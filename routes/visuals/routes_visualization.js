@@ -1024,28 +1024,24 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         //console.log('pcoa_process process exited with code ' + code+' -- '+output);
         //distance_matrix = JSON.parse(output);
         //let last_line = ary[ary.length - 1];
-        if (code === 0){   // SUCCESS
+      let html = "";
+      if (code === 0){   // SUCCESS
 
-          //html = "<img src='/"+image_file+"'>";
-          //let image = path.join('/tmp/',image_file);
-          let html = "<div id='pdf'>";
-          html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-          html += " <p>ERROR in loading pdf file</p>";
-          html += "</object></div>";
-          //console.log(html);
+        //html = "<img src='/"+image_file+"'>";
+        //let image = path.join('/tmp/',image_file);
+        html = "<div id='pdf'>";
+        html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+        html += " <p>ERROR in loading pdf file</p>";
+        html += "</object></div>";
+        //console.log(html);
 
-        } else {
-            console.log('ERROR');
-            let html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
-        }
-
-        res.send(html);
-
+      }
+      else {
+        console.log('ERROR');
+        html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+      }
+      res.send(html);
       });
-
-
-
-
 });
 //
 //  EMPEROR....
@@ -1148,12 +1144,13 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 //
 // DATA BROWSER
 //
+// TODO: JSHint: This function's cyclomatic complexity is too high. (17) (W074)
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
   console.log('in dbrowser');
   console.log(req.session);
-  let html='';
-  let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts + '_count_matrix.biom');
+  let html = '';
+  let matrix_file_path = path.join(config.PROCESS_DIR, 'tmp', ts + '_count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -1213,7 +1210,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
               html += "     <seqcount>";
               // TODO: JSHint: Blocks are nested too deeply. (6) (W073)
               for (let c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']) {
-                  html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
               }
               html += "</seqcount>\n";
               html += "     <rank><val>family</val></rank>\n";
@@ -1343,36 +1340,37 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ tmp_path, ts ],
     };
-    if (plot_type == 'bar'){
+    if (plot_type === 'bar'){
       script = 'phyloseq_bar.R';
       phy = req.body.phy;
       options.args = options.args.concat([image_file, phy, fill]);
-    }else if (plot_type == 'heatmap'){
+    }else if (plot_type === 'heatmap'){
       script = 'phyloseq_heatmap.R';
       //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
       options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
-    }else if (plot_type == 'network'){
+    }else if (plot_type === 'network'){
       script = 'phyloseq_network.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       maxdist = req.body.maxdist || "0.3";
       options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
-    }else if (plot_type == 'ord'){
+    }else if (plot_type === 'ord'){
       script = 'phyloseq_ord.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       ordtype = req.body.ordtype || "PCoA";
       options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
-    }else if (plot_type == 'tree'){
+    }else if (plot_type === 'tree'){
       script = 'phyloseq_tree.R';
       md1 = req.body.md1 || "Description";
       options.args = options.args.concat([image_file, dist_metric, md1]);
-    } else {
-      //ERROR
     }
+    // else {
+    //   //ERROR
+    // }
     let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
     console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
@@ -1382,13 +1380,13 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
             //stdio: [ 'ignore', null, log ]
             stdio: 'pipe'  // stdin, stdout, stderr
     });
-    stdout = '';
-    lastline='';
+    let stdout = '';
+    let lastline = '';
     phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
         lastline = data;
         stdout += data;
     });
-    stderr = '';
+    let stderr = '';
     phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
         stderr += data;
     });
@@ -1397,8 +1395,8 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
           //distance_matrix = JSON.parse(output);
           //let last_line = ary[ary.length - 1];
           if (code === 0){   // SUCCESS
-            console.log('last: '+lastline);
-            if (lastline.toString().substring(0,5) == 'ERROR'){
+            console.log('last: ' + lastline);
+            if (lastline.toString().substring(0,5) === 'ERROR'){
                     console.log('ERROR-1');
                     html = lastline;
             } else {
@@ -1427,7 +1425,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
           } else {
             console.log('ERROR-2');
-            html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
+            html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
           }
           //console.log(html);
           res.send(html);
@@ -1439,159 +1437,162 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //
 //  for dbrowser
 //
+// TODO: JSHint: This function's cyclomatic complexity is too high. (35) (W074)
 function get_sumator(req, biom_matrix){
 
-    let sumator = {};
-    sumator['domain']={};
+  let sumator = {};
+  sumator['domain']={};
 
-    for (let r in biom_matrix.rows){
-        tax_string = biom_matrix.rows[r].id;
-        tax_items = tax_string.split(';');
-        key = tax_items[0];
-        //console.log(tax_items);
-        for (t in tax_items){
-           let taxa = tax_items[t];
-           let rank = C.RANKS[t];
-           if (rank=='domain'){
-               d = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (d in sumator['domain']){
-                       if (i in sumator['domain'][d]['knt']){
-                           sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]={};
-                       sumator['domain'][d]['phylum']={};
-                       sumator['domain'][d]['knt']=[];
-                       sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='phylum'){
-               p = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (p in sumator['domain'][d]['phylum']){
-                       if (i in sumator['domain'][d]['phylum'][p]['knt']){
-                           sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]={};
-                       sumator['domain'][d]['phylum'][p]['klass']={};
-                       sumator['domain'][d]['phylum'][p]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='klass'){
-               k = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (k in sumator['domain'][d]['phylum'][p]['klass']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='order'){
-               o = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='family'){
-               f = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='genus'){
-               g = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='species'){
-               s = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
+  for (let r in biom_matrix.rows){
+    let tax_string = biom_matrix.rows[r].id;
+    let tax_items = tax_string.split(';');
+    let key = tax_items[0];
+      //console.log(tax_items);
+    for (let t in tax_items){
+         let taxa = tax_items[t];
+         let rank = C.RANKS[t];
+         if (rank=='domain'){
+             let d = tax_items[t];
+             for (let i in req.session.chosen_id_order){
+                 if (d in sumator['domain']){
+                     if (i in sumator['domain'][d]['knt']){
+                         sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     }
+                     else {
+                         sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]={};
+                     sumator['domain'][d]['phylum']={};
+                     sumator['domain'][d]['knt']=[];
+                     sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='phylum'){
+             let p = tax_items[t];
+             for (let i in req.session.chosen_id_order){
+                 if (p in sumator['domain'][d]['phylum']){
+                     if (i in sumator['domain'][d]['phylum'][p]['knt']){
+                         sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]={};
+                     sumator['domain'][d]['phylum'][p]['klass']={};
+                     sumator['domain'][d]['phylum'][p]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='klass'){
+             k = tax_items[t];
+             for (i in req.session.chosen_id_order){
+                 if (k in sumator['domain'][d]['phylum'][p]['klass']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank === 'order'){
+             let o = tax_items[t];
+             for (let i in req.session.chosen_id_order){
+                 if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     }
+                     else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='family'){
+             f = tax_items[t];
+             for (i in req.session.chosen_id_order){
+                 if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='genus'){
+             g = tax_items[t];
+             for (i in req.session.chosen_id_order){
+                 if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='species'){
+             s = tax_items[t];
+             for (i in req.session.chosen_id_order){
+                 if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
 
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-           if (rank=='strain'){
-               st = tax_items[t];
-               for (i in req.session.chosen_id_order){
-                   if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                       if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-                       } else {
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                       }
-                   } else {
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
-                       //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-                   }
-               }
-           }
-        }
-    }
-    return sumator;
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+         if (rank=='strain'){
+             st = tax_items[t];
+             for (i in req.session.chosen_id_order){
+                 if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                     if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                     } else {
+                         sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                     }
+                 } else {
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
+                     //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
+                     sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                 }
+             }
+         }
+      }
+  }
+  return sumator;
 }
 
 
@@ -1640,30 +1641,26 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
     new_matrix.did = selected_did;
-
     new_matrix.total = 0;
-
 
     //let idx = -1;
 
-
-
     new_matrix = helpers.sort_json_matrix(new_matrix, order);
     let new_order = {};
-    if (order.orderby =='alpha' ){
-      if (order.value == 'a'){
-        new_order.alpha_value = 'z'
+    if (order.orderby === 'alpha' ){
+      if (order.value === 'a'){
+        new_order.alpha_value = 'z';
       } else {
-        new_order.alpha_value = 'a'
+        new_order.alpha_value = 'a';
       }
-      new_order.count_value = ''
+      new_order.count_value = '';
     } else {
-      if (order.value == 'min'){
-        new_order.count_value = 'max'
+      if (order.value === 'min'){
+        new_order.count_value = 'max';
       } else {
-        new_order.count_value = 'min'
+        new_order.count_value = 'min';
       }
-      new_order.alpha_value = ''
+      new_order.alpha_value = '';
     }
 
     //console.log('order')
@@ -1677,22 +1674,21 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     new_rows = {};
     new_rows[selected_did] = [];
     let LoadDataFinishRequest = function (req, res, project, display) {
-        console.log('LoadDataFinishRequest in bar_single');
-        if (pi.unit_choice == 'OTUs'){
-            let title = 'OTU Count Data'
-        } else {
-            let title = 'Taxonomic Data'
-        }
-        res.render('visuals/user_viz_data/bar_single', {
-              title     : title,
-              ts        : timestamp,
-              matrix    : JSON.stringify(new_matrix),
-              post_items: JSON.stringify(pi),
-              bar_type  : 'single',
-              order     : JSON.stringify(new_order),
-              //html: html,
-              user: req.user, hostname: req.CONFIG.hostname,
-          });
+      console.log('LoadDataFinishRequest in bar_single');
+      let title = 'Taxonomic Data';
+      if (pi.unit_choice === 'OTUs'){
+          title = 'OTU Count Data';
+      }
+      res.render('visuals/user_viz_data/bar_single', {
+        title     : title,
+        ts        : timestamp,
+        matrix    : JSON.stringify(new_matrix),
+        post_items: JSON.stringify(pi),
+        bar_type  : 'single',
+        order     : JSON.stringify(new_order),
+        //html: html,
+        user: req.user, hostname: req.CONFIG.hostname,
+      });
     };
     if ( pi.unit_choice === 'OTUs'){
 
@@ -1802,20 +1798,19 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //console.log(new_matrix)
 
 
-
-
     //DOUBLE
     //console.log(JSON.stringify(new_matrix))
     new_matrix = helpers.sort_json_matrix(new_matrix,order);
     let new_order = {};
-    if (order.orderby =='alpha' ){
-      if (order.value == 'a'){
-        new_order.alpha_value = 'z'
+    if (order.orderby === 'alpha' ){
+      if (order.value === 'a'){
+        new_order.alpha_value = 'z';
       } else {
-        new_order.alpha_value = 'a'
+        new_order.alpha_value = 'a';
       }
-      new_order.count_value = ''
-    } else {
+      new_order.count_value = '';
+    }
+    else {
       if (order.value == 'min'){
         new_order.count_value = 'max'
       } else {
@@ -1853,21 +1848,21 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                   user: req.user, hostname: req.CONFIG.hostname,
               });
     };
-    if ( pi.unit_choice == 'OTUs'){
-
-        LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
-
-    } else {
-        connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
+    if ( pi.unit_choice === 'OTUs') {
+      LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
+    }
+    else {
+      connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
             if (err)  {
               console.log('Query error: ' + err);
               console.log(err.stack);
-              res.send(err)
-            } else {
+              res.send(err);
+            }
+            else {
               //console.log(rows)
               // should write to a file? Or res.render here?
 
-              for (s in rows){
+              for (let s in rows) {
                   did = rows[s].dataset_id;
 
                   //console.log(did)
@@ -1884,7 +1879,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                   let g_id = rows[s].genus_id;
                   let sp_id = rows[s].species_id;
                   let st_id = rows[s].strain_id;
-                  new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
+                  new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
                   //new_rows[did].seq = rows[s].seq.toString('utf8')
               }
               // order by seq_count DESC
@@ -1901,19 +1896,16 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                 console.log('wrote file > '+file_path1);
 
 
-                fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
-                  if (err) return console.log(err);
-                  console.log('wrote file > '+file_path2);
+            fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
+              if (err) return console.log(err);
+              console.log('wrote file > '+file_path2);
 
-                  LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
-                });
-
-              });
-
-            }
-        })
-    }
-
+              LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
+          });
+        });
+      }
+    });
+  }
 });
 //
 //  S E Q U E N C E S
@@ -1925,7 +1917,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	let search_tax = myurl.query.taxa;
     let seqs_filename = myurl.query.filename;
 
-
     let seq_list = [];
     let d,p,k,o,f,g,sp,st;
     let selected_did = myurl.query.did;
@@ -1936,16 +1927,19 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
-        if (req.session.unit_choice == 'OTUs'){
-            res.send('<br><h3>No sequences are associated with this OTU project.</h3>')
-        } else {
-            res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>")
+        if (req.session.unit_choice === 'OTUs'){
+            res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
+        }
+        else {
+            res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
         }
       }
       //console.log('parsing data')
+      let clean_data = "";
       try {
-        let clean_data = JSON.parse(data)
-      }catch(e){
+        clean_data = JSON.parse(data);
+      }
+      catch(e){
         console.log(e);
         res.render('visuals/user_viz_data/sequences', {
                     title: 'Sequences',
@@ -1956,10 +1950,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     seq_list : 'Error Retrieving Sequences',
                     user: req.user, hostname: req.CONFIG.hostname,
         });
-        return
+        return;
       }
 
-      for (i in clean_data){
+      for (let i in clean_data){
 
           seq_tax = '';
           let data = clean_data[i];
