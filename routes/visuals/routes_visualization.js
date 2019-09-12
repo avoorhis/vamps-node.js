@@ -2896,7 +2896,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     let json = {};
     json.id = id;
     json.item = [];
-    if (id==0){
+    if (parseInt(id) === 0){
         // return json for collapsed tree: 'domain' only
 //         json = {"id":"0", "item":[
 //             {"id":"1", "text":"Bacteria", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
@@ -2940,99 +2940,98 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //  project_custom_dhtmlx
 //
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
-    console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
-    let myurl = url.parse(req.url, true);
-    let id = myurl.query.id;
-    console.log('id='+id);
-    let json = {};
-    json.id = id;
-    json.item = [];
-    console.log('DATA_TO_OPEN');
-    console.log(DATA_TO_OPEN);
-    //PROJECT_TREE_OBJ = []
-    //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
-    let itemtext;
-    if (id==0){
+  console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
+  let myurl = url.parse(req.url, true);
+  let id = myurl.query.id;
+  console.log('id='+id);
+  let json = {};
+  json.id = id;
+  json.item = [];
+  console.log('DATA_TO_OPEN');
+  console.log(DATA_TO_OPEN);
+  //PROJECT_TREE_OBJ = []
+  //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
+  let itemtext;
+  if (parseInt(id) === 0){
+    for ( i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
 
-        for ( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
-
-            let pid = PROJECT_TREE_PIDS[i];
-            let node = PROJECT_INFORMATION_BY_PID[pid];
-            //console.log('node',node)
-            let tt_pj_id = 'project/'+node.project+'/'+node.title;
-            if (node.public) {
-              tt_pj_id += '/public';
-            } else {
-              tt_pj_id += '/private';
-            }
-            let pid_str = pid.toString();
-            itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
-            itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-            if (node.public) {
-                itemtext += "<small> <i>(public)</i></small>"
-            } else {
-                itemtext += "<a href='/users/"+ node.oid+"'><small> <i>(PI: "+node.username +")</i></small></a>"
-            }
-
-            if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-              json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
-            } else {
-              json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
-            }
-
-
+        let pid = PROJECT_TREE_PIDS[i];
+        let node = PROJECT_INFORMATION_BY_PID[pid];
+        //console.log('node',node)
+        let tt_pj_id = 'project/'+node.project+'/'+node.title;
+        if (node.public) {
+          tt_pj_id += '/public';
+        } else {
+          tt_pj_id += '/private';
         }
-        //console.log(JSON.stringify(json, null, 4))
+        let pid_str = pid.toString();
+        itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
+        itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+        if (node.public) {
+            itemtext += "<small> <i>(public)</i></small>"
+        } else {
+            itemtext += "<a href='/users/"+ node.oid+"'><small> <i>(PI: "+node.username +")</i></small></a>"
+        }
+
+        if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+          json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
+        } else {
+          json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
+        }
+
 
     }
-    else {
-      //console.log(JSON.stringify(ALL_DATASETS))
-      let this_project = {};
-      id = id.substring(1);  // id = pxx
-      ALL_DATASETS.projects.forEach(function(prj) {
-        if (parseInt(prj.pid) === parseInt(id)){
-          this_project = prj;
-        }
-      });
-      let all_checked_dids = [];
-      if (Object.keys(DATA_TO_OPEN).length > 0){
+    //console.log(JSON.stringify(json, null, 4))
 
-        console.log('dto');
-        if (req.CONFIG.site === 'vamps' ){
-          console.log('VAMPS PRODUCTION -- no print to log');
-        } else {
-          console.log(DATA_TO_OPEN);
-        }
-        for (openpid in DATA_TO_OPEN){
-          Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
-        }
+}
+  else {
+    //console.log(JSON.stringify(ALL_DATASETS))
+    let this_project = {};
+    id = id.substring(1);  // id = pxx
+    ALL_DATASETS.projects.forEach(function(prj) {
+      if (parseInt(prj.pid) === parseInt(id)){
+        this_project = prj;
       }
-      console.log('all_checked_dids:');
+    });
+    let all_checked_dids = [];
+    if (Object.keys(DATA_TO_OPEN).length > 0){
+
+      console.log('dto');
       if (req.CONFIG.site === 'vamps' ){
         console.log('VAMPS PRODUCTION -- no print to log');
       } else {
-        console.log(all_checked_dids)
+        console.log(DATA_TO_OPEN);
       }
-      let pname = this_project.name;
-      for (n in this_project.datasets){
-          let did   = this_project.datasets[n].did;
-          //console.log('didXX',did)
-          let dname = this_project.datasets[n].dname;
-          let ddesc = this_project.datasets[n].ddesc;
-          let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
-          itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
-          if (all_checked_dids.indexOf(parseInt(did)) === -1){
-            json.item.push({id:did, text:itemtext, child:0})
-          } else {
-            json.item.push({id:did, text:itemtext, checked:'1', child:0})
-          }
+      for (openpid in DATA_TO_OPEN){
+        Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
       }
     }
-    json.item.sort(function sortByAlpha(a, b){
-          return helpers.compareStrings_alpha(a.text, b.text);
-    });
-    //console.log(json.item)
-    res.send(json)
+    console.log('all_checked_dids:');
+    if (req.CONFIG.site === 'vamps' ){
+      console.log('VAMPS PRODUCTION -- no print to log');
+    } else {
+      console.log(all_checked_dids)
+    }
+    let pname = this_project.name;
+    for (n in this_project.datasets){
+        let did   = this_project.datasets[n].did;
+        //console.log('didXX',did)
+        let dname = this_project.datasets[n].dname;
+        let ddesc = this_project.datasets[n].ddesc;
+        let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
+        itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
+        if (all_checked_dids.indexOf(parseInt(did)) === -1){
+          json.item.push({id:did, text:itemtext, child:0})
+        } else {
+          json.item.push({id:did, text:itemtext, checked:'1', child:0})
+        }
+    }
+  }
+  json.item.sort(function sortByAlpha(a, b){
+        return helpers.compareStrings_alpha(a.text, b.text);
+  });
+  //console.log(json.item)
+  res.send(json)
 });
 //
 //
