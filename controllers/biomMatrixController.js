@@ -89,7 +89,7 @@ class BiomMatrix {
     }
 
     // console.time('TIME: write_matrix_files');
-    if(this.write_file === true || this.write_file === undefined) {//TODO: refactor
+    if (this.write_file === true || this.write_file === undefined) {//TODO: refactor
       let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
       write_matrix_file_mod.write_matrix_files();
     }
@@ -180,20 +180,21 @@ class BiomMatrix {
     // console.time("TIME: adjust_for_percent_limit_change");
     let min_percent = this.visual_post_items.min_range;
     let max_percent = this.visual_post_items.max_range;
-    let min = 0;
-    let max = 0;
+    // let min = 0;
+    // let max = 0;
     let new_counts = [];
     let new_units = [];
     let cnt_matrix = custom_count_matrix.data;
 
     cnt_matrix.map((row, idx1) => {
-      let got_one = this.check_if_in_interval(custom_count_matrix, row, min, max);
+      let got_one = this.check_if_in_interval(custom_count_matrix, row, min_percent, max_percent);
 
       if (got_one){
         new_counts.push(cnt_matrix[idx1]);
-        new_units.push(custom_count_matrix.rows[idx1]); //?
-        // } else {
-        //   console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
+        new_units.push(custom_count_matrix.rows[idx1]);
+      }
+      else {
+        console.log('rejecting ' + custom_count_matrix.rows[idx1].id);
       }
     });
     custom_count_matrix.data = new_counts;
