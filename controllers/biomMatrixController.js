@@ -81,6 +81,8 @@ class BiomMatrix {
 
     this.biom_matrix = this.create_biom_matrix();
     // console.timeEnd('TIME: create_biom_matrix');
+    console.log("GGG0 this.visual_post_items");
+    console.log(this.visual_post_items);
 
     let true_meaning = [true, 1, "1"];
     if (this.visual_post_items.update_data in true_meaning) {
@@ -88,12 +90,11 @@ class BiomMatrix {
     }
 
     // console.time('TIME: write_matrix_files');
-    if(this.write_file === true || this.write_file === undefined) {//TODO: refactor
+    if (this.write_file === true || this.write_file === undefined) {//TODO: refactor
       let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
       write_matrix_file_mod.write_matrix_files();
     }
     // console.timeEnd('TIME: write_matrix_files');
-
   }
 
   get_columns() {
@@ -122,13 +123,40 @@ class BiomMatrix {
         (cnts_obj[taxname].filter(Number).length) > 0);
   }
 
+  check_what_to_update() {
+    // normalization, percent, domains, Taxonomic Depth, include NAs
+    let adjust = {
+    adjust_for_normalization: false,
+    adjust_for_percent_limit_change: true
+  };
+
+     if (typeof this.visual_post_items.normalization !== "undefined" && this.visual_post_items.normalization !== "none") {
+       adjust.adjust_for_normalization = true;
+     }
+
+    let min_percent = parseInt(this.visual_post_items.min_range) === 0;
+    let max_percent = parseInt(this.visual_post_items.max_range) === 100;
+    if (min_percent && max_percent) {
+      adjust.adjust_for_percent_limit_change = false;
+    }
+
+  return adjust;
+  }
+
   get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
+    console.log("GGG1 this.visual_post_items");
+    console.log(this.visual_post_items);
     // console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 
-    custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
-    custom_count_matrix = this.adjust_for_normalization(custom_count_matrix);
+    let adjust = this.check_what_to_update();
+    if (adjust.adjust_for_normalization) {
+      custom_count_matrix = this.adjust_for_normalization(custom_count_matrix);
+    }
+    if (adjust.adjust_for_percent_limit_change) {
+      custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
+    }
     custom_count_matrix.column_totals = this.re_calculate_totals(custom_count_matrix);
     custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
@@ -151,20 +179,23 @@ class BiomMatrix {
 
   adjust_for_percent_limit_change(custom_count_matrix) {
     // console.time("TIME: adjust_for_percent_limit_change");
-    let min     = this.visual_post_items.min_range;
-    let max     = this.visual_post_items.max_range;
+    let min_percent = this.visual_post_items.min_range;
+    let max_percent = this.visual_post_items.max_range;
+    // let min = 0;
+    // let max = 0;
     let new_counts = [];
     let new_units = [];
     let cnt_matrix = custom_count_matrix.data;
 
     cnt_matrix.map((row, idx1) => {
-      let got_one = this.check_if_in_interval(custom_count_matrix, row, min, max);
+      let got_one = this.check_if_in_interval(custom_count_matrix, row, min_percent, max_percent);
 
       if (got_one){
         new_counts.push(cnt_matrix[idx1]);
-        new_units.push(custom_count_matrix.rows[idx1]); //?
-        // } else {
-        //   console.log('rejecting ' + custom_count_matrix.rows[idx1].name);
+        new_units.push(custom_count_matrix.rows[idx1]);
+      }
+      else {
+        console.log('rejecting ' + custom_count_matrix.rows[idx1].id);
       }
     });
     custom_count_matrix.data = new_counts;
@@ -227,11 +258,17 @@ class BiomMatrix {
     // console.time("TIME: re_calculate_totals");
     let arr = custom_count_matrix.data;
     let tots = [];
-    tots = arr[0].map((col, i) => {// transpose
-      return arr.map(row => row[i]) // loop over rows
-        .reduce((tot, cell) => tot + cell, // sum by col
-          0);
-    });
+    try {
+      tots = arr[0].map((col, i) => {// transpose
+        return arr.map(row => row[i]) // loop over rows
+          .reduce((tot, cell) => tot + cell, // sum by col
+            0);
+      });
+    }
+    catch (e) {
+      console.log(e);
+      console.log("Empty lines in the matrix, probably too many domains were deselected.");
+    }
 
     // console.timeEnd("TIME: re_calculate_totals");
     return tots;
@@ -471,7 +508,13 @@ class Taxonomy {
     this.chosen_dids.map((did, d_idx) => {
      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
      curr_tax_info_obj.map(ob => {
-       tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       if (ob.tax_long_name) {
+         tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+       }
+       else {
+         console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
+       }
      });
     });
 
@@ -547,7 +590,16 @@ class TaxonomySimple extends Taxonomy {
     return one_taxon_name;
   }
 
-  screen_domains(tax_long_name_arr) {
+  check_domain_is_selected(tax_long_name_arr) {
+    let domain_is_selected = this.post_items.domains.includes(tax_long_name_arr[0]);
+    if (!domain_is_selected) {
+      console.log('Excluding', tax_long_name_arr);
+      tax_long_name_arr = [];
+    }
+    return tax_long_name_arr;
+  }
+
+  check_organel_and_chloropl(tax_long_name_arr) {
     let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
     if (organelle_has_been_de_selected) {
       let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
@@ -557,6 +609,12 @@ class TaxonomySimple extends Taxonomy {
         tax_long_name_arr = [];
       }
     }
+    return tax_long_name_arr;
+  }
+
+  screen_domains(tax_long_name_arr) {
+    tax_long_name_arr = this.check_organel_and_chloropl(tax_long_name_arr);
+    tax_long_name_arr = this.check_domain_is_selected(tax_long_name_arr);
     return tax_long_name_arr;
   }
 
@@ -584,7 +642,6 @@ class TaxonomySimple extends Taxonomy {
 
     return rank_name;
   }
-
 }
 
 class TaxonomyCustom extends Taxonomy {
