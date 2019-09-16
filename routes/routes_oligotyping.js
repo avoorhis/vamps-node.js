@@ -357,9 +357,11 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   //var pwd = req.CONFIG.PROCESS_DIR;
   //var user_dir_path = path.join(pwd,'public','user_projects');
   var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);    
-
+  
   var olig_dir = 'oligotyping-'+oligo_code
   var data_repo_path = path.join(user_dir_path, olig_dir);
+  var real_html_runs_path = path.join(data_repo_path, 'OLIGOTYPE-runs') 
+  helpers.ensure_dir_exists(real_html_runs_path)
   var config_file = path.join(data_repo_path, 'config.ini');
   var config = iniparser.parseSync(config_file);
   console.log('looking in config')
@@ -396,10 +398,11 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   
   console.log(fasta_status,' - ',entropy_status,' - ',oligo_status)
   var link_path
-  var real_html_runs_path = path.join(data_repo_path, 'OLIGOTYPE-runs') 
+  
   var processed_oligo_runs = []
 
-  helpers.ensure_dir_exists(real_html_runs_path)
+  
+  
   fs.readdirSync(real_html_runs_path).forEach(function(dir_name) {
     curPath = path.join(real_html_runs_path, dir_name)
     stats = fs.statSync(curPath)
