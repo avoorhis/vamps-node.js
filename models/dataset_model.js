@@ -147,7 +147,7 @@ class Dataset {
 
   update_dataset_obj(rows) {
     //     var did                     = rows.insertId;
-    console.log('WWW002 rows', rows);
+    // console.log('WWW002 rows', rows);
     this.dataset_objects_arr[this.pid.toString()] = Object.assign(rows);
     // this.dataset_objects_arr[482][0]
     // dataset = "test_dataset_1"

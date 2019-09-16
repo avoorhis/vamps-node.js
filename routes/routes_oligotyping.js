@@ -479,7 +479,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
     g = '-g '+ genus
   }
 
-console.log('a')
+
   var cmd_options1 = {
       exec : 'create_GG_alignment_template_from_taxon.py',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -491,7 +491,7 @@ console.log('a')
                       '>', alignmentlog
                     ],
   };
-console.log('a')
+
   var cmd_options2 = {
       exec: 'pynast',
       scriptPath : req.CONFIG.PATH_TO_PYNAST,
@@ -503,13 +503,13 @@ console.log('a')
                       '>', pynastlog
                     ],
   };
-  console.log('b')
+ 
   var cmd_options3 = {
       exec : 'minalign',
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ aligned_file, '>', min_align_fasta_file],
   };
-  console.log('c')
+ 
   var cmd_options4 = {
       //exec : 'entropy_analysis',
       //scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
@@ -528,7 +528,7 @@ console.log('a')
   for(n in lst){
     cmd_list.push(path.join(lst[n].scriptPath, lst[n].exec) + ' ' + lst[n].args.join(' '))
   }
-console.log('d')
+
 
   var script_text = helpers.get_local_script_text(cmd_list);
 
@@ -546,7 +546,7 @@ console.log('d')
     function execEntopyScript(args) {
         console.log('RUNNING1: '+"bash "+args.join(' '))
         
-        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH+':'+req.CONFIG.OLIGO_PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
     
     fs.writeFile(script_file_path, script_text, function writeEntropyScript(err){
@@ -760,7 +760,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     console.log(script_text)
     function execOligoScript(args) {
         console.log('RUNNING2: '+"bash "+args.join(' '))
-        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
+        return spawn("bash", args, { env:{ 'PATH':req.CONFIG.PATH+':'+req.CONFIG.OLIGO_PATH }, stdio: ['pipe', 'pipe', 'pipe'], detached: true });
     }
     fs.writeFile(script_file_path, script_text, function writeOligoScript(err){
         if(err){ return console.log(err) }
