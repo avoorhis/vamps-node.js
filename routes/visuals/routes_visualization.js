@@ -562,10 +562,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     console.log(req.body);
   }
   console.log('req.body: unit_selection');
-  if (typeof  unit_choice === 'undefined'){
-    let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
-    console.log(unit_choice);
-  }
+
   //let this_session_metadata = {}
   let dataset_ids = [];
   if (req.body.api === '1'){
@@ -664,16 +661,22 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         console.log(chosen_dataset_order);
       }
 	  console.log('<--chosen_dataset_order');
-
+    if (typeof unit_choice === 'undefined'){
+      let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+      console.log(unit_choice);
+    }
+    // else {
+    //   console.log("unit_choice is defined: " + unit_choice);
+    // }
 	  res.render('visuals/unit_selection', {
-	                    title: 'VAMPS: Units Selection',
-                        referer: 'visuals_index',
-	                    chosen_datasets: JSON.stringify(chosen_dataset_order),
-	                    constants    : JSON.stringify(needed_constants),
-	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
-		  				md_req       : JSON.stringify(required_metadata_headers),   //
-                        unit_choice  : unit_choice,
-	                    user         : req.user,hostname: req.CONFIG.hostname,
+      title: 'VAMPS: Units Selection',
+      referer: 'visuals_index',
+      chosen_datasets: JSON.stringify(chosen_dataset_order),
+      constants    : JSON.stringify(needed_constants),
+      md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
+      md_req       : JSON.stringify(required_metadata_headers),   //
+      unit_choice  : unit_choice,
+      user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
     // benchmarking
@@ -828,7 +831,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-//
+// test: view_saved_datasets from selection
 router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
@@ -847,6 +850,8 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
     }
   });
 });
+
+//TODO: were it is used?
 router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
@@ -1919,6 +1924,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //
 //  S E Q U E N C E S
 //
+// test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
+// click on the barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	console.log('in sequences');
 	let myurl = url.parse(req.url, true);
@@ -2058,7 +2065,7 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedI
 // let start = process.hrtime();
 //
 
-// };
+//
 router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
   let myurl = url.parse(req.url, true);
   let load = myurl.query.load  || 'all';   // either 'all' or 'selected'
@@ -2170,7 +2177,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 });
 //
 //
-//
+// test: click go to saved datasets
 router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
     if (req.user.username === 'guest'){
@@ -2226,7 +2233,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 });
 //
 //  R E S E T
-//
+// from reorder_datasets click "reset order"
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
         console.log('in reset_ds_order');
         let html = '';
@@ -2421,14 +2428,11 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       //   //res.send(err);
       // }
     });
-
-
-
 });
 //
 //
 //
-
+// test heatmap
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
   console.log('in dheatmap_number_to_color');
   console.log(req.body);
@@ -2460,9 +2464,8 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   data.filename = outfile_name;
   //res.send(outfile_name)
   res.json(data);
-
-
 });
+
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
     console.log('in dheatmap_split_distance');
     console.log(req.body);
@@ -2473,8 +2476,6 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     let biom_file_name = ts+'_count_matrix.biom';
     let biom_file = path.join(pwd,'tmp',biom_file_name);
-
-
 
     let FinishSplitFile = function(req, res){
         let ts = req.session.ts;
@@ -2707,6 +2708,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 //
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
+// test click filter by ENV source on visuals_index
 router.get('/livesearch_env/:envid', function(req, res) {
   let envid = req.params.envid;
   let items = envid.split('--');
@@ -2749,6 +2751,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
 //
 //  FILTER #3 LIVESEARCH TARGET PROJECTS FILTER
 //
+// test click filter by domain/Target on visuals_index
 router.get('/livesearch_target/:gene_target', function(req, res) {
   let gene_target = req.params.gene_target;
   let myurl = url.parse(req.url, true);
@@ -2776,6 +2779,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 //
 // FILTER #4
 //
+// test click filter by portal on visuals_index
 router.get('/livesearch_portal/:portal', function(req, res) {
   console.log('viz:in livesearch portal');
   let select_box_portal = req.params.portal;
@@ -2807,6 +2811,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 //
 //  FILTER # 5 LIVESEARCH PUBLIC/PRIVATE PROJECTS FILTER
 //
+// test: click public/private on visuals_index
 router.get('/livesearch_status/:q', function(req, res) {
   console.log('viz:in livesearch status');
   let q = req.params.q;
@@ -2832,6 +2837,7 @@ router.get('/livesearch_status/:q', function(req, res) {
 //
 //  FILTER #6  LIVESEARCH METADATA FILTER
 //
+// test click filter by Metadata on visuals_index
 router.get('/livesearch_metadata/:num/:q', function(req, res) {
   console.log('viz:in livesearch metadata');
 
@@ -3060,7 +3066,7 @@ router.get('/taxa_piechart', function(req, res) {
   let ts = req.session.ts;
   let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
 
-  fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
+  fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
     if (err) {
       let msg = 'ERROR Message '+err;
       helpers.render_error_page(req,res,msg);

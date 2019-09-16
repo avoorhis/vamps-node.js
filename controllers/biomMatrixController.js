@@ -619,7 +619,6 @@ class TaxonomyCustom extends Taxonomy {
     // console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
 
     return tax_cnt_obj_arrs;
-
   }
 
   initialize_custom_tax_node(selected_node_id) {
