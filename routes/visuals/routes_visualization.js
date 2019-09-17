@@ -2075,12 +2075,12 @@ router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res
 
   });
 });
-// router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
-//   console.log("in '/partials/tax_generic_simple'")
-//   res.render("visuals/partials/tax_generic_simple", {
-//     doms: C.DOMAINS
-//   });
-// });
+router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_generic_simple'")
+  res.render("visuals/partials/tax_generic_simple", {
+    doms: C.DOMAINS
+  });
+});
 // router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
 //   res.render('visuals/partials/tax_gg_custom',{});
 // });
