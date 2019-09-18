@@ -727,6 +727,10 @@ class TaxonomyCustom extends Taxonomy {
   }
 }
 
+class TaxonomyGeneric extends TaxonomySimple {
+
+}
+
 class WriteMatrixFile {
 
   constructor(post_items, biom_matrix) {
@@ -752,5 +756,6 @@ module.exports = {
   TaxonomyFactory: TaxonomyFactory,
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
+  TaxonomyGeneric: TaxonomyGeneric,
   WriteMatrixFile: WriteMatrixFile
 };
