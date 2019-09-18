@@ -1,5 +1,5 @@
 {
   "verbose": true,
-  "watch": ["app.js","config/","routes/*","/models/*"],
+  "watch": ["app.js","config/*","routes/*","/models/*","controllers/*"],
   "ignore": ["user_data/*","node_modules/*","reports/*","logs/*","test/*","tmp/*"]
 }
