@@ -1554,7 +1554,7 @@ router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function 
     console.log('IN GET cleanup_tmp_dirs')
     var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
     var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
-    var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');
+    var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
     console.log("Deleting ALL files and directories in:");
     console.log(temp_dir_path1);
     console.log(temp_dir_path2);
