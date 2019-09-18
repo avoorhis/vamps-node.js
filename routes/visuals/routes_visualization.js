@@ -1294,36 +1294,37 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 // OLIGOTYPING
 //
-router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
-  let ts = req.session.ts;
-  console.log('in POST oligotyping');
-
-  let html='';
-  let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
-  let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
-  let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-
-  //console.log('max_total_count '+max_total_count.toString());
-
-
-  // write html to a file and open it
-
-  console.log("render visuals/oligotyping");
-  //let file_name = ts+'_krona.html';
-  //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-
-  res.render('visuals/oligotyping', {
-    title: 'VAMPS:Oligotyping',
-    html:                html,
-    max_total_count:     max_total_count,
-    matrix:              JSON.stringify(biom_matrix),
-    //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-    user :  req.user, hostname : req.CONFIG.hostname,
-
-  });
-
-
-});
+// Commented out on 2019/09/16 aav
+// router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
+//   let ts = req.session.ts;
+//   console.log('in POST oligotyping');
+//
+//   let html='';
+//   let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
+//   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
+//   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+//
+//   //console.log('max_total_count '+max_total_count.toString());
+//
+//
+//   // write html to a file and open it
+//
+//   console.log("render visuals/oligotyping");
+//   //let file_name = ts+'_krona.html';
+//   //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+//
+//   res.render('visuals/oligotyping', {
+//     title: 'VAMPS:Oligotyping',
+//     html:                html,
+//     max_total_count:     max_total_count,
+//     matrix:              JSON.stringify(biom_matrix),
+//     //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+//     user :  req.user, hostname : req.CONFIG.hostname,
+//
+//   });
+//
+//
+// });
 
 
 //
@@ -1770,7 +1771,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 //
 // B A R - C H A R T  -- D O U B L E
 //
-
+// test: click on cell of distance heatmap
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_double');
 
@@ -2065,7 +2066,7 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedI
 // let start = process.hrtime();
 //
 
-//
+// test: it is only called from public/javascrips/metadata.js line 30
 router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
   let myurl = url.parse(req.url, true);
   let load = myurl.query.load  || 'all';   // either 'all' or 'selected'
@@ -2081,33 +2082,35 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedI
   res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_custom',  { title   : C.default_taxonomy.show+' Custom Taxonomy Selection'});
 });
 
+// test: on unit_select page drop down -select RDP
 router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
   res.render("visuals/partials/tax_rdp26_simple", {
     doms : C.UNITSELECT.rdp2_6_simple.domains,
   });
 });
 
+// test: on unit_select page drop down - select Generic
 router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
   res.render("visuals/partials/tax_generic_simple", {
     doms: C.DOMAINS
   });
 });
-
-router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_gg_custom',{});
-});
-
-router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_gg_simple',{});
-});
-
-router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/otus',{});
-});
-
-router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/med_nodes',{});
-});
+//
+// router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/tax_gg_custom',{});
+// });
+//
+// router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/tax_gg_simple',{});
+// });
+//
+// router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/otus',{});
+// });
+//
+// router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/med_nodes',{});
+// });
 //
 // SAVE CONFIG
 // test "safe configuration" on top; Saved as: configuration-1568329081647.json
@@ -2233,7 +2236,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 });
 //
 //  R E S E T
-// from reorder_datasets click "reset order"
+// test: from reorder_datasets click "reset order"
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
         console.log('in reset_ds_order');
         let html = '';
@@ -3057,7 +3060,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 });
 //
 //
-//
+// test: click on row (index 1...) of taxonomy table
 router.get('/taxa_piechart', function(req, res) {
   console.log('IN taxa_piechart - routes_visualizations');
   let myurl = url.parse(req.url, true);
