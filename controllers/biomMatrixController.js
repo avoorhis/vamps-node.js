@@ -589,8 +589,17 @@ class TaxonomySimple extends Taxonomy {
     return one_taxon_name;
   }
 
+  fungi_domain(domain_name) {
+    if (domain_name === "Fungi") {
+      domain_name = "Eukarya";
+    }
+    return domain_name;
+  }
+
   check_domain_is_selected(tax_long_name_arr) {
-    let domain_is_selected = this.post_items.domains.includes(tax_long_name_arr[0]);
+    let current_domain_name = this.fungi_domain(tax_long_name_arr[0]);
+
+    let domain_is_selected = this.post_items.domains.includes(current_domain_name);
     if (!domain_is_selected) {
       console.log('Excluding', tax_long_name_arr);
       tax_long_name_arr = [];
