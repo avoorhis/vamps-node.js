@@ -459,7 +459,8 @@ class TaxonomyFactory {
   }
 
   choose_taxonomy_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
-    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+    let unit_choice_simple = (this.units === 'tax_silva119_simple');
+      // (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
     let unit_choice_generic_simple = (this.units === 'tax_generic_simple');
 
@@ -593,15 +594,8 @@ class TaxonomySimple extends Taxonomy {
     return one_taxon_name;
   }
 
-  fungi_domain(domain_name) {
-    if (domain_name === "Fungi") {
-      domain_name = "Eukarya";
-    }
-    return domain_name;
-  }
-
   check_domain_is_selected(tax_long_name_arr) {
-    let current_domain_name = this.fungi_domain(tax_long_name_arr[0]);
+    let current_domain_name = tax_long_name_arr[0];
 
     let domain_is_selected = this.post_items.domains.includes(current_domain_name);
     if (!domain_is_selected) {
@@ -732,6 +726,29 @@ class TaxonomyCustom extends Taxonomy {
 }
 
 class TaxonomyGeneric extends TaxonomySimple {
+  let genericTaxonomy      = require(app_root + '/models/generic_taxonomy');
+  let generic_taxonomy = new genericTaxonomy();
+  
+  generic_taxonomy.get_domains(function (err, results) {
+    if (err)
+      {throw err;}
+    else {
+      let domains = results;
+    }
+      // new_taxonomy = new CustomTaxa(results);
+  });
+
+  
+  check_domain_is_selected(tax_long_name_arr) {
+    let current_domain_name = tax_long_name_arr[0];
+
+    let domain_is_selected = this.post_items.domains.includes(current_domain_name);
+    if (!domain_is_selected) {
+      console.log('Excluding', tax_long_name_arr);
+      tax_long_name_arr = [];
+    }
+    return tax_long_name_arr;
+  }
 
 }
 

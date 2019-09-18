@@ -13,13 +13,21 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  JOIN species_generic AS spe USING(species_id) \
  JOIN strain_generic AS str USING(strain_id)";
  //console.log('running custom tax query short-2');
- 
+
+let select_domains_q = "SELECT DISTINCT domain_id, domain FROM domain_generic;";
+
 console.log('GENERIC: running dataset_taxa_counts query from models/generic_taxonomy.js');
 
 module.exports = genericTaxonomy;
 
 function genericTaxonomy() {
 }
+
+genericTaxonomy.prototype.get_domains = function(callback) {
+  connection.query(select_domains_q, function (err, rows) {
+    callback(err, rows);
+  });
+};
 
 genericTaxonomy.prototype.get_all_taxa = function(callback) 
 {
