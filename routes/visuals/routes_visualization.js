@@ -852,7 +852,10 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+//
+//
 router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+
     console.log('found routes_dendrogram-x');
     ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
     ///// It passes the newick string back to view_selection.js
@@ -895,23 +898,10 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
     });
-
-    var stdout = '';
+    stdout = ''
     dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-        //
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stdout += data;
-
+        stdout += data.toString();
     });
-    var stderr = '';
-    dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
-        console.log('stderr: ' + data);
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stderr += data;
-    });
-
     dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
         console.log('dendrogram_process process exited with code ' + code);
 
@@ -960,9 +950,17 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     res.send(html);
                     return;
           }
+
         }else{
-          console.log('stderr: '+stderr);
-          res.send('Script Error');
+          console.log('stdout: ' + stdout);
+        }
+        lines = stdout.split('\n')
+        for(n in lines){
+          if(lines[n].substring(0,6) == 'NEWICK' ){
+            tmp = lines[n].split('=')
+            console.log('FOUND NEWICK '+tmp[1])
+            continue
+          }
         }
     });
 
@@ -985,8 +983,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var image_type = req.body.image_type;
     //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var image_file = ts+'_pcoa.pdf';
-    //var biom_file_name = ts+'_count_matrix.biom';
-    //var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+    
     
    
     var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
@@ -1085,7 +1082,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         var dir_name = ts+'_pcoa3d';
         var dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
         var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+        
         var options1 = {
             scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
             args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts,'-m', mapping_file],
@@ -1146,17 +1143,16 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
 
 });
-
-
 //
 // DATA BROWSER
 //
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
+
     var ts = req.session.ts;
     console.log('in dbrowser');
     console.log(req.session)
     var html='';
-    var matrix_file_path = path.join(config.TMP_FILES,ts+'_count_matrix.biom')
+    var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
    
@@ -1175,119 +1171,121 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
       html += " <seqcount>";
       for(var c_domain in sumator['domain'][d]['knt']){
           html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-      }
-        html += "</seqcount>\n";
-        html += " <rank><val>domain</val></rank>\n";
 
-        // #### PHYLUM ####
-        for(p in sumator['domain'][d]['phylum']){
-          html += " <node name='"+p+"'>\n";
-          html += "  <seqcount>";
-          for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-              html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
-          }
-            html += "</seqcount>\n";
-            html += "  <rank><val>phylum</val></rank>\n";
+      }
+      html += "</seqcount>\n";
+      html += " <rank><val>domain</val></rank>\n";
+
+      // #### PHYLUM ####
+      for(p in sumator['domain'][d]['phylum']){
+        html += " <node name='"+p+"'>\n";
+        html += "  <seqcount>";
+        for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+          html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+        }
+
+      html += "</seqcount>\n";
+      html += "  <rank><val>phylum</val></rank>\n";
 ///
-            // #### KLASS ####
-            for(k in sumator['domain'][d]['phylum'][p]['klass']){
-                html += "  <node name='"+k+"'>\n";
-                html += "   <seqcount>";
-                for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+      // #### KLASS ####
+      for(k in sumator['domain'][d]['phylum'][p]['klass']){
+        html += "  <node name='"+k+"'>\n";
+        html += "   <seqcount>";
+        for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+        }
+        html += "</seqcount>\n";
+        html += "   <rank><val>klass</val></rank>\n";
+
+        // #### ORDER ####
+        for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+          html += "   <node name='"+o+"'>\n";
+          html += "    <seqcount>";
+          for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
+          }
+          html += "</seqcount>\n";
+          html += "    <rank><val>order</val></rank>\n";
+
+          // #### FAMILY ####
+          for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+            html += "    <node name='"+f+"'>\n";
+            html += "     <seqcount>";
+            for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+            }
+            html += "</seqcount>\n";
+            html += "     <rank><val>family</val></rank>\n";
+
+            // #### GENUS ####
+            for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+              html += "     <node name='"+g+"'>\n";
+              html += "      <seqcount>";
+              for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
+              }
+              html += "</seqcount>\n";
+              html += "      <rank><val>genus</val></rank>\n";
+
+              // #### SPECIES ####
+              for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+                html += "     <node name='"+s+"'>\n";
+                html += "      <seqcount>";
+                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                  html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
                 }
                 html += "</seqcount>\n";
-                html += "   <rank><val>klass</val></rank>\n";
+                html += "      <rank><val>species</val></rank>\n";
 
-                // #### ORDER ####
-                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-                    html += "   <node name='"+o+"'>\n";
-                    html += "    <seqcount>";
-                    for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-                        html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-                    }
-                    html += "</seqcount>\n";
-                    html += "    <rank><val>order</val></rank>\n";
+                // #### STRAIN ####
+                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                  html += "     <node name='"+st+"'>\n";
+                  html += "      <seqcount>";
+                  for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
+                  }
+                  html += "</seqcount>\n";
+                  html += "      <rank><val>strain</val></rank>\n";
+                  ///// DONE //////
+                  html += "     </node>\n";
+                }  // end strain
 
-                    // #### FAMILY ####
-                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-                        html += "    <node name='"+f+"'>\n";
-                        html += "     <seqcount>";
-                        for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-                        }
-                        html += "</seqcount>\n";
-                        html += "     <rank><val>family</val></rank>\n";
-
-                        // #### GENUS ####
-                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-                            html += "     <node name='"+g+"'>\n";
-                            html += "      <seqcount>";
-                            for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-                            }
-                            html += "</seqcount>\n";
-                            html += "      <rank><val>genus</val></rank>\n";
-
-                            // #### SPECIES ####
-                            for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-                                html += "     <node name='"+s+"'>\n";
-                                html += "      <seqcount>";
-                                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-                                }
-                                html += "</seqcount>\n";
-                                html += "      <rank><val>species</val></rank>\n";
-
-                                // #### STRAIN ####
-                                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                                      html += "     <node name='"+st+"'>\n";
-                                      html += "      <seqcount>";
-                                      for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                                          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-                                      }
-                                      html += "</seqcount>\n";
-                                      html += "      <rank><val>strain</val></rank>\n";
- ///// DONE //////
-                                      html += "     </node>\n";
-                                }  // end strain
-
-                                html += "     </node>\n";
-                            }  // end species
+                html += "     </node>\n";
+              }  // end species
 
 
-                            html += "     </node>\n";
-                        }  // end genus
-                        html += "    </node>\n";
-                    }  // end family
-                    html += "   </node>\n";
-                }  // end order
-                html += "  </node>\n";
-            }  // end klass
-            html += " </node>\n";
-        }  // end phylum
-        html += "</node>\n";
-    }    // end domain
-    html += "  </node>\n";
+              html += "     </node>\n";
+            }  // end genus
+            html += "    </node>\n";
+          }  // end family
+          html += "   </node>\n";
+        }  // end order
+        html += "  </node>\n";
+      }  // end klass
+      html += " </node>\n";
+    }  // end phylum
+    html += "</node>\n";
+  }    // end domain
+  html += "  </node>\n";
 
 
-    // write html to a file and open it
+  // write html to a file and open it
 
-    console.log("render visuals/dbrowser")
-    //var file_name = ts+'_krona.html';
-    //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+  console.log("render visuals/dbrowser")
+  
 
-    res.render('visuals/dbrowser', {
-      title: 'VAMPS:Taxonomy Browser (Krona)',
-      user:                req.user,
-      html:                html,
-      max_total_count:     max_total_count,
-      matrix:              JSON.stringify(biom_matrix)
+  res.render('visuals/dbrowser', {
+    title: 'VAMPS:Taxonomy Browser (Krona)',
+    user:                req.user,
+    html:                html,
+    max_total_count:     max_total_count,
+    matrix:              JSON.stringify(biom_matrix)
 
-    });
+  });
 
 
 });
+
 //
 // OLIGOTYPING
 //
@@ -1296,7 +1294,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
   console.log('in POST oligotyping');
 
   var html='';
-  var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+  var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
   var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
   var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -1306,8 +1304,7 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
   // write html to a file and open it
 
   console.log("render visuals/oligotyping")
-  //var file_name = ts+'_krona.html';
-  //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+  
 
   res.render('visuals/oligotyping', {
     title: 'VAMPS:Oligotyping',
@@ -1327,8 +1324,9 @@ router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
+
     console.log('in phyloseq post')
-    //console.log(req.body)
+    console.log(req.body)
 
     var ts = req.body.ts;
     var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
@@ -1420,25 +1418,26 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
               // return;
 
 
-                 if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 //if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
                  //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-                      html = "<div id='pdf'>";
-                      html += "<object data='/static_base/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-                      html += " <p>ERROR in loading pdf file</p>";
-                      html += "</object></div>";
-                 }else{
-                      html = "<img src='/"+image_file+"'  >";
-                }
+              html = "<div id='pdf'>";
+              html += "<object data='/static_base/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+              html += " <p>ERROR in loading pdf file</p>";
+              html += "</object></div>";
+                 //}else{
+                 //     html = "<img src='/"+image_file+"'  >";
+                //}
             }
+        
 
-          }else{
-            console.log('ERROR-2');
-            html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
-          }
-          //console.log(html);
-          res.send(html);
+        }else{
+          console.log('ERROR-2');
+          html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
+        }
+        //console.log(html);
+        res.send(html);
 
-    });
+  });
 
 });
 
@@ -1678,7 +1677,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log(new_order)
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
-  var file_path = path.join('tmp',filename);
+  var file_path = path.join(req.CONFIG.TMP_FILES,filename);
   //console.log(file_path)
   new_rows = {}
   new_rows[selected_did] = []
@@ -1836,9 +1835,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   var timestamp = +new Date();  // millisecs since the epoch!
   console.log('TS HM File',timestamp)
   var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json'
-  var file_path1 = path.join('tmp',filename1);
+  var file_path1 = path.join(req.CONFIG.TMP_FILES,filename1);
   var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json'
-  var file_path2 = path.join('tmp',filename2);
+  var file_path2 = path.join(req.CONFIG.TMP_FILES,filename2);
   //console.log(file_path)
   new_rows = {}
   new_rows[did1] = []
@@ -1924,6 +1923,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   }
 
 });
+
 //
 //  S E Q U E N C E S
 //
@@ -1942,7 +1942,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   if(seqs_filename){
     //console.log('found filename',seqs_filename)
 
-    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
+    fs.readFile(path.join(req.CONFIG.TMP_FILES,seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
         if(req.session.unit_choice == 'OTUs'){
@@ -2324,7 +2324,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
+    var biom_file = path.join(req.CONFIG.TMP_FILES,biom_file_name);
     
     var pjds_lookup = {}
     for(i in req.session.chosen_id_order){
@@ -2436,7 +2436,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   var ts = req.session.ts
   var distmtx_file_name = ts+'_distance.json';
-  var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+  var distmtx_file = path.join(req.CONFIG.TMP_FILES,distmtx_file_name);
   //console.log(distmtx_file)
   var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')) // function (err, distance_matrix) {
 
@@ -2450,7 +2450,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   //console.log(html)
   var outfile_name = ts + '-dheatmap-api.html'
-  outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+  outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
   //console.log('outfile_path:',outfile_path)
   //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
   //console.log(result)
@@ -2471,7 +2471,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     
     var ts = req.session.ts
     var test_split_file_name = ts+'_distance_mh_bc.tsv';
-    var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
+    var test_distmtx_file = path.join(req.CONFIG.TMP_FILES,test_split_file_name );
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(req.CONFIG.TMP_FILES,biom_file_name);
     
@@ -2501,7 +2501,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
                 var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata )
 
                 var outfile_name = ts + '-dheatmap-api.html'
-                outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
                 
                 var data = {}
                 data.html = html
@@ -3053,7 +3053,7 @@ router.get('/taxa_piechart', function(req, res) {
   var tax = myurl.query.tax
   var timestamp = +new Date();  // millisecs since the epoch!
   var ts = req.session.ts;
-  var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+  var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
 
   fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
     if (err) {
@@ -3105,6 +3105,7 @@ router.get('/taxa_piechart', function(req, res) {
 
 
 });
+
 
 module.exports = router;
 

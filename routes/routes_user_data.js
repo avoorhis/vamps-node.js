@@ -4587,124 +4587,124 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //
 //
 //
-router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
-  
-  var db = req.db;
-  console.log('metadate download GET req.body-->>');
-  
-  var timestamp = +new Date();  // millisecs since the epoch!
-
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-  helpers.mkdirSync(user_dir);  // create dir if not exists
-  var dids;
-  var header, project;
-  var file_name;
-  var out_file_path;
-
-  
-    var pid  = req.query.pid
-    console.log('pid '+pid)
-    if(pid == undefined || pid == '' || pid == 0 || ! pid ){
-      res.send('Choose a project');
-      return;
-    }
-    dids = DATASET_IDS_BY_PID[pid];
-    
-    project = PROJECT_INFORMATION_BY_PID[pid].project
-    
-    
-    //file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
-    file_name = req.user.username+'-metadata'+timestamp+'_'+project+'.csv';
-    out_file_path = path.join('tmp', file_name);
-    
-  
-    console.log('dids');
-    console.log(dids);
-
-
-    var gzip = zlib.createGzip();
-    var myrows = {}; // myrows[mdname] == [] list of values
-
-    var wstream = fs.createWriteStream(out_file_path);
-    var rs = new Readable();
-    var filetxt;
-    var name_collector = {}
-      for (var i in dids) {
-        did = dids[i];
-        myrows[did] = {}
-        dname = DATASET_NAME_BY_DID[did];
-        // if (req.body.download_type == 'whole_project') {
-        //   header += dname+"\t";
-
-        // } else {
-        //   pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        //   header += pname+'--'+dname+"\t";
-        // }
-
-        //if(HDF5_MDATA === ''){
-        for (var mdname in AllMetadata[did]){
-          
-          //console.log(mdname)
-            var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
-            
-            name_collector[data.name] = 1
-            myrows[did][data.name] = data.value;
-        }
-        
-      }
-    
-    header = "Dataset";
-    mdkeys = Object.keys(name_collector)  // convert to a list
-    for (var i in mdkeys) {
-      header += "\t"+mdkeys[i];
-    }
-    header += "\n";
-    rs.push(header);
-    filetxt = ''
-    if (Object.keys(myrows).length === 0) {
-      rs.push("NO METADATA FOUND\n");
-    } else {
-      for (did in myrows) {
-        ds = DATASET_NAME_BY_DID[did]
-        filetxt += ds
-        for (var i in mdkeys) {
-          mdname = mdkeys[i]
-          //filetxt = mdname+"\t";  // restart sting
-          if(myrows[did].hasOwnProperty(mdname)){
-            filetxt += "\t"+myrows[did][mdname];
-          }else{
-            filetxt += "\t";
-          }
-          // for (i in myrows[did]) {
-          //   filetxt += myrows[mdname][i]+"\t";
-          // }
-          
-        }
-        filetxt += "\n";
-        
-      }
-    }
-    rs.push(filetxt);
-    //console.log(JSON.stringify(filetxt))
-    rs.push(null);
-    rs
-      //.pipe(gzip)
-      .pipe(wstream)
-      .on('finish', function readableStreamOnFinish() {  // finished
-        console.log('done writing file');
-        //console.log(JSON.stringify(req.user))
-        
-        //req.flash('Done')
-        console.log(path.join(req.CONFIG.PROCESS_DIR,  out_file_path))
-        res.download(path.join(req.CONFIG.PROCESS_DIR,   out_file_path))
-
-
-      });
-      
-    
-      //res.send(file_name);
-});
+// router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
+//   
+//   var db = req.db;
+//   console.log('metadate download GET req.body-->>');
+//   
+//   var timestamp = +new Date();  // millisecs since the epoch!
+// 
+//   var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+//   helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+//   helpers.mkdirSync(user_dir);  // create dir if not exists
+//   var dids;
+//   var header, project;
+//   var file_name;
+//   var out_file_path;
+// 
+//   
+//     var pid  = req.query.pid
+//     console.log('pid '+pid)
+//     if(pid == undefined || pid == '' || pid == 0 || ! pid ){
+//       res.send('Choose a project');
+//       return;
+//     }
+//     dids = DATASET_IDS_BY_PID[pid];
+//     
+//     project = PROJECT_INFORMATION_BY_PID[pid].project
+//     
+//     
+//     //file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+//     file_name = req.user.username+'-metadata'+timestamp+'_'+project+'.csv';
+//     out_file_path = path.join('tmp', file_name);
+//     
+//   
+//     console.log('dids');
+//     console.log(dids);
+// 
+// 
+//     var gzip = zlib.createGzip();
+//     var myrows = {}; // myrows[mdname] == [] list of values
+// 
+//     var wstream = fs.createWriteStream(out_file_path);
+//     var rs = new Readable();
+//     var filetxt;
+//     var name_collector = {}
+//       for (var i in dids) {
+//         did = dids[i];
+//         myrows[did] = {}
+//         dname = DATASET_NAME_BY_DID[did];
+//         // if (req.body.download_type == 'whole_project') {
+//         //   header += dname+"\t";
+// 
+//         // } else {
+//         //   pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+//         //   header += pname+'--'+dname+"\t";
+//         // }
+// 
+//         //if(HDF5_MDATA === ''){
+//         for (var mdname in AllMetadata[did]){
+//           
+//           //console.log(mdname)
+//             var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+//             
+//             name_collector[data.name] = 1
+//             myrows[did][data.name] = data.value;
+//         }
+//         
+//       }
+//     
+//     header = "Dataset";
+//     mdkeys = Object.keys(name_collector)  // convert to a list
+//     for (var i in mdkeys) {
+//       header += "\t"+mdkeys[i];
+//     }
+//     header += "\n";
+//     rs.push(header);
+//     filetxt = ''
+//     if (Object.keys(myrows).length === 0) {
+//       rs.push("NO METADATA FOUND\n");
+//     } else {
+//       for (did in myrows) {
+//         ds = DATASET_NAME_BY_DID[did]
+//         filetxt += ds
+//         for (var i in mdkeys) {
+//           mdname = mdkeys[i]
+//           //filetxt = mdname+"\t";  // restart sting
+//           if(myrows[did].hasOwnProperty(mdname)){
+//             filetxt += "\t"+myrows[did][mdname];
+//           }else{
+//             filetxt += "\t";
+//           }
+//           // for (i in myrows[did]) {
+//           //   filetxt += myrows[mdname][i]+"\t";
+//           // }
+//           
+//         }
+//         filetxt += "\n";
+//         
+//       }
+//     }
+//     rs.push(filetxt);
+//     //console.log(JSON.stringify(filetxt))
+//     rs.push(null);
+//     rs
+//       //.pipe(gzip)
+//       .pipe(wstream)
+//       .on('finish', function readableStreamOnFinish() {  // finished
+//         console.log('done writing file');
+//         //console.log(JSON.stringify(req.user))
+//         
+//         //req.flash('Done')
+//         console.log(path.join(req.CONFIG.PROCESS_DIR,  out_file_path))
+//         res.download(path.join(req.CONFIG.PROCESS_DIR,   out_file_path))
+// 
+// 
+//       });
+//       
+//     
+//       //res.send(file_name);
+// });
 //
 // DOWNLOAD MATRIX
 //
