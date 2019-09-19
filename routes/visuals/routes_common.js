@@ -241,12 +241,15 @@ module.exports = {
   // write file
   //
   write_file: function(filename, txt) {
-
+    console.log('filename:'+filename)
     fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
       if(err) {
         console.log('Could not write file: ' + filename + ' Here is the error: ' + err);
       } else {
         console.log("The file (" + filename + ") was saved!");
+        fs.chmod(path.resolve(__dirname, filename), 0664, (error) => {
+            console.log('Changed file permissions');
+        });
       }
     });
 
@@ -289,6 +292,9 @@ module.exports = {
         console.log('Could not write tax file: '+tax_file+' Here is the error: '+err);
       } else {
         console.log("The file ("+tax_file+") was saved!");
+        fs.chmod(path.resolve(__dirname, tax_file), 0664, (error) => {
+            console.log('Changed file permissions');
+        });
       }
     });
 

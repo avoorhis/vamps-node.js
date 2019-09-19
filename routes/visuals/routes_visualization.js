@@ -852,74 +852,105 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+//
+//
 router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
-  console.log('found routes_dendrogram-x');
-  ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
-  ///// It passes the newick string back to view_selection.js
-  ///// and tries to construct the svg there before showing it.
-  console.log('req.body dnd');
-  if(req.CONFIG.site == 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
-    console.log(req.body);
-  }
-  console.log('req.body dnd');
-  var ts = req.body.ts;
-  var metric = req.body.metric;
-  var script = req.body.script; // python, phylogram or phylonator
-  var image_type = req.body.image_type;  // png(python script) or svg
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  //console.log('image_type '+image_type);
-  // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(pwd,'tmp',biom_file_name);
+    console.log('found routes_dendrogram-x');
+    ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
+    ///// It passes the newick string back to view_selection.js
+    ///// and tries to construct the svg there before showing it.
+    console.log('req.body dnd');
+    if(req.CONFIG.site == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+    }else{
+      console.log(req.body);
+    }
+    console.log('req.body dnd');
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var script = req.body.script; // python, phylogram or phylonator
+    var image_type = req.body.image_type;  // png(python script) or svg
+    
+    //console.log('image_type '+image_type);
+    // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  var html = '';
-  var title = 'VAMPS';
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
 
-  var distmtx_file_name = ts+'_distance.csv';
-  var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+    var html = '';
+    var title = 'VAMPS';
+
+    var distmtx_file_name = ts+'_distance.csv';
+    var distmtx_file = path.join(req.CONFIG.TMP_FILES, distmtx_file_name);
 
 
-  var options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
-  };
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
+    };
 
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-  var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-    detached: true,
-    //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-    stdio: 'pipe'  // stdin, stdout, stderr
-  });
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+    stdout = ''
+    dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
+        stdout += data.toString();
+    });
+    dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+        console.log('dendrogram_process process exited with code ' + code);
 
-  var stdout = '';
-  dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-    //
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    stdout += data;
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS
+          if(image_type == 'd3'){
+                    if(req.CONFIG.site == 'vamps' ){
+                      console.log('VAMPS PRODUCTION -- no print to log');
+                    }else{
+                        console.log('stdout: ' + stdout);
+                    }
+                    lines = stdout.split('\n')
+                    for(n in lines){
+                      if(lines[n].substring(0,6) == 'NEWICK' ){
+                        tmp = lines[n].split('=')
+                        console.log('FOUND NEWICK '+tmp[1])
+                        continue
+                      }
+                    }
 
-  });
-  var stderr = '';
-  dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
-    console.log('stderr: ' + data);
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    stderr += data;
-  });
 
-  dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
-    console.log('dendrogram_process process exited with code ' + code);
+                    try{
+                      //newick = JSON.parse(tmp[1]);
+                      newick = tmp[1];
+                      if(req.CONFIG.site == 'vamps' ){
+                        console.log('VAMPS PRODUCTION -- no print to log');
+                      }else{
+                        console.log('NWK->'+newick)
+                      }
+                    }
+                    catch(err){
+                      newick = {"ERROR":err};
+                    }
+                    res.send(newick);
+                    return;
 
-    //var last_line = ary[ary.length - 1];
-    if(code === 0){   // SUCCESS
-      if(image_type == 'd3'){
-        if(req.CONFIG.site == 'vamps' ){
-          console.log('VAMPS PRODUCTION -- no print to log');
+          }else{  // 'pdf'
+                    var viz_width = 1200;
+                    var viz_height = (visual_post_items.no_of_datasets*12)+100;
+                    var image = '/'+ts+'_dendrogram.pdf';
+                    //console.log(image)
+                    html = "<div id='pdf'>";
+                    html += "<object data='/static_base/tmp/"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+                    html += " <p>ERROR in loading pdf file</p>";
+                    html += "</object></div>";
+                    res.send(html);
+                    return;
+          }
+
         }else{
           console.log('stdout: ' + stdout);
         }
@@ -931,83 +962,52 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
             continue
           }
         }
-
-
-        try{
-          //newick = JSON.parse(tmp[1]);
-          newick = tmp[1];
-          if(req.CONFIG.site == 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log('NWK->'+newick)
-          }
-        }
-        catch(err){
-          newick = {"ERROR":err};
-        }
-        res.send(newick);
-        return;
-
-      }else{  // 'pdf'
-        var viz_width = 1200;
-        var viz_height = (visual_post_items.no_of_datasets*12)+100;
-        var image = '/'+ts+'_dendrogram.pdf';
-        //console.log(image)
-        html = "<div id='pdf'>";
-        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-        html += " <p>ERROR in loading pdf file</p>";
-        html += "</object></div>";
-        res.send(html);
-        return;
-      }
-    }else{
-      console.log('stderr: '+stderr);
-      res.send('Script Error');
-    }
-  });
+    });
 
 
 
 
 });
 
+
 //
 // P C O A
 //
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
-  console.log('in PCoA');
-  //console.log(metadata);
-  var ts = req.body.ts;
-  var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-  var metric = req.body.metric;
-  var image_type = req.body.image_type;
-  //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-  var image_file = ts+'_pcoa.pdf';
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
-  md1 = req.body.md1 || "Project";
-  md2 = req.body.md2 || "Description";
+    console.log('in PCoA');
+    //console.log(metadata);
+    var ts = req.body.ts;
+    var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+    var metric = req.body.metric;
+    var image_type = req.body.image_type;
+    //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
+    var image_file = ts+'_pcoa.pdf';
+    
+    
+   
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
-  // var options = {
-  //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-  //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-  // };
-  var options2 = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, ts, metric, md1, md2, image_file],
-  };
-  console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+    md1 = req.body.md1 || "Project";
+    md2 = req.body.md2 || "Description";
 
-  var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-    env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-    detached: true,
-    stdio: [ 'ignore', null, log ]
-    //stdio: 'pipe' // stdin, stdout, stderr
-  });
+      // var options = {
+      //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
+      // };
+      var options2 = {
+        scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+        args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
+      };
+      console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+
+      var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+          env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+          detached: true,
+          stdio: [ 'ignore', null, log ]
+          //stdio: 'pipe' // stdin, stdout, stderr
+      });
+
 
 
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
@@ -1016,13 +1016,22 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     //var last_line = ary[ary.length - 1];
     if(code === 0){   // SUCCESS
 
-      //html = "<img src='/"+image_file+"'>";
-      //var image = path.join('/tmp/',image_file);
-      var html = "<div id='pdf'>";
-      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-      html += " <p>ERROR in loading pdf file</p>";
-      html += "</object></div>";
-      //console.log(html);
+
+            //html = "<img src='/"+image_file+"'>";
+            //var image = path.join('/tmp/',image_file);
+            //var image_path = '/vol_b/vamps/tmp/'+image_file
+            var html = "<div id='pdf'>";
+            html += "<embed src='/static_base/tmp/"+image_file+"' type='application/pdf' width='1000' height='600' />";
+            html += " <p>ERROR in loading pdf file</p>";
+            html += "</object></div>";
+            
+            
+            // var html = "<div id='pdf'>";
+//             html += "<object data='/vol_b/vamps/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+//             html += " <p>ERROR in loading pdf file</p>";
+//             html += "</object></div>";
+            console.log(html);
+
 
     }else{
       console.log('ERROR');
@@ -1042,49 +1051,49 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 // POST is for PC file link
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
-  var ts = req.session.ts;
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var pc_file_name = ts+'_pc.txt';
-  //var pc_file = path.join(pwd,'tmp', pc_file_name);
-  ///////////////////////////////////////////////////
-  console.log('POST in 3D');
-  if(req.CONFIG.site == 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
-    //console.log(visual_post_items);
-  }
 
-  var metric = req.session.selected_distance;
+        var ts = req.session.ts;
+        
+        var pc_file_name = ts+'_pc.txt';
+            
+            ///////////////////////////////////////////////////
+        console.log('POST in 3D');
+        if(req.CONFIG.site == 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
+        }else{
+            //console.log(visual_post_items);
+        }
 
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(pwd,'tmp', biom_file_name);
+        var metric = req.session.selected_distance;
 
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+        
+        var biom_file_name = ts+'_count_matrix.biom';
+        var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
 
-  var mapping_file_name = ts+'_metadata.txt';
-  var mapping_file = path.join(pwd,'tmp', mapping_file_name);
-  var pc_file = path.join(pwd,'tmp', pc_file_name);
-  //var tax_file_name = ts+'_taxonomy.txt';
-  //var tax_file = path.join(pwd,'tmp', tax_file_name);
-  var dist_file_name = ts+'_distance.csv';
-  var dist_file = path.join(pwd,'tmp', dist_file_name);
+        var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
-  var dir_name = ts+'_pcoa3d';
-  var dir_path = path.join(pwd,'views/tmp', dir_name);
-  var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-  //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
-  var options1 = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', pwd, '--prefix', ts,'-m', mapping_file],
-  };
-  //  var options2 = {
-  //       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-  //       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-  //       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-  //   };
-  console.log('outdir: '+dir_path);
-  console.log(options1.scriptPath+'/distance_and_ordination.py '+options1.args.join(' '));
+        var mapping_file_name = ts+'_metadata.txt';
+        var mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
+        var pc_file = path.join(req.CONFIG.TMP_FILES, pc_file_name);
+        
+        var dist_file_name = ts+'_distance.csv';
+        var dist_file = path.join(req.CONFIG.TMP_FILES, dist_file_name);
+
+        var dir_name = ts+'_pcoa3d';
+        var dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
+        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+        
+        var options1 = {
+            scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+            args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts,'-m', mapping_file],
+        };
+        //  var options2 = {
+        //       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
+        //       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+        //       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+        //   };
+        console.log('outdir: '+dir_path);
+        console.log(options1.scriptPath+'/distance_and_ordination.py '+options1.args.join(' '));
 
 
   var pcoa_process = spawn( options1.scriptPath+'/distance_and_ordination.py', options1.args, {
@@ -1107,15 +1116,17 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
     console.log('pcoa_process1 process exited with code ' + code);
 
+
     if(code === 0){    // SUCCESS
+        
+      
+                var html = "** <a href='/static_base/tmp/"+dir_name+"/index.html' target='_blank'>Open Emperor</a> **"
+                html += "<br>Principal Components File: <a href='/static_base/tmp/"+pc_file_name+"' target='_blank'>"+pc_file_name+"</a>";
+                html += "<br>Biom File: <a href='/static_base/tmp/"+biom_file_name+"' target='_blank'>"+biom_file_name+"</a>";
+                html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/"+mapping_file_name+"' target='_blank'>"+mapping_file_name+"</a>";
+                html += "<br>Distance File: <a href='/static_base/tmp/"+dist_file_name+"' target='_blank'>"+dist_file_name+"</a>";
+                //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
-
-      var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
-      html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-      html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-      html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-      html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
-      //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
       res.send(html);
       return;
@@ -1132,46 +1143,47 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
 
 });
-
-
 //
 // DATA BROWSER
 //
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-  var ts = req.session.ts;
-  console.log('in dbrowser');
-  console.log(req.session)
-  var html='';
-  var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-  var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
-  var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
-  //console.log('max_total_count '+max_total_count.toString());
+    var ts = req.session.ts;
+    console.log('in dbrowser');
+    console.log(req.session)
+    var html='';
+    var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
+    var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+   
+    //console.log('max_total_count '+max_total_count.toString());
 
-  // sum counts
-  var sumator = get_sumator(req, biom_matrix);
+    // sum counts
+    var sumator = get_sumator(req, biom_matrix);
 
-  //console.log(JSON.stringify(sumator))
+    //console.log(JSON.stringify(sumator))
 
-  for(var d in sumator['domain']){
+    for(var d in sumator['domain']){
 
-    // #### DOMAIN ####
-    //var dnode_name =  dname
-    html += "<node name='"+d+"'>\n";
-    html += " <seqcount>";
-    for(var c_domain in sumator['domain'][d]['knt']){
-      html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-    }
-    html += "</seqcount>\n";
-    html += " <rank><val>domain</val></rank>\n";
+      // #### DOMAIN ####
+      //var dnode_name =  dname
+      html += "<node name='"+d+"'>\n";
+      html += " <seqcount>";
+      for(var c_domain in sumator['domain'][d]['knt']){
+          html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
 
-    // #### PHYLUM ####
-    for(p in sumator['domain'][d]['phylum']){
-      html += " <node name='"+p+"'>\n";
-      html += "  <seqcount>";
-      for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
       }
+      html += "</seqcount>\n";
+      html += " <rank><val>domain</val></rank>\n";
+
+      // #### PHYLUM ####
+      for(p in sumator['domain'][d]['phylum']){
+        html += " <node name='"+p+"'>\n";
+        html += "  <seqcount>";
+        for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+          html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+        }
+
       html += "</seqcount>\n";
       html += "  <rank><val>phylum</val></rank>\n";
 ///
@@ -1260,8 +1272,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // write html to a file and open it
 
   console.log("render visuals/dbrowser")
-  //var file_name = ts+'_krona.html';
-  //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+  
 
   res.render('visuals/dbrowser', {
     title: 'VAMPS:Taxonomy Browser (Krona)',
@@ -1274,156 +1285,124 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
 
 });
-//
-// OLIGOTYPING
-//
-// Commented out on 2019/09/16 aav
-// router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
-//   var ts = req.session.ts;
-//   console.log('in POST oligotyping');
-// 
-//   var html='';
-//   var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-//   var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
-//   var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-// 
-//   //console.log('max_total_count '+max_total_count.toString());
-// 
-// 
-//   // write html to a file and open it
-// 
-//   console.log("render visuals/oligotyping")
-//   //var file_name = ts+'_krona.html';
-//   //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-// 
-//   res.render('visuals/oligotyping', {
-//     title: 'VAMPS:Oligotyping',
-//     html:                html,
-//     max_total_count:     max_total_count,
-//     matrix:              JSON.stringify(biom_matrix),
-//     //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-//     user :  req.user, hostname : req.CONFIG.hostname,
-// 
-//   });
-// 
-// 
-// });
-// 
+
 
 //
 //
 //
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
-  console.log('in phyloseq post')
-  //console.log(req.body)
 
-  var ts = req.body.ts;
-  var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-  var dist_metric = req.body.metric;
-  var plot_type = req.body.plot_type;
-  var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
-  var phy,md1,md2,ordtype,maxdist,script
+    console.log('in phyloseq post')
+    console.log(req.body)
 
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
-  if(fill === 'Klass'){
-    fill = 'Class';
-  }
-  var tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-  var html = '';
-  //console.log(biom_file)
-  var options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, ts ],
-  };
-  if(plot_type == 'bar'){
-    script = 'phyloseq_bar.R';
-    phy = req.body.phy;
-    options.args = options.args.concat([image_file, phy, fill]);
-  }else if(plot_type == 'heatmap'){
-    script = 'phyloseq_heatmap.R';
-    //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
-    phy = req.body.phy;
-    md1 = req.body.md1;
-    ordtype = req.body.ordtype;
-    options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
-  }else if(plot_type == 'network'){
-    script = 'phyloseq_network.R';
-    md1 = req.body.md1 || "Project";
-    md2 = req.body.md2 || "Description";
-    maxdist = req.body.maxdist || "0.3";
-    options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
-  }else if(plot_type == 'ord'){
-    script = 'phyloseq_ord.R';
-    md1 = req.body.md1 || "Project";
-    md2 = req.body.md2 || "Description";
-    ordtype = req.body.ordtype || "PCoA";
-    options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
-  }else if(plot_type == 'tree'){
-    script = 'phyloseq_tree.R';
-    md1 = req.body.md1 || "Description";
-    options.args = options.args.concat([image_file, dist_metric, md1]);
-  }else{
-    //ERROR
-  }
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    var ts = req.body.ts;
+    var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+    var dist_metric = req.body.metric;
+    var plot_type = req.body.plot_type;
+    var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
+    var phy,md1,md2,ordtype,maxdist,script
 
-  console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
-  var phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
-    env:{'PATH':req.CONFIG.PATH},
-    detached: true,
-    //stdio: [ 'ignore', null, log ]
-    stdio: 'pipe'  // stdin, stdout, stderr
-  });
-  stdout = '';
-  lastline='';
-  phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
-    lastline = data;
-    stdout += data;
-  });
-  stderr = '';
-  phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
-    stderr += data;
-  });
-  phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
-    console.log('phyloseq_process process exited with code ' + code);
-    //distance_matrix = JSON.parse(output);
-    //var last_line = ary[ary.length - 1];
-    if(code === 0){   // SUCCESS
-      console.log('last: '+lastline);
-      if(lastline.toString().substring(0,5) == 'ERROR'){
-        console.log('ERROR-1');
-        html = lastline;
-      }else{
-
-        //   var image = '/'+ts+'_heatmap.pdf';
-        // //console.log(image)
-        // html = "<div id='pdf'>";
-        // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-        // html += " <p>ERROR in loading pdf file</p>";
-        // html += "</object></div>";
-        // res.send(html);
-
-        // return;
-
-
-        if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-          //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-          html = "<div id='pdf'>";
-          html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-          html += " <p>ERROR in loading pdf file</p>";
-          html += "</object></div>";
-        }else{
-          html = "<img src='/"+image_file+"'  >";
-        }
-      }
-
-    }else{
-      console.log('ERROR-2');
-      html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
+    
+    var fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
+    if(fill === 'Klass'){
+        fill = 'Class';
     }
-    //console.log(html);
-    res.send(html);
+    var tmp_path = path.join(req.CONFIG.TMP_FILES);
+    var html = '';
+    //console.log(biom_file)
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ tmp_path, ts ],
+    };
+    if(plot_type == 'bar'){
+      script = 'phyloseq_bar.R';
+      phy = req.body.phy;
+      options.args = options.args.concat([image_file, phy, fill]);
+    }else if(plot_type == 'heatmap'){
+      script = 'phyloseq_heatmap.R';
+      //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
+      phy = req.body.phy;
+      md1 = req.body.md1;
+      ordtype = req.body.ordtype;
+      options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
+    }else if(plot_type == 'network'){
+      script = 'phyloseq_network.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      maxdist = req.body.maxdist || "0.3";
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
+    }else if(plot_type == 'ord'){
+      script = 'phyloseq_ord.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      ordtype = req.body.ordtype || "PCoA";
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
+    }else if(plot_type == 'tree'){
+      script = 'phyloseq_tree.R';
+      md1 = req.body.md1 || "Description";
+      options.args = options.args.concat([image_file, dist_metric, md1]);
+    }else{
+      //ERROR
+    }
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+
+    console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
+    var phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
+            env:{'PATH':req.CONFIG.PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ]
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+    stdout = '';
+    lastline='';
+    phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
+        lastline = data;
+        stdout += data;
+    });
+    stderr = '';
+    phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
+        stderr += data;
+    });
+    phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
+          console.log('phyloseq_process process exited with code ' + code);
+          //distance_matrix = JSON.parse(output);
+          //var last_line = ary[ary.length - 1];
+          if(code === 0){   // SUCCESS
+            console.log('last: '+lastline);
+            if(lastline.toString().substring(0,5) == 'ERROR'){
+                    console.log('ERROR-1');
+                    html = lastline;
+            }else{
+
+              //   var image = '/'+ts+'_heatmap.pdf';
+              // //console.log(image)
+              // html = "<div id='pdf'>";
+              // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+              // html += " <p>ERROR in loading pdf file</p>";
+              // html += "</object></div>";
+              // res.send(html);
+
+              // return;
+
+
+                 //if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
+              html = "<div id='pdf'>";
+              html += "<object data='/static_base/tmp/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+              html += " <p>ERROR in loading pdf file</p>";
+              html += "</object></div>";
+                 //}else{
+                 //     html = "<img src='/"+image_file+"'  >";
+                //}
+            }
+        
+
+        }else{
+          console.log('ERROR-2');
+          html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
+        }
+        //console.log(html);
+        res.send(html);
 
   });
 
@@ -1665,7 +1644,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log(new_order)
   var timestamp = +new Date();  // millisecs since the epoch!
   var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
-  var file_path = path.join('tmp',filename);
+  var file_path = path.join(req.CONFIG.TMP_FILES,filename);
   //console.log(file_path)
   new_rows = {}
   new_rows[selected_did] = []
@@ -1823,9 +1802,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   var timestamp = +new Date();  // millisecs since the epoch!
   console.log('TS HM File',timestamp)
   var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json'
-  var file_path1 = path.join('tmp',filename1);
+  var file_path1 = path.join(req.CONFIG.TMP_FILES,filename1);
   var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json'
-  var file_path2 = path.join('tmp',filename2);
+  var file_path2 = path.join(req.CONFIG.TMP_FILES,filename2);
   //console.log(file_path)
   new_rows = {}
   new_rows[did1] = []
@@ -1911,6 +1890,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   }
 
 });
+
 //
 //  S E Q U E N C E S
 //
@@ -1929,7 +1909,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   if(seqs_filename){
     //console.log('found filename',seqs_filename)
 
-    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
+    fs.readFile(path.join(req.CONFIG.TMP_FILES,seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
         if(req.session.unit_choice == 'OTUs'){
@@ -2310,109 +2290,109 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 //  C L U S T E R  D A T A S E T  O R D E R
 //
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
-  console.log('in cluster_ds_order')
-  var html = '';
-  var ts = req.body.ts;
-  var metric = req.body.metric;
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var pjds_lookup = {}
-  for(i in req.session.chosen_id_order){
-    var did = req.session.chosen_id_order[i]
-    var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
-    pjds_lookup[pjds] = did
-  }
-  var options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
-  };
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-
-  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-
-
-  var cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-    detached: true,
-    stdio: [ 'ignore', null, log ]
-  });  // stdin, stdout, stderr
-
-
-  //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
-  var output = '';
-  cluster_process.stdout.on('data', function clusterProcessStdout(data) {
-    //console.log('stdout: ' + data);
-    output += data.toString();
-  });
-
-  cluster_process.on('close', function clusterProcessOnClose(code) {
-    console.log('ds cluster process exited with code ' + code);
-    var lines = output.split(/\n/)
-
-    for(i in lines){
-
-      if(lines[i].substring(0,7) == 'DS_LIST'){
-        tmp = lines[i].split('=')
-        var ds_list = tmp[1]
-        continue
-      }
+    console.log('in cluster_ds_order')
+    var html = '';
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(req.CONFIG.TMP_FILES,biom_file_name);
+    
+    var pjds_lookup = {}
+    for(i in req.session.chosen_id_order){
+        var did = req.session.chosen_id_order[i]
+        var pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
+        pjds_lookup[pjds] = did
     }
-    if(req.CONFIG.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
-      console.log('dsl',ds_list)
-    }
-    //var last_line = ary[ary.length - 1];
-    if(code === 0){   // SUCCESS
-      try{
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts],
+    };
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
-        dataset_list = JSON.parse(ds_list);
+    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
-        potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
-        ascii_file = ts+'_'+metric+'_tree.txt';
-        ascii_file_path = path.join(pwd,'tmp',ascii_file);
-        fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
-          if (err) {
-            return console.log(err);
-          }else{
-            //console.log(data);
 
-            html = '';
+    var cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr
 
-            html += "<table id='drag_table' class='table table-condensed' >"
-            html += "<thead></thead>";
-            html += "  <tbody>";
-            for (var i in potential_chosen_id_name_hash.names){
-              html += "<tr class='tooltip_row'>";
-              html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-              html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-              html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
-              html += "</td>";
-              html += "   <td>";
-              html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-              html += "   </td>";
-              html += "</tr>";
-            }
-            html += "</tbody>";
-            html += "</table>";
-            html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
 
-            res.send(html)
-          }
-        });
+    //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
+    var output = '';
+    cluster_process.stdout.on('data', function clusterProcessStdout(data) {
+        //console.log('stdout: ' + data);
+        output += data.toString();
+    });
+
+    cluster_process.on('close', function clusterProcessOnClose(code) {
+      console.log('ds cluster process exited with code ' + code);
+      var lines = output.split(/\n/)
+
+      for(i in lines){
+
+        if(lines[i].substring(0,7) == 'DS_LIST'){
+          tmp = lines[i].split('=')
+          var ds_list = tmp[1]
+          continue
+        }
       }
-      catch(err){
-        res.send('Calculation Error: '+err.toString())
+      if(req.CONFIG.site == 'vamps' ){
+        console.log('VAMPS PRODUCTION -- no print to log');
+      }else{
+        console.log('dsl',ds_list)
       }
+      //var last_line = ary[ary.length - 1];
+      if(code === 0){   // SUCCESS
+        try{
+
+            dataset_list = JSON.parse(ds_list);
+
+            potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
+            ascii_file = ts+'_'+metric+'_tree.txt';
+            ascii_file_path = path.join(req.CONFIG.TMP_FILES,ascii_file);
+            fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
+              if (err) {
+                return console.log(err);
+              }else{
+                //console.log(data);
+
+                html = '';
+
+                html += "<table id='drag_table' class='table table-condensed' >"
+                html += "<thead></thead>";
+                html += "  <tbody>";
+                for (var i in potential_chosen_id_name_hash.names){
+                    html += "<tr class='tooltip_row'>";
+                    html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+                    html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+                    html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+                    html += "</td>";
+                    html += "   <td>";
+                    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+                    html += "   </td>";
+                    html += "</tr>";
+                }
+                html += "</tbody>";
+                html += "</table>";
+                html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
+
+                res.send(html)
+              }
+            });
+        }
+        catch(err){
+          res.send('Calculation Error: '+err.toString())
+        }
 
 
-    }else{
-      //console.log('output')
-      //console.log(output);
-      //res.send(err);
-    }
-  });
+      }else{
+        //console.log('output')
+        //console.log(output);
+        //res.send(err);
+      }
+    });
 
 
 
@@ -2427,7 +2407,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   var ts = req.session.ts
   var distmtx_file_name = ts+'_distance.json';
-  var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+  var distmtx_file = path.join(req.CONFIG.TMP_FILES,distmtx_file_name);
   //console.log(distmtx_file)
   var distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')) // function (err, distance_matrix) {
 
@@ -2441,7 +2421,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   //console.log(html)
   var outfile_name = ts + '-dheatmap-api.html'
-  outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+  outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
   //console.log('outfile_path:',outfile_path)
   //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
   //console.log(result)
@@ -2456,134 +2436,133 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
 });
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
-  console.log('in dheatmap_split_distance')
-  console.log(req.body)
-
-
-  var ts = req.session.ts
-  var test_split_file_name = ts+'_distance_mh_bc.tsv';
-  var test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-  var pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(pwd,'tmp',biom_file_name);
-
-
-
-  var FinishSplitFile = function(req, res){
+    console.log('in dheatmap_split_distance')
+    console.log(req.body)
+    
+    
     var ts = req.session.ts
-    //var suffix = split_file_suffixes[req.body.split_distance_choice]
-    var suffix = req.body.split_distance_choice
-    //var distmtx_file_name = ts+'_distance_'+suffix+'.json';
-    var distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-    var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
-    //console.log(distmtx_file)
-    fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
-      if (err) {
-        res.json({'err':err})
-      }else{
-        //console.log(mtxdata)
-        var split_distance_csv_matrix = mtxdata.split('\n')
+    var test_split_file_name = ts+'_distance_mh_bc.tsv';
+    var test_distmtx_file = path.join(req.CONFIG.TMP_FILES,test_split_file_name );
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(req.CONFIG.TMP_FILES,biom_file_name);
+    
+    
+            
+    var FinishSplitFile = function(req, res){
+        var ts = req.session.ts
+        //var suffix = split_file_suffixes[req.body.split_distance_choice]
+        var suffix = req.body.split_distance_choice
+        //var distmtx_file_name = ts+'_distance_'+suffix+'.json';
+        var distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
+        var distmtx_file = path.join(req.CONFIG.TMP_FILES,distmtx_file_name);
+        //console.log(distmtx_file)
+        fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
+            if (err) {
+                res.json({'err':err})
+            }else{
+                //console.log(mtxdata)
+                var split_distance_csv_matrix = mtxdata.split('\n')
+                
+                var IMAGES = require('../routes_images');
+                metadata = {}
+                metadata.numbers_or_colors = req.body.numbers_or_colors
+                metadata.split = true
+                metadata.metric = suffix
+                
+                var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata )
 
-        var IMAGES = require('../routes_images');
-        metadata = {}
-        metadata.numbers_or_colors = req.body.numbers_or_colors
-        metadata.split = true
-        metadata.metric = suffix
+                var outfile_name = ts + '-dheatmap-api.html'
+                outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+                
+                var data = {}
+                data.html = html
+                data.numbers_or_colors = req.body.numbers_or_colors
+                data.filename = outfile_name
+                //res.send(outfile_name)
+                res.json(data)
+            }
+          
+        });
+    }
+    if(helpers.fileExists(test_distmtx_file)){
+        console.log('Using Old Files')
+        FinishSplitFile(req, res) 
+        return   
+    }
+    
+    var options = {
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
+    }; 
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
 
-        var html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata )
-
-        var outfile_name = ts + '-dheatmap-api.html'
-        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-
-        var data = {}
-        data.html = html
-        data.numbers_or_colors = req.body.numbers_or_colors
-        data.filename = outfile_name
-        //res.send(outfile_name)
-        res.json(data)
-      }
+    var stdout = '';
+    split_process.stdout.on('data', function splitsProcessStdout(data) {
+        //
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
 
     });
-  }
-  if(helpers.fileExists(test_distmtx_file)){
-    console.log('Using Old Files')
-    FinishSplitFile(req, res)
-    return
-  }
+    var stderr = '';
+    split_process.stderr.on('data', function splitsProcessStderr(data) {
+        console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+    split_process.on('close', function splitsProcessOnClose(code) {
+        console.log('finished code:'+code.toString())
+        console.log('Creating New Split Distance Files')
+        FinishSplitFile(req, res)        
+        //var split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
+                
 
-  var options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
-  };
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-  var split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-    detached: true,
-    //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-    stdio: 'pipe'  // stdin, stdout, stderr
-  });
-
-  var stdout = '';
-  split_process.stdout.on('data', function splitsProcessStdout(data) {
-    //
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    stdout += data;
-
-  });
-  var stderr = '';
-  split_process.stderr.on('data', function splitsProcessStderr(data) {
-    console.log('stderr: ' + data);
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    stderr += data;
-  });
-  split_process.on('close', function splitsProcessOnClose(code) {
-    console.log('finished code:'+code.toString())
-    console.log('Creating New Split Distance Files')
-    FinishSplitFile(req, res)
-    //var split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
-
-
-  })
+    })
 });
 //
 //
 //
 
 router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
-  console.log('in routes_visualization download_file')
-  var html = '';
-  var ts = req.body.ts;
-  var file_type = req.body.file_type;
-  file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-  if(file_type == 'matrix'){
-    res.setHeader('Content-Type', 'text');
-    out_file_name = ts+'_count_matrix.txt';
-    biom_file_name = ts+'_count_matrix.biom';
-    helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
-  }else if(file_type == 'biom'){
-    file_name = ts+'_count_matrix.biom';
-    res.setHeader('Content-Type', 'text');
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if(file_type == 'tax'){
-    file_name = ts+'_taxonomy.txt';
-    res.setHeader('Content-Type', 'text');
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if(file_type == 'meta'){
-    file_name = ts+'_metadata.txt';
-    res.setHeader('Content-Type', 'text');
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if(file_type == 'configuration'){
-    file_name = req.body.filename;
-    config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    res.setHeader('Content-Type', 'json');
-    res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
-  }else{
-    // ERROR
-    console.log('ERROR In download_file')
-  }
 
+    console.log('in routes_visualization download_file')
+    var html = '';
+    var ts = req.body.ts;
+    var file_type = req.body.file_type;
+    file_path = path.join(req.CONFIG.TMP_FILES);
+    if(file_type == 'matrix'){
+      res.setHeader('Content-Type', 'text');
+      out_file_name = ts+'_count_matrix.txt';
+      biom_file_name = ts+'_count_matrix.biom';      
+      helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
+    }else if(file_type == 'biom'){
+      file_name = ts+'_count_matrix.biom';
+      res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
+    }else if(file_type == 'tax'){
+      file_name = ts+'_taxonomy.txt';
+      res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
+    }else if(file_type == 'meta'){
+      file_name = ts+'_metadata.txt';
+      res.setHeader('Content-Type', 'text');
+      res.download(path.join(file_path, file_name)); // Set disposition and send it.
+    }else if(file_type == 'configuration'){
+      file_name = req.body.filename;
+      config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+      res.setHeader('Content-Type', 'json');
+      res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
+    }else{
+      // ERROR
+      console.log('ERROR In download_file')
+    }
 
 
 });
@@ -3045,7 +3024,7 @@ router.get('/taxa_piechart', function(req, res) {
   var tax = myurl.query.tax
   var timestamp = +new Date();  // millisecs since the epoch!
   var ts = req.session.ts;
-  var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+  var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
 
   fs.readFile(matrix_file_path, 'utf8', function(err,mtxdata){
     if (err) {
@@ -3097,6 +3076,7 @@ router.get('/taxa_piechart', function(req, res) {
 
 
 });
+
 
 module.exports = router;
 

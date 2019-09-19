@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs-extra');
 var COMMON  = require('./routes_common');
+var CONFIG  = require(app_root + '/config/config');
 var helpers = require('../helpers/helpers');
 
 
@@ -78,7 +79,7 @@ module.exports = {
 			var metadata = [];
 			var metadata2 = {};
 			var file_name = post_items.ts+'_metadata.txt';
-			var metadata_filename = path.join(__dirname, '../../tmp/'+file_name);
+			var metadata_filename = path.join(CONFIG.TMP_FILES,file_name);
 			var txt = "#SampleID";
 			for (var n in metadata_names) {				
 					var name = metadata_names[n];

@@ -790,7 +790,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
-    file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
+    file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn === 'download') {

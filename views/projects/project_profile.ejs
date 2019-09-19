@@ -194,7 +194,7 @@
                 <% if(key){ %>
                     <tr><td>Abstract(s)</td><td>
                         <% for(n in publish_data[key].pdfs){ %>
-                            <a href='/static/abstracts/<%= publish_data[key].pdfs[n] %>' target='_blank'>
+                            <a href='/static_dnld/abstracts/<%= publish_data[key].pdfs[n] %>' target='_blank'>
                             <%= publish_data[key].pdfs[n] %></a>
                         <br>
                         <% } %>

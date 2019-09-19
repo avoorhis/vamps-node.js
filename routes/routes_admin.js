@@ -810,7 +810,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
   var timestamp             = +new Date();
   var selected_pid          = req.body.pid
   var filename              = req.body.filename
-  var file_path             = path.join(req.CONFIG.PROCESS_DIR, 'tmp', filename)
+  var file_path             = path.join(req.CONFIG.TMP_FILES, filename)
   var dids                  = DATASET_IDS_BY_PID[selected_pid]
   var new_required_metadata = {}
   var new_custom_metadata   = {}
@@ -1049,7 +1049,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
         console.log('OK--VALIDATES');
       }
       html_json.filename = username + '_' + project_name + '--' + timestamp + '.json';
-      file_path          = path.join(req.CONFIG.PROCESS_DIR, 'tmp', html_json.filename);
+      file_path          = path.join(req.CONFIG.TMP_FILES, html_json.filename);
 
       mdata = convert_names_to_ids_for_storage(newmd);
 
@@ -1458,7 +1458,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
-    var file = path.join(req.CONFIG.PROCESS_DIR, 'tmp', req.query.filename);
+    var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
     res.setHeader('Content-Type', 'text');
     res.download(file); // Set disposition and send it.
   } else if (req.query.fxn == 'download') {
@@ -1552,12 +1552,14 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
 //
 router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
     console.log('IN GET cleanup_tmp_dirs')
-    var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-    var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
+
+    var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+    //var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
     var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+
     console.log("Deleting ALL files and directories in:");
     console.log(temp_dir_path1);
-    console.log(temp_dir_path2);
+    //console.log(temp_dir_path2);
     console.log(temp_dir_path3);
     fs.readdir(temp_dir_path1, function (err, files) {
 
@@ -1565,18 +1567,18 @@ router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function 
             var curPath = temp_dir_path1 + "/" + files[i];
             helpers.deleteFolderRecursive(curPath);
         }
-        fs.readdir(temp_dir_path2, function (err, files) {
-          for (var i = 0; i < files.length; i++) {
-              var curPath = temp_dir_path2 + "/" + files[i];
-              helpers.deleteFolderRecursive(curPath);
-          }
+//         fs.readdir(temp_dir_path2, function (err, files) {
+//           for (var i = 0; i < files.length; i++) {
+//               var curPath = temp_dir_path2 + "/" + files[i];
+//               helpers.deleteFolderRecursive(curPath);
+//           }
           fs.readdir(temp_dir_path3, function (err, files) {
             for (var i = 0; i < files.length; i++) {
                 var curPath = temp_dir_path3 + "/" + files[i];
                 helpers.deleteFolderRecursive(curPath);
             }
           });
-        });
+    //});
   });
   req.flash('success', 'Okay')
   res.render('admin/admin_index', {

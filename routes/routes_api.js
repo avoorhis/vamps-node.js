@@ -129,7 +129,7 @@ router.post('/get_dids_from_project', function(req, res){
 //           //console.log(new_dataset_ids)
 //           outfile_name = ts+'_counts.txt'
 //           
-//           outfile_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+//           outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
 //           var txt = ''
 //           for(n in new_dataset_ids){
 //             did = new_dataset_ids[n]

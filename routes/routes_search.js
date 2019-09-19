@@ -837,9 +837,9 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
 
     // using blastn with -outfmt 13 option produces 2 files
     var out_file = timestamp+"_blast_result.json";
-    var out_file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',out_file);
+    var out_file_path = path.join(req.CONFIG.TMP_FILES,out_file);
     var query_file = timestamp+"_blast_query.fa";
-    var query_file_path = path.join(req.CONFIG.PROCESS_DIR,'tmp',query_file);
+    var query_file_path = path.join(req.CONFIG.TMP_FILES,query_file);
     // then run 'blastn' command
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     

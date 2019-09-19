@@ -1,4 +1,44 @@
 
+// create fasta
+var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
+if (download_fasta_btn !== null) {
+  download_fasta_btn.addEventListener('click', function () {
+      //alert(selected_distance_combo)
+      form = document.getElementById('download_fasta_form_id');
+      download_type = form.download_type.value;
+      dir = form.dir.value;
+      ts =  '';
+      download_data( download_type, dir);
+  });
+}
+function download_data(download_type, dir) {
+    var html = '';
+    var args = {}
+    
+    args.file_type = download_type;
+    args.ts = dir;
+    var xmlhttp = new XMLHttpRequest();
+
+    console.log(download_type)
+    target = '/user_data/copy_file_for_download'
+    args.download_type = download_type;
+    
+
+
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText;
+         //html += "<div class='pull-right'>Your file is being compiled and can be downloaded from the"
+         //html += "<br><a href='/user_data/file_retrieval'>file retrieval page when ready.</a></div>"
+         //document.getElementById('download_confirm_id').innerHTML = html;
+         html = 'Saved!\n\n(File available from the "File Retrieval" button on the "Your Data" page)'
+         alert(html)
+      }
+    };
+    xmlhttp.send(JSON.stringify(args));
+}
 //
 //  SHOW  RESULTS for Taxonomy Search
 //
@@ -144,6 +184,67 @@ function delete_project(code){
     }
 
 }
+//
+//
+//
+function start_entropy(code,directory,rank,family,genus,cutoff){
+   //  <form id='' class='' method='post' action='/oligotyping/entropy/<%= code %>'>
+//         <input type='submit' id=''  class='btn btn-xs btn-primary' value='Run Entropy' />
+//         <input type='hidden' name='directory' value='<%= directory %>' />
+//         <input type='hidden' name='code' value='<%= code %>' />
+//         <input type='hidden' name='rank' value='<%= rank %>' />
+//         <input type='hidden' name='family' value='<%= family %>' />
+//         <input type='hidden' name='genus' value='<%= genus %>' />
+//         <input type='hidden' name='cutoff' value='<%= cutoff %>' />
+//     </form>
+    document.getElementById("run_entropy_btn").disabled = true;
+    
+    var f = document.createElement("form");
+    f.setAttribute('method',"post");
+    f.setAttribute('action',"/oligotyping/entropy/"+code);
+
+  	var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'directory';
+    input.value = directory;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'code';
+    input.value = code;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'rank';
+    input.value = rank;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'family';
+    input.value = family;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'genus';
+    input.value = genus;
+    f.appendChild(input);
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'cutoff';
+    input.value = cutoff;
+    f.appendChild(input);
+
+    var submit = document.createElement('input');
+    submit.setAttribute('type', "submit");
+    f.appendChild(submit);
+    document.body.appendChild(f);
+
+    f.submit();
+    document.body.removeChild(f);
+}
+//
+//
+//
 function view_entropy(code){
     var args = {'code':code}
     //console.log(args)
