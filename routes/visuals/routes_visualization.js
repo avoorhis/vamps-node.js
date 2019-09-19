@@ -890,12 +890,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
     };
 
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+    
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
     });
     stdout = ''
@@ -984,17 +984,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var image_file = ts+'_pcoa.pdf';
     
-    
-   
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
 
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
 
-      // var options = {
-      //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-      // };
+      
       var options2 = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
         args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
@@ -1004,7 +998,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
           env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
           detached: true,
-          stdio: [ 'ignore', null, log ]
+          stdio: [ 'ignore', null, null ]
           //stdio: 'pipe' // stdin, stdout, stderr
       });
 
@@ -1070,7 +1064,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
         var biom_file_name = ts+'_count_matrix.biom';
         var biom_file = path.join(req.CONFIG.TMP_FILES, biom_file_name);
 
-        var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+        
 
         var mapping_file_name = ts+'_metadata.txt';
         var mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
@@ -1100,7 +1094,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
-    //stdio: [ 'ignore', null, log ]
+    //stdio: [ 'ignore', null, null ]
   });  // stdin, stdout, stderr
 
   pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
@@ -1344,13 +1338,13 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }else{
       //ERROR
     }
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+    
 
     console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
     var phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
             env:{'PATH':req.CONFIG.PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ]
+            //stdio: [ 'ignore', null, null ]
             stdio: 'pipe'  // stdin, stdout, stderr
     });
     stdout = '';
@@ -2309,13 +2303,13 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     };
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','visualization.log'), 'a');
+    
 
 
     var cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            stdio: [ 'ignore', null, log ]
+            stdio: [ 'ignore', null, null ]
         });  // stdin, stdout, stderr
 
 
@@ -2498,7 +2492,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     var split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
     });
 
