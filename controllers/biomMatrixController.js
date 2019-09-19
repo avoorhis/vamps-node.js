@@ -455,12 +455,15 @@ class TaxonomyFactory {
     this.units       = visual_post_items.unit_choice;
     this.taxa_counts_module = taxa_counts;
     this.chosen_dids = chosen_dids;
-    this.chosen_taxonomy = this.choose_simple_or_custom_lookup_module(visual_post_items, this.taxa_counts_module, this.chosen_dids);
+    this.chosen_taxonomy = this.choose_taxonomy_lookup_module(visual_post_items, this.taxa_counts_module, this.chosen_dids);
   }
 
-  choose_simple_or_custom_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
-    let unit_choice_simple = (this.units.substr(this.units.length - 6) === 'simple');
+  choose_taxonomy_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
+    let unit_choice_simple = (this.units === 'tax_silva119_simple');
+      // (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
+    let unit_choice_generic_simple = (this.units === 'tax_generic_simple');
+
     //TODO: args object send to whatever module is chosen
     if (unit_choice_simple) {
       return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
@@ -468,11 +471,13 @@ class TaxonomyFactory {
     else if (unit_choice_custom) {
       return new module.exports.TaxonomyCustom(visual_post_items, taxa_counts_module, chosen_dids);
     }
+    else if (unit_choice_generic_simple) {
+      return new module.exports.TaxonomyGeneric(visual_post_items, taxa_counts_module, chosen_dids);
+    }
     else {
-      console.log("ERROR: Can't choose simple or custom taxonomy");
+      console.log("ERROR: Can't choose the correct taxonomy");
     }
   }
-
 }
 
 class Taxonomy {
@@ -590,7 +595,9 @@ class TaxonomySimple extends Taxonomy {
   }
 
   check_domain_is_selected(tax_long_name_arr) {
-    let domain_is_selected = this.post_items.domains.includes(tax_long_name_arr[0]);
+    let current_domain_name = tax_long_name_arr[0];
+
+    let domain_is_selected = this.post_items.domains.includes(current_domain_name);
     if (!domain_is_selected) {
       console.log('Excluding', tax_long_name_arr);
       tax_long_name_arr = [];
@@ -722,6 +729,28 @@ class TaxonomyCustom extends Taxonomy {
   }
 }
 
+class TaxonomyGeneric extends TaxonomySimple {
+  // let genericTaxonomy      = require(app_root + '/models/generic_taxonomy');
+  // let generic_taxonomy = new genericTaxonomy();
+  //
+  // generic_taxonomy.get_domains(function (err, results) {
+  //   if (err)
+  //     {throw err;}
+  //   else {
+  //     let domains = results;
+  //   }
+  //     // new_taxonomy = new CustomTaxa(results);
+  // });
+
+
+  check_domain_is_selected(tax_long_name_arr) {
+    // let current_domain_name = tax_long_name_arr[0];
+
+    return tax_long_name_arr;
+  }
+
+}
+
 class WriteMatrixFile {
 
   constructor(post_items, biom_matrix) {
@@ -747,5 +776,6 @@ module.exports = {
   TaxonomyFactory: TaxonomyFactory,
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
+  TaxonomyGeneric: TaxonomyGeneric,
   WriteMatrixFile: WriteMatrixFile
 };
