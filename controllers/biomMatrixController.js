@@ -726,27 +726,22 @@ class TaxonomyCustom extends Taxonomy {
 }
 
 class TaxonomyGeneric extends TaxonomySimple {
-  let genericTaxonomy      = require(app_root + '/models/generic_taxonomy');
-  let generic_taxonomy = new genericTaxonomy();
-  
-  generic_taxonomy.get_domains(function (err, results) {
-    if (err)
-      {throw err;}
-    else {
-      let domains = results;
-    }
-      // new_taxonomy = new CustomTaxa(results);
-  });
+  // let genericTaxonomy      = require(app_root + '/models/generic_taxonomy');
+  // let generic_taxonomy = new genericTaxonomy();
+  //
+  // generic_taxonomy.get_domains(function (err, results) {
+  //   if (err)
+  //     {throw err;}
+  //   else {
+  //     let domains = results;
+  //   }
+  //     // new_taxonomy = new CustomTaxa(results);
+  // });
 
-  
+
   check_domain_is_selected(tax_long_name_arr) {
-    let current_domain_name = tax_long_name_arr[0];
+    // let current_domain_name = tax_long_name_arr[0];
 
-    let domain_is_selected = this.post_items.domains.includes(current_domain_name);
-    if (!domain_is_selected) {
-      console.log('Excluding', tax_long_name_arr);
-      tax_long_name_arr = [];
-    }
     return tax_long_name_arr;
   }
 
