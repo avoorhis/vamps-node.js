@@ -310,9 +310,10 @@ var delete_previous_tmp_files = function (req, username) {
 
   var fs             = require('fs-extra');
   // dirs to delete from on login::
-  var temp_dir_path1 = path.join(req.CONFIG.TMP_FILES);
-  var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
+  //var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  //var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
   // for vamps and vampsdev qsub scripts:
+<<<<<<< HEAD
 <<<<<<< HEAD
   var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');
   //console.log('Deleting old tmp files2:')
@@ -344,6 +345,31 @@ var delete_previous_tmp_files = function (req, username) {
           helpers.deleteFolderRecursive(curPath);
         }
       }
+=======
+  var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+  //console.log(temp_dir_path1);
+  //console.log(temp_dir_path2);
+  console.log(temp_dir_path3);
+  // fs.readdir(temp_dir_path1, function (err, files) {
+// 
+//     for (var i = 0; i < files.length; i++) {
+//       file_pts = files[i].split('_')[0].split('-');
+//       //console.log('PP1',file_pts[0])
+//       if (file_pts[0] === username) {
+//         var curPath = temp_dir_path1 + "/" + files[i];
+//         helpers.deleteFolderRecursive(curPath);
+//       }
+//     }
+//     fs.readdir(temp_dir_path2, function (err, files) {
+//       for (var i = 0; i < files.length; i++) {
+//         file_pts = files[i].split('_')[0].split('-');
+//         //console.log('PP2',file_pts[0])
+//         if (file_pts[0] === username) {
+//           var curPath = temp_dir_path2 + "/" + files[i];
+//           helpers.deleteFolderRecursive(curPath);
+//         }
+//       }
+>>>>>>> 6822e20301bd0bea675c3699aebcecc204e8f3d6
       fs.readdir(temp_dir_path3, function (err, files) {
         for (var i = 0; i < files.length; i++) {
           file_pts = files[i].split('_')[0].split('-');
@@ -356,9 +382,9 @@ var delete_previous_tmp_files = function (req, username) {
         }
       });
 
-    });
+   // });
 
-  });
+ // });
 };
 
 var update_password = function (req, username, newpass, db) {

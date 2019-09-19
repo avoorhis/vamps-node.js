@@ -1087,7 +1087,7 @@ function download_svg(image, ts) {
 //
 //
 function create_dheatmap(ts, new_window) {
-      //alert('im HM')
+      console.log('im HM')
       if(new_window){
         var htmlstring = document.getElementById('dheatmap_div').innerHTML;
         function openindex()
@@ -1122,16 +1122,22 @@ function create_dheatmap(ts, new_window) {
       //args += "&ts="+ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
+       console.log('im HM2')
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/api/create_image', true);
       //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("Content-Type", "application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,dhm_div);
+      console.log('im HM3')
       xmlhttp.onreadystatechange = function() {
+        console.log('im HM3.5')
         if (xmlhttp.readyState == 4 ) {
+            console.log('im HM3.6')
             clearInterval(myWaitVar);
             var data = JSON.parse(xmlhttp.response)
+            console.log('data')
+            console.log(data)
             dhm_div.innerHTML = data.html;
             document.getElementById('dheatmap_dnld_btn').disabled = false
             //alert(data.numbers_or_colors)
@@ -1146,7 +1152,8 @@ function create_dheatmap(ts, new_window) {
 //             }
         }
       };
-      
+      console.log('im HM4')
+      console.log(args)
       xmlhttp.send(JSON.stringify(args));
 }
 //
