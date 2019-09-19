@@ -217,7 +217,7 @@ function login_auth_user(req, username, password, done, db) {
       // Here on login we delete the users tmp/* files from previous sessions.
       // This seems better than on logout bacause users are less likely to manually logout.
       try {
-        console.log('On Login: Deleting old tmp files:');
+        console.log('On Login: Deleting old user tmp files:');
         delete_previous_tmp_files(req, username);
       } catch (e) {
         console.log(e)
@@ -313,11 +313,18 @@ var delete_previous_tmp_files = function (req, username) {
   var temp_dir_path1 = path.join(req.CONFIG.TMP_FILES);
   var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
   // for vamps and vampsdev qsub scripts:
+<<<<<<< HEAD
   var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp');
   //console.log('Deleting old tmp files2:')
   console.log('1- '+temp_dir_path1);
   console.log('2- '+temp_dir_path2);
   console.log('3- '+temp_dir_path3);
+=======
+  var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+  console.log(temp_dir_path1);
+  console.log(temp_dir_path2);
+  console.log(temp_dir_path3);
+>>>>>>> b5a52f8a411e6db4ac74b17d1bfa1e6e5b68a44e
   fs.readdir(temp_dir_path1, function (err, files) {
 
     for (var i = 0; i < files.length; i++) {

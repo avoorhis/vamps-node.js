@@ -1164,7 +1164,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   var db  = req.db;
   //file_name = 'fasta-'+ts+'_custom.fa.gz';
   var log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
-  //var log = path.join(user_dir, 'export_log.txt');
+
   if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
     norm = 'normalized_to_maximum';
   } else if (normalization == 'percent' || normalization == 'frequency' || normalization == 'normalized_by_percent') {
@@ -1235,7 +1235,9 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   if (req.CONFIG.cluster_available === true) {
     qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
     qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
-    qsub_file_path   = path.join(req.CONFIG.TMP_FILES, 'tmp', qsub_file_name);
+
+    qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
+
     console.log('RUNNING(via qsub):', cmd_list[0]);
     console.log('qsub_file_path:', qsub_file_path);
     fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
@@ -1266,7 +1268,7 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     console.log('No Cluster Available according to req.CONFIG.cluster_available');
     var cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
     console.log('RUNNING:', cmd);
-    //var log = path.join(req.CONFIG.TMP_FILES, 'tmp_log.log')
+
     var dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
       env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
       detached: true,

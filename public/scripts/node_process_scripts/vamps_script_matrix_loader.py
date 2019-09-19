@@ -564,14 +564,12 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--warnings",    
                 required=False,  action="store_true",   dest = "warnings",  default=False,
                 help = 'MySQL warnings off by default')
+    parser.add_argument("-json", "--json_file_path",    
+                required=False,  action="store",   dest = "jsonfile_dir",  default='undefined',
+                help = 'json_file_path for local')
     args = parser.parse_args() 
     
-    pid = start(args)
-    # keep this as print('done pid',pid) for routes_user_data
-    print('done pid',pid)
     
-    # delete the big unneeded key
-    del args.tax_data_by_ds 
     
     # convert args to a dict for passing to fxn
     my_args = vars(args)
@@ -584,8 +582,26 @@ if __name__ == '__main__':
         my_args["site"] = 'vampsdev'
         my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
     else:
+        args.hostname = 'localhost'
         my_args["site"] = 'localhost'
-        my_args["jsonfile_dir"] = './'
+        args.NODE_DATABASE = 'vamps_development'
+        if args.jsonfile_dir == 'undefined':
+            sys.exit('localhost::You must add --json_file_path to command line!')
+        else:            
+            if os.path.exists(args.jsonfile_dir):
+                print ('Validated: json file path')
+                my_args["jsonfile_dir"] = args.jsonfile_dir
+            else:
+                print ("Could not find json directory (-json_file_path): '",args.jsonfile_dir,"'-Exiting")
+                sys.exit(-1)
+    
+    pid = start(args)
+    # keep this as print('done pid',pid) for routes_user_data
+    print('done pid',pid)
+    
+    # delete the big unneeded key
+    del args.tax_data_by_ds 
+        
     
     #Script2
     import vamps_script_upload_metadata as md    

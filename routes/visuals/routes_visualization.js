@@ -1291,37 +1291,38 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 // OLIGOTYPING
 //
-router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
-  var ts = req.session.ts;
-  console.log('in POST oligotyping');
-
-  var html='';
-  var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
-  var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
-  var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-
-  //console.log('max_total_count '+max_total_count.toString());
-
-
-  // write html to a file and open it
-
-  console.log("render visuals/oligotyping")
-  //var file_name = ts+'_krona.html';
-  //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-
-  res.render('visuals/oligotyping', {
-    title: 'VAMPS:Oligotyping',
-    html:                html,
-    max_total_count:     max_total_count,
-    matrix:              JSON.stringify(biom_matrix),
-    //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-    user :  req.user, hostname : req.CONFIG.hostname,
-
-  });
-
-
-});
-
+// Commented out on 2019/09/16 aav
+// router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
+//   var ts = req.session.ts;
+//   console.log('in POST oligotyping');
+// 
+//   var html='';
+//   var matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+//   var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
+//   var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+// 
+//   //console.log('max_total_count '+max_total_count.toString());
+// 
+// 
+//   // write html to a file and open it
+// 
+//   console.log("render visuals/oligotyping")
+//   //var file_name = ts+'_krona.html';
+//   //var html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+// 
+//   res.render('visuals/oligotyping', {
+//     title: 'VAMPS:Oligotyping',
+//     html:                html,
+//     max_total_count:     max_total_count,
+//     matrix:              JSON.stringify(biom_matrix),
+//     //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+//     user :  req.user, hostname : req.CONFIG.hostname,
+// 
+//   });
+// 
+// 
+// });
+// 
 
 //
 //
@@ -2064,21 +2065,24 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedI
 //
 
 // };
-router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
-  var myurl = url.parse(req.url, true);
-  var load = myurl.query.load  || 'all';   // either 'all' or 'selected'
-  res.render('visuals/partials/load_metadata',
-    { title   : 'metadata_table',
-      load    : load
-    });
-});
+// router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
+//   console.log('IN /partials/load_metadata')
+//   var myurl = url.parse(req.url, true);
+//   var load = myurl.query.load  || 'all';   // either 'all' or 'selected'
+//   res.render('visuals/partials/load_metadata',
+//     { title   : 'metadata_table',
+//       load    : load
+//     });
+// });
 //
 //
 //
 router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_'+C.default_taxonomy.name+'_custom'")
   res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_custom',  { title   : C.default_taxonomy.show+' Custom Taxonomy Selection'});
 });
 router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_rdp2.6_simple'")
   res.render("visuals/partials/tax_rdp26_simple", {
 
     doms : C.UNITSELECT.rdp2_6_simple.domains,
@@ -2086,22 +2090,23 @@ router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res
   });
 });
 router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_generic_simple'")
   res.render("visuals/partials/tax_generic_simple", {
     doms: C.DOMAINS
   });
 });
-router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_gg_custom',{});
-});
-router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_gg_simple',{});
-});
-router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/otus',{});
-});
-router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/med_nodes',{});
-});
+// router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/tax_gg_custom',{});
+// });
+// router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/tax_gg_simple',{});
+// });
+// router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/otus',{});
+// });
+// router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
+//   res.render('visuals/partials/med_nodes',{});
+// });
 //
 // SAVE CONFIG
 //
