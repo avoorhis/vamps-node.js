@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-const util = require('util');
+// const util = require('util');
 const url  = require('url');
-const http = require('http');
+// const http = require('http');
 const path = require('path');
 const fs   = require('fs-extra');
 // const open = require('open');
 //const async = require('async');
 const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({});
-const zlib = require('zlib');
-const Readable = require('readable-stream').Readable;
+// const transporter = nodemailer.createTransport({});
+// const zlib = require('zlib');
+// const Readable = require('readable-stream').Readable;
 const multer    = require('multer');
 const config  = require(app_root + '/config/config');
 const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -32,7 +32,7 @@ const biom_matrix_controller = require(app_root + '/controllers/biomMatrixContro
 //const CTABLE  = require('./routes_counts_table');
 //const PythonShell = require('python-shell');
 const spawn = require('child_process').spawn;
-const app = express();
+// const app = express();
 // GLOBALS
 // PROJECT_TREE_PIDS = []
 // PROJECT_TREE_OBJ = []
@@ -860,7 +860,7 @@ router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   // let dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function readFile(err, data) {
+  fs.readFile(file_path, 'utf8',function readFile(err) {
     if (err) {
         let msg = 'ERROR Message ' + err;
         helpers.render_error_page(req,res,msg);
@@ -896,10 +896,10 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   let biom_file = path.join(pwd,'tmp',biom_file_name);
 
   let html = '';
-  let title = 'VAMPS';
+  // let title = 'VAMPS';
 
-  let distmtx_file_name = ts+'_distance.csv';
-  let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+  // let distmtx_file_name = ts+'_distance.csv';
+  // let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
 
 
   let options = {
@@ -969,7 +969,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         }
         res.send(newick);
       } else {  // 'pdf'
-        let viz_width = 1200;
+        // let viz_width = 1200;
         let viz_height = (visual_post_items.no_of_datasets*12)+100;
         let image = '/'+ts+'_dendrogram.pdf';
         //console.log(image)
@@ -999,13 +999,13 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   console.log('in PCoA');
   //console.log(metadata);
   let ts = req.body.ts;
-  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+  // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let metric = req.body.metric;
-  let image_type = req.body.image_type;
+  // let image_type = req.body.image_type;
   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
   let image_file = ts+'_pcoa.pdf';
   let biom_file_name = ts+'_count_matrix.biom';
-  let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+  // let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
   let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
@@ -1081,15 +1081,15 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   let mapping_file_name = ts+'_metadata.txt';
   let mapping_file = path.join(pwd,'tmp', mapping_file_name);
-  let pc_file = path.join(pwd,'tmp', pc_file_name);
+  // let pc_file = path.join(pwd,'tmp', pc_file_name);
   //let tax_file_name = ts+'_taxonomy.txt';
   //let tax_file = path.join(pwd,'tmp', tax_file_name);
   let dist_file_name = ts+'_distance.csv';
-  let dist_file = path.join(pwd,'tmp', dist_file_name);
+  // let dist_file = path.join(pwd,'tmp', dist_file_name);
 
   let dir_name = ts+'_pcoa3d';
   let dir_path = path.join(pwd,'views/tmp', dir_name);
-  let html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+  // let html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
   //let html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   let options1 = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -1459,13 +1459,13 @@ function get_sumator(req, biom_matrix){
   for (let r in biom_matrix.rows){
     let tax_string = biom_matrix.rows[r].id;
     let tax_items = tax_string.split(';');
-    let key = tax_items[0];
+    // let key = tax_items[0];
       //console.log(tax_items);
     for (let t in tax_items){
       let taxa = tax_items[t];
       let rank = C.RANKS[t];
       if (rank === 'domain'){
-         let d = tax_items[t];
+         let d = taxa;
          for (let i in req.session.chosen_id_order){
              if (d in sumator['domain']){
                  if (i in sumator['domain'][d]['knt']){
@@ -1483,7 +1483,7 @@ function get_sumator(req, biom_matrix){
          }
       }
       if (rank === 'phylum'){
-         let p = tax_items[t];
+         let p = taxa;
          for (let i in req.session.chosen_id_order){
              if (p in sumator['domain'][d]['phylum']){
                  if (i in sumator['domain'][d]['phylum'][p]['knt']){
@@ -1500,7 +1500,7 @@ function get_sumator(req, biom_matrix){
          }
       }
       if (rank === 'klass'){
-         let k = tax_items[t];
+         let k = taxa;
          for (i in req.session.chosen_id_order){
              if (k in sumator['domain'][d]['phylum'][p]['klass']){
                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
@@ -1517,7 +1517,7 @@ function get_sumator(req, biom_matrix){
          }
       }
       if (rank === 'order'){
-         let o = tax_items[t];
+         let o = taxa;
          for (let i in req.session.chosen_id_order){
              if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
@@ -1535,7 +1535,7 @@ function get_sumator(req, biom_matrix){
          }
       }
       if (rank === 'family'){
-       let f = tax_items[t];
+       let f = taxa;
        for (let i in req.session.chosen_id_order){
            if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
@@ -1552,7 +1552,7 @@ function get_sumator(req, biom_matrix){
          }
       }
       if (rank === 'genus'){
-      let g = tax_items[t];
+      let g = taxa;
       for (let i in req.session.chosen_id_order){
          if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
              if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
@@ -1569,7 +1569,7 @@ function get_sumator(req, biom_matrix){
       }
       }
       if (rank === 'species'){
-        let s = tax_items[t];
+        let s = taxa;
 
         for (let i in req.session.chosen_id_order){
            if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
@@ -1588,7 +1588,7 @@ function get_sumator(req, biom_matrix){
         }
       }
       if (rank === 'strain'){
-        let st = tax_items[t];
+        let st = taxa;
         for (let i in req.session.chosen_id_order){
           if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
@@ -1688,7 +1688,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     let filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json';
     let file_path = path.join('tmp',filename);
     //console.log(file_path)
-    new_rows = {};
+    let new_rows = {};
     new_rows[selected_did] = [];
     let LoadDataFinishRequest = function (req, res, project, display) {
       console.log('LoadDataFinishRequest in bar_single');
@@ -1713,7 +1713,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     } else {
 
-        connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
+        connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows){
             if (err)  {
               console.log('Query error: ' + err);
               console.log(err.stack);
@@ -1722,7 +1722,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               //console.log(rows)
               for (let s in rows){
                 //rows[s].seq = rows[s].seq.toString('utf8')
-                did = rows[s].dataset_id;
+                let did = rows[s].dataset_id;
 
                 let seq = rows[s].seq.toString('utf8');
                 let seq_cnt = rows[s].seq_count;
@@ -1867,7 +1867,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
   }
   else {
-    connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows, fields){
+    connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows){
           if (err)  {
             console.log('Query error: ' + err);
             console.log(err.stack);
@@ -1878,7 +1878,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
             // should write to a file? Or res.render here?
 
             for (let s in rows) {
-                did = rows[s].dataset_id;
+                let did = rows[s].dataset_id;
 
                 //console.log(did)
                 //rows[s].seq = rows[s].seq.toString('utf8')
@@ -2565,38 +2565,36 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
-  let html = '';
+  // let html = '';
   let ts = req.body.ts;
   let file_type = req.body.file_type;
-  file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  let file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
   if (file_type === 'matrix'){
     res.setHeader('Content-Type', 'text');
-    out_file_name = ts+'_count_matrix.txt';
-    biom_file_name = ts+'_count_matrix.biom';
+    let out_file_name = ts+'_count_matrix.txt';
+    let biom_file_name = ts+'_count_matrix.biom';
     helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
   }else if (file_type === 'biom'){
-    file_name = ts+'_count_matrix.biom';
+    let file_name = ts+'_count_matrix.biom';
     res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   }else if (file_type === 'tax'){
-    file_name = ts+'_taxonomy.txt';
+    let file_name = ts+'_taxonomy.txt';
     res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   }else if (file_type === 'meta'){
-    file_name = ts+'_metadata.txt';
+    let file_name = ts+'_metadata.txt';
     res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   }else if (file_type === 'configuration'){
-    file_name = req.body.filename;
-    config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    let file_name = req.body.filename;
+    let config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     res.setHeader('Content-Type', 'json');
     res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
   } else {
     // ERROR
-    console.log('ERROR In download_file')
+    console.log('ERROR In download_file');
   }
-
-
 
 });
 
@@ -2719,7 +2717,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
   let env_name = items[1];
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
-  let info = PROJECT_INFORMATION_BY_PID;
+  // let info = PROJECT_INFORMATION_BY_PID;
 
   let envid_lst = [];
   if (env_name === 'human associated'){  // get id for 'human associated'
@@ -2822,11 +2820,11 @@ router.get('/livesearch_status/:q', function(req, res) {
   let portal = myurl.query.portal;
 
   PROJECT_FILTER.public = q;
-
+  let projects_to_filter = "";
   if (portal){
-    let projects_to_filter = helpers.get_portal_projects(req, portal)
+    projects_to_filter = helpers.get_portal_projects(req, portal);
   } else {
-    let projects_to_filter = SHOW_DATA.projects
+    projects_to_filter = SHOW_DATA.projects;
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
@@ -2857,10 +2855,11 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   PROJECT_FILTER['metadata'+num] = q;
   //PROJECT_FILTER.metadata_num = num
 
+  let projects_to_filter = "";
   if (portal){
-    let projects_to_filter = helpers.get_portal_projects(req, portal)
+    projects_to_filter = helpers.get_portal_projects(req, portal);
   } else {
-    let projects_to_filter = SHOW_DATA.projects
+    projects_to_filter = SHOW_DATA.projects;
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
