@@ -50,6 +50,11 @@ function print_log_if_not_vamps(req, msg1, msg2) {
   }
 }
 
+function get_timestamp(req) {
+  let timestamp = +new Date();  // millisecs since the epoch!
+  return req.user.username + '_' + timestamp;
+}
+
 //
 //  V I E W  S E L E C T I O N
 //
@@ -92,7 +97,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
   let dataset_ids = [];
   let new_dataset_ids = [];
-  if (req.body.api === '1'){
+  if (req.body.api === '1') {
         console.log('From: API-API-API');
         visual_post_items = COMMON.default_post_items();
         // Change defaults:
@@ -250,7 +255,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         // FIXME need datasets from config file
 
 
-  } else {
+  }
+  else {
         // DONE Direct from unit_select
         console.log('DEFAULT req.body');
         visual_post_items = COMMON.save_post_items(req);
@@ -273,7 +279,6 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
-  //visual_post_items.chosen_name_order = []
   for (let n in dataset_ids){
         let did = dataset_ids[n];
         let dname = DATASET_NAME_BY_DID[did];
@@ -281,28 +286,25 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } );
   }
 
-  // let file_found_error = false;
-  // for (let i in dataset_ids){
-//     let did = dataset_ids[i]
-//     console.log('looking through dataset_ids:'+did.toString())
-//      }
-
-  let timestamp = +new Date();  // millisecs since the epoch!
-  timestamp = req.user.username + '_' + timestamp;
-  visual_post_items.ts = timestamp;
-  req.session.ts = timestamp;
-  // let distance_matrix = {};
+  let curr_timestamp = get_timestamp(req);
+  // let timestamp = +new Date();  // millisecs since the epoch!
+  // timestamp = req.user.username + '_' + timestamp;
+  visual_post_items.ts = curr_timestamp;
+  req.session.ts = curr_timestamp;
 
   console.log('VS--visual_post_items and id-hash:>>');
-  if (req.CONFIG.site === 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log('visual_post_items:');
-    console.log(visual_post_items);
-    console.log('req.session');
-    console.log(req.session);
-
-  }
+  let msg2 = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
+  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', msg2);
+  // if (req.CONFIG.site === 'vamps' ){
+  //     console.log('VAMPS PRODUCTION -- no print to log');
+  // }
+  // else {
+  //   console.log('visual_post_items:');
+  //   console.log(visual_post_items);
+  //   console.log('req.session');
+  //   console.log(req.session);
+  //
+  // }
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
@@ -328,18 +330,17 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
 
   res.render('visuals/view_selection', {
-                                title           : 'VAMPS: Visuals Select',
-                                referer         : 'unit_selection',
-                                matrix          : JSON.stringify(biom_matrix),
-                                metadata        : JSON.stringify(metadata),
-                                constants       : JSON.stringify(needed_constants),
-                                post_items      : JSON.stringify(visual_post_items),
-                                user            : req.user,
-                                hostname        : req.CONFIG.hostname,
-                                token           : req.CONFIG.MAPBOX_TOKEN,
-                                image_to_render : JSON.stringify(image_to_open),
-             });
-
+    title           : 'VAMPS: Visuals Select',
+    referer         : 'unit_selection',
+    matrix          : JSON.stringify(biom_matrix),
+    metadata        : JSON.stringify(metadata),
+    constants       : JSON.stringify(needed_constants),
+    post_items      : JSON.stringify(visual_post_items),
+    user            : req.user,
+    hostname        : req.CONFIG.hostname,
+    token           : req.CONFIG.MAPBOX_TOKEN,
+    image_to_render : JSON.stringify(image_to_open),
+    });
 });
 //
 // Load Configuration File
