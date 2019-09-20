@@ -63,12 +63,6 @@ function get_timestamp(req) {
 router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
    console.log('in POST view_selection');
 
-    // let url_parts = url.parse(req.url, true);
-//     let query = url_parts.query;
-    //console.log('query', req.query)
-    //console.log('file',req.file)
-    //console.log('body',req.body);
-    //console.log('upload',upload.single('upload_files', 12))
   // This page (view_selection) comes after the datasets and units have been selected
   //    in the previous two pages.
   // It should be protected with isLoggedIn like /unit_selection below.
@@ -120,7 +114,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
             new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
             dataset_ids = new_dataset_ids;
             req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids;
-        }else if ( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
+        }
+        else if ( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
             console.log('Found api project ',req.body.project);
             let pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
             new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()]);
@@ -287,44 +282,29 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   }
 
   let curr_timestamp = get_timestamp(req);
-  // let timestamp = +new Date();  // millisecs since the epoch!
-  // timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = curr_timestamp;
   req.session.ts = curr_timestamp;
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg2 = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
   print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', msg2);
-  // if (req.CONFIG.site === 'vamps' ){
-  //     console.log('VAMPS PRODUCTION -- no print to log');
-  // }
-  // else {
-  //   console.log('visual_post_items:');
-  //   console.log(visual_post_items);
-  //   console.log('req.session');
-  //   console.log(req.session);
-  //
-  // }
+
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items);
   let biom_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new");
-  // // console.time("TIME: biom_matrix old refactored");
-  // let biom_matrix = MTX.get_biom_matrix(req, visual_post_items);
-  // // console.timeEnd("TIME: biom_matrix old refactored");
-  //console.log('8')
+
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-  //console.log('9')
+
   if (visual_post_items.metadata.indexOf('primer_suite') !== -1){
       visual_post_items.metadata.push('primers');
   }
   let metadata = META.write_mapping_file(visual_post_items);
 
-
   console.log('image to open', image_to_open);
-//console.log('biom_matrix',biom_matrix);
+
   // function see below
   //render_view_selection(res, req, metadata, image_to_open)
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
@@ -2906,7 +2886,6 @@ router.post('/check_units', function(req, res) {
         }
   }
   res.send(file_err);
-
 });
 //
 //
