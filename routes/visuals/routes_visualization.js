@@ -8,7 +8,7 @@ const path = require('path');
 const fs   = require('fs-extra');
 // const open = require('open');
 //const async = require('async');
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 // const transporter = nodemailer.createTransport({});
 // const zlib = require('zlib');
 // const Readable = require('readable-stream').Readable;
@@ -1330,6 +1330,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: choose phylum, "Phyloseq Bars (R/svg)"
+// TODO: JSHint: This function's cyclomatic complexity is too high. (15) (W074)
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
   //console.log(req.body)
@@ -1941,6 +1942,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
+    // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
     fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
@@ -1972,47 +1974,47 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
       for (let i in clean_data){
 
-          seq_tax = '';
+          let seq_tax = '';
           let data = clean_data[i];
 
-          d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+          d = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
           try {
                 p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
           }catch(e){
-                p = 'phylum_NA'
+                p = 'phylum_NA';
           }
           try {
                 k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
           }catch(e){
-                k = 'class_NA'
+                k = 'class_NA';
           }
           try {
                 o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
           }catch(e){
-                o = 'order_NA'
+                o = 'order_NA';
           }
           try {
                 f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
           }catch(e){
-                f = 'family_NA'
+                f = 'family_NA';
           }
           try {
                 g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
           }catch(e){
-                g = 'genus_NA'
+                g = 'genus_NA';
           }
           try {
                 sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
           }
           catch(e){
-                sp = 'species_NA'
+                sp = 'species_NA';
           }
           try {
                 st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
           }
           catch(e){
-                st = 'strain_NA'
+                st = 'strain_NA';
           }
           seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
           if (seq_tax.substring(0, search_tax.length) === search_tax){
@@ -2141,7 +2143,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
         console.log('VAMPS PRODUCTION -- no print to log');
   } else {
         console.log('json_obj');
-        console.log(json_obj)
+        console.log(json_obj);
   }
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
@@ -2259,7 +2261,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
         }
         html += "</tbody>";
         html += "</table>";
-        res.send(html)
+        res.send(html);
 });
 //
 // A L P H A - B E T I Z E
@@ -2276,23 +2278,23 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
     names.push(name);
-    ids.push(did)
+    ids.push(did);
   }
 
   let names_copy = names.slice();  // slice make an independant copy of the array
   names_copy.sort(); // alpha sort
   for (let i in names_copy){
-    id = ids[names.indexOf(names_copy[i])];
-    name = names_copy[i];
+    let id = ids[names.indexOf(names_copy[i])];
+    let name = names_copy[i];
     html += "<tr class='tooltip_row'>";
-    html += "<td class='dragHandle' id='"+ id +"--"+name+"'> ";
+    html += "<td class='dragHandle' id='" + id + "--" + name + "'> ";
     html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
     html += (parseInt(i)+1).toString()+" (id:"+ id +") - "+name;
     html += "</td>";
     html += "   <td>";
-    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+id +"--"+name+"\")'>^</a>";
+    html += "       <a href='#' onclick='move_to_the_top(" + (parseInt(i) + 1).toString() + ",\"" + id + "--" + name + "\")'>^</a>";
     html += "   </td>";
     html += "</tr>";
   }
@@ -2342,10 +2344,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp',biom_file_name);
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
     let pjds_lookup = {};
-    for (i in req.session.chosen_id_order){
+    for (let i in req.session.chosen_id_order){
         let did = req.session.chosen_id_order[i];
         let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-        pjds_lookup[pjds] = did
+        pjds_lookup[pjds] = did;
     }
     let options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -2368,6 +2370,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         output += data.toString();
     });
 
+    // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
     cluster_process.on('close', function clusterProcessOnClose(code) {
       console.log('ds cluster process exited with code ' + code);
       let lines = output.split(/\n/);
@@ -2448,7 +2451,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   //distance_matrix = JSON.parse(data);
   //console.log(distance_matrix)
-  metadata = {};
+  let metadata = {};
   metadata.numbers_or_colors = req.body.numbers_or_colors;
   metadata.split = false;
   metadata.metric = req.session.selected_distance;  // revert back to selected
@@ -2456,7 +2459,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   //console.log(html)
   let outfile_name = ts + '-dheatmap-api.html';
-  outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+  let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
   //console.log('outfile_path:',outfile_path)
   //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
   //console.log(result)
@@ -2490,13 +2493,13 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         //console.log(distmtx_file)
         fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
             if (err) {
-                res.json({'err':err})
+                res.json({'err': err});
             } else {
                 //console.log(mtxdata)
                 let split_distance_csv_matrix = mtxdata.split('\n');
 
-                let IMAGES = require('../routes_images');
-                metadata = {};
+                IMAGES = require('../routes_images');
+                let metadata = {};
                 metadata.numbers_or_colors = req.body.numbers_or_colors;
                 metadata.split = true;
                 metadata.metric = suffix;
@@ -2504,14 +2507,14 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
                 let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
                 let outfile_name = ts + '-dheatmap-api.html';
-                outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
 
                 let data = {};
                 data.html = html;
                 data.numbers_or_colors = req.body.numbers_or_colors;
                 data.filename = outfile_name;
                 //res.send(outfile_name)
-                res.json(data)
+                res.json(data);
             }
 
         });
@@ -2519,7 +2522,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     if (helpers.fileExists(test_distmtx_file)){
         console.log('Using Old Files');
         FinishSplitFile(req, res);
-        return
+        return;
     }
 
     let options = {
@@ -2552,17 +2555,17 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     split_process.on('close', function splitsProcessOnClose(code) {
         console.log('finished code:'+code.toString());
         console.log('Creating New Split Distance Files');
-        FinishSplitFile(req, res)
+        FinishSplitFile(req, res);
         //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
 
 
-    })
+    });
 });
 //
 //
 //
-//test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
-
+// test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
+// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
   // let html = '';
@@ -2573,7 +2576,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     res.setHeader('Content-Type', 'text');
     let out_file_name = ts+'_count_matrix.txt';
     let biom_file_name = ts+'_count_matrix.biom';
-    helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name)
+    helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
   }else if (file_type === 'biom'){
     let file_name = ts+'_count_matrix.biom';
     res.setHeader('Content-Type', 'text');
@@ -2620,14 +2623,15 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+// TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
 function filter_project_tree_for_permissions(req, obj){
   console.log('Filtering tree projects for permissions');
   let new_project_tree_pids = [];
-  for ( i in obj ){
+  for (let i in obj){
       //node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(obj[i])
-      pid = obj[i].pid;
-      node = PROJECT_INFORMATION_BY_PID[pid];
+      let pid = obj[i].pid;
+      let node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
       if (
             node.public
@@ -2644,7 +2648,7 @@ function filter_project_tree_for_permissions(req, obj){
       }
   }
   //console.log(obj)
-  return new_project_tree_pids
+  return new_project_tree_pids;
 }
 //
 //
@@ -2662,7 +2666,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 
   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-  PROJECT_FILTER = {"substring":"", "env":[],"target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
+  let PROJECT_FILTER = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
 });
 //
@@ -2686,30 +2690,29 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 
   let projects_to_filter = [];
   if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal)
+    projects_to_filter = helpers.get_portal_projects(req, portal);
   } else {
-    projects_to_filter = SHOW_DATA.projects
+    projects_to_filter = SHOW_DATA.projects;
   }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+  let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   if (req.CONFIG.site === 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   } else {
-    console.log('PROJECT_FILTER')
+    console.log('PROJECT_FILTER');
   }
-
   console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
-
 });
 
 //
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
 // test click filter by ENV source on visuals_index
+// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/livesearch_env/:envid', function(req, res) {
   let envid = req.params.envid;
   let items = envid.split('--');
@@ -2849,7 +2852,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
   if (q === '.....'){
-    q = ''
+    q = '';
   }
 
   PROJECT_FILTER['metadata'+num] = q;
@@ -2872,6 +2875,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 //
 //
 // test: page after custom taxonomy been chosen, shows tree
+// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.post('/check_units', function(req, res) {
   console.log('IN check_UNITS');
   console.log(req.body);
@@ -2886,7 +2890,7 @@ router.post('/check_units', function(req, res) {
   }else if (req.body.units === 'tax_generic_simple'){
         files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
   } else {
-        console.log('ERROR:Units not found: '+req.body.units)  // ERROR
+        console.log('ERROR: Units not found: ' + req.body.units); // ERROR
   }
   let file_err = 'PASS';
   let dataset_ids = req.session.chosen_id_order;
@@ -2901,7 +2905,7 @@ router.post('/check_units', function(req, res) {
             jsonfile = require(path_to_file);
         }catch(e){
             file_err='FAIL';
-            break
+            break;
         }
   }
   res.send(file_err);
@@ -2911,6 +2915,7 @@ router.post('/check_units', function(req, res) {
 //
 //
 // test: choose custom taxonomy, show tree
+// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/tax_custom_dhtmlx', function(req, res) {
     //console.log('IN tax_custom_dhtmlx')
     let myurl = url.parse(req.url, true);
@@ -2930,39 +2935,40 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //         }
 
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-        for ( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-            node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+        for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+            let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
             if (node.children_ids.length === 0){
-                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:0})
+                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:0});
             } else {
-                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:1,item:[]})
+                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:1, item:[]});
             }
         }
         json.item.sort(function(a, b) {
             return helpers.compareStrings_alpha(a.text, b.text);
         });
     } else {
-        for (n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-            node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
+        for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+            let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+            let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
             //console.log('node')
             //console.log(node)
             if (node.children_ids.length === 0){
-                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:0})
+                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
             } else {
-                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:1,item:[]})
+                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
             }
         }
         json.item.sort(function sortByAlpha(a, b) {
             return helpers.compareStrings_alpha(a.text, b.text);
         });
     }
-    res.json(json)
+    res.json(json);
 });
 //
 //  project_custom_dhtmlx
 //
 // test: show tree
+// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
   let myurl = url.parse(req.url, true);
@@ -2977,7 +2983,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
   let itemtext;
   if (parseInt(id) === 0){
-    for ( i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
+    for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
 
         let pid = PROJECT_TREE_PIDS[i];
         let node = PROJECT_INFORMATION_BY_PID[pid];
@@ -2992,15 +2998,15 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
         itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
         if (node.public) {
-            itemtext += "<small> <i>(public)</i></small>"
+            itemtext += "<small> <i>(public)</i></small>";
         } else {
-            itemtext += "<a href='/users/"+ node.oid+"'><small> <i>(PI: "+node.username +")</i></small></a>"
+            itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
         }
 
         if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
           json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
         } else {
-          json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
+          json.item.push({id:'p'+pid_str, text:itemtext, checked:false, child:1, item:[]});
         }
 
 
@@ -3026,18 +3032,18 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       } else {
         console.log(DATA_TO_OPEN);
       }
-      for (openpid in DATA_TO_OPEN){
-        Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
+      for (let openpid in DATA_TO_OPEN){
+        Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    if (req.CONFIG.site === 'vamps' ){
+    if (req.CONFIG.site === 'vamps'){
       console.log('VAMPS PRODUCTION -- no print to log');
     } else {
-      console.log(all_checked_dids)
+      console.log(all_checked_dids);
     }
     let pname = this_project.name;
-    for (n in this_project.datasets){
+    for (let n in this_project.datasets){
         let did   = this_project.datasets[n].did;
         //console.log('didXX',did)
         let dname = this_project.datasets[n].dname;
@@ -3055,7 +3061,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         return helpers.compareStrings_alpha(a.text, b.text);
   });
   //console.log(json.item)
-  res.send(json)
+  res.send(json);
 });
 //
 //
@@ -3068,6 +3074,7 @@ router.get('/taxa_piechart', function(req, res) {
   let ts = req.session.ts;
   let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
 
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
     if (err) {
       let msg = 'ERROR Message '+err;
@@ -3085,10 +3092,10 @@ router.get('/taxa_piechart', function(req, res) {
           // want [[1],[2],[3],[4]]
 
           new_matrix.data = [];
-          for (n in data){
-            new_matrix.data.push([data[n]])
+          for (let n in data){
+            new_matrix.data.push([data[n]]);
           }
-          new_matrix.columns = [biom_matrix.rows[i]]
+          new_matrix.columns = [biom_matrix.rows[i]];
         }
       }
       new_matrix.rows = biom_matrix.columns;
@@ -3096,7 +3103,7 @@ router.get('/taxa_piechart', function(req, res) {
         console.log('VAMPS PRODUCTION -- no print to log');
       } else {
         console.log('new mtx:',new_matrix);
-        console.log('counts:',new_matrix.data)
+        console.log('counts:',new_matrix.data);
       }
       let cols =  biom_matrix.columns;
 

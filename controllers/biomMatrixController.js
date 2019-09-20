@@ -757,7 +757,7 @@ class WriteMatrixFile {
   constructor(post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    this.tmp_path = CONFIG.TMP_FILES    //app_root + '/tmp/';
+    this.tmp_path = CONFIG.TMP_FILES;    //app_root + '/tmp/';
   }
 
   write_matrix_files() {
