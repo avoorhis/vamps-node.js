@@ -55,6 +55,7 @@ stand <- decostand(data.matrix(biods),"total")
 d <- vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
 distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
 write.table(as.matrix(d), file=distance_file)
+Sys.chmod(distance_file, "0664", use_umask = FALSE)
 ####################################################
 
 w = 10
@@ -107,5 +108,5 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 # p2 = plot_ordination(physeq, GP.ord, type = "samples", color = color_item, shape = shape_item)
 # p2 + geom_polygon(aes(fill = fill_item)) + geom_point(size = 5) + ggtitle("samples")
 
-
+Sys.chmod(out_file, "0664", use_umask = FALSE)
 dev.off()

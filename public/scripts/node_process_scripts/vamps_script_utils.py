@@ -286,8 +286,7 @@ if __name__ == '__main__':
     
     args.obj = MySQLdb.connect( host=db_host, db=args.NODE_DATABASE, read_default_file=os.path.expanduser("~/.my.cnf_node")    )
 
-    #db = MySQLdb.connect(host="localhost", # your host, usually localhost
-    #                         read_default_file="~/.my.cnf"  ) 
+    
     cur = args.obj.cursor()
 
     

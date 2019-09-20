@@ -6,14 +6,14 @@ library(RColorBrewer)
 args <- commandArgs(TRUE)
 print(args)
 
-process_path <- args[1]
+tmp_path <- args[1]
 metric      <- args[2]
 prefix      <- args[3]
 depth       <- args[4]
 
-biom_file <- paste(process_path,'/tmp/',prefix,'_count_matrix.biom',sep='')
-image_file <- paste(process_path,'/tmp/',prefix,'_fheatmap.svg',sep='')
-distance_file = paste(process_path,'/tmp/',prefix,'_distance.R',sep='')
+biom_file <- paste(tmp_path, '/', prefix,'_count_matrix.biom',sep='')
+image_file <- paste(tmp_path, '/',prefix,'_fheatmap.svg',sep='')
+distance_file = paste(tmp_path, '/',prefix,'_distance.R',sep='')
 myjson<-fromJSON(biom_file)
 data_matrix<-myjson$data
 rownames(data_matrix)<-myjson$rows$id
@@ -153,3 +153,5 @@ pheatmap(x1,  scale="none", color=mypalette6,
 
 #print(warnings())
 dev.off()
+Sys.chmod(image_file, "0664", use_umask = FALSE)
+q()

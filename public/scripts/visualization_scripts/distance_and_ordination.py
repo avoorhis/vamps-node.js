@@ -34,7 +34,7 @@ def go_distance(args):
         data = json.load(json_data)
         json_data.close()
     except:
-        print("NO FILE FOUND ERROR")
+        print("1-NO FILE FOUND ERROR")
         sys.exit()
 
     datasets = []
@@ -62,6 +62,7 @@ def go_distance(args):
 
     #print(edited_dataset_list)
     dist = get_dist(dmatrix, data)
+    
     if args.create_splits:
         # we're done
         return
@@ -84,13 +85,19 @@ def go_distance(args):
             #file_data_line = file_data_line[:-1]+'\n'
             #out_fp.write(file_data_line)
 
-    out_file_selected      = os.path.join(args.basedir, 'tmp', args.prefix+'_distance.json')
+    out_file_selected = os.path.join(args.basedir,  args.prefix+'_distance.json')
+    out_file_csv      = os.path.join(args.basedir,  args.prefix+'_distance.csv')
+    print(dm1)
     
-    #my_file = Path(out_file_selected)
     if not os.path.exists(out_file_selected):
         out_fp2 = open(out_file_selected,'w')
         out_fp2.write(json.dumps(dm2))
         out_fp2.close()
+    try:
+        os.chmod(out_file_selected, 0o664)
+    except:
+        pass
+    write_csv_file(dm1,data,args)
     
     dm1 = DistanceMatrix(dm1)  # convert to scikit-bio DistanceMatrix (v 0.5.1)
     dm1.ids = edited_dataset_list  # assign row names
@@ -153,67 +160,10 @@ def get_dist(mtx, biom_data):
         for spl in matrices:
             df = pd.DataFrame(data=matrices[spl],index=cols,columns=cols)
             #dict = df.to_dict()
-            out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_'+spl+'.tsv')
+            out_file       = os.path.join(args.basedir, args.prefix+'_distance_'+spl+'.tsv')
             df.to_csv(out_file, sep='\t', encoding='utf-8')
-            #out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_'+spl+'.json')
-            #out_fp = open(out_file,'w')
-            #out_fp.write(json.dumps(dict))
-            #out_fp.close()
-        # dtvar = np_jc_l + np_cb_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_cb.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8')
-#         
-#         
-#         dtvar = np_jc_l + np_mh_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_mh.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8')
-#         
-#         
-#         dtvar = np_jc_l + np_bc_u  
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_jc_bc.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8')      
-#         
-#         
-#         dtvar = np_kz_l + np_cb_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_cb.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
-#         
-#         
-#         dtvar = np_kz_l + np_mh_u  
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_mh.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8')      
-#         
-#         
-#         dtvar = np_kz_l + np_bc_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_kz_bc.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
-#         
-#         
-#         dtvar = np_cb_l + np_mh_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_cb_mh.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
-#         
-#         
-#         dtvar = np_cb_l + np_bc_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         out_file       = os.path.join(args.basedir, 'tmp', args.prefix+'_distance_cb_bc.tsv')
-#         df.to_csv(out_file, sep='\t', encoding='utf-8') 
-#         
-#         
-#         dtvar = np_mh_l + np_bc_u
-#         df = pd.DataFrame(data=dtvar,index=cols,columns=cols)
-#         dict = df.to_dict()
-        
-        
-        #df.to_csv(out_file, sep='\t', encoding='utf-8')         
-        
+           
+
         
         #print(dict)
         #sys.exit()
@@ -278,14 +228,14 @@ def dendrogram_pdf(args, dm, leafLabels):
 
         linkage_matrix = linkage(dm,  method="average" )
         dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
-        image_file = os.path.join(args.basedir, 'tmp',args.prefix+'_dendrogram.pdf')
+        image_file = os.path.join(args.basedir, args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
 
 def dendrogram_newick(args, dm1):
       # apply the ds names as ids
     mynewick = construct_cluster(args, dm1)
-    newick_file = os.path.join(args.basedir,'tmp',args.prefix+'_newick.tre')
+    newick_file = os.path.join(args.basedir, args.prefix+'_newick.tre')
     mynewick.write(newick_file)
     
     return mynewick
@@ -299,7 +249,7 @@ def cluster_datasets(args, dm1):
 
     ascii_tree = mynewick.ascii_art()
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
-    ascii_file_path = os.path.join(args.basedir, 'tmp',ascii_file)
+    ascii_file_path = os.path.join(args.basedir, ascii_file)
     fp = open(ascii_file_path,'w')
     fp.write(ascii_tree)
     fp.close()
@@ -313,8 +263,20 @@ def cluster_datasets(args, dm1):
 
 
 
-def write_csv_file(args):
-        file_name = 'distance.csv'
+def write_csv_file(mtx, biom_data, args):
+        #file_name = 'distance.csv'
+        
+        c = [ i['id'] for i in biom_data['columns']]
+        r = [ i['id'] for i in biom_data['rows']]
+        print(c)
+        df = pd.DataFrame(data=mtx,columns=c,index=c)
+        #dict = df.to_dict()
+        out_file       = os.path.join(args.basedir, args.prefix+'_distance.csv')
+        df.to_csv(out_file, sep='\t', encoding='utf-8')
+        try:
+            os.chmod(out_file, 0o664)
+        except:
+            pass
 #
 #
 #
@@ -366,9 +328,10 @@ def create_emperor_visual(args, pcfile):
     # must read from file (scikit-bio version 0.5.1 http://scikit-bio.org/docs/0.5.1/generated/generated/skbio.stats.ordination.OrdinationResults.html
     res = OrdinationResults.read(pcfile)
     emp = Emperor(res, mf)
-    pcoa_outdir = os.path.join(args.basedir,'views', 'tmp',args.prefix+'_pcoa3d')
+    #pcoa_outdir = os.path.join(args.basedir,'views', 'tmp',args.prefix+'_pcoa3d')
+    pcoa_outdir = os.path.join(args.basedir, args.prefix+'_pcoa3d')
     print('OUT?',pcoa_outdir,args.basedir)
-    os.makedirs(pcoa_outdir, exist_ok=True)
+    os.makedirs(pcoa_outdir, mode=0o777, exist_ok=True)
     with open(os.path.join(pcoa_outdir, 'index.html'), 'w') as f:
         f.write(emp.make_emperor(standalone=True))
         emp.copy_support_files(pcoa_outdir)
@@ -394,9 +357,12 @@ def create_emperor_pc_file(args, dist, ds_list):
     from skbio.stats.ordination import pcoa
     PCoA_result = pcoa(dist)
     PCoA_result.samples.index = ds_list
-    pcfile = os.path.join(args.basedir, 'tmp',args.prefix+'_pc.txt')
+    pcfile = os.path.join(args.basedir,  args.prefix+'_pc.txt')
     PCoA_result.write(pcfile)
-    
+    try:
+        os.chmod(pcfile, 0o664)
+    except:
+        pass
     return pcfile
    
 #
@@ -428,7 +394,7 @@ def pcoa_pdf(args, data):
 
                     metadata[ds] = row
         except:
-            print("NO FILE FOUND ERROR")
+            print("2-NO FILE FOUND ERROR")
             sys.exit()
 
 
@@ -494,7 +460,7 @@ def pcoa_pdf(args, data):
             ax[0,0].set_title('P1-P2')
             ax[0,2].set_title('P2-P3')
 
-            image_file = os.path.join(args.basedir, 'tmp',args.prefix+'_pcoa.pdf')
+            image_file = os.path.join(args.basedir,args.prefix+'_pcoa.pdf')
             pylab.savefig(image_file, bbox_inches='tight')
         else:
             print('no metadata')

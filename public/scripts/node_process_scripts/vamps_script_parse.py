@@ -243,41 +243,12 @@ if __name__ == '__main__':
     parser.add_argument("-u", "--user",          
                 required=True,  action='store', dest = "owner", 
                 help=" ")   
-#     parser.add_argument("-proj", "--project",          
-#                 required=False,  action='store', dest = "project", default='',
-#                 help=" ")  
-#     parser.add_argument("-o", "--jsonfile_dir",                   
-#                required=True,  action="store",   dest = "jsonfile_dir",
-#                help="""JSON Files Directory""")
-#     parser.add_argument("-data_dir", "--data_dir",          
-#                 required=True,  action='store', dest = "data_dir", default='user_data',
-#                 help=" config.USER_FILES_BASE ")
+
                       
     args = parser.parse_args()    
     
     
-   #  if args.host == 'vamps':
-#         #db_host = 'vampsdb'
-#         db_host = 'bpcweb8'
-#         args.NODE_DATABASE = 'vamps2'
-#         db_home = '/groups/vampsweb/vamps/'
-#     elif args.host == 'vampsdev':
-#         #db_host = 'vampsdev'
-#         db_host = 'bpcweb7'
-#         args.NODE_DATABASE = 'vamps2'
-#         db_home = '/groups/vampsweb/vampsdev/'
-#     else:
-#         db_host = 'localhost'
-#         db_home = '~/'
-#         args.NODE_DATABASE = 'vamps_development'
-#     
-#     args.obj = MySQLdb.connect( host=db_host, db=args.NODE_DATABASE, read_default_file=os.path.expanduser("~/.my.cnf_node")    )
-# 
-#     #db = MySQLdb.connect(host="localhost", # your host, usually localhost
-#     #                         read_default_file="~/.my.cnf"  ) 
-#     args.cur = args.obj.cursor()
-
-    
+   
     
     #(args.proj, args.pid, args.dids, args.dsets) = get_data(args)  
     

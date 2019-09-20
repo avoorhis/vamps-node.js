@@ -101,7 +101,7 @@
     <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
     <div class="white_box readonly">
       <% for (var n in project_abstracts[0]) { %>
-      <a href='/static/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
+      <a href='/static_dnld/abstracts/<%= project_abstracts[0][n] %>' target='_blank'><%= project_abstracts[0][n] %></a><br/>
       <% } %> <!-- for (var pid in all_metadata)-->
       <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
     </div>

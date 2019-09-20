@@ -11,7 +11,7 @@ module.exports = {
 taxon_color_legend: function(req, res) {
     console.log('In routes_images/function: images/taxon_color_legend')
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
@@ -33,7 +33,7 @@ taxon_color_legend: function(req, res) {
         }
         html += '</table>'
         var outfile_name = ts + '-color_legend-api.html'
-        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
         result = save_file(html, outfile_path)
         console.log('result',result)
@@ -56,7 +56,7 @@ counts_matrix: function(req, res) {
     //console.log(req.session)
     
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
@@ -217,7 +217,7 @@ counts_matrix: function(req, res) {
             html += "</table>";
       
             var outfile_name = ts + '-counts_table-api.html'
-            outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+            outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
         
             result = save_file(html, outfile_path)
             data = {}
@@ -238,31 +238,29 @@ dheatmap: function(req, res){
     console.log('In routes_images/function: images/dheatmap')
     //console.log(req.session)
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = req.CONFIG.PROCESS_DIR;
-    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
-    //console.log('mtx1')
+    //var pwd = req.CONFIG.TMP_FILES;
+    
 
     var html = '';
     var title = 'VAMPS';
 
-    var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
-    var dist_json_file_path = path.join(config.PROCESS_DIR,'tmp', ts+'_distance.json')
+    //var distmtx_file_name = ts+'_distance.csv';
+    //var distmtx_file = path.join(req.CONFIG.TMP_FILES, distmtx_file_name);
+    var dist_json_file_path = path.join(req.CONFIG.TMP_FILES, ts+'_distance.json')
+    console.log(dist_json_file_path)
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', pwd, '--prefix', ts],
+       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts],
      };
-
-    var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
-
+    
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
         });
 
@@ -301,7 +299,7 @@ dheatmap: function(req, res){
                 var html = module.exports.create_hm_table(req, JSON.parse(distance_matrix), metadata )
                 
                 var outfile_name = ts + '-dheatmap-api.html'
-                outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+                outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
                 console.log('outfile_path:',outfile_path)
                 result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
                 //console.log(result)
@@ -341,13 +339,13 @@ dheatmap: function(req, res){
 fheatmap: function(req, res){
     console.log('In routes_images/function: images/fheatmap')
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = req.CONFIG.PROCESS_DIR;
+    
     var options = {
         scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-        args :       [ pwd, req.session.selected_distance, ts, req.session.tax_depth],
+        args :       [ req.CONFIG.TMP_FILES, req.session.selected_distance, ts, req.session.tax_depth],
     };
     console.log(options.scriptPath+'/fheatmap2.R '+options.args.join(' '));
     var fheatmap_process = spawn( options.scriptPath+'/fheatmap2.R', options.args, {
@@ -375,7 +373,7 @@ fheatmap: function(req, res){
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS
             var svgfile_name  = ts + '_fheatmap.svg'  // must match file name written in R script: dendrogram.R
-            svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
+            svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file')}
 
@@ -408,7 +406,7 @@ piecharts: function(req, res) {
 
   var imagetype = 'group'
 
-  matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+  matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
         var msg = 'ERROR Message '+err;
@@ -567,7 +565,7 @@ piecharts: function(req, res) {
 
         var html = body.select('.container').html()
         var outfile_name = ts + '-piecharts-api.svg'
-        outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
         result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
         data = {}
@@ -594,7 +592,7 @@ barcharts: function(req, res){
 
   var imagetype = 'group'
 
-  matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+  matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
         var msg = 'ERROR Message '+err;
@@ -675,7 +673,7 @@ barcharts: function(req, res){
       var html = body.select('.container').html()
       
       var outfile_name = ts + '-barcharts-api.svg'
-      outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+      outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
       console.log('outfile_path:',outfile_path)
       result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
       //console.log(result)
@@ -740,7 +738,7 @@ metadata_csv: function(req, res){
 
     //console.log(html)
     var outfile_name = ts + '-metadata-api.csv'
-    outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+    outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
     console.log('outfile_path:',outfile_path)
     result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
     //console.log(result)
@@ -755,12 +753,11 @@ metadata_csv: function(req, res){
 adiversity: function(req, res){
     console.log('in routes_images/adiversity')
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES, ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
     var pwd = req.CONFIG.PROCESS_DIR;
-    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
-    //console.log('mtx1')
+    
 
     var html = '';
     var title = 'VAMPS';
@@ -770,13 +767,12 @@ adiversity: function(req, res){
       args :       [ '-in', matrix_file_path, '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
     };
 
-    var log = fs.openSync(path.join(config.PROCESS_DIR,'logs','visualization.log'), 'a');
 
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
         });
 
@@ -824,7 +820,7 @@ adiversity: function(req, res){
            html += '</table>';
 
             var outfile_name = ts + '-adiversity-api.csv'
-            outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+            outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
             console.log('outfile_path:',outfile_path)
             result = save_file(output, outfile_path) // this saved file should now be downloadable from jupyter notebook
             //console.log(result)
@@ -845,12 +841,10 @@ dendrogram: function(req, res){
     ///groups/vampsweb/vampsdev/seqinfobin/bin/Rscript --no-save --slave --no-restore tree_create.R avoorhis_4742180_normalized.mtx horn avoorhis_4742180 trees
     //console.log(phylo)
     var ts = req.session.ts
-    matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom')
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
     var pwd = req.CONFIG.PROCESS_DIR;
-    //var biom_file_path = path.join(config.PROCESS_DIR,'tmp', biom_file_name);
-    //console.log('mtx1')
 
     var metric = req.session.selected_distance;
     var html = '';
@@ -860,12 +854,12 @@ dendrogram: function(req, res){
       args :       [ req.CONFIG.PROCESS_DIR, metric, ts ],
     };
 
-    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    
     console.log(options.scriptPath+'/dendrogram2.R '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/dendrogram2.R', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
     });
 
@@ -892,7 +886,7 @@ dendrogram: function(req, res){
         if(code === 0){   // SUCCESS
             //console.log('stdout: '+output);
             var svgfile_name  = ts + '_dendrogram.svg'  // must match file name written in R script: dendrogram.R
-            svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
+            svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file');return}
 
@@ -904,10 +898,7 @@ dendrogram: function(req, res){
                 return
 
             })
-            //outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-            //console.log('outfile_path:',outfile_path)
-            //
-            //console.log(result)
+            
 
 
         }else{
@@ -934,7 +925,7 @@ phyloseq: function(req,res){
     var phyloseq_process = spawn( options.scriptPath+'/phyloseq_test.R', options.args, {
             env:{'PATH':req.CONFIG.PATH},
             detached: true,
-            //stdio: [ 'ignore', null, log ]
+            //stdio: [ 'ignore', null, null ]
             stdio: 'pipe'  // stdin, stdout, stderr
     });
     stdout = '';
@@ -953,7 +944,7 @@ phyloseq: function(req,res){
           if(code === 0){   // SUCCESS
 
                 var svgfile_name  = ts + '_phyloseq_test.svg'  // must match file name written in R script: dendrogram.R
-                svgfile_path = path.join(config.PROCESS_DIR,'tmp', svgfile_name);  // file name save to user_location
+                svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
                 fs.readFile(svgfile_path, 'utf8', function(err, contents){
                     if(err){ res.send('ERROR reading file');return}
 
@@ -1590,8 +1581,19 @@ function average(data){
   return avg;
 }
 function save_file(data, file_path){
-    fs.writeFileSync(file_path, data)
-    return 'Success'
+    //fs.writeFileSync(file_path, data)
+    //fs.chmodSync(file_path, 0o664);
+    //return 'Success'
+    fs.writeFile(file_path, data, function(err){
+        if(err) {
+            return console.log(err);
+        }
+        else{
+            fs.chmodSync(file_path, 0o664);
+            return 'Success'
+        }
+    
+    })
 }
 function thin_out_data_for_display(mtx){
     console.log('in thin_out_data_for_display- OTUs only')
