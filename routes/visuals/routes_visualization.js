@@ -55,7 +55,7 @@ function get_timestamp(req) {
   return req.user.username + '_' + timestamp;
 }
 
-function chosen_datasets_2_visual_post_items(visual_post_items, dataset_ids) {
+function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 // get dataset_ids the add names for biom file output:
 // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
@@ -284,21 +284,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.custom_taxa = visual_post_items.custom_taxa;
   }
 
-  visual_post_items = chosen_datasets_2_visual_post_items(visual_post_items, dataset_ids);
-  console.log("JJJ1");
-  console.log(JSON.stringify(visual_post_items));
-
-  // get dataset_ids the add names for biom file output:
-  // chosen_id_order was set in unit_select and added to session variable
-  visual_post_items.chosen_datasets = [];
-  for (let n in dataset_ids){
-        let did = dataset_ids[n];
-        let dname = DATASET_NAME_BY_DID[did];
-        let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        visual_post_items.chosen_datasets.push( { did: did, name: pname + '--' + dname } );
-  }
-  console.log("JJJ0");
-  console.log(JSON.stringify(visual_post_items));
+  visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
 
   let curr_timestamp = get_timestamp(req);
   visual_post_items.ts = curr_timestamp;
@@ -323,9 +309,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let metadata = META.write_mapping_file(visual_post_items);
 
   console.log('image to open', image_to_open);
-
-  // function see below
-  //render_view_selection(res, req, metadata, image_to_open)
+  
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
 
   res.render('visuals/view_selection', {
@@ -2612,10 +2596,10 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     }
     //DATA_TO_OPEN = {}
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    PROJECT_FILTER = {"substring":"", "env":[],"target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
+    PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
     res.json(PROJECT_FILTER);
-
 });
+
 //
 //
 //
@@ -2672,7 +2656,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
-// test: search
+// test: search by substring
 router.get('/livesearch_projects/:substring', function(req, res) {
   console.log('viz:in livesearch_projects/:substring');
   let substring = req.params.substring.toUpperCase();
