@@ -541,6 +541,29 @@ function get_dataset_ids(req) {
   return dataset_ids;
 }
 
+function LoadFailureRequest(req, res, needed_constants) {
+  // return to
+  res.render('visuals/visuals_index', {
+    title       : 'VAMPS: Select Datasets',
+    subtitle    : 'Dataset Selection Page',
+    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    constants   : JSON.stringify(needed_constants),
+    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+    md_names    : AllMetadataNames,
+    filtering   : 0,
+    portal_to_show : '',
+    data_to_open: JSON.stringify(DATA_TO_OPEN),
+    user        : req.user,
+    hostname    : req.CONFIG.hostname,
+  });
+}
+
+function no_data(req, res, needed_constants) {
+  console.log('redirecting back -- no data selected');
+  req.flash('fail', 'Select Some Datasets');
+  LoadFailureRequest(req, res, needed_constants);
+}
+
 //
 // U N I T  S E L E C T I O N
 //
@@ -556,56 +579,20 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
-  // let dataset_ids = [];
-  // if (req.body.api === '1'){
-  //   console.log('API-API-API');
-  //   dataset_ids = JSON.parse(req.body.ds_order);
-  // }else if (req.body.resorted === '1'){
-  // 	dataset_ids = req.body.ds_order;
-  // }else if (req.body.from_geo_search === '1'){
-  //   dataset_ids = req.body.dids;
-  // } else {
-  //   dataset_ids = JSON.parse(req.body.dataset_ids);
-  // }
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
-  let LoadFailureRequest = function (req, res) {
-        // return to
-        res.render('visuals/visuals_index', {
-          title       : 'VAMPS: Select Datasets',
-          subtitle    : 'Dataset Selection Page',
-          proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-          constants   : JSON.stringify(needed_constants),
-          md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-          md_names    : AllMetadataNames,
-          filtering   : 0,
-          portal_to_show : '',
-          data_to_open: JSON.stringify(DATA_TO_OPEN),
-          user        : req.user,
-          hostname    : req.CONFIG.hostname,
-      });
-    };
   // I call this here and NOT in view_selection
   // A user can jump here directly from geo_search
   // However a user can jump directly to view_select from
   // saved datasets or configuration which they could conceivably manipulate
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  if (req.CONFIG.site === 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log('dataset_ids '+dataset_ids);
-  }
-  if (dataset_ids === undefined || dataset_ids.length === 0){
-      console.log('redirecting back -- no data selected');
-   	  req.flash('fail', 'Select Some Datasets');
-   	  LoadFailureRequest(req, res);
-      return;
+  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', 'dataset_ids ' + JSON.stringify(dataset_ids));
+
+  if (dataset_ids === undefined || dataset_ids.length === 0) {
+    no_data(req, res, needed_constants);
+    return;
   }
   else {
-    // let available_units = C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
-
-    // GLOBAL Variable
-
     req.session.chosen_id_order   = dataset_ids;
 
     // Thes get only the names of the available metadata:
