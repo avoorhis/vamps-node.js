@@ -40,9 +40,8 @@ colony-npm/
 *log.txt
 *.log
 
-
-
 # keeping empty dirs
+tmp/
 public/dco/*
 logs/*
 !logs/.gitignore
