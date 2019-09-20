@@ -376,7 +376,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   var status = 'New'
   try{
         fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists    
-  }catch{
+  }catch(e) {
         var status = String(fs.readFileSync(status_file))
   }
 
