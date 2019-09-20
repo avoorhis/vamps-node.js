@@ -55,6 +55,19 @@ function get_timestamp(req) {
   return req.user.username + '_' + timestamp;
 }
 
+function chosen_datasets_2_visual_post_items(visual_post_items, dataset_ids) {
+// get dataset_ids the add names for biom file output:
+// chosen_id_order was set in unit_select and added to session variable
+  visual_post_items.chosen_datasets = [];
+  for (let n in dataset_ids) {
+    let did = dataset_ids[n];
+    let dname = DATASET_NAME_BY_DID[did];
+    let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+    visual_post_items.chosen_datasets.push({did: did, name: pname + '--' + dname});
+  }
+  return visual_post_items;
+}
+
 //
 //  V I E W  S E L E C T I O N
 //
@@ -271,6 +284,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.custom_taxa = visual_post_items.custom_taxa;
   }
 
+  visual_post_items = chosen_datasets_2_visual_post_items(visual_post_items, dataset_ids);
+  console.log("JJJ1");
+  console.log(JSON.stringify(visual_post_items));
+
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
@@ -278,8 +295,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         let did = dataset_ids[n];
         let dname = DATASET_NAME_BY_DID[did];
         let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        visual_post_items.chosen_datasets.push( { did:did,name:pname+'--'+dname } );
+        visual_post_items.chosen_datasets.push( { did: did, name: pname + '--' + dname } );
   }
+  console.log("JJJ0");
+  console.log(JSON.stringify(visual_post_items));
 
   let curr_timestamp = get_timestamp(req);
   visual_post_items.ts = curr_timestamp;
