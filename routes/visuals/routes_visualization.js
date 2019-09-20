@@ -309,7 +309,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let metadata = META.write_mapping_file(visual_post_items);
 
   console.log('image to open', image_to_open);
-  
+
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
 
   res.render('visuals/view_selection', {
@@ -525,6 +525,22 @@ function create_clean_config(req, upld_obj)
   }
   //});
 }
+
+function get_dataset_ids(req) {
+  let dataset_ids = [];
+  if (req.body.api === '1'){
+    console.log('API-API-API');
+    dataset_ids = JSON.parse(req.body.ds_order);
+  } else if (req.body.resorted === '1'){
+    dataset_ids = req.body.ds_order;
+  } else if (req.body.from_geo_search === '1'){
+    dataset_ids = req.body.dids;
+  } else {
+    dataset_ids = JSON.parse(req.body.dataset_ids);
+  }
+  return dataset_ids;
+}
+
 //
 // U N I T  S E L E C T I O N
 //
@@ -536,25 +552,21 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   let error_msg = '';
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  if (req.CONFIG.site === 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(req.body);
-  }
+  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
-  //let this_session_metadata = {}
-  let dataset_ids = [];
-  if (req.body.api === '1'){
-    console.log('API-API-API');
-    dataset_ids = JSON.parse(req.body.ds_order);
-  }else if (req.body.resorted === '1'){
-  	dataset_ids = req.body.ds_order;
-  }else if (req.body.from_geo_search === '1'){
-    dataset_ids = req.body.dids;
-  } else {
-    dataset_ids = JSON.parse(req.body.dataset_ids);
-  }
+  let dataset_ids = get_dataset_ids(req);
+  // let dataset_ids = [];
+  // if (req.body.api === '1'){
+  //   console.log('API-API-API');
+  //   dataset_ids = JSON.parse(req.body.ds_order);
+  // }else if (req.body.resorted === '1'){
+  // 	dataset_ids = req.body.ds_order;
+  // }else if (req.body.from_geo_search === '1'){
+  //   dataset_ids = req.body.dids;
+  // } else {
+  //   dataset_ids = JSON.parse(req.body.dataset_ids);
+  // }
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   let LoadFailureRequest = function (req, res) {
         // return to
