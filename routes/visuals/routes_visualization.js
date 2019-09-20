@@ -42,6 +42,13 @@ const spawn = require('child_process').spawn;
 // // init_node const node_class =
 // const CustomTaxa  = require('./custom_taxa_class');
 
+function print_log(req, msg1, msg2) {
+  if (req.CONFIG.site === 'vamps') {
+    console.log(msg1);
+  } else {
+    console.log(msg2);
+  }
+}
 
 //
 //  V I E W  S E L E C T I O N
@@ -74,22 +81,17 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   //    There should be one or more datasets shown in list
   //    There should be one or more visual choices shown.
   //
-  //let body = JSON.parse(req.body);
-  //if (typeof visual_post_items == undefined){
+
   let visual_post_items = {};
-  //}
-  // if (req.body.unit_choice == 'tax_rdp2.6_simple'){
-//     delete req.body[C.default_taxonomy.name+'_domains']
-//   }else if (req.body.unit_choice == 'tax_'+C.default_taxonomy.name+'_simple'){
-//     delete req.body['rdp2.6_domains']
-//   }
+
   console.log(req.user.username+' req.body: view_selection body-->>');
-  if (req.CONFIG.site === 'vamps') {
-      console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log('req.body');
-    console.log(req.body);
-  }
+  print_log(req, 'VAMPS PRODUCTION -- no print to log', 'req.body = ' + req.body);
+  // if (req.CONFIG.site === 'vamps') {
+  //     console.log('VAMPS PRODUCTION -- no print to log');
+  // } else {
+  //   console.log('req.body');
+  //   console.log(req.body);
+  // }
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
