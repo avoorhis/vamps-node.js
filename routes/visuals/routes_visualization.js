@@ -42,7 +42,7 @@ const spawn = require('child_process').spawn;
 // // init_node const node_class =
 // const CustomTaxa  = require('./custom_taxa_class');
 
-function print_log(req, msg1, msg2) {
+function print_log_if_not_vamps(req, msg1, msg2) {
   if (req.CONFIG.site === 'vamps') {
     console.log(msg1);
   } else {
@@ -85,13 +85,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let visual_post_items = {};
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  print_log(req, 'VAMPS PRODUCTION -- no print to log', 'req.body = ' + req.body);
-  // if (req.CONFIG.site === 'vamps') {
-  //     console.log('VAMPS PRODUCTION -- no print to log');
-  // } else {
-  //   console.log('req.body');
-  //   console.log(req.body);
-  // }
+  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
