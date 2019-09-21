@@ -1,6 +1,7 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const helpers = require(app_root + '/routes/helpers/helpers');
 const fs = require('fs-extra');
+const path = require('path');
 
 class viewSelectionGetData {
   // const default_data = new viewSelectionGetData(() => 'this is the get_data for gold');
@@ -90,7 +91,7 @@ class viewSelectionGetData {
       return;
     }
 
-    this.visual_post_items.update_data = this.req.body.update_data              || '1';   // fires changes
+    this.visual_post_items.update_data = this.req.body.update_data || '1';   // fires changes
 
     this.req.session.no_of_datasets  = this.visual_post_items.no_of_datasets = this.dataset_ids.length;
 
@@ -138,19 +139,7 @@ class viewSelectionGetData {
   from_directory_configuration_file() {
     // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
     console.log('from_directory_configuration_file-POST');
-    // populate this.visual_post_items from ?????
-    let config_file_path = path.join(this.req.CONFIG.USER_FILES_BASE, this.req.user.username, this.req.body.filename);
-    let upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
-    //console.log(upld_obj)
-    let config_file_data = create_clean_config(this.req, upld_obj); // put into this.req.session
-    if (Object.keys(config_file_data).length === 0){
-      //error
-      res.redirect('saved_elements');
-      return;
-    }
-    for (let item in config_file_data) {// TODO: copy the object faster
-      this.req.session[item] = config_file_data[item];
-    }
+
     this.dataset_ids = this.req.session.chosen_id_order;
     this.get_visual_post_items_common();
     this.visual_post_items.update_data = 1;
@@ -158,30 +147,10 @@ class viewSelectionGetData {
   // not in resorted: this.visual_post_items.update_data = 1;
 
   from_upload_configuration_file() {
-    // UPLOAD Config file
     console.log('from_upload_configuration_file-POST');
-    // populate this.visual_post_items from ????
-    // For this we need the upload.single('upload_files', 12) in the post definition
-    let upload_file = this.req.file.path;
-    let upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
-    let config_file_data = create_clean_config(this.req, upld_obj); // put into this.req.session
-    if (Object.keys(config_file_data).length === 0){
-      //error
-      res.redirect('saved_elements');
-      return;
-    }
-    for (let item in config_file_data) {//TODO: already done above - DRY
-      this.req.session[item] = config_file_data[item];
-    }
     this.dataset_ids = this.req.session.chosen_id_order;
     this.get_visual_post_items_common();
     this.visual_post_items.update_data = 1;
-    // same as from_directory_configuration_file this.visual_post_items...
-
-    //let image_to_open = load_configuration_file(this.req, res, config_file_data)
-    // FIXME need datasets from config file
-
-
   }
   
 }
