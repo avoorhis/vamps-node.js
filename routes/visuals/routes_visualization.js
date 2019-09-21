@@ -289,14 +289,16 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.timeEnd("TIME: if_else");
 
   console.time("TIME: visualization_new");
-  const DataFactory = require("factory.js");
-...
-  var queryCode = req.param('queryCode');
-  var strategy = Factory.getStrategy(queryCode);
+  // const DataFactory = require("factory.js");
+// ...
+//   var queryCode = req.param('queryCode');
+//   var strategy = Factory.getStrategy(queryCode);
 
-  strategy.execute()
+  // strategy.execute()
 
-  const visualization_obj = new visualization_controller.viewSelection();
+  const visualization_obj = new visualization_controller.viewSelectionFactory(req);
+  dataset_ids = visualization_obj.dataset_ids;
+  visual_post_items = visualization_obj.visual_post_items;
   // let view_selection = visualization_obj.visualization;
   console.timeEnd("TIME: visualization_new");
 

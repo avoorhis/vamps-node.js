@@ -11,9 +11,9 @@ class viewSelectionGetData {
 // const api = new viewSelectionGetData(() => 'this is the get_data for silver');
 //
   constructor(req) {
-    this.image_to_open = {};
+    // this.image_to_open = {};
     this.dataset_ids = [];
-    this.new_dataset_ids = [];
+    // this.new_dataset_ids = [];
     this.visual_post_items = {};
     this.req = req;
     this.domains = ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
@@ -39,23 +39,53 @@ class viewSelectionGetData {
   from_upload_configuration_file(){
   }
 }
+// module.exports = function () {
+//
+//   var serviceDescriptions: [
+//     { name: 'a', service:  StrategyA},
+//     {name: 'b', service:  StrategyB}
+//   ];
+//
+//   var getStrategy: function (name) {
+//     //asuming you have underscore, otherwise, just iterate the array to look for the proper service
+//     return _.find(this.serviceDescriptions, {name: name}).service;
+//   };
+//
+// }
 
-module.exports = function () {
 
-  var serviceDescriptions: [
-    { name: 'a', service:  StrategyA},
-    {name: 'b', service:  StrategyB}
-  ];
+class viewSelectionFactory {
 
-  var getStrategy: function (name) {
-    //asuming you have underscore, otherwise, just iterate the array to look for the proper service
-    return _.find(this.serviceDescriptions, {name: name}).service;
-  };
+  constructor(req) {
+    this.req = req;
+    this.dataset_ids = [];
+    this.visual_post_items = {};
+    this.get_data = new module.exports.viewSelectionGetData(req);
+    this.select_get_data_strategy();
+  }
+    // module.exports.viewSelectionGetData
+  select_get_data_strategy() {
+    let req_body = this.req.body;
+    if (req_body.api === '1') {
+      console.log("api");
+    }
+    // else if (req_body.cancel_resort === '1') {}
+    // else if (req_body.from_directory_configuration_file === '1') {}
+    // else if (req_body.from_upload_configuration_file === '1') {}
+    // else if (req_body.resorted === '1') {}
+    // else if (req_body.restore_image === '1') {}
+    // else if (req_body.update_data === '1') {}  // from 'Update' button on view_selection.html
+    else {
+      this.get_data.default_data();
+    }
+
+    this.dataset_ids = this.get_data.dataset_ids;
+    this.visual_post_items = this.get_data.visual_post_items;
+
+  }
+
 
 }
-
-
-// class viewSelectionFactory {
 //   // let  StrategyA = require('./strategyA.js'),
 //   // StrategyB = require('./strategyB.js');
 //
@@ -112,8 +142,8 @@ module.exports = function () {
 // const restore_image = new viewSelectionGetData(() => 'this is the get_data for silver');
 // const api = new viewSelectionGetData(() => 'this is the get_data for silver');
 //
-// module.exports = {
-//   // viewSelection,
-//   viewSelectionGetData
-// };
+module.exports = {
+  viewSelectionGetData,
+  viewSelectionFactory
+};
 
