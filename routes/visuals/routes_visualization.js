@@ -119,185 +119,185 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
   let dataset_ids = [];
   let new_dataset_ids = [];
-  console.time("TIME: if_else");
-  if (req.body.api === '1') {
-        console.log('From: API-API-API');
-        visual_post_items = COMMON.default_post_items();
-        // Change defaults:
-        req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none";
-        req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn";
-        req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum";
-        req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
-        req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes";
-        req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
-        req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
-
-        if ((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
-            console.log('Found api dids ',req.body.ds_order);
-            try {
-                dataset_ids = JSON.parse(req.body.ds_order);
-            }
-            catch(e){
-                dataset_ids = req.body.ds_order;
-            }
-            new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
-            dataset_ids = new_dataset_ids;
-            req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids;
-        }
-        else if ( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
-            console.log('Found api project ',req.body.project);
-            let pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
-            new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()]);
-            visual_post_items.ds_order = new_dataset_ids;
-            console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project]);
-            console.log(visual_post_items.ds_order);
-            req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
-            //console.log('dids',dataset_ids)
-        } else {
-            console.log('API ALERT - no dids or project');
-            return;
-        }
-
-        visual_post_items.update_data = req.body.update_data              || '1';   // fires changes
-
-        req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length;
-
-        // for API select ALL metadata with these datasets
-        let md = {}; // hash lookup unique
-        for (let n in dataset_ids){
-            let did = dataset_ids[n];
-            for (let item in AllMetadata[did]){
-                md[item] =1;
-            }
-        }
-        req.session.metadata  = visual_post_items.metadata = Object.keys(md);
-
-  }
-  else if (req.body.restore_image === '1'){
-        console.log('in view_selection RESTORE IMAGE');
-  }
-  else if (req.body.cancel_resort === '1'){
-        console.log('resorted canceled');
-        req.flash('success','Canceled Resort.');
-        dataset_ids = JSON.parse(req.body.ds_order);
-
-  }
-  else if (req.body.update_data === '1'){  // from 'Update' button on view_selection.html
-        console.log('Update Data');
-        // populate req.session and visual_post_items from req.body(post)
-        dataset_ids = req.session.chosen_id_order;
-        visual_post_items = COMMON.save_post_items(req);
-        for (let item in visual_post_items){
-            req.session[item] = visual_post_items[item];
-        }
-        //console.log('XXXXXXXXXXX-VPI')
-        //console.log(visual_post_items)
-
-  }
-  else if (req.body.resorted === '1'){
-        console.log('resorted === 1');
-        // populate visual_post_items from req.session (except new ds_order)
-        req.flash('success','The dataset order has been updated.');
-        dataset_ids = req.body.ds_order;
-        req.session.chosen_id_order = dataset_ids;
-        visual_post_items.unit_choice = req.session.unit_choice;
-        visual_post_items.no_of_datasets = dataset_ids.length;
-        visual_post_items.normalization = req.session.normalization;
-        visual_post_items.selected_distance = req.session.selected_distance;
-        visual_post_items.tax_depth = req.session.tax_depth;
-        visual_post_items.include_nas = req.session.include_nas;
-        visual_post_items.min_range = req.session.min_range;
-        visual_post_items.max_range = req.session.max_range;
-        visual_post_items.metadata = req.session.metadata;
-        visual_post_items.domains = req.session.domains;
-        visual_post_items.custom_taxa = req.session.custom_taxa;
-  }
-  else if (req.body.from_directory_configuration_file === '1'){
-    // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
-    console.log('from_directory_configuration_file-POST');
-    // populate visual_post_items from ?????
-    let config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
-    let upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
-    //console.log(upld_obj)
-    let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-    if (Object.keys(config_file_data).length === 0){
-        //error
-        res.redirect('saved_elements');
-        return;
-    }
-    for (let item in config_file_data) {// TODO: copy the object faster
-        req.session[item] = config_file_data[item];
-    }
-    dataset_ids = req.session.chosen_id_order;
-    visual_post_items.unit_choice = req.session.unit_choice;
-    visual_post_items.no_of_datasets = dataset_ids.length;
-    visual_post_items.normalization = req.session.normalization;
-    visual_post_items.selected_distance = req.session.selected_distance;
-    visual_post_items.tax_depth = req.session.tax_depth;
-    visual_post_items.include_nas = req.session.include_nas;
-    visual_post_items.min_range = req.session.min_range;
-    visual_post_items.max_range = req.session.max_range;
-    visual_post_items.metadata = req.session.metadata;
-    visual_post_items.domains = req.session.domains;
-    visual_post_items.custom_taxa = req.session.custom_taxa;
-    visual_post_items.update_data = 1;
-  }
-  else if (req.body.from_upload_configuration_file === '1') {
-        // UPLOAD Config file
-        console.log('from_upload_configuration_file-POST');
-        // populate visual_post_items from ????
-        // For this we need the upload.single('upload_files', 12) in the post definition
-        let upload_file = req.file.path;
-        let upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
-        let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-        if (Object.keys(config_file_data).length === 0){
-            //error
-            res.redirect('saved_elements');
-            return;
-        }
-        for (let item in config_file_data) {//TODO: already done above - DRY
-            req.session[item] = config_file_data[item];
-        }
-        dataset_ids = req.session.chosen_id_order;
-        visual_post_items.unit_choice = req.session.unit_choice;
-        visual_post_items.no_of_datasets = dataset_ids.length;
-        visual_post_items.normalization = req.session.normalization;
-        visual_post_items.selected_distance = req.session.selected_distance;
-        visual_post_items.tax_depth = req.session.tax_depth;
-        visual_post_items.include_nas = req.session.include_nas;
-        visual_post_items.min_range = req.session.min_range;
-        visual_post_items.max_range = req.session.max_range;
-        visual_post_items.metadata = req.session.metadata;
-        visual_post_items.domains = req.session.domains;
-        visual_post_items.custom_taxa = req.session.custom_taxa;
-        visual_post_items.update_data = 1;
-
-
-        //let image_to_open = load_configuration_file(req, res, config_file_data)
-        // FIXME need datasets from config file
-
-
-  }
-  else {
-        // DONE Direct from unit_select
-        console.log('DEFAULT req.body');
-        visual_post_items = COMMON.save_post_items(req);
-        //console.log('visual_post_items')
-        //console.log(visual_post_items)
-        dataset_ids = req.session.chosen_id_order;
-        req.session.no_of_datasets = dataset_ids.length;
-        req.session.metadata = visual_post_items.metadata;
-        req.session.normalization = "none";
-        req.session.selected_distance = "morisita_horn";
-        req.session.tax_depth = req.body.tax_depth;
-        req.session.domains = req.body.domains || [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
-        req.session.include_nas = "yes";
-        req.session.min_range = '0';
-        req.session.max_range = '100';
-        req.session.unit_choice = req.body.unit_choice;
-        req.session.custom_taxa = visual_post_items.custom_taxa;
-  }
-  console.timeEnd("TIME: if_else");
+  // console.time("TIME: if_else");
+  // if (req.body.api === '1') {
+  //       console.log('From: API-API-API');
+  //       visual_post_items = COMMON.default_post_items();
+  //       // Change defaults:
+  //       req.session.normalization = visual_post_items.normalization = req.body.normalization          || "none";
+  //       req.session.selected_distance = visual_post_items.selected_distance = req.body.selected_distance  || "morisita_horn";
+  //       req.session.tax_depth   = visual_post_items.tax_depth = req.body.tax_depth                  || "phylum";
+  //       req.session.domains     = visual_post_items.domains = req.body.domains                      || ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
+  //       req.session.include_nas = visual_post_items.include_nas = req.body.include_nas              || "yes";
+  //       req.session.min_range   = visual_post_items.min_range = req.body.min_range                  || '0';
+  //       req.session.max_range   = visual_post_items.max_range = req.body.max_range                  || '100';
+  //
+  //       if ((req.body).hasOwnProperty('ds_order') && req.body.ds_order.length !== 0){
+  //           console.log('Found api dids ',req.body.ds_order);
+  //           try {
+  //               dataset_ids = JSON.parse(req.body.ds_order);
+  //           }
+  //           catch(e){
+  //               dataset_ids = req.body.ds_order;
+  //           }
+  //           new_dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
+  //           dataset_ids = new_dataset_ids;
+  //           req.session.chosen_id_order = visual_post_items.ds_order = dataset_ids;
+  //       }
+  //       else if ( (req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(req.body.project) ){
+  //           console.log('Found api project ',req.body.project);
+  //           let pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid;
+  //           new_dataset_ids = helpers.screen_dids_for_permissions(req, DATASET_IDS_BY_PID[pid.toString()]);
+  //           visual_post_items.ds_order = new_dataset_ids;
+  //           console.log(PROJECT_INFORMATION_BY_PNAME[req.body.project]);
+  //           console.log(visual_post_items.ds_order);
+  //           req.session.chosen_id_order = dataset_ids = visual_post_items.ds_order;
+  //           //console.log('dids',dataset_ids)
+  //       } else {
+  //           console.log('API ALERT - no dids or project');
+  //           return;
+  //       }
+  //
+  //       visual_post_items.update_data = req.body.update_data              || '1';   // fires changes
+  //
+  //       req.session.no_of_datasets  = visual_post_items.no_of_datasets = dataset_ids.length;
+  //
+  //       // for API select ALL metadata with these datasets
+  //       let md = {}; // hash lookup unique
+  //       for (let n in dataset_ids){
+  //           let did = dataset_ids[n];
+  //           for (let item in AllMetadata[did]){
+  //               md[item] =1;
+  //           }
+  //       }
+  //       req.session.metadata  = visual_post_items.metadata = Object.keys(md);
+  //
+  // }
+  // else if (req.body.restore_image === '1'){
+  //       console.log('in view_selection RESTORE IMAGE');
+  // }
+  // else if (req.body.cancel_resort === '1'){
+  //       console.log('resorted canceled');
+  //       req.flash('success','Canceled Resort.');
+  //       dataset_ids = JSON.parse(req.body.ds_order);
+  //
+  // }
+  // else if (req.body.update_data === '1'){  // from 'Update' button on view_selection.html
+  //       console.log('Update Data');
+  //       // populate req.session and visual_post_items from req.body(post)
+  //       dataset_ids = req.session.chosen_id_order;
+  //       visual_post_items = COMMON.save_post_items(req);
+  //       for (let item in visual_post_items){
+  //           req.session[item] = visual_post_items[item];
+  //       }
+  //       //console.log('XXXXXXXXXXX-VPI')
+  //       //console.log(visual_post_items)
+  //
+  // }
+  // else if (req.body.resorted === '1'){
+  //       console.log('resorted === 1');
+  //       // populate visual_post_items from req.session (except new ds_order)
+  //       req.flash('success','The dataset order has been updated.');
+  //       dataset_ids = req.body.ds_order;
+  //       req.session.chosen_id_order = dataset_ids;
+  //       visual_post_items.unit_choice = req.session.unit_choice;
+  //       visual_post_items.no_of_datasets = dataset_ids.length;
+  //       visual_post_items.normalization = req.session.normalization;
+  //       visual_post_items.selected_distance = req.session.selected_distance;
+  //       visual_post_items.tax_depth = req.session.tax_depth;
+  //       visual_post_items.include_nas = req.session.include_nas;
+  //       visual_post_items.min_range = req.session.min_range;
+  //       visual_post_items.max_range = req.session.max_range;
+  //       visual_post_items.metadata = req.session.metadata;
+  //       visual_post_items.domains = req.session.domains;
+  //       visual_post_items.custom_taxa = req.session.custom_taxa;
+  // }
+  // else if (req.body.from_directory_configuration_file === '1'){
+  //   // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
+  //   console.log('from_directory_configuration_file-POST');
+  //   // populate visual_post_items from ?????
+  //   let config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
+  //   let upld_obj = JSON.parse(fs.readFileSync(config_file_path, 'utf8'));
+  //   //console.log(upld_obj)
+  //   let config_file_data = create_clean_config(req, upld_obj); // put into req.session
+  //   if (Object.keys(config_file_data).length === 0){
+  //       //error
+  //       res.redirect('saved_elements');
+  //       return;
+  //   }
+  //   for (let item in config_file_data) {// TODO: copy the object faster
+  //       req.session[item] = config_file_data[item];
+  //   }
+  //   dataset_ids = req.session.chosen_id_order;
+  //   visual_post_items.unit_choice = req.session.unit_choice;
+  //   visual_post_items.no_of_datasets = dataset_ids.length;
+  //   visual_post_items.normalization = req.session.normalization;
+  //   visual_post_items.selected_distance = req.session.selected_distance;
+  //   visual_post_items.tax_depth = req.session.tax_depth;
+  //   visual_post_items.include_nas = req.session.include_nas;
+  //   visual_post_items.min_range = req.session.min_range;
+  //   visual_post_items.max_range = req.session.max_range;
+  //   visual_post_items.metadata = req.session.metadata;
+  //   visual_post_items.domains = req.session.domains;
+  //   visual_post_items.custom_taxa = req.session.custom_taxa;
+  //   visual_post_items.update_data = 1;
+  // }
+  // else if (req.body.from_upload_configuration_file === '1') {
+  //       // UPLOAD Config file
+  //       console.log('from_upload_configuration_file-POST');
+  //       // populate visual_post_items from ????
+  //       // For this we need the upload.single('upload_files', 12) in the post definition
+  //       let upload_file = req.file.path;
+  //       let upld_obj = JSON.parse(fs.readFileSync(upload_file, 'utf8'));//,function(err, data){
+  //       let config_file_data = create_clean_config(req, upld_obj); // put into req.session
+  //       if (Object.keys(config_file_data).length === 0){
+  //           //error
+  //           res.redirect('saved_elements');
+  //           return;
+  //       }
+  //       for (let item in config_file_data) {//TODO: already done above - DRY
+  //           req.session[item] = config_file_data[item];
+  //       }
+  //       dataset_ids = req.session.chosen_id_order;
+  //       visual_post_items.unit_choice = req.session.unit_choice;
+  //       visual_post_items.no_of_datasets = dataset_ids.length;
+  //       visual_post_items.normalization = req.session.normalization;
+  //       visual_post_items.selected_distance = req.session.selected_distance;
+  //       visual_post_items.tax_depth = req.session.tax_depth;
+  //       visual_post_items.include_nas = req.session.include_nas;
+  //       visual_post_items.min_range = req.session.min_range;
+  //       visual_post_items.max_range = req.session.max_range;
+  //       visual_post_items.metadata = req.session.metadata;
+  //       visual_post_items.domains = req.session.domains;
+  //       visual_post_items.custom_taxa = req.session.custom_taxa;
+  //       visual_post_items.update_data = 1;
+  //
+  //
+  //       //let image_to_open = load_configuration_file(req, res, config_file_data)
+  //       // FIXME need datasets from config file
+  //
+  //
+  // }
+  // else {
+  //       // DONE Direct from unit_select
+  //       console.log('DEFAULT req.body');
+  //       visual_post_items = COMMON.save_post_items(req);
+  //       //console.log('visual_post_items')
+  //       //console.log(visual_post_items)
+  //       dataset_ids = req.session.chosen_id_order;
+  //       req.session.no_of_datasets = dataset_ids.length;
+  //       req.session.metadata = visual_post_items.metadata;
+  //       req.session.normalization = "none";
+  //       req.session.selected_distance = "morisita_horn";
+  //       req.session.tax_depth = req.body.tax_depth;
+  //       req.session.domains = req.body.domains || [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
+  //       req.session.include_nas = "yes";
+  //       req.session.min_range = '0';
+  //       req.session.max_range = '100';
+  //       req.session.unit_choice = req.body.unit_choice;
+  //       req.session.custom_taxa = visual_post_items.custom_taxa;
+  // }
+  // console.timeEnd("TIME: if_else");
 
   console.time("TIME: visualization_new");
   // const DataFactory = require("factory.js");
@@ -634,6 +634,11 @@ function test_if_json_file_exists(req, i, dataset_ids, did) {
 // test: select datasets
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
+  if (typeof unit_choice === 'undefined'){
+    let unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
+    console.log(unit_choice);
+  }
+
   console.log(req.user.username+' req.body: unit_selection-->>');
   print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', JSON.stringify(req.body));
   console.log('req.body: unit_selection');
@@ -681,10 +686,6 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', chosen_dataset_order);
 	  console.log('<--chosen_dataset_order');
 
-    if (typeof unit_choice === 'undefined'){
-      let unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
-      console.log(unit_choice);
-    }
     // else {
     //   console.log("unit_choice is defined: " + unit_choice);
     // }
