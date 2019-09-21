@@ -25,6 +25,8 @@ const IMAGES = require('../routes_images');
 //const PCOA    = require('./routes_pcoa');
 // const MTX     = require('./routes_counts_matrix');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
+const visualization_controller = require(app_root + '/controllers/visualizationController');
+
 //const HMAP    = require('./routes_distance_heatmap');
 //const DEND    = require('./routes_dendrogram');
 //const BCHARTS = require('./routes_bar_charts');
@@ -104,6 +106,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
   let dataset_ids = [];
   let new_dataset_ids = [];
+  console.time("TIME: if_else");
   if (req.body.api === '1') {
         console.log('From: API-API-API');
         visual_post_items = COMMON.default_post_items();
@@ -283,6 +286,19 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         req.session.unit_choice = req.body.unit_choice;
         req.session.custom_taxa = visual_post_items.custom_taxa;
   }
+  console.timeEnd("TIME: if_else");
+
+  console.time("TIME: visualization_new");
+  const DataFactory = require("factory.js");
+...
+  var queryCode = req.param('queryCode');
+  var strategy = Factory.getStrategy(queryCode);
+
+  strategy.execute()
+
+  const visualization_obj = new visualization_controller.viewSelection();
+  // let view_selection = visualization_obj.visualization;
+  console.timeEnd("TIME: visualization_new");
 
   visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
 
@@ -588,7 +604,6 @@ function test_if_json_file_exists(req, i, dataset_ids, did) {
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 // test: select datasets
-// TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   console.log(req.user.username+' req.body: unit_selection-->>');
