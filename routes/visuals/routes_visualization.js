@@ -564,6 +564,24 @@ function no_data(req, res, needed_constants) {
   LoadFailureRequest(req, res, needed_constants);
 }
 
+function test_if_json_file_exists(req, i, dataset_ids, did) {
+  let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
+  let path_to_file = path.join(files_prefix, did + '.json');
+  let error_msg = "";
+  try {
+    require(path_to_file);
+  } catch (err) {
+    console.log(err);
+    let pid = PROJECT_ID_BY_DID[dataset_ids[i]];
+    let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+    let dname = DATASET_NAME_BY_DID[did];
+    error_msg = 'No Taxonomy found for this dataset (' + pname + '--' + dname + ' (did:' + did + ')) and possibly others. Try selecting other units.';
+  }
+  if (error_msg){
+    req.flash('fail', error_msg);
+  }
+}
+
 //
 // U N I T  S E L E C T I O N
 //
@@ -572,7 +590,6 @@ function no_data(req, res, needed_constants) {
 // test: select datasets
 // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
-  let error_msg = '';
 
   console.log(req.user.username+' req.body: unit_selection-->>');
   print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', JSON.stringify(req.body));
@@ -584,6 +601,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // A user can jump here directly from geo_search
   // However a user can jump directly to view_select from
   // saved datasets or configuration which they could conceivably manipulate
+
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
   print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', 'dataset_ids ' + JSON.stringify(dataset_ids));
@@ -607,41 +625,21 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       let dname = DATASET_NAME_BY_DID[did];
       let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
 
-      chosen_dataset_order.push( { did:did, name:pname+'--'+dname } );  // send this to client
-
+      chosen_dataset_order.push( { did:did, name:pname + '--' + dname } );  // send this to client
       // !!!use default taxonomy here (may choose other on this page)
-      let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
-      let path_to_file = path.join(files_prefix, did +'.json');
-      try {
-          let jsonfile = require(path_to_file);
-          //this_session_metadata[did]  = jsonfile['metadata'];
-      }
-      catch(err){
-          console.log(err);
-          let pid = PROJECT_ID_BY_DID[dataset_ids[i]];
-          let pname = PROJECT_INFORMATION_BY_PID[pid].project;
-          let dname = DATASET_NAME_BY_DID[did];
-          //this_session_metadata[did]  = {}
-          error_msg = 'No Taxonomy found for this dataset ('+pname+'--'+dname+' (did:'+did+')) and possibly others. Try selecting other units.';
-      }
+      test_if_json_file_exists(req, i, dataset_ids, did);
     }
 
-	 if (error_msg){
-	    req.flash('fail', error_msg);
-	 }
 	  // benchmarking
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
 	  console.log('chosen_dataset_order-->');
-	  if (req.CONFIG.site === 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-      } else {
-        console.log(chosen_dataset_order);
-      }
+    print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', chosen_dataset_order);
 	  console.log('<--chosen_dataset_order');
+
     if (typeof unit_choice === 'undefined'){
-      let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+      let unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
       console.log(unit_choice);
     }
     // else {
@@ -655,7 +653,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
       md_req       : JSON.stringify(required_metadata_headers),   //
       unit_choice  : unit_choice,
-      user         : req.user,hostname: req.CONFIG.hostname,
+      user         : req.user,
+      hostname     : req.CONFIG.hostname,
 	  });  // end render
   }
     // benchmarking
