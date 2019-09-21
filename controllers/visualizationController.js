@@ -127,6 +127,7 @@ class viewSelectionGetData {
     this.get_visual_post_items_common();
   }
 
+  // test: "POST-Load (view)" configuration file from saved_elements
   from_directory_configuration_file() {
     // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
     console.log('from_directory_configuration_file-POST');
