@@ -211,8 +211,6 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
         visual_post_items.metadata = req.session.metadata;
         visual_post_items.domains = req.session.domains;
         visual_post_items.custom_taxa = req.session.custom_taxa;
-
-
   }
   else if (req.body.from_directory_configuration_file === '1'){
     // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
@@ -313,8 +311,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   dataset_ids = visualization_obj.dataset_ids;
   visual_post_items = visualization_obj.visual_post_items;
 
-  console.log("UUU1");
-  console.log(JSON.stringify(req.session));
+  // TODO: use when test config files below
+  // console.log("UUU1");
+  // console.log(JSON.stringify(req.session));
   let config_file = "";
   if (req.body.from_directory_configuration_file === '1') {
     config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
@@ -324,8 +323,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     config_file = req.file.path;
     update_config(req, res, config_file);
   }
-  console.log("UUU2");
-  console.log(JSON.stringify(req.session));
+  // console.log("UUU2");
+  // console.log(JSON.stringify(req.session));
 
   console.timeEnd("TIME: visualization_new");
 
