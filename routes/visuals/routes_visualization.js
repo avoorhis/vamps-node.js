@@ -70,6 +70,19 @@ function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
   return visual_post_items;
 }
 
+function update_config(req, res, config_file) {
+  let upld_obj = JSON.parse(fs.readFileSync(config_file, 'utf8'));
+  let config_file_data = create_clean_config(req, upld_obj); // put into req.session
+  if (Object.keys(config_file_data).length === 0){
+    //error
+    res.redirect('saved_elements');
+    return;
+  }
+  for (let item in config_file_data) {// TODO: copy the object faster
+    req.session[item] = config_file_data[item];
+  }
+}
+
 //
 //  V I E W  S E L E C T I O N
 //
@@ -299,7 +312,21 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
   dataset_ids = visualization_obj.dataset_ids;
   visual_post_items = visualization_obj.visual_post_items;
-  // let view_selection = visualization_obj.visualization;
+
+  console.log("UUU1");
+  console.log(JSON.stringify(req.session));
+  let config_file = "";
+  if (req.body.from_directory_configuration_file === '1') {
+    config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
+    update_config(req, res, config_file);
+  }
+  else if (req.body.from_upload_configuration_file === '1') {
+    config_file = req.file.path;
+    update_config(req, res, config_file);
+  }
+  console.log("UUU2");
+  console.log(JSON.stringify(req.session));
+
   console.timeEnd("TIME: visualization_new");
 
   visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
