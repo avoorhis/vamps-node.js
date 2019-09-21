@@ -120,22 +120,10 @@ class viewSelectionGetData {
     // populate this.req.session and this.visual_post_items from this.req.body(post)
     this.dataset_ids = this.req.session.chosen_id_order;
     this.visual_post_items = COMMON.save_post_items(this.req);
-    console.time("TIME: copy obj assign");
-    this.req.session = Object.assign({}, this.visual_post_items);
-    console.timeEnd("TIME: copy obj assign");
 
-    console.log('copy obj assign');
-    console.log(JSON.stringify(this.req.session));
-
-    console.time("TIME: copy obj for");
     for (let item in this.visual_post_items){
       this.req.session[item] = this.visual_post_items[item];
     }
-    console.timeEnd("TIME: copy obj for");
-
-    console.log('copy obj for');
-    console.log(JSON.stringify(this.req.session));
-
   }
 
   from_resorted() {
