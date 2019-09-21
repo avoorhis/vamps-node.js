@@ -2667,26 +2667,58 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   res.json(PROJECT_FILTER);
 
 });
-//
+
+function get_files_prefix(req) {
+  let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE) + "--datasets_" ;
+  let units = req.body.units;
+  let taxonomies = {
+    default_simple: 'tax_' + C.default_taxonomy.name + '_simple',
+    default_custom: 'tax_' + C.default_taxonomy.name + '_custom',
+    rdp: 'tax_rdp2.6_simple',
+    generic: 'tax_generic_simple'
+  };
+
+  if (units === taxonomies["default_simple"] || units === taxonomies["default_custom"]) {
+    files_prefix = files_prefix + C.default_taxonomy.name;
+  } else if (units === taxonomies['rdp']) {
+    files_prefix = files_prefix + "rdp2.6";
+  } else if (units === taxonomies['generic']) {
+    files_prefix = files_prefix + "generic";
+  } else {
+    console.log('ERROR: Units not found: ' + req.body.units); // ERROR
+  }
+  return files_prefix;
+}
 //
 // test: page after custom taxonomy been chosen, shows tree
 // JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.post('/check_units', function(req, res) {
   console.log('IN check_UNITS');
   console.log(req.body);
-  let files_prefix;
   let path_to_file;
   let jsonfile;
 
-  if (req.body.units === 'tax_'+C.default_taxonomy.name+'_simple' || req.body.units === 'tax_'+C.default_taxonomy.name+'_custom'){
-        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
-  }else if (req.body.units === 'tax_rdp2.6_simple'){
-        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-  }else if (req.body.units === 'tax_generic_simple'){
-        files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
-  } else {
-        console.log('ERROR: Units not found: ' + req.body.units); // ERROR
-  }
+  let files_prefix = get_files_prefix(req);
+  // let taxonomies = {
+  //   default_simple: 'tax_'+C.default_taxonomy.name+'_simple',
+  //   default_custom: 'tax_'+C.default_taxonomy.name+'_custom',
+  //   rdp: 'tax_rdp2.6_simple',
+  //   generic: 'tax_generic_simple'
+  // };
+  // let is_default_simple = req.body.units === 'tax_'+C.default_taxonomy.name+'_simple';
+  // let is_default_custom = req.body.units === 'tax_'+C.default_taxonomy.name+'_custom';
+  // if (is_default_simple || is_default_custom) {
+  //       files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_"+C.default_taxonomy.name);
+  // }
+  // else if (req.body.units === 'tax_rdp2.6_simple') {
+  //       files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
+  // }
+  // else if (req.body.units === 'tax_generic_simple') {
+  //       files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
+  // }
+  // else {
+  //       console.log('ERROR: Units not found: ' + req.body.units); // ERROR
+  // }
   let file_err = 'PASS';
   let dataset_ids = req.session.chosen_id_order;
   // console.log('dataset_ids')
@@ -2698,7 +2730,8 @@ router.post('/check_units', function(req, res) {
         //console.log(path_to_file)
         try {
             jsonfile = require(path_to_file);
-        }catch(e){
+        }
+        catch(e){
             file_err='FAIL';
             break;
         }
