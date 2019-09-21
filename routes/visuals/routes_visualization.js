@@ -681,23 +681,24 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 });
 
 //TODO: were it is used?
-router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
-  // this fxn is required for viewing list of saved datasets
-  // when 'toggle open button is activated'
-  console.log(req.body.filename);
-  //console.log('XX'+JSON.stringify(req.body));
-  let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
-  console.log(file_path);
-  // let dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function readFile(err) {
-    if (err) {
-        let msg = 'ERROR Message ' + err;
-        helpers.render_error_page(req,res,msg);
-    } else {
-      res.redirect('unit_selection');
-    }
-  });
-});
+// router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
+//   // this fxn is required for viewing list of saved datasets
+//   // when 'toggle open button is activated'
+//   console.log(req.body.filename);
+//   //console.log('XX'+JSON.stringify(req.body));
+//   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
+//   console.log(file_path);
+//   // let dataset_ids = [];
+//   fs.readFile(file_path, 'utf8',function readFile(err) {
+//     if (err) {
+//         let msg = 'ERROR Message ' + err;
+//         helpers.render_error_page(req,res,msg);
+//     } else {
+//       res.redirect('unit_selection');
+//     }
+//   });
+// });
+
 //
 //
 // test: dendrogram
@@ -869,6 +870,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       res.send(html);
       });
 });
+
 //
 //  EMPEROR....
 // POST is for PC file link
@@ -959,7 +961,6 @@ stdio:['pipe', 'pipe', 'pipe']
 
 
 });
-
 
 //
 // DATA BROWSER
@@ -1101,6 +1102,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
   });
 });
+
 //
 // OLIGOTYPING
 //
@@ -1135,7 +1137,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 //
 // });
-
 
 //
 //
@@ -1422,12 +1423,9 @@ function get_sumator(req, biom_matrix){
   return sumator;
 }
 
-
-
 //
 //  G E O S P A T I A L (see view_selection.js)
 //
-
 
 //
 // B A R - C H A R T  -- S I N G L E
@@ -1577,7 +1575,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     }
 
 });
-
 
 //
 // B A R - C H A R T  -- D O U B L E
@@ -1733,6 +1730,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   });
 }
 });
+
 //
 //  S E Q U E N C E S
 //
@@ -1870,6 +1868,7 @@ router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedI
         doms : C.UNITSELECT.silva119_simple.domains
     });
 });
+
 //
 //
 //
@@ -1907,6 +1906,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
     doms: C.DOMAINS
   });
 });
+
 //
 // router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
 //   res.render('visuals/partials/tax_gg_custom',{});
@@ -1926,6 +1926,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 //
 // SAVE CONFIG
 // test "safe configuration" on top; Saved as: configuration-1568329081647.json
+
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
@@ -2412,36 +2413,41 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     res.json(PROJECT_FILTER);
 });
 
+function test_project_visibility_permissions(req, node) {
+  let user_security_level_to_int = parseInt(req.user.security_level);
+  let is_admin_user = user_security_level_to_int <= 10;
+  let no_permissions = node.permissions.length === 0;
+  let owner_is_user = node.permissions.indexOf(req.user.user_id) !== -1;
+  let dco_project = (node.project).substring(0,3) === 'DCO';
+  let dco_editor_for_dco_project = (user_security_level_to_int === 45 && dco_project);
+
+  return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
+}
+
 //
 //
 //
-// TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
 function filter_project_tree_for_permissions(req, obj){
   console.log('Filtering tree projects for permissions');
   let new_project_tree_pids = [];
   for (let i in obj){
-      //node = PROJECT_INFORMATION_BY_PID[pid];
-      //console.log(obj[i])
-      let pid = obj[i].pid;
-      let node = PROJECT_INFORMATION_BY_PID[pid];
-      //console.log(node)
-      if (
-            node.public
-            || req.user.security_level <= 10                    // admin user ==1
-            || node.permissions.length === 0                    // ??
-            || node.permissions.indexOf(req.user.user_id) !== -1 // owner is user
-            || (parseInt(req.user.security_level) === 45 && (node.project).substring(0,3) === 'DCO') // DCO Editor all DCO* projects
-            ) {
-
-                if (parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0){
-                    new_project_tree_pids.push(pid);
-                }
-
+    //node = PROJECT_INFORMATION_BY_PID[pid];
+    //console.log(obj[i])
+    let pid = obj[i].pid;
+    let node = PROJECT_INFORMATION_BY_PID[pid];
+    //console.log(node)
+    let is_visible = test_project_visibility_permissions(req, node);
+    if (is_visible) {
+      let not_metagenomic = parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
+      if (not_metagenomic){
+        new_project_tree_pids.push(pid);
       }
+    }
   }
   //console.log(obj)
   return new_project_tree_pids;
 }
+
 //
 //
 //
