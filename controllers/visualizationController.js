@@ -2,15 +2,7 @@ const COMMON = require(app_root + '/routes/visuals/routes_common');
 const helpers = require(app_root + '/routes/helpers/helpers');
 
 class viewSelectionGetData {
-  // const default_data = new viewSelectionGetData(() => 'this is the get_data for gold');
-// const from_upload_configuration_file = new viewSelectionGetData(() => 'this is the get_data for gold');
-// const from_directory_configuration_file = new viewSelectionGetData(() => 'this is the get_data for goldAndInternational');
-// const from_resorted = new viewSelectionGetData(() => 'this is the get_data for goldAndDataHeavy');
-// const from_update_data = new viewSelectionGetData(() => 'this is the get_data for silver');
-// const from_cancel_resort = new viewSelectionGetData(() => 'this is the get_data for silver');
-// const from_restore_image = new viewSelectionGetData(() => 'this is the get_data for silver');
-// const from_api = new viewSelectionGetData(() => 'this is the get_data for silver');
-//
+
   constructor(req) {
     // this.image_to_open = {};
     this.dataset_ids = [];
