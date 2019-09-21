@@ -370,6 +370,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     });
 });
 //
+//
 // Load Configuration File
 // TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
 function load_configuration_file(req, res, config_file_data )
@@ -960,17 +961,17 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       if (image_type === 'd3'){
         print_log_if_not_vamps(req, 'stdout: ' + stdout);
         let lines = stdout.split('\n');
+        let tmp_arr = [];
         for (let n in lines){
           if (lines[n].substring(0,6) === 'NEWICK' ){
-            let tmp = lines[n].split('=');
-            console.log('FOUND NEWICK ' + tmp[1]);
-
+            tmp_arr = lines[n].split('=');
+            console.log('FOUND NEWICK ' + tmp_arr[1]);
           }
         }
 
         try {
           //newick = JSON.parse(tmp[1]);
-          newick = tmp[1]; //TODO: JSHint: 'tmp' is not defined. (W117) ???
+          newick = tmp_arr[1]; //TODO: JSHint: 'tmp' is not defined. (W117) ???
           print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err){
@@ -3022,12 +3023,12 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         //console.log('didXX',did)
         let dname = this_project.datasets[n].dname;
         let ddesc = this_project.datasets[n].ddesc;
-        let tt_ds_id  = 'dataset/'+pname+'/'+dname+'/'+ddesc;
-        itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
+        let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
+        itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
         if (all_checked_dids.indexOf(parseInt(did)) === -1){
-          json.item.push({id:did, text:itemtext, child:0})
+          json.item.push({id:did, text:itemtext, child:0});
         } else {
-          json.item.push({id:did, text:itemtext, checked:'1', child:0})
+          json.item.push({id:did, text:itemtext, checked:'1', child:0});
         }
     }
   }
