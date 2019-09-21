@@ -44,11 +44,11 @@ const spawn = require('child_process').spawn;
 // // init_node const node_class =
 // const CustomTaxa  = require('./custom_taxa_class');
 
-function print_log_if_not_vamps(req, msg1, msg2) {
+function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
   if (req.CONFIG.site === 'vamps') {
-    console.log(msg1);
+    console.log(msg_prod);
   } else {
-    console.log(msg2);
+    console.log(msg);
   }
 }
 
@@ -112,7 +112,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let visual_post_items = {};
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', 'req.body = ' + JSON.stringify(req.body));
+  print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
@@ -336,7 +336,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg2 = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', msg2);
+  print_log_if_not_vamps(req, msg2);
 
   console.log('<<VS--visual_post_items');
   console.log('entering MTX.get_biom_matrix');
@@ -640,7 +640,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', JSON.stringify(req.body));
+  print_log_if_not_vamps(req, JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -652,7 +652,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', 'dataset_ids ' + JSON.stringify(dataset_ids));
+  print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
   if (dataset_ids === undefined || dataset_ids.length === 0) {
     no_data(req, res, needed_constants);
@@ -683,7 +683,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
 	  console.log('chosen_dataset_order-->');
-    print_log_if_not_vamps(req, 'VAMPS PRODUCTION -- no print to log', chosen_dataset_order);
+    print_log_if_not_vamps(req, chosen_dataset_order);
 	  console.log('<--chosen_dataset_order');
 
     // else {
@@ -703,7 +703,6 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
     // benchmarking
   helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
-
 
 }); // end fxn
 
@@ -743,7 +742,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
       DATA_TO_OPEN[pid] = obj[pj];
     }
     //console.log('got data to open '+data_to_open)
-  }else if (req.body.project){
+  } else if (req.body.project){
     // open whole project
     DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
   }
@@ -788,7 +787,8 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  let unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+  // Andy, is unit_choice global?
+  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
   if (req.body.data_to_open) {// TODO: DRY, the similar peace above
@@ -900,11 +900,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   ///// It passes the newick string back to view_selection.js
   ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  if (req.CONFIG.site === 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(req.body);
-  }
+  print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let ts = req.body.ts;
   let metric = req.body.metric;
@@ -962,12 +958,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
       if (image_type === 'd3'){
-        if (req.CONFIG.site === 'vamps' ){
-          console.log('VAMPS PRODUCTION -- no print to log');
-        }
-        else {
-          console.log('stdout: ' + stdout);
-        }
+        print_log_if_not_vamps(req, 'stdout: ' + stdout);
         let lines = stdout.split('\n');
         for (let n in lines){
           if (lines[n].substring(0,6) === 'NEWICK' ){
@@ -980,11 +971,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         try {
           //newick = JSON.parse(tmp[1]);
           newick = tmp[1]; //TODO: JSHint: 'tmp' is not defined. (W117) ???
-          if (req.CONFIG.site === 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          } else {
-            console.log('NWK->' + newick);
-          }
+          print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err){
           newick = {"ERROR":err};
@@ -1086,12 +1073,6 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //let pc_file = path.join(pwd,'tmp', pc_file_name);
       ///////////////////////////////////////////////////
   console.log('POST in 3D');
-  if (req.CONFIG.site === 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  }
-  // else {
-      //console.log(visual_post_items);
-  // }
 
   let metric = req.session.selected_distance;
 
@@ -2141,12 +2122,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_config-->>');
-  if (req.CONFIG.site === 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  }
-  else {
-    console.log(req.body);
-  }
+  print_log_if_not_vamps(req, req.body);
   console.log('<--req.body: save_config');
   let timestamp = +new Date();  // millisecs since the epoch!
   let filename = 'configuration-' + timestamp + '.json';
@@ -2160,13 +2136,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   delete json_obj.passport;
   delete json_obj.cookie;
 
-
-  if (req.CONFIG.site === 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-        console.log('json_obj');
-        console.log(json_obj);
-  }
+  print_log_if_not_vamps(req, 'json_obj: ' + JSON.stringify(json_obj));
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
   helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
@@ -2185,11 +2155,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  if (req.CONFIG.site === 'vamps' ){
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(req.body);
-  }
+  print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
 	let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -2403,11 +2369,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
           ds_list = tmp[1];
         }
       }
-      if (req.CONFIG.site === 'vamps') {
-        console.log('VAMPS PRODUCTION -- no print to log');
-      } else {
-        console.log('dsl', ds_list);
-      }
+      print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
+
       //let last_line = ary[ary.length - 1];
       if (code === 0){   // SUCCESS
         try {
@@ -2720,11 +2683,8 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  if (req.CONFIG.site === 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log('PROJECT_FILTER');
-  }
+  print_log_if_not_vamps(req, 'PROJECT_FILTER');
+
   console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
@@ -3048,21 +3008,14 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     if (Object.keys(DATA_TO_OPEN).length > 0){
 
       console.log('dto');
-      if (req.CONFIG.site === 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-      } else {
-        console.log(DATA_TO_OPEN);
-      }
+      print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    if (req.CONFIG.site === 'vamps'){
-      console.log('VAMPS PRODUCTION -- no print to log');
-    } else {
-      console.log(all_checked_dids);
-    }
+    print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+
     let pname = this_project.name;
     for (let n in this_project.datasets){
         let did   = this_project.datasets[n].did;
@@ -3120,12 +3073,8 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      if (req.CONFIG.site === 'vamps' ){
-        console.log('VAMPS PRODUCTION -- no print to log');
-      } else {
-        console.log('new mtx:',new_matrix);
-        console.log('counts:',new_matrix.data);
-      }
+      print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+
       let cols =  biom_matrix.columns;
 
       res.render('visuals/user_viz_data/pie_single_tax', {
