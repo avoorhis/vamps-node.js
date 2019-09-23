@@ -142,12 +142,12 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     }
     req.session.metadata  = visual_post_items.metadata = Object.keys(md)
 
-  }else if(req.body.restore_image === '1'){
-    console.log('in view_selection RESTORE IMAGE')
-  }else if(req.body.cancel_resort === '1'){
-    console.log('resorted canceled')
-    req.flash('success','Canceled Resort.');
-    var dataset_ids = JSON.parse(req.body.ds_order);
+  // }else if(req.body.restore_image === '1'){
+//     console.log('in view_selection RESTORE IMAGE')
+//   }else if(req.body.cancel_resort === '1'){
+//     console.log('resorted canceled')
+//     req.flash('success','Canceled Resort.');
+//     var dataset_ids = JSON.parse(req.body.ds_order);
 
   }else if(req.body.update_data === '1'){  // from 'Update' button on view_selection.html
     console.log('Update Data')
@@ -818,7 +818,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
   fxn = req.body.fxn;
-  //console.log('XX'+JSON.stringify(req.body));
+  console.log('1XX'+JSON.stringify(req.body));
   var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
@@ -832,23 +832,23 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
     }
   });
 });
-router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
-  // this fxn is required for viewing list of saved datasets
-  // when 'toggle open button is activated'
-  console.log(req.body.filename)
-  //console.log('XX'+JSON.stringify(req.body));
-  var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
-  console.log(file_path);
-  var dataset_ids = [];
-  fs.readFile(file_path, 'utf8',function readFile(err,data) {
-    if (err) {
-      var msg = 'ERROR Message '+err;
-      helpers.render_error_page(req,res,msg);
-    }else{
-      res.redirect('unit_selection');
-    }
-  });
-});
+// router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
+//   // this fxn is required for viewing list of saved datasets
+//   // when 'toggle open button is activated'
+//   console.log(req.body.filename)
+//   console.log('2XX'+JSON.stringify(req.body));
+//   var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
+//   console.log(file_path);
+//   var dataset_ids = [];
+//   fs.readFile(file_path, 'utf8',function readFile(err,data) {
+//     if (err) {
+//       var msg = 'ERROR Message '+err;
+//       helpers.render_error_page(req,res,msg);
+//     }else{
+//       res.redirect('unit_selection');
+//     }
+//   });
+// });
 //
 //
 //
@@ -938,17 +938,8 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     res.send(newick);
                     return;
 
-          }else{  // 'pdf'
-                    var viz_width = 1200;
-                    var viz_height = (visual_post_items.no_of_datasets*12)+100;
-                    var image = '/'+ts+'_dendrogram.pdf';
-                    //console.log(image)
-                    html = "<div id='pdf'>";
-                    html += "<object data='/static_base/tmp/"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-                    html += " <p>ERROR in loading pdf file</p>";
-                    html += "</object></div>";
-                    res.send(html);
-                    return;
+          }else{ 
+          
           }
 
         }else{
