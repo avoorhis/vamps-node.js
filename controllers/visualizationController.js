@@ -70,7 +70,7 @@ class viewSelectionGetData {
     else if ( (this.req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(this.req.body.project) ){
       console.log('Found api project ',this.req.body.project);
       let pid = PROJECT_INFORMATION_BY_PNAME[this.req.body.project].pid;
-      this.new_dataset_ids = helpers.screen_dids_for_permissions(this.req, this.dataset_ids_BY_PID[pid.toString()]);
+      this.new_dataset_ids = helpers.screen_dids_for_permissions(this.req, DATASET_IDS_BY_PID[pid.toString()]);
       this.visual_post_items.ds_order = this.new_dataset_ids;
       console.log(PROJECT_INFORMATION_BY_PNAME[this.req.body.project]);
       console.log(this.visual_post_items.ds_order);
