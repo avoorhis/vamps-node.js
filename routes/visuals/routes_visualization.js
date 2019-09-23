@@ -126,6 +126,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   if (req.body.from_directory_configuration_file === '1') {
     config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
     update_config(req, res, config_file);
+
   }
   else if (req.body.from_upload_configuration_file === '1') {
     config_file = req.file.path;
@@ -665,7 +666,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
   let fxn = req.body.fxn;
-  //console.log('XX'+JSON.stringify(req.body));
+  // console.log('XX'+JSON.stringify(req.body));
   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   // let dataset_ids = [];
@@ -679,25 +680,6 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
     }
   });
 });
-
-//TODO: were it is used?
-// router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
-//   // this fxn is required for viewing list of saved datasets
-//   // when 'toggle open button is activated'
-//   console.log(req.body.filename);
-//   //console.log('XX'+JSON.stringify(req.body));
-//   let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
-//   console.log(file_path);
-//   // let dataset_ids = [];
-//   fs.readFile(file_path, 'utf8',function readFile(err) {
-//     if (err) {
-//         let msg = 'ERROR Message ' + err;
-//         helpers.render_error_page(req,res,msg);
-//     } else {
-//       res.redirect('unit_selection');
-//     }
-//   });
-// });
 
 //
 //
@@ -758,21 +740,74 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       stderr += data;
   });
 
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
-  dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
-      console.log('dendrogram_process process exited with code ' + code);
+// <<<<<<< HEAD
+//   // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
+//   dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+//       console.log('dendrogram_process process exited with code ' + code);
+//
+//     let newick = "";
+//       //let last_line = ary[ary.length - 1];
+//     if (code === 0){   // SUCCESS
+//       if (image_type === 'd3'){
+//         print_log_if_not_vamps(req, 'stdout: ' + stdout);
+//         let lines = stdout.split('\n');
+//         let tmp_arr = [];
+//         for (let n in lines){
+//           if (lines[n].substring(0,6) === 'NEWICK' ){
+//             tmp_arr = lines[n].split('=');
+//             console.log('FOUND NEWICK ' + tmp_arr[1]);
+// =======
+//
+    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            detached: true,
+            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });
+    stdout = ''
+    dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
+        stdout += data.toString();
+    });
+    dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+        console.log('dendrogram_process process exited with code ' + code);
 
-    let newick = "";
-      //let last_line = ary[ary.length - 1];
-    if (code === 0){   // SUCCESS
-      if (image_type === 'd3'){
-        print_log_if_not_vamps(req, 'stdout: ' + stdout);
-        let lines = stdout.split('\n');
-        let tmp_arr = [];
-        for (let n in lines){
-          if (lines[n].substring(0,6) === 'NEWICK' ){
-            tmp_arr = lines[n].split('=');
-            console.log('FOUND NEWICK ' + tmp_arr[1]);
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS
+          if(image_type == 'd3'){
+                    if(req.CONFIG.site == 'vamps' ){
+                      console.log('VAMPS PRODUCTION -- no print to log');
+                    }else{
+                        console.log('stdout: ' + stdout);
+                    }
+                    lines = stdout.split('\n')
+                    for(n in lines){
+                      if(lines[n].substring(0,6) == 'NEWICK' ){
+                        tmp = lines[n].split('=')
+                        console.log('FOUND NEWICK '+tmp[1])
+                        continue
+                      }
+                    }
+
+
+                    try{
+                      //newick = JSON.parse(tmp[1]);
+                      newick = tmp[1];
+                      if(req.CONFIG.site == 'vamps' ){
+                        console.log('VAMPS PRODUCTION -- no print to log');
+                      }else{
+                        console.log('NWK->'+newick)
+                      }
+                    }
+                    catch(err){
+                      newick = {"ERROR":err};
+                    }
+                    res.send(newick);
+                    return;
+
+          }else{ 
+          
+// >>>>>>> master
           }
         }
 
