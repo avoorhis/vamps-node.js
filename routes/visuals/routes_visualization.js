@@ -422,7 +422,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+  
   // GLOBAL
   DATA_TO_OPEN = {};
   if(req.body.data_to_open){
@@ -477,7 +477,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
+  
   // GLOBAL
   DATA_TO_OPEN = {};
   if(req.body.data_to_open){
