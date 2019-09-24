@@ -185,12 +185,12 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 var showDots='';
 
 // Save Confiuration
-save_config = document.getElementById('save_config_id') || null;
-if (save_config !== null) {
-  save_config.addEventListener('click', function () {
-      save_configuration(ds_local,user_local);
-  });
-}
+// save_config = document.getElementById('save_config_id') || null;
+// if (save_config !== null) {
+//   save_config.addEventListener('click', function () {
+//       save_configuration(ds_local,user_local);
+//   });
+// }
 
 // create fasta
 var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
@@ -1870,25 +1870,25 @@ function download_data(type, download_type, ts) {
 //
 //
 //
-function save_configuration(ds_local, user){
-
-  if(user=='guest'){
-      alert("The 'guest' user is not permitted to save datasets.");
-      return;
-    }
-  args=''
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("POST", '/visuals/save_config', true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState == 4 ) {
-         var response = xmlhttp.responseText;
-         document.getElementById('save_config_confirmation').innerHTML = response
-
-      }
-    };
-    xmlhttp.send(args);
-}
+// function save_configuration(ds_local, user){
+// 
+//   if(user=='guest'){
+//       alert("The 'guest' user is not permitted to save datasets.");
+//       return;
+//     }
+//   args=''
+//   var xmlhttp = new XMLHttpRequest();
+//   xmlhttp.open("POST", '/visuals/save_config', true);
+//     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//     xmlhttp.onreadystatechange = function() {
+//       if (xmlhttp.readyState == 4 ) {
+//          var response = xmlhttp.responseText;
+//          document.getElementById('save_config_confirmation').innerHTML = response
+// 
+//       }
+//     };
+//     xmlhttp.send(args);
+// }
 
 function reload_view_form(){
 
