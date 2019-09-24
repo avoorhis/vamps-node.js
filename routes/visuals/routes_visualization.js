@@ -239,6 +239,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     current_unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
     console.log(current_unit_choice);
   }
+  else {
+    current_unit_choice = unit_choice;
+  }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
   print_log_if_not_vamps(req, JSON.stringify(req.body));
@@ -478,9 +481,11 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 // test: dendrogram
 router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   console.log('found routes_dendrogram-x');
-  ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
-  ///// It passes the newick string back to view_selection.js
-  ///// and tries to construct the svg there before showing it.
+ /*
+ * this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
+ * It passes the newick string back to view_selection.js
+ * and tries to construct the svg there before showing it.
+ */
   console.log('req.body dnd');
   print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
@@ -502,22 +507,24 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
   };
 
-  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-  let dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-          env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-          detached: true,
-          //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-          stdio: 'pipe'  // stdin, stdout, stderr
-  });
+  // let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+  console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
+  let dendrogram_process = spawn(options.scriptPath + '/distance_and_ordination.py',
+    options.args,
+    {
+      env: {'PATH': req.CONFIG.PATH,
+        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH
+      },
+      detached: true,
+      stdio: 'pipe'  // stdin, stdout, stderr
+    });
 
   let stdout = '';
   dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-      //
-      //data = data.toString().replace(/^\s+|\s+$/g, '');
-      data = data.toString();
-      stdout += data;
-
+    //
+    //data = data.toString().replace(/^\s+|\s+$/g, '');
+    data = data.toString();
+    stdout += data;
   });
   let stderr = '';
   dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
@@ -528,12 +535,15 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   });
 
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-  dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-    detached: true,
-    //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
-    stdio: 'pipe'  // stdin, stdout, stderr
-  });
+  dendrogram_process = spawn(options.scriptPath+'/distance_and_ordination.py',
+    options.args,
+    {
+      env: {'PATH': req.CONFIG.PATH,
+        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH
+      },
+      detached: true,
+      stdio: 'pipe'  // stdin, stdout, stderr
+    });
   stdout = '';
   dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
     stdout += data.toString();
@@ -541,50 +551,38 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
 
-    //var last_line = ary[ary.length - 1];
-    if(code === 0){   // SUCCESS
-      if(image_type == 'd3'){
-        if(req.CONFIG.site == 'vamps' ){
-          console.log('VAMPS PRODUCTION -- no print to log');
-        }else{
-          console.log('stdout: ' + stdout);
-        }
-        lines = stdout.split('\n')
-        for(n in lines){
-          if(lines[n].substring(0,6) == 'NEWICK' ){
-            tmp = lines[n].split('=')
-            console.log('FOUND NEWICK '+tmp[1])
-            continue
+    let tmp = [];
+    if (code === 0){   // SUCCESS
+      if (image_type === 'd3'){
+        print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        let lines = stdout.split('\n');
+        for (let n in lines){
+          if (lines[n].substring(0,6) === 'NEWICK' ) {
+            tmp = lines[n].split('=');
+            console.log('FOUND NEWICK '+tmp[1]);
           }
         }
 
-
+        let newick = [];
         try{
-          //newick = JSON.parse(tmp[1]);
           newick = tmp[1];
-          if(req.CONFIG.site == 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log('NWK->'+newick)
-          }
+          print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err){
-          newick = {"ERROR":err};
+          newick = {"ERROR": err};
         }
         res.send(newick);
         return;
-
       }
-
-    }else{
+    }
+    else {
       console.log('stdout: ' + stdout);
     }
-    lines = stdout.split('\n')
-    for(n in lines){
-      if(lines[n].substring(0,6) == 'NEWICK' ){
-        tmp = lines[n].split('=')
-        console.log('FOUND NEWICK '+tmp[1])
-        continue
+    let lines = stdout.split('\n');
+    for (let n in lines){
+      if (lines[n].substring(0,6) === 'NEWICK' ){
+        tmp = lines[n].split('=');
+        console.log('FOUND NEWICK '+tmp[1]);
       }
     }
   });
