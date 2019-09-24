@@ -232,10 +232,12 @@ function test_if_json_file_exists(req, i, dataset_ids, did) {
 // logged in users only
 // test: select datasets
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
-
+  console.log("req.session.unit_choice: ");
+  console.log(req.session.unit_choice);
+  let current_unit_choice = "";
   if (typeof unit_choice === 'undefined'){
-    let unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
-    console.log(unit_choice);
+    current_unit_choice = 'tax_' + C.default_taxonomy.name + '_simple';
+    console.log(current_unit_choice);
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
@@ -297,7 +299,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       constants    : JSON.stringify(needed_constants),
       md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
       md_req       : JSON.stringify(required_metadata_headers),   //
-      unit_choice  : unit_choice,
+      unit_choice  : current_unit_choice,
       user         : req.user,
       hostname     : req.CONFIG.hostname,
 	  });  // end render
@@ -484,7 +486,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   console.log('req.body dnd');
   let ts = req.body.ts;
   let metric = req.body.metric;
-  let script = req.body.script; // python, phylogram or phylonator
+  // let script = req.body.script; // python, phylogram or phylonator
   let image_type = req.body.image_type;  // png(python script) or svg
   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
   //console.log('image_type '+image_type);
@@ -493,12 +495,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   let biom_file_name = ts+'_count_matrix.biom';
   let biom_file = path.join(pwd,'tmp',biom_file_name);
 
-  let html = '';
-  // let title = 'VAMPS';
-
-  // let distmtx_file_name = ts+'_distance.csv';
-  // let distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
-
+  // let html = '';
 
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -530,108 +527,69 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       stderr += data;
   });
 
-// <<<<<<< HEAD
-//   // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
-//   dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
-//       console.log('dendrogram_process process exited with code ' + code);
-//
-//     let newick = "";
-//       //let last_line = ary[ary.length - 1];
-//     if (code === 0){   // SUCCESS
-//       if (image_type === 'd3'){
-//         print_log_if_not_vamps(req, 'stdout: ' + stdout);
-//         let lines = stdout.split('\n');
-//         let tmp_arr = [];
-//         for (let n in lines){
-//           if (lines[n].substring(0,6) === 'NEWICK' ){
-//             tmp_arr = lines[n].split('=');
-//             console.log('FOUND NEWICK ' + tmp_arr[1]);
-// =======
-//
-    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-    var dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-            detached: true,
-            //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
-            stdio: 'pipe'  // stdin, stdout, stderr
-    });
-    stdout = ''
-    dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-        stdout += data.toString();
-    });
-    dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
-        console.log('dendrogram_process process exited with code ' + code);
+  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+  dendrogram_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+    detached: true,
+    //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
+    stdio: 'pipe'  // stdin, stdout, stderr
+  });
+  stdout = '';
+  dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
+    stdout += data.toString();
+  });
+  dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+    console.log('dendrogram_process process exited with code ' + code);
 
-        //var last_line = ary[ary.length - 1];
-        if(code === 0){   // SUCCESS
-          if(image_type == 'd3'){
-                    if(req.CONFIG.site == 'vamps' ){
-                      console.log('VAMPS PRODUCTION -- no print to log');
-                    }else{
-                        console.log('stdout: ' + stdout);
-                    }
-                    lines = stdout.split('\n')
-                    for(n in lines){
-                      if(lines[n].substring(0,6) == 'NEWICK' ){
-                        tmp = lines[n].split('=')
-                        console.log('FOUND NEWICK '+tmp[1])
-                        continue
-                      }
-                    }
-
-
-                    try{
-                      //newick = JSON.parse(tmp[1]);
-                      newick = tmp[1];
-                      if(req.CONFIG.site == 'vamps' ){
-                        console.log('VAMPS PRODUCTION -- no print to log');
-                      }else{
-                        console.log('NWK->'+newick)
-                      }
-                    }
-                    catch(err){
-                      newick = {"ERROR":err};
-                    }
-                    res.send(newick);
-                    return;
-
-          }else{ 
-          
-// >>>>>>> master
+    //var last_line = ary[ary.length - 1];
+    if(code === 0){   // SUCCESS
+      if(image_type == 'd3'){
+        if(req.CONFIG.site == 'vamps' ){
+          console.log('VAMPS PRODUCTION -- no print to log');
+        }else{
+          console.log('stdout: ' + stdout);
+        }
+        lines = stdout.split('\n')
+        for(n in lines){
+          if(lines[n].substring(0,6) == 'NEWICK' ){
+            tmp = lines[n].split('=')
+            console.log('FOUND NEWICK '+tmp[1])
+            continue
           }
         }
 
-        try {
+
+        try{
           //newick = JSON.parse(tmp[1]);
-          newick = tmp_arr[1]; //TODO: JSHint: 'tmp' is not defined. (W117) ???
-          print_log_if_not_vamps(req, 'NWK->' + newick);
+          newick = tmp[1];
+          if(req.CONFIG.site == 'vamps' ){
+            console.log('VAMPS PRODUCTION -- no print to log');
+          }else{
+            console.log('NWK->'+newick)
+          }
         }
         catch(err){
           newick = {"ERROR":err};
         }
         res.send(newick);
-      } else {  // 'pdf'
-        // let viz_width = 1200;
-        let viz_height = (visual_post_items.no_of_datasets*12)+100;
-        let image = '/'+ts+'_dendrogram.pdf';
-        //console.log(image)
-        html = "<div id='pdf'>";
-        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-        html += " <p>ERROR in loading pdf file</p>";
-        html += "</object></div>";
-        res.send(html);
+        return;
+
+      }
+
+    }else{
+      console.log('stdout: ' + stdout);
+    }
+    lines = stdout.split('\n')
+    for(n in lines){
+      if(lines[n].substring(0,6) == 'NEWICK' ){
+        tmp = lines[n].split('=')
+        console.log('FOUND NEWICK '+tmp[1])
+        continue
       }
     }
-    else {
-      console.log('stderr: ' + stderr);
-      res.send('Script Error');
-    }
   });
-
-
-
-
 });
+
 
 //
 // P C O A
