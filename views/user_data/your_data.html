@@ -70,9 +70,9 @@
 		        <div class="panel panel-default">
 		              <div class="panel-heading">
 		                <% if(user.username == 'guest'){ %>
-		                    <a disabled class="btn btn-sm btn-primary" href=''>Saved Datasets & Configurations</a>
+		                    <a disabled class="btn btn-sm btn-primary" href=''>Saved Datasets</a>
 		                <% }else{ %>
-		                    <a class="btn btn-sm btn-primary" href='/visuals/saved_elements'>Saved Datasets & Configurations</a>
+		                    <a class="btn btn-sm btn-primary" href='/visuals/saved_elements'>Saved Datasets</a>
                         <% } %>
 		              </div>
 		              <div class="panel-body">
@@ -112,24 +112,7 @@
 		              </div>
 		        </div>
 		  </div>
-      
-		  <div class="<%= span %>">
-		          <div class="panel panel-default">
-		              <div class="panel-heading">
-                        <% if(user.username == 'guest'){ %>
-                            <a disabled class="btn btn-sm btn-primary" href=''>Load Image or Configuration File</a>
-                        <% }else{ %>
-		                   <!--  <a class="btn btn-sm btn-primary" href='/user_data/import_choices/upload_image_file'>Load Image or Configuration File</a> -->
-		                    <a class="btn btn-sm btn-primary" href='/user_data/upload_configuration'>Load Image or Configuration File</a>
-                        <% } %>
-		              </div>
-		              <div class="panel-body">
-		              	Re load an image or configuration from a previously saved file.
-		              </div>
-		          </div>
-		          
-		  </div>
-		
+
 		  <div class="<%= span %>">
 		          <div class="panel panel-default">
 		              <div class="panel-heading">
