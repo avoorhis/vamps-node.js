@@ -25,7 +25,7 @@ const IMAGES = require('../routes_images');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
 const visualization_controller = require(app_root + '/controllers/visualizationController');
 const spawn = require('child_process').spawn;
-const app = express();
+// const app = express();
 
 function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
   if (req.CONFIG.site === 'vamps') {
@@ -51,19 +51,6 @@ function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
     visual_post_items.chosen_datasets.push({did: did, name: pname + '--' + dname});
   }
   return visual_post_items;
-}
-
-function update_config(req, res, config_file) {
-  let upld_obj = JSON.parse(fs.readFileSync(config_file, 'utf8'));
-  let config_file_data = create_clean_config(req, upld_obj); // put into req.session
-  if (Object.keys(config_file_data).length === 0){
-    //error
-    res.redirect('saved_elements');
-    return;
-  }
-  for (let item in config_file_data) {// TODO: copy the object faster
-    req.session[item] = config_file_data[item];
-  }
 }
 
 //
@@ -110,22 +97,6 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
   let dataset_ids = visualization_obj.dataset_ids;
   let visual_post_items = visualization_obj.visual_post_items;
-
-  // TODO: use when test config files below
-  // console.log("UUU1");
-  // console.log(JSON.stringify(req.session));
-  let config_file = "";
-  if (req.body.from_directory_configuration_file === '1') {
-    config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
-    update_config(req, res, config_file);
-
-  }
-  else if (req.body.from_upload_configuration_file === '1') {
-    config_file = req.file.path;
-    update_config(req, res, config_file);
-  }
-  // console.log("UUU2");
-  // console.log(JSON.stringify(req.session));
 
   visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
 
@@ -494,17 +465,15 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   // let script = req.body.script; // python, phylogram or phylonator
   let image_type = req.body.image_type;  // png(python script) or svg
   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  //console.log('image_type '+image_type);
   // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
   let biom_file_name = ts+'_count_matrix.biom';
   let biom_file = path.join(pwd,'tmp',biom_file_name);
 
-  // let html = '';
 
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', pwd, '--prefix', ts ],
+    args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', pwd, '--prefix', ts ],
   };
 
   // let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
@@ -548,6 +517,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
     stdout += data.toString();
   });
+  // JSHint: This function's cyclomatic complexity is too high. (8) (W074)
   dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
 
@@ -593,7 +563,67 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 // P C O A
 //
 //test: "PCoA 2D Analyses (R/pdf)"
+// router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
+//   console.log('in PCoA');
+//   //console.log(metadata);
+//   let ts = req.body.ts;
+//   // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+//   let metric = req.body.metric;
+//   // let image_type = req.body.image_type;
+//   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
+//   let image_file = ts+'_pcoa.pdf';
+//   let biom_file_name = ts+'_count_matrix.biom';
+//   let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
+//   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+//   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+//   let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+//
+//   let md1 = req.body.md1 || "Project";
+//   let md2 = req.body.md2 || "Description";
+//
+//     // let options = {
+//     //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//     //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
+//     // };
+//     let options2 = {
+//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//       args :       [ tmp_path, ts, metric, md1, md2, image_file],
+//     };
+//     console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+//
+//     let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+//         env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+//         detached: true,
+//         stdio: [ 'ignore', null, log ]
+//         //stdio: 'pipe' // stdin, stdout, stderr
+//     });
+//
+//     pcoa_process.on('close', function pcoaProcessOnClose(code) {
+//         //console.log('pcoa_process process exited with code ' + code+' -- '+output);
+//         //distance_matrix = JSON.parse(output);
+//         //let last_line = ary[ary.length - 1];
+//       let html = "";
+//       if (code === 0){   // SUCCESS
+//
+//         //html = "<img src='/"+image_file+"'>";
+//         //let image = path.join('/tmp/',image_file);
+//         html = "<div id='pdf'>";
+//         html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+//         html += " <p>ERROR in loading pdf file</p>";
+//         html += "</object></div>";
+//         //console.log(html);
+//
+//       }
+//       else {
+//         console.log('ERROR');
+//         html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+//       }
+//       res.send(html);
+//       });
+// });
+//test: "PCoA 2D Analyses (R/pdf)"
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
+
   console.log('in PCoA');
   //console.log(metadata);
   let ts = req.body.ts;
@@ -602,56 +632,42 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   // let image_type = req.body.image_type;
   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
   let image_file = ts+'_pcoa.pdf';
-  let biom_file_name = ts+'_count_matrix.biom';
-  // let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
-  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
-  let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
   let md1 = req.body.md1 || "Project";
   let md2 = req.body.md2 || "Description";
 
-    // let options = {
-    //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-    // };
-    let options2 = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ tmp_path, ts, metric, md1, md2, image_file],
-    };
-    console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+  let options2 = {
+    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
+  };
+  console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
 
-    let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-        env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-        detached: true,
-        stdio: [ 'ignore', null, log ]
-        //stdio: 'pipe' // stdin, stdout, stderr
-    });
+  let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+    env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+    detached: true,
+    stdio: [ 'ignore', null, null ]
+  });
 
-    pcoa_process.on('close', function pcoaProcessOnClose(code) {
-        //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-        //distance_matrix = JSON.parse(output);
-        //let last_line = ary[ary.length - 1];
-      let html = "";
-      if (code === 0){   // SUCCESS
+  let html = "";
+  pcoa_process.on('close', function pcoaProcessOnClose(code) {
 
-        //html = "<img src='/"+image_file+"'>";
-        //let image = path.join('/tmp/',image_file);
-        html = "<div id='pdf'>";
-        html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-        html += " <p>ERROR in loading pdf file</p>";
-        html += "</object></div>";
-        //console.log(html);
+    if (code === 0) {   // SUCCESS
 
-      }
-      else {
-        console.log('ERROR');
-        html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
-      }
-      res.send(html);
-      });
+      html = "<div id='pdf'>";
+      html += "<embed src='/static_base/tmp/"+image_file+"' type='application/pdf' width='1000' height='600' />";
+      html += " <p>ERROR in loading pdf file</p>";
+      html += "</object></div>";
+
+      console.log(html);
+    }
+    else {
+      console.log('ERROR');
+      html = 'PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+    }
+    res.send(html);
+  });
 });
-
+//
 //
 //  EMPEROR....
 // POST is for PC file link
@@ -672,41 +688,29 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
-  let mapping_file_name = ts+'_metadata.txt';
+  let mapping_file_name = ts + '_metadata.txt';
   let mapping_file = path.join(pwd,'tmp', mapping_file_name);
-  // let pc_file = path.join(pwd,'tmp', pc_file_name);
-  //let tax_file_name = ts+'_taxonomy.txt';
-  //let tax_file = path.join(pwd,'tmp', tax_file_name);
-  let dist_file_name = ts+'_distance.csv';
-  // let dist_file = path.join(pwd,'tmp', dist_file_name);
+  let dist_file_name = ts + '_distance.csv';
+
 
   let dir_name = ts+'_pcoa3d';
   let dir_path = path.join(pwd,'views/tmp', dir_name);
-  // let html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-  //let html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   let options1 = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--basedir', pwd, '--prefix', ts,'-m', mapping_file],
   };
-  //  let options2 = {
-  //       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-  //       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-  //       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-  //   };
   console.log('outdir: '+dir_path);
   console.log(options1.scriptPath+'/distance_and_ordination.py '+options1.args.join(' '));
 
-
-let pcoa_process = spawn( options1.scriptPath+'/distance_and_ordination.py', options1.args, {
-env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-detached: true,
-stdio:['pipe', 'pipe', 'pipe']
-//stdio: [ 'ignore', null, log ]
+  let pcoa_process = spawn( options1.scriptPath+'/distance_and_ordination.py', options1.args, {
+    env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+    detached: true,
+    stdio:['pipe', 'pipe', 'pipe']
   });  // stdin, stdout, stderr
 
-  pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
+  // pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
       //console.log('1stdout: ' + data);
-  });
+  // });
   let stderr1 = '';
   pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
           console.log('1stderr-POST: ' + data);
@@ -715,32 +719,23 @@ stdio:['pipe', 'pipe', 'pipe']
           //return;
   });
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
-          console.log('pcoa_process1 process exited with code ' + code);
+    console.log('pcoa_process1 process exited with code ' + code);
 
-          if (code === 0){    // SUCCESS
+    if (code === 0){    // SUCCESS
+      let html = "** <a href='/tmp/" + dir_name + "/index' target='_blank'>Open Emperor</a> **";
+      html  += "<br>Principal Components File: <a href='/" + pc_file_name + "'>" + pc_file_name + "</a>";
+      html  += "<br>Biom File: <a href='/" + biom_file_name + "'>" + biom_file_name + "</a>";
+      html  += "<br>Mapping (metadata) File: <a href='/" + mapping_file_name + "'>" + mapping_file_name + "</a>";
+      html  += "<br>Distance File: <a href='/" + dist_file_name + "'>" + dist_file_name + "</a>";
+      //html  += " <a href='../tmp/" + dir_name + "/index' target='_blank'>Emperor5</a>"
 
-
-                      let html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **";
-                      html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                      html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                      html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
-                      html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
-                      //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
-
-                      res.send(html);
-
-
-
-
-          } else {
-              //console.log('ERROR');
-              res.send('Python Script Error: '+stderr1);
-          }
+      res.send(html);
+    }
+    else {
+      //console.log('ERROR');
+      res.send('Python Script Error: ' + stderr1);
+    }
   });
-  /////////////////////////////////////////////////
-
-
-
 });
 
 //
@@ -1212,6 +1207,7 @@ function get_sumator(req, biom_matrix){
 // B A R - C H A R T  -- S I N G L E
 //
 // test: B A R - C H A R T  -- S I N G L E - (click on a bar)
+// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     console.log('in routes_viz/bar_single');
     let myurl = url.parse(req.url, true);
@@ -1280,6 +1276,9 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //console.log(file_path)
     let new_rows = {};
     new_rows[selected_did] = [];
+  // JSHint: This function has too many parameters. (4) (W072)
+  // JSHint: 'project' is defined but never used. (W098)
+  // JSHint: 'display' is defined but never used. (W098)
     let LoadDataFinishRequest = function (req, res, project, display) {
       console.log('LoadDataFinishRequest in bar_single');
       let title = 'Taxonomic Data';
@@ -1303,64 +1302,64 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     } else {
 
-        connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows){
-            if (err)  {
-              console.log('Query error: ' + err);
-              console.log(err.stack);
-              res.send(err);
+      connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
+        // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
+      function mysqlSelectSeqsPerDID(err, rows){
+        if (err)  {
+          console.log('Query error: ' + err);
+          console.log(err.stack);
+          res.send(err);
+        } else {
+        //console.log(rows)
+        for (let s in rows){
+          //rows[s].seq = rows[s].seq.toString('utf8')
+          let did = rows[s].dataset_id;
+
+          let seq = rows[s].seq.toString('utf8');
+          let seq_cnt = rows[s].seq_count;
+          let gast = rows[s].gast_distance;
+          let classifier = rows[s].classifier;
+          let d_id = rows[s].domain_id;
+          let p_id = rows[s].phylum_id;
+          let k_id = rows[s].klass_id;
+          let o_id = rows[s].order_id;
+          let f_id = rows[s].family_id;
+          let g_id;
+          if (rows[s].hasOwnProperty("genus_id")){
+            if (rows[s].genus_id === 'undefined'){
+                g_id = 'genus_NA';
             } else {
-              //console.log(rows)
-              for (let s in rows){
-                //rows[s].seq = rows[s].seq.toString('utf8')
-                let did = rows[s].dataset_id;
-
-                let seq = rows[s].seq.toString('utf8');
-                let seq_cnt = rows[s].seq_count;
-                let gast = rows[s].gast_distance;
-                let classifier = rows[s].classifier;
-                let d_id = rows[s].domain_id;
-                let p_id = rows[s].phylum_id;
-                let k_id = rows[s].klass_id;
-                let o_id = rows[s].order_id;
-                let f_id = rows[s].family_id;
-                let g_id;
-                if (rows[s].hasOwnProperty("genus_id")){
-                  if (rows[s].genus_id === 'undefined'){
-                      g_id = 'genus_NA';
-                  } else {
-                      g_id = rows[s].genus_id;
-                  }
-                } else {
-                  g_id = '';
-                }
-                let sp_id = '';
-
-                if (rows[s].hasOwnProperty("species_id")){
-                  sp_id = rows[s].species_id;
-                }
-                let st_id = rows[s].strain_id;
-                new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
-              }
-              // order by seq_count DESC
-              new_rows[selected_did].sort(function sortByCount(a, b) {
-                return b.seq_count - a.seq_count;
-              });
-
-              fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
-
-              LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
-
+                g_id = rows[s].genus_id;
             }
-        })
+          } else {
+            g_id = '';
+          }
+          let sp_id = '';
 
-    }
+          if (rows[s].hasOwnProperty("species_id")){
+            sp_id = rows[s].species_id;
+          }
+          let st_id = rows[s].strain_id;
+          new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
+        }
+        // order by seq_count DESC
+        new_rows[selected_did].sort(function sortByCount(a, b) {
+          return b.seq_count - a.seq_count;
+        });
 
+        fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
+
+        LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
+      }
+    });
+  }
 });
 
 //
 // B A R - C H A R T  -- D O U B L E
 //
 // test: click on cell of distance heatmap
+// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_double');
 
@@ -1431,10 +1430,11 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   let filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json';
   let file_path2 = path.join('tmp',filename2);
   //console.log(file_path)
-  new_rows = {};
+  let new_rows = {};
   new_rows[did1] = [];
   new_rows[did2] = [];
   //console.log(new_rows)
+  // JSHint: This function has too many parameters. (6) (W072)
   let LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
      console.log('LoadDataFinishRequest in bar_double');
     let title = 'Taxonomic Data';
@@ -1532,7 +1532,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
-    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function readFile(err,data) {
+    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
         console.log(err);
         if (req.session.unit_choice === 'OTUs'){
@@ -2013,14 +2013,14 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
         let distmtx_file = path.join(config.PROCESS_DIR,'tmp', distmtx_file_name);
         //console.log(distmtx_file)
-        fs.readFile(distmtx_file, 'utf8',function readFile(err,mtxdata) {
+        fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
             if (err) {
                 res.json({'err': err});
             } else {
                 //console.log(mtxdata)
                 let split_distance_csv_matrix = mtxdata.split('\n');
 
-                IMAGES = require('../routes_images');
+                // IMAGES = require('../routes_images'); ?already required on top?
                 let metadata = {};
                 metadata.numbers_or_colors = req.body.numbers_or_colors;
                 metadata.split = true;
@@ -2501,7 +2501,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //  project_custom_dhtmlx
 //
 // test: show tree
-// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
+// TODO: JSHint: This function's cyclomatic complexity is too high. (10) (W074)
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
   let myurl = url.parse(req.url, true);
