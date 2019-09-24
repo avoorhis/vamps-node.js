@@ -22,27 +22,10 @@ const COMMON  = require('./routes_common');
 const C = require('../../public/constants');
 const META    = require('./routes_visuals_metadata');
 const IMAGES = require('../routes_images');
-//const PCOA    = require('./routes_pcoa');
-// const MTX     = require('./routes_counts_matrix');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
 const visualization_controller = require(app_root + '/controllers/visualizationController');
-
-//const HMAP    = require('./routes_distance_heatmap');
-//const DEND    = require('./routes_dendrogram');
-//const BCHARTS = require('./routes_bar_charts');
-//const PCHARTS = require('./routes_pie_charts');
-//const CTABLE  = require('./routes_counts_table');
-//const PythonShell = require('python-shell');
 const spawn = require('child_process').spawn;
-// const app = express();
-// GLOBALS
-// PROJECT_TREE_PIDS = []
-// PROJECT_TREE_OBJ = []
-// DATA_TO_OPEN = {};
-//const xmldom = require('xmldom');
-
-// // init_node const node_class =
-// const CustomTaxa  = require('./custom_taxa_class');
+const app = express();
 
 function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
   if (req.CONFIG.site === 'vamps') {
@@ -89,24 +72,33 @@ function update_config(req, res, config_file) {
 // test: get graphics ("show available graphics")
 router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
    console.log('in POST view_selection');
+  /*
+     var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+  console.log('query', req.query)
+  console.log('file',req.file)
+  console.log('body',req.body);
+  console.log('upload',upload.single('upload_files', 12))
+  This page (view_selection) comes after the datasets and units have been selected
+     in the previous two pages.
+  It should be protected with isLoggedIn like /unit_selection below.
+  The function call will look like this when isLoggedIn is in place:
+             router.post('/view_selection', isLoggedIn, function(req, res) {
+  This page is where the user will choose to view his/her selected visuals.
+  The left side will show a synopsis of what choices the user has made:
+     datasets, normalization, units and any specifics such as tax rank, domain, NAs ....
+  The middle section will have a list of buttons allowing download of files
+  And the right side will have links to the previously selected visuals.
+  Before this page is rendered the visuals should have been created using the functions called below.
+  The visual pages will be created in a public directory and each page will have a random number or timestamp
+     attached so the page is private and can be deleted later.
+  TESTING:
+     There should be one or more datasets shown in list
+     There should be one or more visual choices shown.
 
-  // This page (view_selection) comes after the datasets and units have been selected
-  //    in the previous two pages.
-  // It should be protected with isLoggedIn like /unit_selection below.
-  // The function call will look like this when isLoggedIn is in place:
-  //            router.post('/view_selection', isLoggedIn, function(req, res) {
-  // This page is where the user will choose to view his/her selected visuals.
-  // The left side will show a synopsis of what choices the user has made:
-  //    datasets, normalization, units and any specifics such as tax rank, domain, NAs ....
-  // The middle section will have a list of buttons allowing download of files
-  // And the right side will have links to the previously selected visuals.
-  // Before this page is rendered the visuals should have been created using the functions called below.
-  // The visual pages will be created in a public directory and each page will have a random number or timestamp
-  //    attached so the page is private and can be deleted later.
-  // TESTING:
-  //    There should be one or more datasets shown in list
-  //    There should be one or more visual choices shown.
-  //
+  var body = JSON.parse(req.body);
+  if(typeof visual_post_items == undefined){
+  */
 
   console.log(req.user.username+' req.body: view_selection body-->>');
   print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
@@ -176,207 +168,6 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     image_to_render : JSON.stringify(image_to_open),
     });
 });
-//
-//
-// Load Configuration File
-// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
-function load_configuration_file(req, res, config_file_data )
-{
-    console.log('config_file_data');
-    console.log(config_file_data);
-    //req.session = config_file_data
-     let image_to_open = {};
-
-
-    const allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix", "metadata_table", "fheatmap", "dendrogram01", "dendrogram03", "pcoa", "pcoa3d", "geospatial", "adiversity"];
-
-    if (allowed_images.indexOf(config_file_data.image) !== -1){
-        console.log('FILE is IMAGE-2');
-    }
-    if (config_file_data.hasOwnProperty('image') ){
-      console.log('FILE is IMAGE-1');
-      image_to_open.image = config_file_data.image;
-    }
-
-    if (config_file_data.hasOwnProperty('phylum')){
-      console.log('FILE is IMAGE (phyloseq bars or heatmap)');
-      image_to_open.phylum = config_file_data.phylum;
-    }
-    else {
-      console.log('FILE is CONFIG or IMAGE w/o phyloseq bars or heatmap');
-    }
-    let visual_post_items = config_file_data;
-    let ids = config_file_data.id_name_hash.ids;
-    let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
-
-    req.flash('success', 'Using data from configuration file.');
-    console.log('in view_selection FROM CONFIG or IMAGE');
-
-
-    visual_post_items.no_of_datasets = new_dataset_ids.length;
-    for (let n in chosen_id_name_hash.ids){
-        let did = chosen_id_name_hash.ids[n];
-        let pid = PROJECT_ID_BY_DID[did];
-        let pjds = PROJECT_INFORMATION_BY_PID[pid].project + '--' + DATASET_NAME_BY_DID[did];
-        chosen_id_name_hash.names.push(pjds);
-    }
-    if (! config_file_data.hasOwnProperty('metadata') || config_file_data['metadata'].length === 0){
-        visual_post_items.metadata = ['latitude','longitude'];
-    }
-
-    let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
-
-    for (let i in chosen_id_name_hash.ids){
-      let did = chosen_id_name_hash.ids[i];
-      try {
-            if (visual_post_items.unit_choice === 'tax_rdp2.6_simple'){
-                files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp2.6");
-            }
-            let path_to_file = path.join(files_prefix, did.toString() +'.json');
-
-            try {
-              let jsonfile = require(path_to_file);
-            }
-            catch(e1){
-              try {
-                let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_generic");
-                // TODO: dataset_ids is not deined?
-                let path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
-                let jsonfile = require(path_to_file);
-              }
-              catch(e2) {
-                console.log('2-no file '+e2.toString()+' Exiting');
-                req.flash('fail', `ERROR 
-                Dataset file not found '${dataset_ids[i]}.json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.`);
-            //res.redirect('visuals_index');
-            //return;
-              }
-            }
-            TAXCOUNTS[did] = jsonfile['taxcounts'];
-            METADATA[did]  = jsonfile['metadata'];
-      }
-      catch(err){
-        console.log('2-no file '+err.toString()+' Exiting');
-        req.flash('fail', `ERROR 
-          Dataset file not found '${dataset_ids[i]}.json' This means that one or more datasets do not have counts or sequences represented and some visuals on this page may not function.`);
-      }
-    }
-    return image_to_open;
-}
-
-//
-//  Create Clean Configuration File (From file upload)
-//
-//TODO: JSHint: This function's cyclomatic complexity is too high. (30) (W074)
-function create_clean_config(req, upld_obj)
-{
-  //fs.readFile(upload_file, 'utf8',function(err, data){
-        //if (err){ return err }
-
-  let timestamp = +new Date();
-  let ts = req.user.username  + '_'+timestamp;
-  let clean_obj = {};
-  clean_obj.ts = ts;
-  let new_filename = "";
-
-  if (upld_obj.hasOwnProperty('image')) {
-    console.log('1) FILE is IMAGE');
-    clean_obj.image = upld_obj.image;
-    new_filename = 'image-' + clean_obj.image + '-' + clean_obj.ts + '.json';
-  } else {
-    console.log('2) FILE is CONFIG');
-    new_filename = 'configuration-' + timestamp + '.json';
-  }
-
-  if (! upld_obj.hasOwnProperty('chosen_id_order')) {
-      req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-      return {};
-  }
-
-  let ids = upld_obj.chosen_id_order;
-  let new_dataset_ids = helpers.screen_dids_for_permissions(req, ids);
-  if (! upld_obj.hasOwnProperty('source') && upld_obj.source.substring(0, 4) !== 'vamps'){
-    req.flash('fail', "This doesn't look like a well formatted JSON Configuration file");
-    return {};
-  }
-  if (new_dataset_ids.length === 0){
-    req.flash('fail', 'There are no active datasets (or you do not have the correct permissions) to load');
-    return {};
-
-  } else {
-    // move the file ASIS to the CONFIG.USER_FILES_BASE location
-    clean_obj.chosen_id_order = new_dataset_ids;
-    clean_obj.no_of_datasets = new_dataset_ids.length;
-
-    // ADD DEFAULTS if needed
-    if (! upld_obj.hasOwnProperty('metadata') || upld_obj.metadata.length === 0){
-      clean_obj.metadata = ['latitude','longitude'];
-    } else {
-      clean_obj.metadata = upld_obj.metadata;
-    }
-    clean_obj.unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
-    clean_obj.custom_taxa = ["NA"];
-    const allowed_norms = ['none', 'maximum', 'frequency'];
-    if (! upld_obj.hasOwnProperty('normalization') || allowed_norms.indexOf(upld_obj.normalization) === -1){
-      clean_obj.normalization = 'none';
-    } else {
-      clean_obj.normalization = upld_obj.normalization;
-    }
-    const allowed_distance_metrics = ['jaccard','kulczynski','canberra','morisita_horn','bray_curtis'];
-    if (! upld_obj.hasOwnProperty('selected_distance') || allowed_distance_metrics.indexOf(upld_obj.selected_distance) === -1){
-      clean_obj.selected_distance = 'morisita_horn';
-    } else {
-      clean_obj.selected_distance = upld_obj.selected_distance;
-    }
-    const allowed_ranks = C.RANKS;
-    if (! upld_obj.hasOwnProperty('tax_depth') || allowed_ranks.indexOf(upld_obj.tax_depth) === -1){
-      clean_obj.tax_depth = 'phylum';
-    } else {
-      clean_obj.tax_depth = upld_obj.tax_depth;
-    }
-    const allowed_incnas = ['yes','no'];
-    if (! upld_obj.hasOwnProperty('include_nas') || allowed_incnas.indexOf(upld_obj.include_nas) === -1){
-      clean_obj.include_nas = 'yes';
-    } else {
-      clean_obj.include_nas = upld_obj.include_nas;
-    }
-    // DOMAINS
-    let allowed_domains = C.DOMAINS.domains;
-    if (! upld_obj.hasOwnProperty('domains') || upld_obj.domains.length === 0){
-      clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
-    }
-    else {
-      let arr = [];
-      for (let n in allowed_domains){
-        if (upld_obj.domains.indexOf(allowed_domains[n].name) !== -1){
-            arr.push(allowed_domains[n].name);
-        }
-      }
-      clean_obj.domains = arr;
-      if (upld_obj.domains.length === 0){
-        clean_obj.domains = ["Archaea", "Bacteria", "Eukarya", "Organelle", "Unknown"];
-      }
-    }
-
-    if (typeof upld_obj.min_range === 'string'){
-      clean_obj.min_range = parseInt(upld_obj.min_range) || 0;
-    }
-    if (! upld_obj.hasOwnProperty('min_range') || upld_obj.min_range < 0  || upld_obj.min_range > 99) {
-      clean_obj.min_range = 0;
-    }
-    if (typeof upld_obj.max_range === 'string'){
-      clean_obj.max_range = parseInt(upld_obj.max_range) || 100;
-    }
-    if (! upld_obj.hasOwnProperty('max_range') || upld_obj.max_range < 1  || upld_obj.max_range > 100){
-      clean_obj.max_range = 100;
-    }
-
-    let new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename);
-    fs.writeFileSync(new_filename_path, JSON.stringify(clean_obj));
-    return clean_obj;
-  }
-  //});
-}
 
 function get_dataset_ids(req) {
   let dataset_ids = [];
@@ -453,10 +244,12 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   let dataset_ids = get_dataset_ids(req);
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
-  // I call this here and NOT in view_selection
-  // A user can jump here directly from geo_search
-  // However a user can jump directly to view_select from
-  // saved datasets or configuration which they could conceivably manipulate
+  /*
+  * I call this here and NOT in view_selection
+  A user can jump here directly from geo_search
+  However a user can jump directly to view_select from
+  saved datasets which they could conceivably manipulate
+  * */
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
@@ -539,7 +332,6 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
   if (req.body.data_to_open){
@@ -595,8 +387,6 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  // Andy, is unit_choice global?
-  unit_choice = 'tax_'+C.default_taxonomy.name+'_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
   if (req.body.data_to_open) {// TODO: DRY, the similar peace above
@@ -1942,58 +1732,6 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
   });
 });
 
-//
-// router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
-//   res.render('visuals/partials/tax_gg_custom',{});
-// });
-//
-// router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
-//   res.render('visuals/partials/tax_gg_simple',{});
-// });
-//
-// router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
-//   res.render('visuals/partials/otus',{});
-// });
-//
-// router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
-//   res.render('visuals/partials/med_nodes',{});
-// });
-//
-// SAVE CONFIG
-// test "safe configuration" on top; Saved as: configuration-1568329081647.json
-
-router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
-
-  console.log('req.body: save_config-->>');
-  print_log_if_not_vamps(req, req.body);
-  console.log('<--req.body: save_config');
-  let timestamp = +new Date();  // millisecs since the epoch!
-  let filename = 'configuration-' + timestamp + '.json';
-
-  let json_obj = Object.assign({},req.session);
-  json_obj.source = 'vamps.mbl.edu';
-  json_obj.ts = +new Date();
-  delete json_obj.cookie;
-  delete json_obj.returnTo;
-  delete json_obj.flash;
-  delete json_obj.passport;
-  delete json_obj.cookie;
-
-  print_log_if_not_vamps(req, 'json_obj: ' + JSON.stringify(json_obj));
-  let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
-  //console.log(filename);
-  helpers.write_to_file(filename_path, JSON.stringify(json_obj));
-
-  res.send("Saved as: <a href='saved_elements'>"+filename+"</a>");
-
-
-});
-//
-//
-//
-
 //test: save_datasets
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
@@ -2023,7 +1761,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
-      let acceptable_prefixes = ['datasets', 'configuration', 'image'];
+      let acceptable_prefixes = ['datasets', 'image'];
       let saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
       let file_info = {};
@@ -2417,12 +2155,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     let file_name = ts+'_metadata.txt';
     res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if (file_type === 'configuration'){
-    let file_name = req.body.filename;
-    let config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    res.setHeader('Content-Type', 'json');
-    res.download(path.join(config_file_path, file_name)); // Set disposition and send it.
-  } else {
+    } else {
     // ERROR
     console.log('ERROR In download_file');
   }
@@ -2766,14 +2499,17 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     json.id = id;
     json.item = [];
     if (parseInt(id) === 0){
-        // return json for collapsed tree: 'domain' only
-//         json = {"id":"0", "item":[
-//             {"id":"1", "text":"Bacteria", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
-//             {"id":"214", "text":"Archaea", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
-//             {"id":"338", "text":"Unknown", "tooltip":"domain", "checked":true,"child":"1", "item":[]},
-//             {"id":"353", "text":"Organelle", "tooltip":"domain", "checked":true,"child":"1", "item":[]}
-//             ]
-//         }
+      /*
+          return json for collapsed tree: 'domain' only
+              json = {"id":"0","item":[
+                  {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
+                  {"id":"214","text":"Archaea","tooltip":"domain","checked":true,"child":"1","item":[]},
+                  {"id":"338","text":"Unknown","tooltip":"domain","checked":true,"child":"1","item":[]},
+                  {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
+                  ]
+              }
+      */
+
 
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
         for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){

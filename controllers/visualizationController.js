@@ -45,6 +45,13 @@ class viewSelectionGetData {
 
   from_api() {
     console.log('From: API-API-API');
+    /*
+    * See
+    https://github.com/joefutrelle/VAMPS_API_Interaction
+    https://github.com/avoorhis/VAMPS-api
+    https://github.com/sydneyruzicka/VAMPS_API_Interaction
+    *
+    * */
     this.visual_post_items = COMMON.default_post_items();
     // Change defaults:
     this.req.session.normalization = this.visual_post_items.normalization = this.req.body.normalization          || "none";
@@ -97,16 +104,6 @@ class viewSelectionGetData {
 
   }
 
-  from_restore_image() {
-    console.log('in view_selection RESTORE IMAGE');
-  }
-
-  from_cancel_resort() {
-    console.log('resorted canceled');
-    this.req.flash('success','Canceled Resort.');
-    this.dataset_ids = JSON.parse(this.req.body.ds_order);
-  }
-
   from_update_data() {  // from 'Update' button on view_selection.html
     console.log('Update Data');
     // populate this.req.session and this.visual_post_items from this.req.body(post)
@@ -126,40 +123,7 @@ class viewSelectionGetData {
     this.req.session.chosen_id_order = this.dataset_ids;
     this.get_visual_post_items_common();
   }
-
-  // test: "POST-Load (view)" configuration file from saved_elements
-  from_directory_configuration_file() {
-    // ALL Config files now loaded through GET (see router.get('/view_selection/:filename/:from_configuration_file')
-    console.log('from_directory_configuration_file-POST');
-
-    this.dataset_ids = this.req.session.chosen_id_order;
-    this.get_visual_post_items_common();
-    this.visual_post_items.update_data = 1;
-  }
-  // not in resorted: this.visual_post_items.update_data = 1;
-
-  from_upload_configuration_file() {
-    console.log('from_upload_configuration_file-POST');
-    this.dataset_ids = this.req.session.chosen_id_order;
-    this.get_visual_post_items_common();
-    this.visual_post_items.update_data = 1;
-  }
-  
 }
-// module.exports = function () {
-//
-//   var serviceDescriptions: [
-//     { name: 'a', service:  StrategyA},
-//     {name: 'b', service:  StrategyB}
-//   ];
-//
-//   var getStrategy: function (name) {
-//     //asuming you have underscore, otherwise, just iterate the array to look for the proper service
-//     return _.find(this.serviceDescriptions, {name: name}).service;
-//   };
-//
-// }
-
 
 class viewSelectionFactory {
 
@@ -177,20 +141,8 @@ class viewSelectionFactory {
     if (req_body.api === '1') {
       this.get_data.from_api();
     }
-    else if (req_body.cancel_resort === '1') {
-      this.get_data.from_cancel_resort();
-    }
-    else if (req_body.from_directory_configuration_file === '1') {
-      this.get_data.from_directory_configuration_file();
-    }
-    else if (req_body.from_upload_configuration_file === '1') {
-      this.get_data.from_upload_configuration_file();
-    }
     else if (req_body.resorted === '1') {
       this.get_data.from_resorted();
-    }
-    else if (req_body.restore_image === '1') {
-      this.get_data.from_restore_image();
     }
     else if (req_body.update_data === '1') {
       this.get_data.from_update_data();
