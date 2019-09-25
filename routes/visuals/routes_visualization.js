@@ -450,117 +450,83 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: dendrogram
-router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   console.log('found routes_dendrogram-x');
- /*
- * this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
- * It passes the newick string back to view_selection.js
- * and tries to construct the svg there before showing it.
- */
+///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
+///// It passes the newick string back to view_selection.js
+///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
   print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let ts = req.body.ts;
   let metric = req.body.metric;
-  // let script = req.body.script; // python, phylogram or phylonator
-  let image_type = req.body.image_type;  // png(python script) or svg
-  let pwd = req.CONFIG.PROCESS_DIR;
-  // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
-  console.log("CCC req.CONFIG.PROCESS_DIR");
-  console.log(req.CONFIG.PROCESS_DIR);
-
-  let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file = path.join(pwd, 'tmp', biom_file_name);
-  console.log("BBB: biom_file ");
-  console.log(biom_file);
-
+  let script = req.body.script; // python,  phylogram or phylonator
+  let image_type = req.body.image_type; // png(python script) or svg
+//console.log('image_type '+image_type);
+// see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
+  let biom_file_name = ts+'_count_matrix.biom';
+  let biom_file = path.join(req.CONFIG.TMP_FILES,  biom_file_name);
+  let html = '';
+  let title = 'VAMPS';
+  let distmtx_file_name = ts+'_distance.csv';
+  let distmtx_file = path.join(req.CONFIG.TMP_FILES,  distmtx_file_name);
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', pwd, '--prefix', ts ],
+    args : [ '-in',  biom_file,  '-metric', metric, '--function', 'dendrogram-'+image_type, '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts ],
   };
-
-  // let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
   console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
-  let dendrogram_process = spawn(options.scriptPath + '/distance_and_ordination.py',
-    options.args,
-    {
-      env: {'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH
-      },
+  let dendrogram_process = spawn( options.scriptPath + '/distance_and_ordination.py',
+    options.args, {
+      env:{'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
       detached: true,
-      stdio: 'pipe'  // stdin, stdout, stderr
-    });
-
+      stdio: 'pipe' // stdin,  stdout,  stderr
+  });
   let stdout = '';
-  dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
-    //
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    stdout += data;
-  });
-  let stderr = '';
-  dendrogram_process.stderr.on('data', function dendrogramProcessStderr(data) {
-      console.log('stderr: ' + data);
-      //data = data.toString().replace(/^\s+|\s+$/g, '');
-      data = data.toString();
-      stderr += data;
-  });
-
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-  dendrogram_process = spawn(options.scriptPath+'/distance_and_ordination.py',
-    options.args,
-    {
-      env: {'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH
-      },
-      detached: true,
-      stdio: 'pipe'  // stdin, stdout, stderr
-    });
-  stdout = '';
-  dendrogram_process.stdout.on('data', function dendrogramProcessStdout(data) {
+  dendrogram_process.stdout.on('data',  function dendrogramProcessStdout(data) {
     stdout += data.toString();
   });
-  // JSHint: This function's cyclomatic complexity is too high. (8) (W074)
-  dendrogram_process.on('close', function dendrogramProcessOnClose(code) {
+  dendrogram_process.on('close',  function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
-
-    let tmp = [];
-    if (code === 0){   // SUCCESS
+  let lines = [];
+  let tmp = [];
+    if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
         print_log_if_not_vamps(req, 'stdout: ' + stdout);
-        let lines = stdout.split('\n');
-        for (let n in lines){
-          if (lines[n].substring(0,6) === 'NEWICK' ) {
+
+        lines = stdout.split('\n');
+        for(let n in lines){
+          if (lines[n].substring(0, 6) === 'NEWICK' ){
             tmp = lines[n].split('=');
-            console.log('FOUND NEWICK '+tmp[1]);
+            console.log('FOUND NEWICK ' + tmp[1]);
+            // continue
           }
         }
-
-        let newick = [];
-        try{
+        let newick = "";
+        try {
+          //newick = JSON.parse(tmp[1]);
           newick = tmp[1];
           print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err){
-          newick = {"ERROR": err};
+          newick = {"ERROR":err};
         }
         res.send(newick);
         return;
       }
     }
-    else {
+    else{
       console.log('stdout: ' + stdout);
     }
-    let lines = stdout.split('\n');
-    for (let n in lines){
-      if (lines[n].substring(0,6) === 'NEWICK' ){
+    lines = stdout.split('\n');
+    for(let n in lines) {
+      if (lines[n].substring(0, 6) === 'NEWICK' ){
         tmp = lines[n].split('=');
         console.log('FOUND NEWICK '+tmp[1]);
+        // continue
       }
     }
   });
 });
-
 
 //
 // P C O A
