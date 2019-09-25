@@ -464,12 +464,15 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   let metric = req.body.metric;
   // let script = req.body.script; // python, phylogram or phylonator
   let image_type = req.body.image_type;  // png(python script) or svg
-  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+  let pwd = req.CONFIG.PROCESS_DIR;
   // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
+  console.log("CCC req.CONFIG.PROCESS_DIR");
+  console.log(req.CONFIG.PROCESS_DIR);
 
-  let biom_file_name = ts+'_count_matrix.biom';
-  let biom_file = path.join(pwd,'tmp',biom_file_name);
-
+  let biom_file_name = ts + '_count_matrix.biom';
+  let biom_file = path.join(pwd, 'tmp', biom_file_name);
+  console.log("BBB: biom_file ");
+  console.log(biom_file);
 
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
