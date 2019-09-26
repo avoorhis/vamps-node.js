@@ -227,14 +227,20 @@ class sumator {
     return tax_cnt_obj_arrs;
   }
 
+  // get_tax_str_array(biom_matrix, row_ind) {
+  //   let tax_string = biom_matrix.rows[row_ind].id;
+  //   return tax_string.split(';');
+  // }
+
   get_all_tax_str_array(biom_matrix) {
-    return biom_matrix.rows.map(row => {
-      row.id.split(';');
-    });
+    return biom_matrix.rows.map(row => row.id.split(';'));
   }
 
+  //biom_matrix.rows.map(row => {row.id}).map(str => str.split(';'))
   get_all_tax_by_rank_obj(biom_matrix) {
     let arr_of_tax_by_rank_obj = [];
+    let all_tax_str_array = this.get_all_tax_str_array(biom_matrix);
+
     for (let row_ind in biom_matrix.rows) {
       let tax_items_arr = this.get_tax_str_array(biom_matrix, row_ind);
 
