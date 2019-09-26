@@ -1,5 +1,7 @@
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const helpers = require(app_root + '/routes/helpers/helpers');
+const path = require('path');
+const C = require(app_root + '/public/constants');
 
 class viewSelectionGetData {
 
@@ -156,8 +158,51 @@ class viewSelectionFactory {
   }
 }
 
+class visualizationFiles {
+  // constructor(req) {
+  // }
+
+  get_process_dir(req) {
+    return req.CONFIG.PROCESS_DIR;
+  }
+
+  get_user_file_path(req) {
+    const user_file_path = req.CONFIG.USER_FILES_BASE;
+    return path.join(user_file_path, req.body.user, req.body.filename);
+  }
+
+  get_json_files_prefix(req) {
+    return path.join(req.CONFIG.JSON_FILES_BASE,
+      NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
+  }
+
+  get_biom_file_path(req, ts) {
+    let biom_file_name = ts + '_count_matrix.biom';
+    return path.join(req.CONFIG.TMP_FILES,  biom_file_name);
+  }
+
+  get_tmp_file_path(req) {
+    return req.CONFIG.TMP_FILES;
+  }
+
+  print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
+    if (req.CONFIG.site === 'vamps') {
+      console.log(msg_prod);
+    } else {
+      console.log(msg);
+    }
+  }
+
+  get_timestamp(req) {
+    let timestamp = +new Date();  // millisecs since the epoch!
+    return req.user.username + '_' + timestamp;
+  }
+
+}
+
 module.exports = {
   viewSelectionGetData,
-  viewSelectionFactory
+  viewSelectionFactory,
+  visualizationFiles
 };
 

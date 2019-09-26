@@ -27,29 +27,32 @@ const visualization_controller = require(app_root + '/controllers/visualizationC
 const spawn = require('child_process').spawn;
 // const app = express();
 
-function get_process_dir(req) {
-  return req.CONFIG.PROCESS_DIR;
-}
+const file_path_obj =  new visualization_controller.visualizationFiles();
 
-function get_user_file_path(req) {
-  const user_file_path = req.CONFIG.USER_FILES_BASE;
-  return path.join(user_file_path, req.body.user, req.body.filename);
-}
 
-function get_json_files_prefix(req) {
-  return path.join(req.CONFIG.JSON_FILES_BASE,
-    NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
-}
-
-function get_biom_file_path(req, ts) {
-  let biom_file_name = ts + '_count_matrix.biom';
-  return path.join(req.CONFIG.TMP_FILES,  biom_file_name);
-}
-
-function get_tmp_file_path(req) {
-  return req.CONFIG.TMP_FILES;
-}
-
+// function get_process_dir(req) {
+//   return req.CONFIG.PROCESS_DIR;
+// }
+//
+// function get_user_file_path(req) {
+//   const user_file_path = req.CONFIG.USER_FILES_BASE;
+//   return path.join(user_file_path, req.body.user, req.body.filename);
+// }
+//
+// function get_json_files_prefix(req) {
+//   return path.join(req.CONFIG.JSON_FILES_BASE,
+//     NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
+// }
+//
+// function get_biom_file_path(req, ts) {
+//   let biom_file_name = ts + '_count_matrix.biom';
+//   return path.join(req.CONFIG.TMP_FILES,  biom_file_name);
+// }
+//
+// function get_tmp_file_path(req) {
+//   return req.CONFIG.TMP_FILES;
+// }
+//
 function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
   if (req.CONFIG.site === 'vamps') {
     console.log(msg_prod);
@@ -202,7 +205,7 @@ function no_data(req, res, needed_constants) {
 }
 
 function test_if_json_file_exists(req, i, dataset_ids, did) {
-  let files_prefix = get_json_files_prefix(req);
+  let files_prefix = file_path_obj.get_json_files_prefix(req);
   let path_to_file = path.join(files_prefix, did + '.json');
   let error_msg = "";
   try {
@@ -457,7 +460,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // let fxn = req.body.fxn;
   // console.log('XX'+JSON.stringify(req.body));
   // let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
-  let file_path = get_user_file_path(req);
+  let file_path = file_path_obj.get_user_file_path(req);
   console.log(file_path);
   // let dataset_ids = [];
   fs.readFile(file_path, 'utf8', function readFile(err,data) {
@@ -490,8 +493,8 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 //   let biom_file_name = ts + '_count_matrix.biom';
   // let biom_file = path.join(req.CONFIG.TMP_FILES,  biom_file_name);
-  let biom_file_path = get_biom_file_path(req, ts);
-  let tmp_file_path = get_tmp_file_path(req);
+  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   // let html = '';
   // let title = 'VAMPS';
@@ -676,7 +679,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   let pc_file_name = ts + '_pc.txt';
   let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
     // path.join(req.CONFIG.TMP_FILES, biom_file_name);
   let mapping_file_name = ts + '_metadata.txt';
   let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
@@ -750,7 +753,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log('in dbrowser');
   console.log(req.session);
   let html = '';
-  let matrix_file_path = get_biom_file_path(req, ts);
+  let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
     // path.join(req.CONFIG.TMP_FILES, 'tmp', ts + '_count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
@@ -1868,7 +1871,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     let ts = req.body.ts;
     let metric = req.body.metric;
     // let biom_file_name = ts + '_count_matrix.biom';
-    let biom_file_path = get_biom_file_path(req, ts);
+    let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
       // path.join(req.CONFIG.PROCESS_DIR, 'tmp', biom_file_name);
     let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
 
@@ -2009,7 +2012,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 
     // let biom_file_name = ts + '_count_matrix.biom';
     // let biom_file = path.join(pwd, 'tmp', biom_file_name);
-    let biom_file_path = get_biom_file_path(req, ts);
+    let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
 
     let FinishSplitFile = function(req, res){
         let ts = req.session.ts;
