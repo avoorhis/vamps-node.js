@@ -712,7 +712,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
     //console.log('1stdout: ' + data);
   });
-  stderr1 = '';
+  let stderr1 = '';
   pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
     console.log('1stderr-POST: ' + data);
     stderr1 += data;
@@ -723,17 +723,18 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     console.log('pcoa_process1 process exited with code ' + code);
     if(code === 0){ // SUCCESS
       let html = "** <a href='/static_base/tmp/" + dir_name + "/index.html' target='_blank'>Open Emperor</a> **"
-      html "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
- html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
- html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
- html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
- //html += " <a href='../tmp/" + dir_name + "/index' target='_blank'>Emperor5</a>"
- res.send(html);
+      html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
+      html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
+      html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
+      html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
+      //html  += " <a href='../tmp/" + dir_name + "/index' target='_blank'>Emperor5</a>"
+
  return;
- }else{
- //console.log('ERROR');
- res.send('Python Script Error: ' + stderr1);
  }
+    else{
+      //console.log('ERROR');
+      res.send('Python Script Error: ' + stderr1);
+    }
  });
  /////////////////////////////////////////////////
 });
