@@ -680,15 +680,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   let pc_file_name = ts + '_pc.txt';
   let biom_file_name = ts + '_count_matrix.biom';
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-    // path.join(req.CONFIG.TMP_FILES, biom_file_name);
   let mapping_file_name = ts + '_metadata.txt';
   let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
-  // let pc_file = path.join(req.CONFIG.TMP_FILES, pc_file_name);
   let dist_file_name = ts + '_distance.csv';
-  // let dist_file = path.join(req.CONFIG.TMP_FILES, dist_file_name);
   let dir_name = ts + '_pcoa3d';
   let dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
-  // let html_path = path.join(dir_path, 'index.html'); // file to be created by make_emperor.py script
   let options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args : [ '-in',
@@ -711,27 +707,23 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
-    //stdio: [ 'ignore', null, null ]
-  }); // stdin, stdout, stderr
-  pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
-    //console.log('1stdout: ' + data);
   });
+  // pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
+  //   //console.log('1stdout: ' + data);
+  // });
   let stderr1 = '';
   pcoa_process.stderr.on('data', function pcoaProcessStderr(data) {
     console.log('1stderr-POST: ' + data);
     stderr1 += data;
-    //res.send(stderr1);
-    //return;
   });
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
     console.log('pcoa_process1 process exited with code ' + code);
-    if(code === 0){ // SUCCESS
+    if (code === 0){ // SUCCESS
       let html = "** <a href='/static_base/tmp/" + dir_name + "/index.html' target='_blank'>Open Emperor</a> **"
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
       html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
-      //html  += " <a href='../tmp/" + dir_name + "/index' target='_blank'>Emperor5</a>"
 
  return;
  }
@@ -754,16 +746,23 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log(req.session);
   let html = '';
   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
-    // path.join(req.CONFIG.TMP_FILES, 'tmp', ts + '_count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
-  //console.log('max_total_count '+max_total_count.toString());
-
   // sum counts
-  let sumator = get_sumator(req, biom_matrix);
+  console.time("TIME: get_sumator new");
+  const sumator_class =  new visualization_controller.sumator(req);
 
-  //console.log(JSON.stringify(sumator))
+  let sumator_new = sumator_class.get_sumator(req, biom_matrix);
+  console.timeEnd("TIME: get_sumator new");
+  console.log(JSON.stringify(sumator_new));
+
+  console.time("TIME: get_sumator orig");
+  let sumator = get_sumator(req, biom_matrix);
+  console.timeEnd("TIME: get_sumator orig");
+  console.log(JSON.stringify(sumator));
+
+  console.time("TIME: over sumator orig");
 
   for (let d in sumator['domain']) {
 
@@ -866,6 +865,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
       html += "</node>\n";
   }    // end domain
   html += "  </node>\n";
+  console.timeEnd("TIME: over sumator orig");
 
 
   // write html to a file and open it
@@ -880,7 +880,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     html:                html,
     max_total_count:     max_total_count,
     matrix:              JSON.stringify(biom_matrix)
-
   });
 });
 
@@ -1047,7 +1046,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 function get_sumator(req, biom_matrix){
 
   let sumator = {};
-  sumator['domain']={};
+  sumator['domain'] = {};
 
   for (let r in biom_matrix.rows){
     let tax_string = biom_matrix.rows[r].id;
@@ -1069,8 +1068,8 @@ function get_sumator(req, biom_matrix){
                  }
              } else {
                  sumator['domain'][d]={};
-                 sumator['domain'][d]['phylum']={};
-                 sumator['domain'][d]['knt']=[];
+                 sumator['domain'][d]['phylum'] = {};
+                 sumator['domain'][d]['knt'] = [];
                  sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
              }
          }
@@ -1094,7 +1093,7 @@ function get_sumator(req, biom_matrix){
       }
       if (rank === 'klass'){
          let k = taxa;
-         for (i in req.session.chosen_id_order){
+         for (let i in req.session.chosen_id_order){
              if (k in sumator['domain'][d]['phylum'][p]['klass']){
                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
                      sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
