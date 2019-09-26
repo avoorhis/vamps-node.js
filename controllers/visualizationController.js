@@ -227,9 +227,10 @@ class sumator {
     return tax_cnt_obj_arrs;
   }
 
-  get_tax_str_array(biom_matrix, row_ind) {
-    let tax_string = biom_matrix.rows[row_ind].id;
-    return tax_string.split(';');
+  get_all_tax_str_array(biom_matrix) {
+    return biom_matrix.rows.map(row => {
+      row.id.split(';');
+    });
   }
 
   get_all_tax_by_rank_obj(biom_matrix) {
