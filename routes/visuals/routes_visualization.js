@@ -750,7 +750,8 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log('in dbrowser');
   console.log(req.session);
   let html = '';
-  let matrix_file_path = path.join(req.CONFIG.TMP_FILES, 'tmp', ts + '_count_matrix.biom');
+  let matrix_file_path = get_biom_file_path(req, ts);
+    // path.join(req.CONFIG.TMP_FILES, 'tmp', ts + '_count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
