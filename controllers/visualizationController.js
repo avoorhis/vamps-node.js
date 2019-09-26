@@ -238,16 +238,8 @@ class sumator {
 
   //biom_matrix.rows.map(row => {row.id}).map(str => str.split(';'))
   get_all_tax_by_rank_obj(biom_matrix) {
-    let arr_of_tax_by_rank_obj = [];
     let all_tax_str_array = this.get_all_tax_str_array(biom_matrix);
-
-    for (let row_ind in biom_matrix.rows) {
-      let tax_items_arr = this.get_tax_str_array(biom_matrix, row_ind);
-
-      let tax_by_rank_obj = this.make_tax_by_rank_obj(tax_items_arr);
-      arr_of_tax_by_rank_obj.push(tax_by_rank_obj);
-    }
-    return arr_of_tax_by_rank_obj;
+    return all_tax_str_array.map(tax_items_arr => this.make_tax_by_rank_obj(tax_items_arr));
   }
 // TODO: JSHint: This function's cyclomatic complexity is too high. (35) (W074)
   get_sumator(req, biom_matrix){
