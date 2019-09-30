@@ -79,6 +79,21 @@ function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
   return visual_post_items;
 }
 
+function start_visual_post_items(req) {
+  const visualization_obj = new visualization_controller.viewSelectionFactory(req);
+  let dataset_ids = visualization_obj.dataset_ids;
+  let visual_post_items = visualization_obj.visual_post_items;
+
+  visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
+
+  console.log('VS--visual_post_items and id-hash:>>');
+  let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
+  print_log_if_not_vamps(req, msg);
+  console.log('<<VS--visual_post_items');
+
+  return visual_post_items;
+}
+
 //
 //  V I E W  S E L E C T I O N
 //
@@ -120,20 +135,26 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   helpers.start = process.hrtime();
   let image_to_open = {};
 
-  const visualization_obj = new visualization_controller.viewSelectionFactory(req);
-  let dataset_ids = visualization_obj.dataset_ids;
-  let visual_post_items = visualization_obj.visual_post_items;
+  // const visualization_obj = new visualization_controller.viewSelectionFactory(req);
+  // let dataset_ids = visualization_obj.dataset_ids;
+  // let visual_post_items = visualization_obj.visual_post_items;
+  //
+  // visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
+  //
+  // let curr_timestamp = get_timestamp(req);
+  // visual_post_items.ts = curr_timestamp;
+  // req.session.ts = curr_timestamp;
+  //
+  // console.log('VS--visual_post_items and id-hash:>>');
+  // let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
+  // print_log_if_not_vamps(req, msg);
+  // console.log('<<VS--visual_post_items');
 
-  visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
+  let visual_post_items = start_visual_post_items(req);
 
   let curr_timestamp = get_timestamp(req);
   visual_post_items.ts = curr_timestamp;
   req.session.ts = curr_timestamp;
-
-  console.log('VS--visual_post_items and id-hash:>>');
-  let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  print_log_if_not_vamps(req, msg);
-  console.log('<<VS--visual_post_items');
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
@@ -751,8 +772,11 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 
   // sum counts
   console.time("TIME: get_sumator new");
-  const sumator_class =  new visualization_controller.sumator(req);
+  // const sumator_class =  new visualization_controller.sumator(req);
 
+  let visual_post_items = start_visual_post_items(req);
+  const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items, false);
+  biom_matrix_obj.taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
   let sumator_new = sumator_class.get_sumator(req, biom_matrix);
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
@@ -1228,7 +1252,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
      //console.log(req.session)
 
     let pi = {};
-    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
+    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
     pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
     pi.no_of_datasets=1;
     pi.ts = req.session.ts;
@@ -1377,15 +1401,15 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
-  let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project+'--'+DATASET_NAME_BY_DID[did1];
-  let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project+'--'+DATASET_NAME_BY_DID[did2];
+  let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project + '--' + DATASET_NAME_BY_DID[did1];
+  let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project + '--' + DATASET_NAME_BY_DID[did2];
 
   //let ds_items = pjds.split('--');
 
   //console.log(ds1, ds2)
 
   let pi = {};
-  pi.chosen_datasets = [{did:did1, name:ds1},{did:did2, name:ds2}];
+  pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
   pi.no_of_datasets=2;
   pi.ts = req.session.ts;
   pi.unit_choice = req.session.unit_choice;

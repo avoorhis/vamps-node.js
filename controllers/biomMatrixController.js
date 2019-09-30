@@ -10,6 +10,7 @@ const C      = require(app_root + '/public/constants');
 const CONFIG = require(app_root + '/config/config');
 const path   = require("path");
 const extend = require('util')._extend;
+const {VM} = require('vm2');
 
 let helpers = require(app_root + '/routes/helpers/helpers');
 
@@ -460,10 +461,30 @@ class TaxonomyFactory {
   }
 
   choose_taxonomy_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
+    let taxonomy_names = Object.keys(C.UNITSELECT);
+    let taxonomy_choice_obj = {};
+    let vm = new VM({timeout: 10, sandbox: {a: function(){ return 123 }}});
+    vm.run('a()');
+
+    let vm_t = new VM({timeout: 10, taxonomy_names, sandbox: {a: function(){
+          for (let taxonomy_ind in taxonomy_names){
+            return "new module.exports." + taxonomy_names[taxonomy_ind] + "(visual_post_items, taxa_counts_module, chosen_dids)";
+          }
+    }}});
+    vm_t.run('a()');
+
+
+    for (let taxonomy_ind in taxonomy_names){
+      let tax_obj_name = "Taxonomy" + taxonomy_names[taxonomy_ind];
+      taxonomy_choice_obj[taxonomy_name] = new module.exports.tax_obj_name(visual_post_items, taxa_counts_module, chosen_dids);
+    }
+
+    return  taxonomy_choice_obj[this.units];
     let unit_choice_simple = (this.units === 'tax_silva119_simple');
       // (this.units.substr(this.units.length - 6) === 'simple');
     let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
     let unit_choice_generic_simple = (this.units === 'tax_generic_simple');
+    let unit_choice_rdp = (this.units === 'tax_rdp2.6_simple');
 
     //TODO: args object send to whatever module is chosen
     if (unit_choice_simple) {
@@ -476,7 +497,8 @@ class TaxonomyFactory {
       return new module.exports.TaxonomyGeneric(visual_post_items, taxa_counts_module, chosen_dids);
     }
     else {
-      console.log("ERROR: Can't choose the correct taxonomy");
+      // return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
+      console.log("ERROR: Can't choose the correct taxonomy, using simple");
     }
   }
 }
@@ -526,6 +548,55 @@ class Taxonomy {
     // console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
     return tax_cnt_obj_arrs;
   }
+
+  make_sum_tax_name_cnt_obj_per_dataset(tax_id_obj_by_did_filtered) {
+    console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+    /*
+    domain: {
+      bact: {knt: Arr(11)}
+      arc: {knt: Arr(11)}
+      }
+    domain_phylum {
+      bact;ph1: {knt: Arr(11)}
+      bact;ph2: {knt: Arr(11)}
+      arc;ph1a: {knt: Arr(11)}
+    }
+    * */
+    let dids_len = this.chosen_dids.length;
+    let knt_arr = Array(dids_len).fill(0);
+    const sumator = {};
+
+    this.chosen_dids.map((did, d_idx) => {
+
+      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
+      curr_tax_info_obj.map(ob => {
+        ob.tax_id_arr.map((tax_id, tax_id_ind) => {
+          if (sumator[tax_id]) {
+            sumator[tax_id]['knt'][d_idx] += ob.cnt;
+          }
+          else {
+            sumator[tax_id] = {};
+            sumator[tax_id]['knt'] = knt_arr;
+            sumator[tax_id]['knt'][d_idx] = ob.cnt;
+          }
+          console.log(tax_id_ind);
+        });
+
+
+        // // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        // if (ob.tax_long_name) {
+        //   tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        // }
+        // else {
+        //   console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
+        // }
+      });
+    });
+
+    console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+    return tax_cnt_obj_arrs;
+  }
+
 }
 
 class TaxonomySimple extends Taxonomy {

@@ -94,7 +94,7 @@ constants.TARGETS = ["Av3", "Av3v5", "Av4", "Av4v5", "Av5v6", "Av6", "Av6v4",
   "Bv1v2", "Bv1v3", "Bv1v4", "Bv2", "Bv3", "Bv3v4", "Bv3v5", "Bv4", "Bv4v5", "Bv5", "Bv5v6", "Bv6", "Bv6v4",
   "Ev4", "Ev9", "ITS1"];
 
-constants.UNITSELECT               = {
+constants.UNITSELECT = {
   silva119_simple   : {
       id: 'tax_silva119_simple',
       file: 'unit_selectors/taxa_silva119_simple.html',
