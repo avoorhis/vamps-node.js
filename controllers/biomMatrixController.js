@@ -362,7 +362,7 @@ class TaxaCounts {
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
-  get_taxonomy_object() {
+  get_taxonomy_object() { //TODO: switch or object instead of if/else
     let taxonomy_object;
     if (this.units === 'tax_rdp2.6_simple') {
       taxonomy_object = new_rdp_taxonomy;
@@ -454,69 +454,59 @@ class TaxaCounts {
 
 class TaxonomyFactory {
   constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.units       = visual_post_items.unit_choice;
     this.taxa_counts_module = taxa_counts;
     this.chosen_dids = chosen_dids;
-    this.chosen_taxonomy = this.choose_taxonomy_lookup_module(visual_post_items, this.taxa_counts_module, this.chosen_dids);
+    this.chosen_taxonomy = this.choose_taxonomy_lookup_module(visual_post_items);
   }
 
-  choose_taxonomy_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
-    let taxonomy_names = Object.keys(C.UNITSELECT);
-    let taxonomy_choice_obj = {};
-    let vm = new VM({timeout: 10, sandbox: {a: function(){ return 123 }}});
-    vm.run('a()');
+  choose_taxonomy_lookup_module(visual_post_items) {
+    let units = visual_post_items.unit_choice;
+    let parameters_obj = {
+      "visual_post_items": visual_post_items,
+      "taxa_counts_module": this.taxa_counts_module,
+      "chosen_dids": this.chosen_dids
+    };
 
-    for (let taxonomy_ind in taxonomy_names){
-      let t = taxonomy_names[taxonomy_ind];
-      let vm_t = new VM({timeout: 10, t, sandbox: {a: function(){ return "new module.exports." + t + "(visual_post_items, taxa_counts_module, chosen_dids)" }}});
-      return vm_t.run('a()');
-    }
-
-    [
-      "silva119_simple",
-      "silva119_custom",
-      "rdp2_6_simple",
-      "generic_simple",
-      "gg_simple",
-      "gg_custom",
-      "otus",
-      "med_nodes"
-    ]
-
-    for (let taxonomy_ind in taxonomy_names){
-      let tax_obj_name = "Taxonomy" + taxonomy_names[taxonomy_ind];
-      taxonomy_choice_obj[taxonomy_name] = new module.exports.tax_obj_name(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-
-    return  taxonomy_choice_obj[this.units];
-    let unit_choice_simple = (this.units === 'tax_silva119_simple');
-      // (this.units.substr(this.units.length - 6) === 'simple');
-    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-    let unit_choice_generic_simple = (this.units === 'tax_generic_simple');
-    let unit_choice_rdp = (this.units === 'tax_rdp2.6_simple');
-
-    //TODO: args object send to whatever module is chosen
-    if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else if (unit_choice_generic_simple) {
-      return new module.exports.TaxonomyGeneric(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else {
-      // return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
-      console.log("ERROR: Can't choose the correct taxonomy, using simple");
-    }
+    const taxonomy_choice_obj = {
+      "tax_silva119_simple": function () {
+        return new module.exports.TaxonomySimple(parameters_obj);
+      },
+      "tax_silva119_custom": function () {
+        return new module.exports.TaxonomyCustom(parameters_obj);
+      },
+      "tax_rdp2.6_simple": function () {
+        return new module.exports.TaxonomyRDP(parameters_obj);
+      },
+      "tax_generic_simple": function () {
+        return new module.exports.TaxonomyGeneric(parameters_obj);
+      },
+      "tax_gg_simple": function () {
+        return new module.exports.TaxonomyGg_simple(parameters_obj);
+      },
+      "tax_gg_custom": function () {
+        return new module.exports.TaxonomyGg_custom(parameters_obj);
+      },
+      "otus": function () {
+        return new module.exports.TaxonomyOtus(parameters_obj);
+      },
+      "med_nodes": function () {
+        return new module.exports.TaxonomyMed_nodes(parameters_obj);
+      },
+      "default": function () {
+        console.log("ERROR: Can't choose the correct taxonomy, using simple");
+        return new module.exports.TaxonomySimple(parameters_obj);
+      }
+    };
+    return (taxonomy_choice_obj[units] || taxonomy_choice_obj['default'])();
   }
+
 }
 
 class Taxonomy {
-  constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.chosen_dids                = chosen_dids;
-    this.post_items                 = visual_post_items;
-    this.taxa_counts_module         = taxa_counts;
+  constructor(parameters_obj) {
+    this.chosen_dids                = parameters_obj["chosen_dids"];
+    this.post_items                 = parameters_obj["visual_post_items"];
+    this.taxa_counts_module         = parameters_obj["taxa_counts_module"];
     this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
     this.id_rank_taxa_cash          = {};
     this.tax_name_used_unique       = new Set();
