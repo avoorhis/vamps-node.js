@@ -466,13 +466,22 @@ class TaxonomyFactory {
     let vm = new VM({timeout: 10, sandbox: {a: function(){ return 123 }}});
     vm.run('a()');
 
-    let vm_t = new VM({timeout: 10, taxonomy_names, sandbox: {a: function(){
-          for (let taxonomy_ind in taxonomy_names){
-            return "new module.exports." + taxonomy_names[taxonomy_ind] + "(visual_post_items, taxa_counts_module, chosen_dids)";
-          }
-    }}});
-    vm_t.run('a()');
+    for (let taxonomy_ind in taxonomy_names){
+      let t = taxonomy_names[taxonomy_ind];
+      let vm_t = new VM({timeout: 10, t, sandbox: {a: function(){ return "new module.exports." + t + "(visual_post_items, taxa_counts_module, chosen_dids)" }}});
+      return vm_t.run('a()');
+    }
 
+    [
+      "silva119_simple",
+      "silva119_custom",
+      "rdp2_6_simple",
+      "generic_simple",
+      "gg_simple",
+      "gg_custom",
+      "otus",
+      "med_nodes"
+    ]
 
     for (let taxonomy_ind in taxonomy_names){
       let tax_obj_name = "Taxonomy" + taxonomy_names[taxonomy_ind];
