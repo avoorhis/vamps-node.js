@@ -10,7 +10,6 @@ const C      = require(app_root + '/public/constants');
 const CONFIG = require(app_root + '/config/config');
 const path   = require("path");
 const extend = require('util')._extend;
-const {VM} = require('vm2');
 
 let helpers = require(app_root + '/routes/helpers/helpers');
 
