@@ -207,25 +207,25 @@ class sumator {
   //  for dbrowser
 //
 
-  connect_names_with_cnts() {
-    // console.time("TIME: connect_names_with_cnts");
-
-    this.chosen_dids.map(did => {
-      let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered[did];
-      curr_taxcounts_obj.map(curr_obj => {
-        let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
-
-        if (tax_long_name) {
-          curr_obj["tax_long_name"] = tax_long_name;
-          this.tax_name_used_unique.add(tax_long_name);
-        }
-      });
-    });
-    let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank);
-
-    // console.timeEnd("TIME: connect_names_with_cnts");
-    return tax_cnt_obj_arrs;
-  }
+  // connect_names_with_cnts() {
+  //   // console.time("TIME: connect_names_with_cnts");
+  //
+  //   this.chosen_dids.map(did => {
+  //     let curr_taxcounts_obj = this.tax_id_obj_by_did_filtered[did];
+  //     curr_taxcounts_obj.map(curr_obj => {
+  //       let tax_long_name = this.get_tax_long_name(curr_obj, this.taxonomy_object);
+  //
+  //       if (tax_long_name) {
+  //         curr_obj["tax_long_name"] = tax_long_name;
+  //         this.tax_name_used_unique.add(tax_long_name);
+  //       }
+  //     });
+  //   });
+  //   let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank);
+  //
+  //   // console.timeEnd("TIME: connect_names_with_cnts");
+  //   return tax_cnt_obj_arrs;
+  // }
 
   // get_tax_str_array(biom_matrix, row_ind) {
   //   let tax_string = biom_matrix.rows[row_ind].id;
