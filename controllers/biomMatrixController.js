@@ -547,7 +547,7 @@ class Taxonomy {
     return tax_cnt_obj_arrs;
   }
 
-  make_sum_tax_name_cnt_obj_per_dataset(tax_id_obj_by_did_filtered) {
+  make_sum_tax_name_cnt_obj_per_dataset() {
     console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     /*
     domain: {
@@ -562,7 +562,59 @@ class Taxonomy {
     * */
     let dids_len = this.chosen_dids.length;
     let knt_arr = Array(dids_len).fill(0);
-    const sumator = {};
+
+    /*
+    try {
+      tots = arr[0].map((col, i) => {// transpose
+        return arr.map(row => row[i]) // loop over rows
+          .reduce((tot, cell) => tot + cell, // sum by col
+            0);
+      });
+    }
+
+    var channelSettings = channels.reduce(function(obj, itm) {
+        var channel = itm.toLowerCase().replace(" ", "");
+        obj[channel] = false;
+
+        return obj;
+}, {})
+
+    */
+    let tax_cnt_obj_arrs_w_tax_arr = Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
+
+      ob[taxon] = {
+        taxon_name: taxon,
+        taxon_arr: taxon.split(";"),
+        taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon]
+      };
+      return ob;
+    }, {});
+
+    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+      let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
+      let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
+      // let knts = taxon_cnts_per_d.map(taxon => {
+      //   ob[taxon]["knts"] = taxon_cnts_per_d;
+      //   return ob;
+      // });
+      function sum_arrs(num, idx) {
+        return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
+      }
+
+      for (let t_ind in taxon_arr) { // TODO: map
+        let taxon = taxon_arr[t_ind];
+        let key_tax_exists = (typeof ob[taxon] !== "undefined");
+        if (key_tax_exists && ob[taxon]["knt"]) {
+          ob[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+        }
+        else {
+          ob[taxon] = {};
+          ob[taxon]["knt"] = taxon_cnts_per_d;
+        }
+      }
+
+      return ob;
+    }, {});
 
     this.chosen_dids.map((did, d_idx) => {
 
