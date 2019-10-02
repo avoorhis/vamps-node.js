@@ -612,33 +612,94 @@ class Taxonomy {
     //   return ob;
     // }, {});
 
+    let new_tax_cnt_obj = Object.assign({}, tax_cnt_obj_arrs_w_tax_arr);
+    let new_tax_cnt_obj_nested = Object.keys(new_tax_cnt_obj).map(taxon_name => {
+      let curr_obj = new_tax_cnt_obj[taxon_name];
+      let nested_obj = curr_obj.taxon_arr.reduce((obj, taxon, ind) => {
+        let current_key = ind + "_" + taxon;
+        obj[current_key] = {};
+        return obj;
+      }, {});
+      curr_obj["nested_obj"] = nested_obj;
+      return curr_obj;
+    });
+
+    let new_sumator = Object.keys(new_tax_cnt_obj_nested).reduce((new_obj, tax_cnt_obj_nested, ind) => {
+      let len = tax_cnt_obj_nested.taxon_arr.length();
+      for (let idx = 0; idx < len; idx++) {
+
+      }
+
+      // let current_taxon = tax_cnt_obj_nested.nested_obj
+      // new_obj[current_taxon] =
+
+    }, {});
+
+
+    let empty_sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+      let current_key = "";
+      let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
+      let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
+      for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
+        let current_taxon = taxon_arr[t_ind];
+        let current_rank = C.RANKS[t_ind];
+        current_key = current_key + ";" + current_taxon + "_rank_" + current_rank;
+        ob[current_key] = {};
+        ob[current_key]["knt"] = taxon_cnts_per_d;
+        ob[current_key]["taxon"] = current_taxon;
+        ob[current_key]["rank"] = current_rank;
+      }
+      return ob;
+    }, {});
+
     let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
       let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
       let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
       function sum_arrs(num, idx) {
         return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
       }
-      // todo: see get_one_taxon_name for id + rank
+
       for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
         let taxon = taxon_arr[t_ind];
         let current_rank = C.RANKS[t_ind];
-
-        let key_rank_exists = (typeof ob[current_rank] !== "undefined");
-        if (key_rank_exists) {// TODO: simplify. create an empty one first
-          let key_tax_exists = (typeof ob[current_rank][taxon] !== "undefined");
-          if (key_tax_exists && ob[current_rank][taxon]["knt"]) {
-            ob[current_rank][taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
-          }
+        let current_key = taxon + "_rank_" + current_rank;
+        let current_key_exists = (typeof ob[current_key] !== "undefined");
+        if (current_key_exists && ob[current_key]["knt"]) {
+          ob[current_key]["knt"] = ob[current_key]["knt"].map(sum_arrs);
         }
         else {
-          ob[current_rank] = {};
-          ob[current_rank][taxon] = {};
-          ob[current_rank][taxon]["knt"] = taxon_cnts_per_d;
+          ob[current_key] = {};
+          ob[current_key]["knt"] = taxon_cnts_per_d;
         }
       }
 
       return ob;
     }, {});
+
+    // let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+    //   let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
+    //   let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
+    //   function sum_arrs(num, idx) {
+    //     return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
+    //   }
+    //   // todo: see get_one_taxon_name for id + rank
+    //   for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
+    //     let taxon = taxon_arr[t_ind];
+    //     let current_rank = C.RANKS[t_ind];
+    //     let current_key = taxon + "_rank_" + current_rank;
+    //     let current_key_exists = (typeof ob[current_key] !== "undefined");
+    //     if (current_key_exists && ob[current_key_exists]["knt"]) {// TODO: simplify. create an empty one first
+    //         ob[current_rank][taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+    //     }
+    //     else {
+    //       ob[current_rank] = {};
+    //       ob[current_rank][taxon] = {};
+    //       ob[current_rank][taxon]["knt"] = taxon_cnts_per_d;
+    //     }
+    //   }
+    //
+    //   return ob;
+    // }, {});
 
 
     console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
