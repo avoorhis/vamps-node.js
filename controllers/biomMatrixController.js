@@ -590,27 +590,27 @@ class Taxonomy {
       return ob;
     }, {});
 
-    let flat_sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
-      let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
-      let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
-      function sum_arrs(num, idx) {
-        return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
-      }
-
-      for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
-        let taxon = taxon_arr[t_ind];
-        let key_tax_exists = (typeof ob[taxon] !== "undefined");
-        if (key_tax_exists && ob[taxon]["knt"]) {
-          ob[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
-        }
-        else {
-          ob[taxon] = {};
-          ob[taxon]["knt"] = taxon_cnts_per_d;
-        }
-      }
-
-      return ob;
-    }, {});
+    // let flat_sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+    //   let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
+    //   let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
+    //   function sum_arrs(num, idx) {
+    //     return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
+    //   }
+    //
+    //   for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
+    //     let taxon = taxon_arr[t_ind];
+    //     let key_tax_exists = (typeof ob[taxon] !== "undefined");
+    //     if (key_tax_exists && ob[taxon]["knt"]) {
+    //       ob[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+    //     }
+    //     else {
+    //       ob[taxon] = {};
+    //       ob[taxon]["knt"] = taxon_cnts_per_d;
+    //     }
+    //   }
+    //
+    //   return ob;
+    // }, {});
 
     let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
       let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
@@ -618,16 +618,22 @@ class Taxonomy {
       function sum_arrs(num, idx) {
         return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
       }
-
+      // todo: see get_one_taxon_name for id + rank
       for (let t_ind = 0; t_ind < taxon_arr.length; t_ind += 1) { // TODO: map? benchmark
         let taxon = taxon_arr[t_ind];
-        let key_tax_exists = (typeof ob[taxon] !== "undefined");
-        if (key_tax_exists && ob[taxon]["knt"]) {
-          ob[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+        let current_rank = C.RANKS[t_ind];
+
+        let key_rank_exists = (typeof ob[current_rank] !== "undefined");
+        if (key_rank_exists) {// TODO: simplify. create an empty one first
+          let key_tax_exists = (typeof ob[current_rank][taxon] !== "undefined");
+          if (key_tax_exists && ob[current_rank][taxon]["knt"]) {
+            ob[current_rank][taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+          }
         }
         else {
-          ob[taxon] = {};
-          ob[taxon]["knt"] = taxon_cnts_per_d;
+          ob[current_rank] = {};
+          ob[current_rank][taxon] = {};
+          ob[current_rank][taxon]["knt"] = taxon_cnts_per_d;
         }
       }
 
