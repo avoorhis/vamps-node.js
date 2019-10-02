@@ -774,9 +774,8 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.time("TIME: get_sumator new");
   // const sumator_class =  new visualization_controller.sumator(req);
 
-  let visual_post_items = start_visual_post_items(req);
-  const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items, false);
-  biom_matrix_obj.taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
+  const taxa_counts_class = new biom_matrix_controller.TaxaCounts(req, req.session, req.session.chosen_id_order);
+  sum_tax_name_cnt_obj_per_dataset = taxa_counts_class.taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
   let sumator_new = sumator_class.get_sumator(req, biom_matrix);
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
