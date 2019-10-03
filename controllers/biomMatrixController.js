@@ -603,25 +603,19 @@ class Taxonomy {
     {
       let current_entry = tax_cnt_obj_arrs_w_tax_arr[curr_tax];
       let nest_taxa_arr = this.nest(current_entry["taxon_arr"]);
+      tax_cnt_obj_arrs_w_tax_arr[curr_tax]["nest_taxa_arr"] = nest_taxa_arr;
       let obj = {};
       let key_arr = current_entry["taxon_arr"];
       for (let ptr = obj, i = 0, j = key_arr.length; i < j; i++) {
         ptr = (ptr[key_arr[i]] = {});
       }
+      // let iterator = new module.exports.Iterator(obj);
+      //
+      // for (let a of iterator) {
+      //   console.log(a);
+      // }
 
-      let iterator = new module.exports.Iterator(obj);
-
-
-      while(iterator.hasNext()) {
-        console.log(this.iterator.next());
-      }
-
-      this.iterator.rewind();
-      console.log(this.iterator.current());
-
-    });
-
-
+    // nest_taxa_arr
 
     // let flat_sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
     //   let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
@@ -977,39 +971,59 @@ class WriteMatrixFile {
   }
 }
 
-class Iterator {
+class IteratorClass {
   constructor(data) {
-    this.keys = Object.keys(data);
     this.index = 0;
-    this.length = this.keys.length;
+    this.data = data;
   }
 
-  next() {
-    let element;
-    if (!this.hasNext()) {
-      return null;
-    }
-    element = this.data[this.keys[this.index]];
-    // if (typeof element === "object") {
-    //
-    // }
-    this.index++;
-    return element;
-  }
-
-  hasNext() {
-    return this.index < length;
-  }
-
-  rewind() {
-    this.index = 0;
-    return this.data[this.keys[this.index]];
-  }
-
-  current() {
-    return this.data[this.keys[this.index]];
+  [Symbol.iterator]() {
+    return {
+      next: () => {
+        if (this.index < this.data.length) {
+          return { value: this.data[this.index++], done: false };
+        } else {
+          this.index = 0; // to reset iteration status
+          return { done: true };
+        }
+      },
+    };
   }
 }
+
+// class Iterator {
+//   constructor(data) {
+//     this.keys = Object.keys(data);
+//     this.index = 0;
+//     this.length = this.keys.length;
+//   }
+//
+//   next() {
+//     let element;
+//     if (!this.hasNext()) {
+//       return null;
+//     }
+//     element = this.data[this.keys[this.index]];
+//     // if (typeof element === "object") {
+//     //
+//     // }
+//     this.index++;
+//     return element;
+//   }
+//
+//   hasNext() {
+//     return this.index < length;
+//   }
+//
+//   rewind() {
+//     this.index = 0;
+//     return this.data[this.keys[this.index]];
+//   }
+//
+//   current() {
+//     return this.data[this.keys[this.index]];
+//   }
+// }
 
 module.exports = {
   BiomMatrix: BiomMatrix,
@@ -1021,5 +1035,5 @@ module.exports = {
   TaxonomyGeneric: TaxonomyGeneric,
   TaxonomyRDP: TaxonomyRDP,
   WriteMatrixFile: WriteMatrixFile,
-  Iterator: Iterator
+  Iterator: IteratorClass
 };
