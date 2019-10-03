@@ -897,8 +897,9 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // write html to a file and open it
 
   console.log("render visuals/dbrowser");
-  //let file_name = ts+'_krona.html';
-  //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+  // let file_name = ts + '_krona.html';
+  // let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
+  // fs.writeFileSync(html_path, JSON.stringify(html));
 
   res.render('visuals/dbrowser', {
     title: 'VAMPS:Taxonomy Browser (Krona)',
