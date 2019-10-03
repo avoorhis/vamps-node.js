@@ -503,14 +503,14 @@ class TaxonomyFactory {
 
 class Taxonomy {
   constructor(parameters_obj) {
-    this.chosen_dids                = parameters_obj["chosen_dids"];
-    this.post_items                 = parameters_obj["visual_post_items"];
-    this.taxa_counts_module         = parameters_obj["taxa_counts_module"];
-    this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
-    this.id_rank_taxa_cash          = {};
-    this.tax_name_used_unique       = new Set();
+    this.chosen_dids = parameters_obj["chosen_dids"];
+    this.post_items = parameters_obj["visual_post_items"];
+    this.taxa_counts_module = parameters_obj["taxa_counts_module"];
+    this.taxonomy_object = this.taxa_counts_module.taxonomy_object;
+    this.id_rank_taxa_cash = {};
+    this.tax_name_used_unique = new Set();
     this.tax_id_obj_by_did_filtered = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
-    this.tax_cnt_obj_arrs           = this.connect_names_with_cnts();
+    this.tax_cnt_obj_arrs = this.connect_names_with_cnts();
   }
 
   make_empty_tax_cnt_obj() {
@@ -531,16 +531,15 @@ class Taxonomy {
     let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
 
     this.chosen_dids.map((did, d_idx) => {
-     const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
-     curr_tax_info_obj.map(ob => {
-       // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
-       if (ob.tax_long_name) {
-         tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
-       }
-       else {
-         console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
-       }
-     });
+      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
+      curr_tax_info_obj.map(ob => {
+        // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        if (ob.tax_long_name) {
+          tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        } else {
+          console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
+        }
+      });
     });
 
     // console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
@@ -589,31 +588,31 @@ class Taxonomy {
 
     */
     let tax_cnt_obj_arrs_w_tax_arr = Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
-
+      let taxon_arr = taxon.split(";");
       ob[taxon] = {
         taxon_name: taxon,
-        taxon_arr: taxon.split(";"),
-        taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon]
+        taxon_arr: taxon_arr,
+        taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
+        nest_taxa_arr: this.nest(taxon_arr)
       };
       return ob;
     }, {});
 
+    let ranks_depth = tax_cnt_obj_arrs_w_tax_arr.taxon_arr.length;
+
     //TODO: combine taxa, ranks and counts per dataset, get xml
-    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).map(curr_tax =>
-    {
+    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).map(curr_tax => {
       let current_entry = tax_cnt_obj_arrs_w_tax_arr[curr_tax];
-      let nest_taxa_arr = this.nest(current_entry["taxon_arr"]);
-      tax_cnt_obj_arrs_w_tax_arr[curr_tax]["nest_taxa_arr"] = nest_taxa_arr;
-      let obj = {};
-      let key_arr = current_entry["taxon_arr"];
-      for (let ptr = obj, i = 0, j = key_arr.length; i < j; i++) {
-        ptr = (ptr[key_arr[i]] = {});
-      }
-      // let iterator = new module.exports.Iterator(obj);
-      //
-      // for (let a of iterator) {
-      //   console.log(a);
-      // }
+
+    });
+    console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+    return sumator;
+  }
+    // let iterator = new module.exports.Iterator(obj);
+    //
+    // for (let a of iterator) {
+    //   console.log(a);
+    // }
 
     // nest_taxa_arr
 
@@ -657,8 +656,8 @@ class Taxonomy {
     //
     //   }
 
-      // let current_taxon = tax_cnt_obj_nested.nested_obj
-      // new_obj[current_taxon] =
+    // let current_taxon = tax_cnt_obj_nested.nested_obj
+    // new_obj[current_taxon] =
 
     // }, {});
 
@@ -728,10 +727,6 @@ class Taxonomy {
     //   return ob;
     // }, {});
 
-
-    console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
-    return sumator;
-  }
 
 }
 
