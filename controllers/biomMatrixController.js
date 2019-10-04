@@ -593,28 +593,42 @@ class Taxonomy {
         taxon_name: taxon,
         taxon_arr: taxon_arr,
         taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
-        nest_taxa_arr: this.nest(taxon_arr)
+        nest_taxa_obj: this.nest(taxon_arr)
       };
       return ob;
     }, {});
 
-    let ranks_depth = tax_cnt_obj_arrs_w_tax_arr.taxon_arr.length;
-
+    // let ranks_depth = tax_cnt_obj_arrs_w_tax_arr.taxon_arr.length;
+    // let current_tax_name = "";
     //TODO: combine taxa, ranks and counts per dataset, get xml
-    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).map(curr_tax => {
+    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, curr_tax) => {
       let current_entry = tax_cnt_obj_arrs_w_tax_arr[curr_tax];
+      let taxon_arr = current_entry.taxon_arr;
+      let taxon_cnts_per_d = current_entry.taxon_cnts_per_d;
+      function sum_arrs(num, idx) {
+        return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
+      }
+      for (let ptr = current_entry.nest_taxa_obj, t_ind = 0, len = taxon_arr.length; t_ind < len; t_ind++) {
+        let current_taxon_name = taxon_arr[t_ind];
+        let current_obj = ptr;
+        let next_obj = ptr[taxon_arr[t_ind]];
+        let key_tax_exists = (typeof current_obj !== "undefined");
 
-    });
+        if (key_tax_exists && current_obj["knt"]) {
+          ptr =
+            (current_obj["knt"] = current_obj["knt"].map(sum_arrs));
+          //       ob[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+        }
+        else {
+          // ptr[taxon_arr[t_ind]] = {};
+          current_obj["knt"] = taxon_cnts_per_d;
+        }
+      }
+      return ob;
+    }, {});
     console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     return sumator;
   }
-    // let iterator = new module.exports.Iterator(obj);
-    //
-    // for (let a of iterator) {
-    //   console.log(a);
-    // }
-
-    // nest_taxa_arr
 
     // let flat_sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
     //   let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
