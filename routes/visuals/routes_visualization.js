@@ -778,15 +778,15 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
   const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
 
-  let sum_tax_name_cnt_obj_per_dataset = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
+  let sumator_new = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
   // let sumator_new = sumator_class.get_sumator(req, biom_matrix);
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
 
-  console.time("TIME: get_sumator orig");
-  let sumator = get_sumator(req, biom_matrix);
-  console.timeEnd("TIME: get_sumator orig");
-  console.log(JSON.stringify(sumator));
+  // console.time("TIME: get_sumator orig");
+  // let sumator = get_sumator(req, biom_matrix);
+  // console.timeEnd("TIME: get_sumator orig");
+  // console.log(JSON.stringify(sumator));
 
   console.time("TIME: over sumator orig");
 
