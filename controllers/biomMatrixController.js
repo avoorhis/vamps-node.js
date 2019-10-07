@@ -584,7 +584,8 @@ class Taxonomy {
   make_sum_tax_name_cnt_obj_per_dataset() {
     console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
-
+    let initial_obj = {};
+    // initial_obj["node"] = {};
     let summator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
       let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
       let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
@@ -594,25 +595,24 @@ class Taxonomy {
 
       for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
         let taxon = taxon_arr[t_ind];
-        let key_tax_exists = (typeof ob[taxon] !== "undefined");
-        if (key_tax_exists && ob[taxon]["seqcount"]["val"]) {
-          ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
+        let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["node"] !== "undefined" && typeof ptr[taxon]["node"]["name"] !== "undefined");
+        if (key_tax_exists && ob[taxon]["node"]["seqcount"]["val"]) {
+          ptr[taxon]["node"]["seqcount"]["val"] = ob[taxon]["node"]["seqcount"]["val"].map(sum_arrs);
         }
         else {
           ptr[taxon] = {};
           ptr[taxon]["node"] = {};
-          ptr[taxon]["node"]["@"] = {};
-          ptr[taxon]["node"]["@"]["name"] = taxon_arr[t_ind];
-          ptr[taxon]["rank"] = {};
-          ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
-          ptr[taxon]["seqcount"] = {};
-          ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
+          ptr[taxon]["node"]["name"] = taxon_arr[t_ind];
+          ptr[taxon]["node"]["rank"] = {};
+          ptr[taxon]["node"]["rank"]["val"] = C.RANKS[t_ind];
+          ptr[taxon]["node"]["seqcount"] = {};
+          ptr[taxon]["node"]["seqcount"]["val"] = taxon_cnts_per_d;
         }
-        ptr = ptr[taxon];
+        ptr = ptr[taxon]["node"];
       }
 
       return ob;
-    }, {});
+    }, initial_obj);
 
     console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     return summator;
