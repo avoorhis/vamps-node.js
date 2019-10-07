@@ -21,6 +21,7 @@ const visualization_controller = require(app_root + '/controllers/visualizationC
 const spawn = require('child_process').spawn;
 // const app = express();
 const js2xmlparser = require("js2xmlparser");
+const xml_convert = require('xml-js');
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
 
@@ -782,11 +783,18 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // let sumator = get_sumator(req, biom_matrix);
   // console.timeEnd("TIME: get_sumator orig");
   // console.log(JSON.stringify(sumator));
-  let sumator = {};
   console.time("TIME: over sumator new");
-  let new_xmp = js2xmlparser.parse("node", sumator_new);
-  console.log(new_xmp);
-  html = new_xmp;
+  // let new_xmp = js2xmlparser.parse("node", sumator_new);
+  // let options = {compact: true};
+  let options = {compact: true,
+    elementNameFn: function(val) {return val.replace('foo:','');}};
+  // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
+
+  let result_xml = xml_convert.js2xml(sumator_new, options);     // to convert javascript object to xml text
+
+  console.log("result_xml = ");
+  console.log(result_xml);
+  html = result_xml;
   console.timeEnd("TIME: over sumator new");
 
 
