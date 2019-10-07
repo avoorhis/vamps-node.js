@@ -595,14 +595,18 @@ class Taxonomy {
       for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
         let taxon = taxon_arr[t_ind];
         let key_tax_exists = (typeof ob[taxon] !== "undefined");
-        if (key_tax_exists && ob[taxon]["knt"]) {
-          ptr[taxon]["knt"] = ob[taxon]["knt"].map(sum_arrs);
+        if (key_tax_exists && ob[taxon]["seqcount"]["val"]) {
+          ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
         }
         else {
           ptr[taxon] = {};
-          ptr[taxon]["t_name"] = taxon_arr[t_ind];
-          ptr[taxon]["rank"] = C.RANKS[t_ind];
-          ptr[taxon]["knt"] = taxon_cnts_per_d;
+          ptr[taxon]["node"] = {};
+          ptr[taxon]["node"]["@"] = {};
+          ptr[taxon]["node"]["@"]["name"] = taxon_arr[t_ind];
+          ptr[taxon]["rank"] = {};
+          ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
+          ptr[taxon]["seqcount"] = {};
+          ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         }
         ptr = ptr[taxon];
       }

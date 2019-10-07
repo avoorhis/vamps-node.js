@@ -6,12 +6,6 @@ const url  = require('url');
 // const http = require('http');
 const path = require('path');
 const fs   = require('fs-extra');
-// const open = require('open');
-//const async = require('async');
-// const nodemailer = require('nodemailer');
-// const transporter = nodemailer.createTransport({});
-// const zlib = require('zlib');
-// const Readable = require('readable-stream').Readable;
 const multer    = require('multer');
 const config  = require(app_root + '/config/config');
 const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -26,6 +20,7 @@ const biom_matrix_controller = require(app_root + '/controllers/biomMatrixContro
 const visualization_controller = require(app_root + '/controllers/visualizationController');
 const spawn = require('child_process').spawn;
 // const app = express();
+const js2xmlparser = require("js2xmlparser");
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
 
@@ -787,112 +782,119 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // let sumator = get_sumator(req, biom_matrix);
   // console.timeEnd("TIME: get_sumator orig");
   // console.log(JSON.stringify(sumator));
+  let sumator = {};
+  console.time("TIME: over sumator new");
+  let new_xmp = js2xmlparser.parse("node", sumator_new);
+  console.log(new_xmp);
+  html = new_xmp;
+  console.timeEnd("TIME: over sumator new");
 
-  console.time("TIME: over sumator orig");
 
-  for (let d in sumator['domain']) {
-
-    // #### DOMAIN ####
-    //let dnode_name =  dname
-    html += "<node name='"+d+"'>\n";
-    html += " <seqcount>";
-    for (let c_domain in sumator['domain'][d]['knt']) {
-        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-    }
-      html += "</seqcount>\n";
-      html += " <rank><val>domain</val></rank>\n";
-
-      // #### PHYLUM ####
-      for (let p in sumator['domain'][d]['phylum']){
-        html += " <node name='" + p + "'>\n";
-        html += "  <seqcount>";
-        for (let c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-            html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString() + "</val>";
-        }
-        html += "</seqcount>\n";
-        html += "  <rank><val>phylum</val></rank>\n";
-        ///
-        // #### KLASS ####
-        for (let k in sumator['domain'][d]['phylum'][p]['klass'])
-        {
-          html += "  <node name='" + k + "'>\n";
-          html += "   <seqcount>";
-          for (let c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
-          }
-          html += "</seqcount>\n";
-          html += "   <rank><val>klass</val></rank>\n";
-
-            // #### ORDER ####
-          for (let o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']) {
-            html += "   <node name='" + o + "'>\n";
-            html += "    <seqcount>";
-            for (let c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']) {
-              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-            }
-            html += "</seqcount>\n";
-            html += "    <rank><val>order</val></rank>\n";
-
-            // #### FAMILY ####
-            for (let f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-              html += "    <node name='"+f+"'>\n";
-              html += "     <seqcount>";
-              // TODO: JSHint: Blocks are nested too deeply. (6) (W073)
-              for (let c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']) {
-                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-              }
-              html += "</seqcount>\n";
-              html += "     <rank><val>family</val></rank>\n";
-
-              // #### GENUS ####
-              for (let g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']) {
-                html += "     <node name='"+g+"'>\n";
-                html += "      <seqcount>";
-                for (let c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-                }
-                html += "</seqcount>\n";
-                html += "      <rank><val>genus</val></rank>\n";
-
-                // #### SPECIES ####
-                for (let s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']) {
-                  html += "     <node name='" + s + "'>\n";
-                  html += "      <seqcount>";
-                  for (let c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                      html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-                  }
-                  html += "</seqcount>\n";
-                  html += "      <rank><val>species</val></rank>\n";
-
-                  // #### STRAIN ####
-                  for (let st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                        html += "     <node name='"+st+"'>\n";
-                        html += "      <seqcount>";
-                        for (let c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-                }
-                html += "</seqcount>\n";
-                html += "      <rank><val>strain</val></rank>\n";
-///// DONE //////
-                html += "     </node>\n";
-                  }  // end strain
-                  html += "     </node>\n";
-                }  // end species
-                html += "     </node>\n";
-              }  // end genus
-              html += "    </node>\n";
-            }  // end family
-            html += "   </node>\n";
-          }  // end order
-          html += "  </node>\n";
-        }  // end klass
-        html += " </node>\n";
-      }  // end phylum
-      html += "</node>\n";
-  }    // end domain
-  html += "  </node>\n";
-  console.timeEnd("TIME: over sumator orig");
-
+//   console.time("TIME: over sumator orig");
+//
+//   for (let d in sumator['domain']) {
+//
+//     // #### DOMAIN ####
+//     //let dnode_name =  dname
+//     html += "<node name='"+d+"'>\n";
+//     html += " <seqcount>";
+//     for (let c_domain in sumator['domain'][d]['knt']) {
+//         html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+//     }
+//       html += "</seqcount>\n";
+//       html += " <rank><val>domain</val></rank>\n";
+//
+//       // #### PHYLUM ####
+//       for (let p in sumator['domain'][d]['phylum']){
+//         html += " <node name='" + p + "'>\n";
+//         html += "  <seqcount>";
+//         for (let c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+//             html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString() + "</val>";
+//         }
+//         html += "</seqcount>\n";
+//         html += "  <rank><val>phylum</val></rank>\n";
+//         ///
+//         // #### KLASS ####
+//         for (let k in sumator['domain'][d]['phylum'][p]['klass'])
+//         {
+//           html += "  <node name='" + k + "'>\n";
+//           html += "   <seqcount>";
+//           for (let c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+//               html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+//           }
+//           html += "</seqcount>\n";
+//           html += "   <rank><val>klass</val></rank>\n";
+//
+//             // #### ORDER ####
+//           for (let o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']) {
+//             html += "   <node name='" + o + "'>\n";
+//             html += "    <seqcount>";
+//             for (let c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']) {
+//               html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
+//             }
+//             html += "</seqcount>\n";
+//             html += "    <rank><val>order</val></rank>\n";
+//
+//             // #### FAMILY ####
+//             for (let f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+//               html += "    <node name='"+f+"'>\n";
+//               html += "     <seqcount>";
+//               // TODO: JSHint: Blocks are nested too deeply. (6) (W073)
+//               for (let c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']) {
+//                 html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+//               }
+//               html += "</seqcount>\n";
+//               html += "     <rank><val>family</val></rank>\n";
+//
+//               // #### GENUS ####
+//               for (let g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']) {
+//                 html += "     <node name='"+g+"'>\n";
+//                 html += "      <seqcount>";
+//                 for (let c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+//                     html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
+//                 }
+//                 html += "</seqcount>\n";
+//                 html += "      <rank><val>genus</val></rank>\n";
+//
+//                 // #### SPECIES ####
+//                 for (let s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']) {
+//                   html += "     <node name='" + s + "'>\n";
+//                   html += "      <seqcount>";
+//                   for (let c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+//                       html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
+//                   }
+//                   html += "</seqcount>\n";
+//                   html += "      <rank><val>species</val></rank>\n";
+//
+//                   // #### STRAIN ####
+//                   for (let st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+//                         html += "     <node name='"+st+"'>\n";
+//                         html += "      <seqcount>";
+//                         for (let c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+//                             html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
+//                 }
+//                 html += "</seqcount>\n";
+//                 html += "      <rank><val>strain</val></rank>\n";
+// ///// DONE //////
+//                 html += "     </node>\n";
+//                   }  // end strain
+//                   html += "     </node>\n";
+//                 }  // end species
+//                 html += "     </node>\n";
+//               }  // end genus
+//               html += "    </node>\n";
+//             }  // end family
+//             html += "   </node>\n";
+//           }  // end order
+//           html += "  </node>\n";
+//         }  // end klass
+//         html += " </node>\n";
+//       }  // end phylum
+//       html += "</node>\n";
+//   }    // end domain
+//   html += "  </node>\n";
+//   console.timeEnd("TIME: over sumator orig");
+//
 
   // write html to a file and open it
 
