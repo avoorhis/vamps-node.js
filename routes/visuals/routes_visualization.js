@@ -761,26 +761,23 @@ function is_array(data) {
 }
 
 function recursive_sumator_read(data, res_arr, iter_num) {
-  let level = 1;
   iter_num++;
   let key;
   let temp_arr = [];
+  let inner_obj = {};
   let all_keys = ["name", "rank", "seqcount", "val"];
   for (key in data) {
     if (!data.hasOwnProperty(key)) { continue }
     if (all_keys.includes(key)) {
-      temp_arr.push(data);
       continue;
     }
-    if (is_object(data[key])) {
-      let res = recursive_sumator_read(data[key], res_arr, iter_num);
-
-      let depth = res[0] + 1;
-      level = Math.max(depth, level);
+    if (is_object(data[key]) && (key === data[key].name)) {
+      temp_arr.push(data[key]);
+      inner_obj = recursive_sumator_read(data[key], res_arr, iter_num);
     }
     res_arr.push(temp_arr);
   }
-  return [level, res_arr, iter_num];
+  return [data, res_arr, iter_num];
 
   
   // let all_keys = ["name", "rank", "seqcount"];
