@@ -760,105 +760,53 @@ function is_array(data) {
   return data && (Array.isArray(data));
 }
 
-function recursive_sumator_read(data, res_arr, iter_num) {
-  iter_num++;
-  let key;
-  let temp_arr = [];
-  let inner_obj = {};
-  let all_keys = ["name", "rank", "seqcount", "val"];
-  for (key in data) {
-    if (!data.hasOwnProperty(key)) { continue }
-    if (all_keys.includes(key)) {
-      continue;
-    }
-    if (is_object(data[key]) && (key === data[key].name)) {
-      temp_arr.push(data[key]);
-      inner_obj = recursive_sumator_read(data[key], res_arr, iter_num);
-    }
-    res_arr.push(temp_arr);
-  }
-  return [data, res_arr, iter_num];
-
-  
-  // let all_keys = ["name", "rank", "seqcount"];
-  // Object.keys(data).forEach(function (k, ind) {
-  //   if (is_object(data[k])) {
-  //     console.log(k in all_keys);
-  //     new_res[ind] = [];
-  //     recursive_sumator_read(new_res, data[k]);
-  //     // return;
-  //   }
-  //   else {
-  //     new_res[ind].push(data[k]);
-  //   }
-  // });
-
-  // if (is_object(data)) {
-  //   Object.keys(data).forEach(recursive_sumator_read(new_res, data))
-  //
-  // }
-  // else {
-  //   new_res.push(data);
-  // }
-  // return new_res;
-    // return is_object(data) ? make_array_of_summator_obj(data)
-    //   : Object.entries(data).map ( ([key, value]) => {
-    //     return { [key]: recursive_sumator_read(value) };
-    //   });
-}
-//
-// function make_array_of_summator_obj(sumator_new) {
-//   let arr_obj = [];
-//   let all_keys = ["name", "rank", "seqcount"];
-//
-//   for (let i = 0; i < Object.keys(sumator_new).length; i++) {
-//     let k = Object.keys(sumator_new)[i];
-//     let entry = sumator_new[k];
-//     if (!(k in all_keys)) {
-//       arr_obj.push(entry);
+// function recursive_sumator_read(data, res_arr, iter_num) {
+//   iter_num++;
+//   let key;
+//   let temp_arr = [];
+//   let inner_obj = {};
+//   let all_keys = ["name", "rank", "seqcount", "val"];
+//   for (key in data) {
+//     if (!data.hasOwnProperty(key)) { continue }
+//     if (all_keys.includes(key)) {
+//       continue;
 //     }
-//
-//     // let a = recursive_sumator_read(entry);
-//
+//     if (is_object(data[key]) && (key === data[key].name)) {
+//       temp_arr.push(data[key]);
+//       data = recursive_sumator_read(data[key], temp_arr, iter_num);
+//     }
+//     res_arr.push(temp_arr);
 //   }
+//   return [data, res_arr, iter_num];
 //
-//   return arr_obj;
 //
-//   // return sumator_new.reduce( (acc, [year, month, day, object]) => {
-//   //   let curr = acc[year] = acc[year] || {};
-//   //   curr = curr[month] = curr[month] || {};
-//   //   curr = curr[day] = curr[day] || [];
-//   //   curr.push(object);
-//   //   return acc;
-//   // }, {});
+//   // let all_keys = ["name", "rank", "seqcount"];
+//   // Object.keys(data).forEach(function (k, ind) {
+//   //   if (is_object(data[k])) {
+//   //     console.log(k in all_keys);
+//   //     new_res[ind] = [];
+//   //     recursive_sumator_read(new_res, data[k]);
+//   //     // return;
+//   //   }
+//   //   else {
+//   //     new_res[ind].push(data[k]);
+//   //   }
+//   // });
+//
+//   // if (is_object(data)) {
+//   //   Object.keys(data).forEach(recursive_sumator_read(new_res, data))
 //   //
-//   // function wrapInArrays(data) {
-//   //   return Array.isArray(data) ? data
-//   //     : Object.entries(data).map ( ([key, value]) => {
-//   //       return { [key]: wrapInArrays(value) };
-//   //     });
 //   // }
-//
-//   // const wrapped = wrapInArrays(result);
-//
+//   // else {
+//   //   new_res.push(data);
+//   // }
+//   // return new_res;
+//     // return is_object(data) ? make_array_of_summator_obj(data)
+//     //   : Object.entries(data).map ( ([key, value]) => {
+//     //     return { [key]: recursive_sumator_read(value) };
+//     //   });
 // }
 
-function make_array_of_sumator(sumator_new) {
-  console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
-  let initial_obj = {};
-  let res_arr = [];
-  let summator = Object.keys(sumator_new).reduce((ob, inner_obj) => {
-
-    for (let ptr = ob, t_ind = 0, j = Object.keys(inner_obj).length; t_ind < j; t_ind++) {
-      res_arr.push(ptr);
-      ptr = res_arr;
-    }
-    return ob;
-  }, initial_obj);
-
-  console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
-  return summator;
-}
 
 
 
@@ -889,11 +837,8 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
 
-  let new_res = [];
-  let iter_num = 0;
-  let sumator = recursive_sumator_read(sumator_new, new_res, iter_num);
 
-  // make_array_of_sumator(sumator_new);
+  let sumator = taxonomy_lookup_module.make_array_of_sumator(sumator_new);
 
   // console.time("TIME: get_sumator orig");
   // let sumator = get_sumator(req, biom_matrix);

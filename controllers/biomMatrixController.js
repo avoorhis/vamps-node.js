@@ -602,25 +602,50 @@ class Taxonomy {
         }
         else {
           ptr[taxon] = {};
-          // ptr[taxon] = {};
+          ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
+          ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
+          ptr[taxon]["children"] ? ptr[taxon]["children"].push(taxon_arr[t_ind + 1]) : ptr[taxon]["child"] = [];
           ptr[taxon]["name"] = taxon_arr[t_ind];
           ptr[taxon]["rank"] = {};
           ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
           ptr[taxon]["seqcount"] = {};
           ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         }
+        ptr[taxon]["children"] = ptr[taxon]["children"].filter(helpers.onlyUnique);
         ptr = ptr[taxon];
         // init_arr.push(ptr);
       }
       return ob;
     }, initial_obj);
 
-    // console.log("init_arr - ");
-    // console.log(init_arr);
-
     console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     return summator;
   }
+
+  make_array_of_sumator(sumator_new) {
+
+    console.time("TIME: make_array_of_sumator");
+    // let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
+    let initial_obj = [];
+    // let cash = [];
+    let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
+      let curr_data_obj = sumator_new[data_obj_key];
+      let depth = curr_data_obj["depth"];
+      for (let temp_arr = ob, i = 0; i <= depth; i++) {
+        let temp_obj = {};
+        temp_obj["name"] = curr_data_obj["name"];
+        temp_obj["rank"] = curr_data_obj["rank"];
+        temp_obj["seqcount"] = curr_data_obj["seqcount"];
+        temp_arr.push(temp_obj);
+      }
+
+      return ob;
+    }, initial_obj);
+
+    console.timeEnd("TIME: make_array_of_sumator");
+    return summator;
+  }
+
 
 }
 
