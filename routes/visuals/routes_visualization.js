@@ -751,6 +751,120 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
  });
  /////////////////////////////////////////////////
 });
+
+function is_object(data) {
+  return data && (data.constructor === Object);
+}
+
+function is_array(data) {
+  return data && (Array.isArray(data));
+}
+
+function recursive_sumator_read(data, res_arr, iter_num) {
+  let level = 1;
+  iter_num++;
+  let key;
+  let temp_arr = [];
+  let all_keys = ["name", "rank", "seqcount", "val"];
+  for (key in data) {
+    if (!data.hasOwnProperty(key)) { continue }
+    if (all_keys.includes(key)) {
+      temp_arr.push(data);
+      continue;
+    }
+    if (is_object(data[key])) {
+      let res = recursive_sumator_read(data[key], res_arr, iter_num);
+
+      let depth = res[0] + 1;
+      level = Math.max(depth, level);
+    }
+    res_arr.push(temp_arr);
+  }
+  return [level, res_arr, iter_num];
+
+  
+  // let all_keys = ["name", "rank", "seqcount"];
+  // Object.keys(data).forEach(function (k, ind) {
+  //   if (is_object(data[k])) {
+  //     console.log(k in all_keys);
+  //     new_res[ind] = [];
+  //     recursive_sumator_read(new_res, data[k]);
+  //     // return;
+  //   }
+  //   else {
+  //     new_res[ind].push(data[k]);
+  //   }
+  // });
+
+  // if (is_object(data)) {
+  //   Object.keys(data).forEach(recursive_sumator_read(new_res, data))
+  //
+  // }
+  // else {
+  //   new_res.push(data);
+  // }
+  // return new_res;
+    // return is_object(data) ? make_array_of_summator_obj(data)
+    //   : Object.entries(data).map ( ([key, value]) => {
+    //     return { [key]: recursive_sumator_read(value) };
+    //   });
+}
+//
+// function make_array_of_summator_obj(sumator_new) {
+//   let arr_obj = [];
+//   let all_keys = ["name", "rank", "seqcount"];
+//
+//   for (let i = 0; i < Object.keys(sumator_new).length; i++) {
+//     let k = Object.keys(sumator_new)[i];
+//     let entry = sumator_new[k];
+//     if (!(k in all_keys)) {
+//       arr_obj.push(entry);
+//     }
+//
+//     // let a = recursive_sumator_read(entry);
+//
+//   }
+//
+//   return arr_obj;
+//
+//   // return sumator_new.reduce( (acc, [year, month, day, object]) => {
+//   //   let curr = acc[year] = acc[year] || {};
+//   //   curr = curr[month] = curr[month] || {};
+//   //   curr = curr[day] = curr[day] || [];
+//   //   curr.push(object);
+//   //   return acc;
+//   // }, {});
+//   //
+//   // function wrapInArrays(data) {
+//   //   return Array.isArray(data) ? data
+//   //     : Object.entries(data).map ( ([key, value]) => {
+//   //       return { [key]: wrapInArrays(value) };
+//   //     });
+//   // }
+//
+//   // const wrapped = wrapInArrays(result);
+//
+// }
+
+function make_array_of_sumator(sumator_new) {
+  console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+  let initial_obj = {};
+  let res_arr = [];
+  let summator = Object.keys(sumator_new).reduce((ob, inner_obj) => {
+
+    for (let ptr = ob, t_ind = 0, j = Object.keys(inner_obj).length; t_ind < j; t_ind++) {
+      res_arr.push(ptr);
+      ptr = res_arr;
+    }
+    return ob;
+  }, initial_obj);
+
+  console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+  return summator;
+}
+
+
+
 //
 // DATA BROWSER
 //
@@ -775,9 +889,14 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
 
   let sumator_new = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
-  // let sumator_new = sumator_class.get_sumator(req, biom_matrix);
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
+
+  let new_res = [];
+  let iter_num = 0;
+  let sumator = recursive_sumator_read(sumator_new, new_res, iter_num);
+
+  // make_array_of_sumator(sumator_new);
 
   // console.time("TIME: get_sumator orig");
   // let sumator = get_sumator(req, biom_matrix);
@@ -786,11 +905,40 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.time("TIME: over sumator new");
   // let new_xmp = js2xmlparser.parse("node", sumator_new);
   // let options = {compact: true};
-  let options = {compact: true,
+  // let new_object_sum = {};
+  // new_object_sum["node"] = {};
+  // for (let i = 0; i < Object.keys(sumator_new).length; i++) {
+  //   let key = Object.keys(sumator_new)[i];
+  //   new_object_sum["node name"] = key;
+  //   let curr_obj = sumator_new[key];
+  //   Object.assign(new_object_sum["node"], {curr_obj});
+  // }
+  // console.log("new_object_sum : ");
+  // console.log(new_object_sum);
+  // let all_keys = ["name", "rank", "seqcount"];
+  // let arr_obj = [];
+  // for (let i = 0; i < Object.keys(sumator_new).length; i++) {
+  //   let k = Object.keys(sumator_new)[i];
+  //   let entry = sumator_new[k];
+  //   if (k in all_keys) {}
+  //   new_arr.push(entry);
+  // }
+  //
+  //
+  // let result_string = "";
+  //
+  // const toXml = (data) => {
+  //   return data.reduce((result, el) => {
+  //     return result + `<trkpt lat="${el.lat}" lon="${el.lon}"><ele>${el.ele}</ele></trkpt>\n`
+  //   }, '')
+  //
+
+
+    let options = {compact: true,
     elementNameFn: function(val) {return val.replace('foo:','');}};
   // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
 
-  let result_xml = xml_convert.js2xml(sumator_new, options);     // to convert javascript object to xml text
+  let result_xml = xml_convert.js2xml(sumator, options);     // to convert javascript object to xml text
 
   console.log("result_xml = ");
   console.log(result_xml);
