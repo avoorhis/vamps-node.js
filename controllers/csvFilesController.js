@@ -212,6 +212,16 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     return all_my_files;
   }
 
+  wrap_each_element_of_the_items_array_with_quotes(item, cellEscape) {
+    return cellEscape + item + cellEscape;
+  }
+
+  wrap_each_element_of_the_row_with_quotes(row, cellEscape) {
+    return row.map((item) => {
+      return cellEscape + item + cellEscape;
+    });
+  }
+
   convertArrayOfObjectsToCSV(args) {
     // console.time('TIME: convertArrayOfObjectsToCSV');
 
@@ -240,6 +250,35 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     let cellEscape      = args.cellEscape || '"';
 
     let result = '';
+    console.time("result1");
+    transposed_data_arr.map((row) => {
+      // TODO: to a function?
+      // result = row.map(function (item) {
+      let r1 = row.map((item) =>
+        {
+          return this.wrap_each_element_of_the_items_array_with_quotes(item, cellEscape);
+        }
+      ).join(columnDelimiter);
+
+      result += r1;
+      result += lineDelimiter;
+    });
+    console.timeEnd("result1");
+    console.log("result1");
+
+    console.time("result2");
+    transposed_data_arr.reduce((result, row) => {
+      // TODO: to a function?
+      result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
+      result.join(columnDelimiter);
+      result + lineDelimiter;
+      return result;
+    }, "");
+    console.timeEnd("result2");
+    console.log("result2");
+
+    console.time("result3");
+    result = '';
     transposed_data_arr.map(function (row) {
       // TODO: to a function?
       // result = row.map(function (item) {
@@ -251,6 +290,8 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       result += r1;
       result += lineDelimiter;
     });
+    console.timeEnd("result3");
+    console.log("result3");
 
     // console.timeEnd('TIME: convertArrayOfObjectsToCSV');
 
