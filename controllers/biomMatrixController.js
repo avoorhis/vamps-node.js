@@ -604,7 +604,12 @@ class Taxonomy {
           ptr[taxon] = {};
           ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
           ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
-          ptr[taxon]["children"] ? ptr[taxon]["children"].push(taxon_arr[t_ind + 1]) : ptr[taxon]["child"] = [];
+          if (typeof ptr[taxon]["children"] === "undefined") {
+            ptr[taxon]["children"] = [];
+          }
+          if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
+            ptr[taxon]["children"].push(taxon_arr[t_ind + 1]);
+          }
           ptr[taxon]["name"] = taxon_arr[t_ind];
           ptr[taxon]["rank"] = {};
           ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
