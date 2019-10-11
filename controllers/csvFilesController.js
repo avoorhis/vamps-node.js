@@ -212,16 +212,25 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     return all_my_files;
   }
 
-  wrap_each_element_of_the_items_array_with_quotes(item, cellEscape) {
-    return cellEscape + item + cellEscape;
-  }
-
   wrap_each_element_of_the_row_with_quotes(row, cellEscape) {
     return row.map((item) => {
       return cellEscape + item + cellEscape;
     });
   }
 
+  make_quoted_result(transposed_data_arr, args) {
+    let columnDelimiter = args.columnDelimiter || ',';
+    let lineDelimiter   = args.lineDelimiter || '\n';
+    let cellEscape      = args.cellEscape || '"';
+
+    let quoted_result = transposed_data_arr.reduce((result, row) => {
+      result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
+      result.join(columnDelimiter);
+      result + lineDelimiter;
+      return result;
+    }, "");
+    return quoted_result;
+  }
   convertArrayOfObjectsToCSV(args) {
     // console.time('TIME: convertArrayOfObjectsToCSV');
 
@@ -245,57 +254,35 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     let matrix_length   = DATASET_IDS_BY_PID[project_id].length + 1;
     let transposed_data_arr = helpers.transpose_2d_arr_and_fill(data_arr, matrix_length);
 
+    let quoted_result = this.make_quoted_result(transposed_data_arr, args);
+    // let columnDelimiter = args.columnDelimiter || ',';
+    // let lineDelimiter   = args.lineDelimiter || '\n';
+    // let cellEscape      = args.cellEscape || '"';
+    //
+    // let wraped_result = transposed_data_arr.reduce((result, row) => {
+    //   result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
+    //   result.join(columnDelimiter);
+    //   result + lineDelimiter;
+    //   return result;
+    // }, "");
+    console.log("result2");
+
     let columnDelimiter = args.columnDelimiter || ',';
     let lineDelimiter   = args.lineDelimiter || '\n';
     let cellEscape      = args.cellEscape || '"';
 
-    let result = '';
-    console.time("result1");
-    transposed_data_arr.map((row) => {
-      // TODO: to a function?
-      // result = row.map(function (item) {
-      let r1 = row.map((item) =>
-        {
-          return this.wrap_each_element_of_the_items_array_with_quotes(item, cellEscape);
-        }
-      ).join(columnDelimiter);
-
-      result += r1;
-      result += lineDelimiter;
-    });
-    console.timeEnd("result1");
-    console.log("result1");
-
-    console.time("result2");
-    transposed_data_arr.reduce((result, row) => {
-      // TODO: to a function?
+    let wraped_result = transposed_data_arr.reduce((result, row) => {
       result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
       result.join(columnDelimiter);
       result + lineDelimiter;
       return result;
     }, "");
-    console.timeEnd("result2");
-    console.log("result2");
 
-    console.time("result3");
-    result = '';
-    transposed_data_arr.map(function (row) {
-      // TODO: to a function?
-      // result = row.map(function (item) {
-      let r1 = row.map(function (item) {
-        // Wrap each element of the items array with quotes
-        return cellEscape + item + cellEscape;
-      }).join(columnDelimiter);
-
-      result += r1;
-      result += lineDelimiter;
-    });
-    console.timeEnd("result3");
-    console.log("result3");
+    console.log("wraped_result");
 
     // console.timeEnd('TIME: convertArrayOfObjectsToCSV');
 
-    return result;
+    return quoted_result;
   }
 
   test_project_name(project_name) {
