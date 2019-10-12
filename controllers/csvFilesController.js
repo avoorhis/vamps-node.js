@@ -224,13 +224,15 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     let cellEscape      = args.cellEscape || '"';
 
     let quoted_result = transposed_data_arr.reduce((result, row) => {
-      result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
-      result.join(columnDelimiter);
-      result + lineDelimiter;
+      let r1 = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
+      r1.join(columnDelimiter);
+      result += r1;
+      result += lineDelimiter;
       return result;
     }, "");
     return quoted_result;
   }
+
   convertArrayOfObjectsToCSV(args) {
     // console.time('TIME: convertArrayOfObjectsToCSV');
 
@@ -255,30 +257,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     let transposed_data_arr = helpers.transpose_2d_arr_and_fill(data_arr, matrix_length);
 
     let quoted_result = this.make_quoted_result(transposed_data_arr, args);
-    // let columnDelimiter = args.columnDelimiter || ',';
-    // let lineDelimiter   = args.lineDelimiter || '\n';
-    // let cellEscape      = args.cellEscape || '"';
-    //
-    // let wraped_result = transposed_data_arr.reduce((result, row) => {
-    //   result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
-    //   result.join(columnDelimiter);
-    //   result + lineDelimiter;
-    //   return result;
-    // }, "");
-    console.log("result2");
-
-    let columnDelimiter = args.columnDelimiter || ',';
-    let lineDelimiter   = args.lineDelimiter || '\n';
-    let cellEscape      = args.cellEscape || '"';
-
-    let wraped_result = transposed_data_arr.reduce((result, row) => {
-      result = this.wrap_each_element_of_the_row_with_quotes(row, cellEscape);
-      result.join(columnDelimiter);
-      result + lineDelimiter;
-      return result;
-    }, "");
-
-    console.log("wraped_result");
+    // console.log("result2");
 
     // console.timeEnd('TIME: convertArrayOfObjectsToCSV');
 
