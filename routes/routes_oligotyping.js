@@ -374,10 +374,11 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
   oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
   var status_file= path.join(data_repo_path, 'STATUS.txt');
   var status = 'New'
-  try{
-        fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists    
-  }catch(e) {
-        var status = String(fs.readFileSync(status_file))
+  try {
+    fs.closeSync(fs.openSync(status_file, 'wx')); // fails to create if path exists
+  }
+  catch(err) {
+    var status = String(fs.readFileSync(status_file));
   }
 
   
