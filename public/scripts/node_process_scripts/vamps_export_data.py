@@ -866,7 +866,7 @@ if __name__ == '__main__':
 
          where
 
-            -site       vamps or [default: vampsdev]
+            -s, --site       vamps or [default: vampsdev]
 
             -r,   --runcode
 
