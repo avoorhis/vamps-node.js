@@ -361,7 +361,7 @@ class TaxaCounts {
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
-  get_taxonomy_object() {
+  get_taxonomy_object() { //TODO: switch or object instead of if/else
     let taxonomy_object;
     if (this.units === 'tax_rdp2.6_simple') {
       taxonomy_object = new_rdp_taxonomy;
@@ -453,44 +453,64 @@ class TaxaCounts {
 
 class TaxonomyFactory {
   constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.units       = visual_post_items.unit_choice;
     this.taxa_counts_module = taxa_counts;
     this.chosen_dids = chosen_dids;
-    this.chosen_taxonomy = this.choose_taxonomy_lookup_module(visual_post_items, this.taxa_counts_module, this.chosen_dids);
+    this.chosen_taxonomy = this.choose_taxonomy_lookup_module(visual_post_items);
   }
 
-  choose_taxonomy_lookup_module(visual_post_items, taxa_counts_module, chosen_dids) {
-    let unit_choice_simple = (this.units === 'tax_silva119_simple');
-      // (this.units.substr(this.units.length - 6) === 'simple');
-    let unit_choice_custom = (this.units === 'tax_' + C.default_taxonomy.name + '_custom');
-    let unit_choice_generic_simple = (this.units === 'tax_generic_simple');
+  choose_taxonomy_lookup_module(visual_post_items) {
+    let units = visual_post_items.unit_choice;
+    let parameters_obj = {
+      "visual_post_items": visual_post_items,
+      "taxa_counts_module": this.taxa_counts_module,
+      "chosen_dids": this.chosen_dids
+    };
 
-    //TODO: args object send to whatever module is chosen
-    if (unit_choice_simple) {
-      return new module.exports.TaxonomySimple(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else if (unit_choice_custom) {
-      return new module.exports.TaxonomyCustom(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else if (unit_choice_generic_simple) {
-      return new module.exports.TaxonomyGeneric(visual_post_items, taxa_counts_module, chosen_dids);
-    }
-    else {
-      console.log("ERROR: Can't choose the correct taxonomy");
-    }
+    const taxonomy_choice_obj = {
+      "tax_silva119_simple": function () {
+        return new module.exports.TaxonomySimple(parameters_obj);
+      },
+      "tax_silva119_custom": function () {
+        return new module.exports.TaxonomyCustom(parameters_obj);
+      },
+      "tax_rdp2.6_simple": function () {
+        return new module.exports.TaxonomyRDP(parameters_obj);
+      },
+      "tax_generic_simple": function () {
+        return new module.exports.TaxonomyGeneric(parameters_obj);
+      },
+      "tax_gg_simple": function () {
+        return new module.exports.TaxonomyGg_simple(parameters_obj);
+      },
+      "tax_gg_custom": function () {
+        return new module.exports.TaxonomyGg_custom(parameters_obj);
+      },
+      "otus": function () {
+        return new module.exports.TaxonomyOtus(parameters_obj);
+      },
+      "med_nodes": function () {
+        return new module.exports.TaxonomyMed_nodes(parameters_obj);
+      },
+      "default": function () {
+        console.log("ERROR: Can't choose the correct taxonomy, using simple");
+        return new module.exports.TaxonomySimple(parameters_obj);
+      }
+    };
+    return (taxonomy_choice_obj[units] || taxonomy_choice_obj['default'])();
   }
+
 }
 
 class Taxonomy {
-  constructor(visual_post_items, taxa_counts, chosen_dids) {
-    this.chosen_dids                = chosen_dids;
-    this.post_items                 = visual_post_items;
-    this.taxa_counts_module         = taxa_counts;
-    this.taxonomy_object            = this.taxa_counts_module.taxonomy_object;
-    this.id_rank_taxa_cash          = {};
-    this.tax_name_used_unique       = new Set();
+  constructor(parameters_obj) {
+    this.chosen_dids = parameters_obj["chosen_dids"];
+    this.post_items = parameters_obj["visual_post_items"];
+    this.taxa_counts_module = parameters_obj["taxa_counts_module"];
+    this.taxonomy_object = this.taxa_counts_module.taxonomy_object;
+    this.id_rank_taxa_cash = {};
+    this.tax_name_used_unique = new Set();
     this.tax_id_obj_by_did_filtered = this.taxa_counts_module.tax_id_obj_by_did_filtered_by_rank;
-    this.tax_cnt_obj_arrs           = this.connect_names_with_cnts();
+    this.tax_cnt_obj_arrs = this.connect_names_with_cnts();
   }
 
   make_empty_tax_cnt_obj() {
@@ -511,21 +531,127 @@ class Taxonomy {
     let tax_cnt_obj_arrs = this.make_empty_tax_cnt_obj();
 
     this.chosen_dids.map((did, d_idx) => {
-     const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
-     curr_tax_info_obj.map(ob => {
-       // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
-       if (ob.tax_long_name) {
-         tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
-       }
-       else {
-         console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
-       }
-     });
+      const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
+      curr_tax_info_obj.map(ob => {
+        // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        if (ob.tax_long_name) {
+          tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
+        } else {
+          console.log('Skipping Empty ob.tax_long_name index:' + d_idx + ' with count:' + String(ob.cnt));
+        }
+      });
     });
 
     // console.timeEnd("TIME: make_tax_name_cnt_obj_per_dataset_map");
     return tax_cnt_obj_arrs;
   }
+
+  nest(arr) {
+    let obj = {};
+    for (let ptr = obj, i = 0, j = arr.length; i < j; i++) {
+      ptr = (ptr[arr[i]] = {});
+    }
+    return obj;
+  }
+
+  // make_nested_tax_object(current_entry) {
+  //   let taxon_arr = current_entry.taxon_arr;
+  //   let taxon_cnts_per_d = current_entry.taxon_cnts_per_d;
+  //   let temp_obj = {};
+  //   for (let ptr = temp_obj, i = 0, j = taxon_arr.length; i < j; i++) {
+  //       ptr =
+  //         (ptr[taxon_arr[i]] = {});
+  //       ptr["t_name"] = taxon_arr[i];
+  //       ptr["rank"] = C.RANKS[i];
+  //       ptr["knt"] = taxon_cnts_per_d;
+  //     }
+  //   return temp_obj;
+  // }
+
+  make_tax_cnt_obj_arrs_w_tax_arr() {
+    return Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
+      let taxon_arr = taxon.split(";");
+      ob[taxon] = {
+        taxon_name: taxon,
+        taxon_arr: taxon_arr,
+        taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
+        nest_taxa_obj: this.nest(taxon_arr)
+      };
+      return ob;
+    }, {});
+  }
+
+  make_sum_tax_name_cnt_obj_per_dataset() {
+    console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+    let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
+    let initial_obj = {};
+    // initial_obj["node"] = {};
+    // let init_arr = [];
+    let summator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+      let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
+      let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
+      function sum_arrs(num, idx) {
+        return parseInt(num) + parseInt(taxon_cnts_per_d[idx]);
+      }
+
+      for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
+        let taxon = taxon_arr[t_ind];
+        let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["name"] !== "undefined");
+        if (key_tax_exists && ob[taxon]["seqcount"]["val"]) {
+          ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
+        }
+        else {
+          ptr[taxon] = {};
+          ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
+          ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
+          if (typeof ptr[taxon]["children"] === "undefined") {
+            ptr[taxon]["children"] = [];
+          }
+          if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
+            ptr[taxon]["children"].push(taxon_arr[t_ind + 1]);
+          }
+          ptr[taxon]["name"] = taxon_arr[t_ind];
+          ptr[taxon]["rank"] = {};
+          ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
+          ptr[taxon]["seqcount"] = {};
+          ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
+        }
+        ptr[taxon]["children"] = ptr[taxon]["children"].filter(helpers.onlyUnique);
+        ptr = ptr[taxon];
+        // init_arr.push(ptr);
+      }
+      return ob;
+    }, initial_obj);
+
+    console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+    return summator;
+  }
+
+  make_array_of_sumator(sumator_new) {
+
+    console.time("TIME: make_array_of_sumator");
+    // let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
+    let initial_obj = [];
+    // let cash = [];
+    let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
+      let curr_data_obj = sumator_new[data_obj_key];
+      let depth = curr_data_obj["depth"];
+      for (let temp_arr = ob, i = 0; i <= depth; i++) {
+        let temp_obj = {};
+        temp_obj["name"] = curr_data_obj["name"];
+        temp_obj["rank"] = curr_data_obj["rank"];
+        temp_obj["seqcount"] = curr_data_obj["seqcount"];
+        temp_arr.push(temp_obj);
+      }
+
+      return ob;
+    }, initial_obj);
+
+    console.timeEnd("TIME: make_array_of_sumator");
+    return summator;
+  }
+
+
 }
 
 class TaxonomySimple extends Taxonomy {
@@ -658,28 +784,32 @@ class TaxonomyCustom extends Taxonomy {
 
     this.chosen_dids.map(did => {
       this.tax_id_obj_by_did_filtered[did] = [];
+      try {
+        this.post_items["custom_taxa"].map(selected_node_id => {
+          if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
+            let temp_obj = {};
+            let combined_ids_res = this.combine_db_tax_id_list(selected_node_id);
+            let id_chain = combined_ids_res[0];
+            let custom_tax_long_name = combined_ids_res[1];
+            temp_obj["tax_long_name"] = custom_tax_long_name;
+            temp_obj["tax_id_row"] = id_chain;
+            temp_obj["cnt"] = this.get_tax_cnt(id_chain, did) || 0;
 
-      this.post_items["custom_taxa"].map(selected_node_id => {
-        if (this.taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id)) {
-          let temp_obj = {};
-          let combined_ids_res = this.combine_db_tax_id_list(selected_node_id);
-          let id_chain = combined_ids_res[0];
-          let custom_tax_long_name = combined_ids_res[1];
-          temp_obj["tax_long_name"] = custom_tax_long_name;
-          temp_obj["tax_id_row"] = id_chain;
-          temp_obj["cnt"] = this.get_tax_cnt(id_chain, did) || 0;
-
-          this.tax_name_used_unique.add(custom_tax_long_name);
-          this.tax_id_obj_by_did_filtered[did].push(temp_obj);
-        }
-      });
+            this.tax_name_used_unique.add(custom_tax_long_name);
+            this.tax_id_obj_by_did_filtered[did].push(temp_obj);
+          }
+        });
+      }
+      catch (err) {
+        console.log('this.post_items["custom_taxa"] are undefined for did = ' + did);
+        console.log(err.toString());
+      }
     });
     // TODO: Why is it called from here?
     let tax_cnt_obj_arrs = this.make_tax_name_cnt_obj_per_dataset(this.tax_id_obj_by_did_filtered);
     // console.timeEnd('TIME: make_tax_name_cnt_obj_per_did_custom_map');
 
     return tax_cnt_obj_arrs;
-
   }
 
   initialize_custom_tax_node(selected_node_id) {
@@ -727,22 +857,16 @@ class TaxonomyCustom extends Taxonomy {
 }
 
 class TaxonomyGeneric extends TaxonomySimple {
-  // let genericTaxonomy      = require(app_root + '/models/generic_taxonomy');
-  // let generic_taxonomy = new genericTaxonomy();
-  //
-  // generic_taxonomy.get_domains(function (err, results) {
-  //   if (err)
-  //     {throw err;}
-  //   else {
-  //     let domains = results;
-  //   }
-  //     // new_taxonomy = new CustomTaxa(results);
-  // });
-
 
   check_domain_is_selected(tax_long_name_arr) {
-    // let current_domain_name = tax_long_name_arr[0];
+    return tax_long_name_arr;
+  }
 
+}
+
+class TaxonomyRDP extends TaxonomySimple {
+
+  check_domain_is_selected(tax_long_name_arr) {
     return tax_long_name_arr;
   }
 
@@ -753,7 +877,7 @@ class WriteMatrixFile {
   constructor(post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    this.tmp_path = CONFIG.TMP_FILES    //app_root + '/tmp/';
+    this.tmp_path = CONFIG.TMP_FILES;    //app_root + '/tmp/';
   }
 
   write_matrix_files() {
@@ -766,6 +890,60 @@ class WriteMatrixFile {
   }
 }
 
+class IteratorClass {
+  constructor(data) {
+    this.index = 0;
+    this.data = data;
+  }
+
+  [Symbol.iterator]() {
+    return {
+      next: () => {
+        if (this.index < this.data.length) {
+          return { value: this.data[this.index++], done: false };
+        } else {
+          this.index = 0; // to reset iteration status
+          return { done: true };
+        }
+      },
+    };
+  }
+}
+
+// class Iterator {
+//   constructor(data) {
+//     this.keys = Object.keys(data);
+//     this.index = 0;
+//     this.length = this.keys.length;
+//   }
+//
+//   next() {
+//     let element;
+//     if (!this.hasNext()) {
+//       return null;
+//     }
+//     element = this.data[this.keys[this.index]];
+//     // if (typeof element === "object") {
+//     //
+//     // }
+//     this.index++;
+//     return element;
+//   }
+//
+//   hasNext() {
+//     return this.index < length;
+//   }
+//
+//   rewind() {
+//     this.index = 0;
+//     return this.data[this.keys[this.index]];
+//   }
+//
+//   current() {
+//     return this.data[this.keys[this.index]];
+//   }
+// }
+
 module.exports = {
   BiomMatrix: BiomMatrix,
   TaxaCounts: TaxaCounts,
@@ -774,5 +952,7 @@ module.exports = {
   TaxonomySimple: TaxonomySimple,
   TaxonomyCustom: TaxonomyCustom,
   TaxonomyGeneric: TaxonomyGeneric,
-  WriteMatrixFile: WriteMatrixFile
+  TaxonomyRDP: TaxonomyRDP,
+  WriteMatrixFile: WriteMatrixFile,
+  Iterator: IteratorClass
 };
