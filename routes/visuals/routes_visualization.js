@@ -807,7 +807,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 //     //   });
 // }
 
-function convert_sumator_ob_to_xml(sumator) {
+function convert_sumator_ob_to_xml2(sumator) {
   let options = {compact: true,
     elementNameFn: function(val) {return val.replace('foo:','');}};
   // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
@@ -815,6 +815,69 @@ function convert_sumator_ob_to_xml(sumator) {
   let result_xml = xml_convert.js2xml(sumator, options);
   return result_xml;
 }
+
+// function resetValuesToZero (obj) {
+//   Object.keys(obj).forEach(function (key) {
+//     if (typeof obj[key] === 'object') {
+//       return resetValuesToZero(obj[key]);
+//     }
+//     obj[key] = 0;
+//   });
+// }
+
+// function toArray(obj) {
+//   const result = [];
+//   for (const prop in obj) {
+//     const value = obj[prop];
+//     if (typeof value === 'object') {
+//       result.push(toArray(value)); // <- recursive call
+//     }
+//     else {
+//       result.push(value);
+//     }
+//   }
+//   return result;
+// }
+
+function convert_sumator_ob_to_xml(obj) {
+  let result_xml = {};
+  for (const prop in obj) {
+    const value = obj[prop];
+
+    if (typeof value === 'object' && value.hasOwnProperty("depth")) {
+      // result.push(toArray(value)); // <- recursive call
+      result_xml["node"] = {};
+      result_xml["node"]["@1"] = {};
+      result_xml["node"]["@1"]["name"] = value["name"];
+      result_xml["node"]["@1"]["name"]["seqcount"] = value["seqcount"];
+      result_xml["node"]["@1"]["name"]["rank"] = value["rank"];
+      result_xml = convert_sumator_ob_to_xml(result_xml);
+    }
+    // else {
+      // result.push(value);
+    // }
+  }
+  return result_xml;
+}
+
+// function convert_sumator_ob_to_xml(ob) {
+//   let result_xml = {};
+//   Object.entries(ob).map ( ([key, value]) => {
+//     console.log(key);
+//     if (typeof value === 'object') {
+//       return convert_sumator_ob_to_xml(value);
+//     }
+//     else {
+//       let ob = {};
+//       ob["node"] = {};
+//       ob["node"]["@1"] = {};
+//       ob["node"]["@1"]["name"] = key;
+//       ob["node"]["@1"]["name"]["seqcount"] = value[key]["seqcount"];
+//       ob["node"]["@1"]["name"]["rank"] = value[key]["rank"];
+//     }
+//     return ob;
+//   });
+// }
 
 //
 // DATA BROWSER
