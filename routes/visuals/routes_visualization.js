@@ -843,7 +843,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
 
-  let sumator = taxonomy_lookup_module.make_array_of_sumator(sumator_new);
+  // let sumator = taxonomy_lookup_module.make_array_of_sumator(sumator_new);
 
   // console.time("TIME: get_sumator orig");
   // let sumator = get_sumator(req, biom_matrix);
@@ -857,7 +857,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   //
   // let result_xml = xml_convert.js2xml(sumator, options);     // to convert javascript object to xml text
 
-  let result_xml = convert_sumator_ob_to_xml(sumator);
+  let result_xml = convert_sumator_ob_to_xml(sumator_new);
   console.log("result_xml = ");
   console.log(result_xml);
   html = result_xml;
