@@ -618,8 +618,8 @@ class Taxonomy {
       for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
         let taxon = taxon_arr[t_ind];
         let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["name"] !== "undefined");
-        if (key_tax_exists && ob[taxon]["seqcount"]["val"]) {
-          ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
+        if (key_tax_exists && ptr[taxon]["seqcount"]["val"]) {
+          ptr[taxon]["seqcount"]["val"] = ptr[taxon]["seqcount"]["val"].map(sum_arrs);
         }
         else {
           ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
