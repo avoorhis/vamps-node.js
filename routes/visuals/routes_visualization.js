@@ -1001,6 +1001,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
   // fs.writeFileSync(html_path, JSON.stringify(html));
 
+
   res.render('visuals/dbrowser', {
     title: 'VAMPS:Taxonomy Browser (Krona)',
     user:                req.user,
@@ -1170,165 +1171,165 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //  for dbrowser
 //
 // TODO: JSHint: This function's cyclomatic complexity is too high. (35) (W074)
-function get_sumator(req, biom_matrix){
-
-  let sumator = {};
-  sumator['domain'] = {};
-
-  for (let r in biom_matrix.rows){
-    let tax_string = biom_matrix.rows[r].id;
-    let tax_items = tax_string.split(';');
-    // let key = tax_items[0];
-    //console.log(tax_items);
-    for (let t in tax_items){
-      let taxa = tax_items[t];
-      let rank = C.RANKS[t];
-      if (rank === 'domain'){
-        let d = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (d in sumator['domain']){
-            if (i in sumator['domain'][d]['knt']){
-              sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }
-            else {
-              sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]={};
-            sumator['domain'][d]['phylum'] = {};
-            sumator['domain'][d]['knt'] = [];
-            sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'phylum'){
-        let p = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (p in sumator['domain'][d]['phylum']){
-            if (i in sumator['domain'][d]['phylum'][p]['knt']){
-              sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            } else {
-              sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]={};
-            sumator['domain'][d]['phylum'][p]['klass']={};
-            sumator['domain'][d]['phylum'][p]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'klass'){
-        let k = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (k in sumator['domain'][d]['phylum'][p]['klass']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            } else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'order'){
-        let o = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }
-            else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'family'){
-        let f = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            } else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'genus'){
-        let g = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            } else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'species'){
-        let s = taxa;
-
-        for (let i in req.session.chosen_id_order){
-          if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            } else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          } else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
-
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if (rank === 'strain'){
-        let st = taxa;
-        for (let i in req.session.chosen_id_order){
-          if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-            if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }
-            else {
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }
-          else {
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
-            //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-    }
-  }
-  return sumator;
-}
+// function get_sumator(req, biom_matrix){
+//
+//   let sumator = {};
+//   sumator['domain'] = {};
+//
+//   for (let r in biom_matrix.rows){
+//     let tax_string = biom_matrix.rows[r].id;
+//     let tax_items = tax_string.split(';');
+//     // let key = tax_items[0];
+//     //console.log(tax_items);
+//     for (let t in tax_items){
+//       let taxa = tax_items[t];
+//       let rank = C.RANKS[t];
+//       if (rank === 'domain'){
+//         let d = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (d in sumator['domain']){
+//             if (i in sumator['domain'][d]['knt']){
+//               sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             }
+//             else {
+//               sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]={};
+//             sumator['domain'][d]['phylum'] = {};
+//             sumator['domain'][d]['knt'] = [];
+//             sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'phylum'){
+//         let p = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (p in sumator['domain'][d]['phylum']){
+//             if (i in sumator['domain'][d]['phylum'][p]['knt']){
+//               sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             } else {
+//               sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]={};
+//             sumator['domain'][d]['phylum'][p]['klass']={};
+//             sumator['domain'][d]['phylum'][p]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'klass'){
+//         let k = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (k in sumator['domain'][d]['phylum'][p]['klass']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             } else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'order'){
+//         let o = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             }
+//             else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'family'){
+//         let f = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             } else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'genus'){
+//         let g = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             } else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'species'){
+//         let s = taxa;
+//
+//         for (let i in req.session.chosen_id_order){
+//           if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             } else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           } else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
+//
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//       if (rank === 'strain'){
+//         let st = taxa;
+//         for (let i in req.session.chosen_id_order){
+//           if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+//             }
+//             else {
+//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//             }
+//           }
+//           else {
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
+//             //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
+//             sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return sumator;
+// }
 
 //
 //  G E O S P A T I A L (see view_selection.js)
