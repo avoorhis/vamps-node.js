@@ -598,6 +598,7 @@ class Taxonomy {
     }
     if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
       children_arr.push(taxon_arr[t_ind + 1]);
+      children_arr = children_arr.filter(helpers.onlyUnique);
     }
     return children_arr;
   }
@@ -606,8 +607,7 @@ class Taxonomy {
     console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
     let initial_obj = {};
-    // initial_obj["node"] = {};
-    // let init_arr = [];
+
     let summator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
       let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
       let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
@@ -617,7 +617,7 @@ class Taxonomy {
 
       for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
         let taxon = taxon_arr[t_ind];
-        let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["name"] !== "undefined");
+        let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["name"] !== "undefined");
         if (key_tax_exists && ob[taxon]["seqcount"]["val"]) {
           ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
         }
@@ -626,9 +626,7 @@ class Taxonomy {
           ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         }
         ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
-        ptr[taxon]["children"] = ptr[taxon]["children"].filter(helpers.onlyUnique);
         ptr = ptr[taxon];
-        // init_arr.push(ptr);
       }
       return ob;
     }, initial_obj);
@@ -638,11 +636,8 @@ class Taxonomy {
   }
 
   make_array_of_sumator(sumator_new) {
-
     console.time("TIME: make_array_of_sumator");
-    // let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
     let initial_obj = [];
-    // let cash = [];
     let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
       let curr_data_obj = sumator_new[data_obj_key];
       let depth = curr_data_obj["depth"];
@@ -660,8 +655,6 @@ class Taxonomy {
     console.timeEnd("TIME: make_array_of_sumator");
     return summator;
   }
-
-
 }
 
 class TaxonomySimple extends Taxonomy {
