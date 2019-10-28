@@ -625,22 +625,7 @@ class Taxonomy {
           ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
           ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         }
-        //   {
-        //   ptr[taxon] = {};
-        //   ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
-        //   ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
-        //   if (typeof ptr[taxon]["children"] === "undefined") {
-        //     ptr[taxon]["children"] = [];
-        //   }
-        //   if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
-        //     ptr[taxon]["children"].push(taxon_arr[t_ind + 1]);
-        //   }
-        //   ptr[taxon]["name"] = taxon_arr[t_ind];
-        //   ptr[taxon]["rank"] = {};
-        //   ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
-        //   ptr[taxon]["seqcount"] = {};
-        //   ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
-        // }
+        ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
         ptr[taxon]["children"] = ptr[taxon]["children"].filter(helpers.onlyUnique);
         ptr = ptr[taxon];
         // init_arr.push(ptr);
