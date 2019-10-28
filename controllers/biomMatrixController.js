@@ -581,6 +581,27 @@ class Taxonomy {
     }, {});
   }
 
+  make_new_entry_for_sumator (j, t_ind, taxon_arr) {
+    let t_ob = {};
+    t_ob["depth"] = j - t_ind - 1; // exclude current level
+    t_ob["parent"] = taxon_arr[t_ind - 1] || "";
+    t_ob["name"] = taxon_arr[t_ind];
+    t_ob["rank"] = {};
+    t_ob["rank"]["val"] = C.RANKS[t_ind];
+    t_ob["seqcount"] = {};
+    return t_ob;
+  }
+  
+  add_children (children_arr, taxon_arr, t_ind) {
+    if (typeof children_arr === "undefined") {
+      children_arr = [];
+    }
+    if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
+      children_arr.push(taxon_arr[t_ind + 1]);
+    }
+    return children_arr;
+  }
+
   make_sum_tax_name_cnt_obj_per_dataset() {
     console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
@@ -601,21 +622,25 @@ class Taxonomy {
           ptr[taxon]["seqcount"]["val"] = ob[taxon]["seqcount"]["val"].map(sum_arrs);
         }
         else {
-          ptr[taxon] = {};
-          ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
-          ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
-          if (typeof ptr[taxon]["children"] === "undefined") {
-            ptr[taxon]["children"] = [];
-          }
-          if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
-            ptr[taxon]["children"].push(taxon_arr[t_ind + 1]);
-          }
-          ptr[taxon]["name"] = taxon_arr[t_ind];
-          ptr[taxon]["rank"] = {};
-          ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
-          ptr[taxon]["seqcount"] = {};
+          ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
           ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         }
+        //   {
+        //   ptr[taxon] = {};
+        //   ptr[taxon]["depth"] = j - t_ind - 1; // exclude current level
+        //   ptr[taxon]["parent"] = taxon_arr[t_ind - 1] || "";
+        //   if (typeof ptr[taxon]["children"] === "undefined") {
+        //     ptr[taxon]["children"] = [];
+        //   }
+        //   if (typeof taxon_arr[t_ind + 1] !== "undefined" ) {
+        //     ptr[taxon]["children"].push(taxon_arr[t_ind + 1]);
+        //   }
+        //   ptr[taxon]["name"] = taxon_arr[t_ind];
+        //   ptr[taxon]["rank"] = {};
+        //   ptr[taxon]["rank"]["val"] = C.RANKS[t_ind];
+        //   ptr[taxon]["seqcount"] = {};
+        //   ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
+        // }
         ptr[taxon]["children"] = ptr[taxon]["children"].filter(helpers.onlyUnique);
         ptr = ptr[taxon];
         // init_arr.push(ptr);
