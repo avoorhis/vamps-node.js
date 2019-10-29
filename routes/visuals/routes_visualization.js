@@ -807,14 +807,77 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 //     //   });
 // }
 
-function convert_sumator_ob_to_xml2(sumator) {
-  let options = {compact: true,
-    elementNameFn: function(val) {return val.replace('foo:','');}};
-  // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
+function format_sumator(allData) {
+  // let array = ["<node>"];
+  let array = [""];
+  printList(allData);
+  // array.push("<ul>");
+  array.push("");
+//printList("string");
+  console.log(array);
+  // console.log(html);
 
-  let result_xml = xml_convert.js2xml(sumator, options);
-  return result_xml;
+  function printList(items) {
+    if (helpers.is_object(items)) {
+      getChildren(items);
+    }
+    else if (helpers.is_array(items)) {
+      printArray(items);
+    }
+    else {
+      array.push("<val>" + items + "</val>");
+    }
+  }
+
+  function getChildren(parent) {
+    const fields_w_val = ["rank", "seqcount", "val"];
+    const fields2skip = ["depth", "name", "parent", "children"];
+
+    for (let child in parent) {
+      //console.log(child);
+      if (fields_w_val.includes(child)) {
+        array.push(`<${child}>`);
+        printList(parent[child]);
+        array.push(`</${child}>`);
+      }
+      else if (fields2skip.includes(child)) {
+        printList(parent[child]);
+      }
+      else {
+        array.push(`<node name='${child}'>`);
+        printList(parent[child]);
+        array.push("</node>");
+      }
+    }
+  }
+
+  function printArray(myArray){
+    for(let i = 0; i < myArray.length; i++){
+      //console.log(myArray[i]);
+      array.push("<val>" + myArray[i] + "</val>");
+    }
+  }
+  return array.join("");
 }
+
+// function convert_sumator_ob_to_xml(sumator) {
+//   let options = {compact: true,
+//     declaration: {include: false},
+//     wrapHandlers: {
+//       "node": function() {
+//         return "@1";
+//       },
+//       "@1": function() {
+//         return "name";
+//       }
+//     },
+//     // elementNameFn: function(val) {return val.replace('name', 'node');}
+//   };
+//   // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
+//
+//   let result_xml = xml_convert.js2xml(sumator, options);
+//   return result_xml;
+// }
 
 // function resetValuesToZero (obj) {
 //   Object.keys(obj).forEach(function (key) {
@@ -839,26 +902,31 @@ function convert_sumator_ob_to_xml2(sumator) {
 //   return result;
 // }
 
-function convert_sumator_ob_to_xml(obj) {
-  let result_xml = {};
-  for (const prop in obj) {
-    const value = obj[prop];
+// function inner_convert() {
+//
+// }
 
-    if (typeof value === 'object' && value.hasOwnProperty("depth")) {
-      // result.push(toArray(value)); // <- recursive call
-      result_xml["node"] = {};
-      result_xml["node"]["@1"] = {};
-      result_xml["node"]["@1"]["name"] = value["name"];
-      result_xml["node"]["@1"]["name"]["seqcount"] = value["seqcount"];
-      result_xml["node"]["@1"]["name"]["rank"] = value["rank"];
-      result_xml = convert_sumator_ob_to_xml(result_xml);
-    }
-    // else {
-      // result.push(value);
-    // }
-  }
-  return result_xml;
-}
+// function convert_sumator_ob_to_xml(obj) {
+//   let res_str = "";
+//   let result_xml = {};
+//   for (const prop in obj) {
+//     const value = obj[prop];
+//
+//     if (typeof value === 'object' && value.hasOwnProperty("depth")) {
+//       // result.push(toArray(value)); // <- recursive call
+//       result_xml["node"] = {};
+//       result_xml["node"]["@1"] = {};
+//       result_xml["node"]["@1"]["name"] = value["name"];
+//       result_xml["node"]["@1"]["name"]["seqcount"] = value["seqcount"];
+//       result_xml["node"]["@1"]["name"]["rank"] = value["rank"];
+//       result_xml = convert_sumator_ob_to_xml(result_xml);
+//     }
+//     // else {
+//       // result.push(value);
+//     // }
+//   }
+//   return result_xml;
+// }
 
 // function convert_sumator_ob_to_xml(ob) {
 //   let result_xml = {};
@@ -878,6 +946,7 @@ function convert_sumator_ob_to_xml(obj) {
 //     return ob;
 //   });
 // }
+
 
 //
 // DATA BROWSER
@@ -906,7 +975,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.timeEnd("TIME: get_sumator new");
   console.log(JSON.stringify(sumator_new));
 
-  // let sumator = taxonomy_lookup_module.make_array_of_sumator(sumator_new);
+  // let sumator = taxonomy_lookup_module.refpormat_sumator(sumator_new);
 
   // console.time("TIME: get_sumator orig");
   // let sumator = get_sumator(req, biom_matrix);
@@ -920,12 +989,14 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   //
   // let result_xml = xml_convert.js2xml(sumator, options);     // to convert javascript object to xml text
 
-  let result_xml = convert_sumator_ob_to_xml(sumator_new);
+  // let result_xml = convert_sumator_ob_to_xml(sumator_new);
+  // let result_xml = taxonomy_lookup_module.reformat_sumator(sumator_new);
+  let result_xml = format_sumator(sumator_new);
+
   console.log("result_xml = ");
   console.log(result_xml);
   html = result_xml;
   console.timeEnd("TIME: over sumator new");
-
 
   // write html to a file and open it
 

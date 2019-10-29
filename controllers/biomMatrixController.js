@@ -583,11 +583,13 @@ class Taxonomy {
 
   make_new_entry_for_sumator (j, t_ind, taxon_arr) {
     let t_ob = {};
-    t_ob["depth"] = j - t_ind - 1; // exclude current level
-    t_ob["parent"] = taxon_arr[t_ind - 1] || "";
-    t_ob["name"] = taxon_arr[t_ind];
-    t_ob["rank"] = {};
-    t_ob["rank"]["val"] = C.RANKS[t_ind];
+    // t_ob["depth"] = j - t_ind - 1; // exclude current level
+    // t_ob["parent"] = taxon_arr[t_ind - 1] || "";
+    // t_ob["name"] = taxon_arr[t_ind];
+    t_ob["rank"] = C.RANKS[t_ind];
+    // t_ob["rank"] = {};
+    // t_ob["rank"]["val"] = C.RANKS[t_ind];
+
     t_ob["seqcount"] = {};
     return t_ob;
   }
@@ -618,14 +620,17 @@ class Taxonomy {
       for (let ptr = ob, t_ind = 0, j = taxon_arr.length; t_ind < j; t_ind++) {
         let taxon = taxon_arr[t_ind];
         let key_tax_exists = (typeof ptr[taxon] !== "undefined" && typeof ptr[taxon]["name"] !== "undefined");
-        if (key_tax_exists && ptr[taxon]["seqcount"]["val"]) {
-          ptr[taxon]["seqcount"]["val"] = ptr[taxon]["seqcount"]["val"].map(sum_arrs);
+        if (key_tax_exists && ptr[taxon]["seqcount"]) {
+        // if (key_tax_exists && ptr[taxon]["seqcount"]["val"]) {
+          // ptr[taxon]["seqcount"]["val"] = ptr[taxon]["seqcount"]["val"].map(sum_arrs);
+          ptr[taxon]["seqcount"] = ptr[taxon]["seqcount"].map(sum_arrs);
         }
         else {
           ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
-          ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
+          // ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
+          ptr[taxon]["seqcount"] = taxon_cnts_per_d;
         }
-        ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
+        // ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
         ptr = ptr[taxon];
       }
       return ob;
@@ -635,26 +640,37 @@ class Taxonomy {
     return summator;
   }
 
-  make_array_of_sumator(sumator_new) {
-    console.time("TIME: make_array_of_sumator");
-    let initial_obj = [];
-    let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
-      let curr_data_obj = sumator_new[data_obj_key];
-      let depth = curr_data_obj["depth"];
-      for (let temp_arr = ob, i = 0; i <= depth; i++) {
-        let temp_obj = {};
-        temp_obj["name"] = curr_data_obj["name"];
-        temp_obj["rank"] = curr_data_obj["rank"];
-        temp_obj["seqcount"] = curr_data_obj["seqcount"];
-        temp_arr.push(temp_obj);
-      }
 
-      return ob;
-    }, initial_obj);
 
-    console.timeEnd("TIME: make_array_of_sumator");
-    return summator;
-  }
+  // reformat_sumator(sumator_new, ob_res = {}) {
+  //   console.time("TIME: reformat_sumator");
+  //   for (let k in Object.keys(sumator_new)){
+  //     let cur_obj = sumator_new[k];
+  //     str_res += '<node name=' + cur_obj["name"] + '>';
+  //     str_res += '<seqcount'> + cur_obj["name"] + '>';
+  //
+  //
+  //   }
+  //
+  //
+  //   let initial_obj = [];
+  //   let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
+  //     let curr_data_obj = sumator_new[data_obj_key];
+  //     let depth = curr_data_obj["depth"];
+  //     for (let temp_arr = ob, i = 0; i <= depth; i++) {
+  //       let temp_obj = {};
+  //       temp_obj["name"] = curr_data_obj["name"];
+  //       temp_obj["rank"] = curr_data_obj["rank"];
+  //       temp_obj["seqcount"] = curr_data_obj["seqcount"];
+  //       temp_arr.push(temp_obj);
+  //     }
+  //
+  //     return ob;
+  //   }, initial_obj);
+  //
+  //   console.timeEnd("TIME: reformat_sumator");
+  //   return summator;
+  // }
 }
 
 class TaxonomySimple extends Taxonomy {
