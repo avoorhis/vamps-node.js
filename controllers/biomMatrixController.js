@@ -513,6 +513,8 @@ class Taxonomy {
     this.tax_cnt_obj_arrs = this.connect_names_with_cnts();
   }
 
+  connect_names_with_cnts() {}
+
   make_empty_tax_cnt_obj() {
     // console.time("TIME: make_empty_tax_cnt_obj");
     let tax_cnt_obj_arrs_empty = {};
@@ -566,6 +568,22 @@ class Taxonomy {
     }, {});
   }
 
+  make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(b_mtx) {
+    return b_mtx["rows"].reduce((ob, curr_row_ob, idx) => {
+      let taxon = curr_row_ob["id"];
+      let taxon_arr = taxon.split(";");
+      ob[taxon] = {
+        taxon_name: taxon,
+        taxon_arr: taxon_arr,
+        taxon_cnts_per_d: b_mtx.data[idx],
+        nest_taxa_obj: this.nest(taxon_arr)
+      };
+      return ob;
+    }, {});
+    // console.log(q);
+  }
+
+
   make_new_entry_for_sumator (j, t_ind, taxon_arr) {
     let t_ob = {};
     t_ob["name"] = taxon_arr[t_ind];
@@ -585,9 +603,12 @@ class Taxonomy {
     return children_arr;
   }
 
-  get_sumator() {
+  get_sumator(tax_cnt_obj_arrs_w_tax_arr) {
     console.time("TIME: get_sumator in controller");
-    let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
+    if (typeof tax_cnt_obj_arrs_w_tax_arr === "undefined") {
+      tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
+    }
+
     let initial_obj = {};
 
     let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {

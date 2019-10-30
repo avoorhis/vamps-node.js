@@ -801,41 +801,6 @@ function format_sumator(allData) {
   return array.join("");
 }
 
-function nest(arr) {
-  let obj = {};
-  for (let ptr = obj, i = 0, j = arr.length; i < j; i++) {
-    ptr = (ptr[arr[i]] = {});
-  }
-  return obj;
-}
-
-function  make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(b_mtx) {
-  let q = b_mtx["rows"].reduce((ob, curr_row_ob, idx) => {
-    let taxon = curr_row_ob["id"];
-    let taxon_arr = taxon.split(";");
-    ob[taxon] = {
-      taxon_name: taxon,
-      taxon_arr: taxon_arr,
-      taxon_cnts_per_d: b_mtx.data[idx],
-//     taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
-      nest_taxa_obj: nest(taxon_arr)
-    };
-  return ob;
-  }, {});
-  console.log(q);
-
-  // return Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
-  //   let taxon_arr = taxon.split(";");
-  //   ob[taxon] = {
-  //     taxon_name: taxon,
-  //     taxon_arr: taxon_arr,
-  //     taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
-  //     nest_taxa_obj: this.nest(taxon_arr)
-  //   };
-  //   return ob;
-  // }, {});
-}
-
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
   console.log('in dbrowser');
@@ -843,8 +808,10 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+  const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
 
-  let new_ob = make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(biom_matrix);
+  let new_ob = taxonomy_class.make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(biom_matrix);
+  let sumator_new = taxonomy_class.get_sumator(new_ob);
 
   // sum counts
   console.time("TIME: get_sumator new");
@@ -859,7 +826,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.timeEnd("TIME: taxonomy_factory.chosen_taxonomy");
 
   console.time("TIME: taxonomy_lookup_module.get_sumator()");
-  let sumator_new = taxonomy_lookup_module.get_sumator();
+  let sumator_new1 = taxonomy_lookup_module.get_sumator();
   console.timeEnd("TIME: taxonomy_lookup_module.get_sumator()");
   console.timeEnd("TIME: get_sumator new");
 
