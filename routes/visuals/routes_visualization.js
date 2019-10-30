@@ -808,34 +808,36 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-  const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
-
-  let new_ob = taxonomy_class.make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(biom_matrix);
-  let sumator_new = taxonomy_class.get_sumator(new_ob);
 
   // sum counts
   console.time("TIME: get_sumator new");
-  console.time("TIME: biom_matrix_controller.TaxaCounts");
-  const taxa_counts_class = new biom_matrix_controller.TaxaCounts(req, req.session, req.session.chosen_id_order);
-  console.timeEnd("TIME: biom_matrix_controller.TaxaCounts");
-  console.time("TIME: biom_matrix_controller.TaxonomyFactory");
-  const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
-  console.timeEnd("TIME: biom_matrix_controller.TaxonomyFactory");
-  console.time("TIME: taxonomy_factory.chosen_taxonomy");
-  const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
-  console.timeEnd("TIME: taxonomy_factory.chosen_taxonomy");
+  const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
 
-  console.time("TIME: taxonomy_lookup_module.get_sumator()");
-  let sumator_new1 = taxonomy_lookup_module.get_sumator();
-  console.timeEnd("TIME: taxonomy_lookup_module.get_sumator()");
+  let tax_cnt_obj_arrs_w_tax_arr_from_b_mtx_ob = taxonomy_class.make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(biom_matrix);
+  let sumator_new = taxonomy_class.get_sumator(tax_cnt_obj_arrs_w_tax_arr_from_b_mtx_ob);
+
+  // console.time("TIME: biom_matrix_controller.TaxaCounts");
+  // const taxa_counts_class = new biom_matrix_controller.TaxaCounts(req, req.session, req.session.chosen_id_order);
+  // console.timeEnd("TIME: biom_matrix_controller.TaxaCounts");
+  // console.time("TIME: biom_matrix_controller.TaxonomyFactory");
+  // const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
+  // console.timeEnd("TIME: biom_matrix_controller.TaxonomyFactory");
+  // console.time("TIME: taxonomy_factory.chosen_taxonomy");
+  // const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
+  // console.timeEnd("TIME: taxonomy_factory.chosen_taxonomy");
+  //
+  // console.time("TIME: taxonomy_lookup_module.get_sumator()");
+  // let sumator_new1 = taxonomy_lookup_module.get_sumator();
+  // console.timeEnd("TIME: taxonomy_lookup_module.get_sumator()");
   console.timeEnd("TIME: get_sumator new");
 
   console.time("TIME: format_sumator sumator new");
 
   let result_xml = format_sumator(sumator_new);
-
   console.timeEnd("TIME: format_sumator sumator new");
 
+  console.log("result_xml: ");
+  console.log(result_xml);
   console.log("render visuals/dbrowser");
 
   res.render('visuals/dbrowser', {
