@@ -999,26 +999,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 // B A R - C H A R T  -- S I N G L E
 //
 // test: B A R - C H A R T  -- S I N G L E - (click on a bar)
-// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
-router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
-  console.log('in routes_viz/bar_single');
-  let myurl = url.parse(req.url, true);
-  //console.log('in piechart_single',myurl.query)
-  //let ts = myurl.query.ts;
-  let selected_did = myurl.query.did;
-  let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
-  let value = myurl.query.val || 'z'; // a,z, min, max
-  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  //let ds_items = pjds.split('--');
-  //console.log('myurl.query')
-  //console.log(myurl.query)
-  //console.log('bar_single:session')
-  //console.log(req.session)
 
+function make_pi(selected_did, req) {
   let pi = {};
   let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-  pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
-  pi.no_of_datasets=1;
+  pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
+  pi.no_of_datasets = 1;
   pi.ts = req.session.ts;
   pi.unit_choice = req.session.unit_choice;
   pi.min_range = req.session.min_range;
@@ -1027,6 +1013,56 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   pi.tax_depth = req.session.tax_depth;
   pi.include_nas = req.session.include_nas;
   pi.domains = req.session.domains;
+  return pi;
+}
+
+function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order}) {
+  console.log('LoadDataFinishRequest in bar_single');
+  let title = 'Taxonomic Data';
+  if (pi.unit_choice === 'OTUs') {
+    title = 'OTU Count Data';
+  }
+  res.render('visuals/user_viz_data/bar_single', {
+    title: title,
+    ts: timestamp,
+    matrix: JSON.stringify(new_matrix),
+    post_items: JSON.stringify(pi),
+    bar_type: 'single',
+    order: JSON.stringify(new_order),
+    //html: html,
+    user: req.user, hostname: req.CONFIG.hostname,
+  });
+}
+
+// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
+router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
+  console.log('in routes_viz/bar_single');
+  let myurl = url.parse(req.url, true);
+  //console.log('in piechart_single',myurl.query)
+  //let ts = myurl.query.ts;
+  let selected_did = myurl.query.did;
+  let orderby = myurl.query.order || 'alphaDown'; // alpha, count
+  let value = myurl.query.val || 'z'; // a,z, min, max
+  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  //let ds_items = pjds.split('--');
+  //console.log('myurl.query')
+  //console.log(myurl.query)
+  //console.log('bar_single:session')
+  //console.log(req.session)
+
+  // let pi = {};
+  // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+  // pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
+  // pi.no_of_datasets=1;
+  // pi.ts = req.session.ts;
+  // pi.unit_choice = req.session.unit_choice;
+  // pi.min_range = req.session.min_range;
+  // pi.max_range = req.session.max_range;
+  // pi.normalization = req.session.normalization;
+  // pi.tax_depth = req.session.tax_depth;
+  // pi.include_nas = req.session.include_nas;
+  // pi.domains = req.session.domains;
+  let pi = make_pi(selected_did, req);
   let write_file = false;  // DO NOT OVERWRITE The Matrix File
   // let new_matrix = MTX.get_biom_matrix(req, pi, write_file);
   console.time("TIME: biom_matrix_new_from_bar_single");
@@ -1040,6 +1076,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
   //let idx = -1;
 
+  // TODO: DRY
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
   let new_order = {};
   if (order.orderby === 'alpha' ){
@@ -1070,30 +1107,15 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   new_rows[selected_did] = [];
   // JSHint: This function has too many parameters. (4) (W072)
   // JSHint: 'project' is defined but never used. (W098)
-  // JSHint: 'display' is defined but never used. (W098)
-  let LoadDataFinishRequest = function (req, res, project, display) {
-    console.log('LoadDataFinishRequest in bar_single');
-    let title = 'Taxonomic Data';
-    if (pi.unit_choice === 'OTUs'){
-      title = 'OTU Count Data';
-    }
-    res.render('visuals/user_viz_data/bar_single', {
-      title     : title,
-      ts        : timestamp,
-      matrix    : JSON.stringify(new_matrix),
-      post_items: JSON.stringify(pi),
-      bar_type  : 'single',
-      order     : JSON.stringify(new_order),
-      //html: html,
-      user: req.user, hostname: req.CONFIG.hostname,
-    });
-  };
+  let LoadDataFinishRequest = LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
+
+// JSHint: 'display' is defined but never used. (W098)
   if ( pi.unit_choice === 'OTUs'){
 
     LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
 
   } else {
-
+    // TODO: DRY
     connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
       // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
       function mysqlSelectSeqsPerDID(err, rows){
