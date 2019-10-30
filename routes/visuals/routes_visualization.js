@@ -841,7 +841,8 @@ function format_sumator(allData) {
         array.push(`</${child}>`);
       }
       else if (fields2skip.includes(child)) {
-        printList(parent[child]);
+        // printList(parent[child]);
+        console.log();
       }
       else {
         array.push(`<node name='${child}'>`);

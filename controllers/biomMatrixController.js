@@ -633,7 +633,7 @@ class Taxonomy {
         //   ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
         //   ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
         // }
-        ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
+        // ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
         ptr = ptr[taxon];
       }
       return ob;
