@@ -2433,6 +2433,14 @@ exports.is_empty = function(obj_or_arr) {
   return Object.keys(obj_or_arr).length === 0;
 };
 
+exports.is_object = function(data) {
+  return data && (data.constructor === Object);
+};
+
+exports.is_array = function(data) {
+  return data && (Array.isArray(data));
+};
+
 exports.create_matrix_from_biom = function(res, file_path, infile_name, outfile_name){
     console.log('IN create_matrix_from_biom')
     biom_file_path = path.join(file_path, infile_name);

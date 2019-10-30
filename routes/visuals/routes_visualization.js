@@ -95,7 +95,7 @@ function start_visual_post_items(req) {
 //
 // test: get graphics ("show available graphics")
 router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
-   console.log('in POST view_selection');
+  console.log('in POST view_selection');
   /*
      var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
@@ -161,7 +161,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
 
   if (visual_post_items.metadata.indexOf('primer_suite') !== -1){
-      visual_post_items.metadata.push('primers');
+    visual_post_items.metadata.push('primers');
   }
   let metadata = META.write_mapping_file(visual_post_items);
 
@@ -180,7 +180,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     hostname        : req.CONFIG.hostname,
     token           : req.CONFIG.MAPBOX_TOKEN,
     image_to_render : JSON.stringify(image_to_open),
-    });
+  });
 });
 
 function get_dataset_ids(req) {
@@ -285,7 +285,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
     let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
-     // Gather just the tax data of selected datasets
+    // Gather just the tax data of selected datasets
     let chosen_dataset_order = [];
 
     for (let i in req.session.chosen_id_order){
@@ -298,18 +298,18 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       test_if_json_file_exists(req, i, dataset_ids, did);
     }
 
-	  // benchmarking
-	  helpers.start = process.hrtime();
-	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
+    // benchmarking
+    helpers.start = process.hrtime();
+    helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
-	  console.log('chosen_dataset_order-->');
+    console.log('chosen_dataset_order-->');
     print_log_if_not_vamps(req, chosen_dataset_order);
-	  console.log('<--chosen_dataset_order');
+    console.log('<--chosen_dataset_order');
 
     // else {
     //   console.log("unit_choice is defined: " + unit_choice);
     // }
-	  res.render('visuals/unit_selection', {
+    res.render('visuals/unit_selection', {
       title: 'VAMPS: Units Selection',
       referer: 'visuals_index',
       chosen_datasets: JSON.stringify(chosen_dataset_order),
@@ -319,9 +319,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       unit_choice  : current_unit_choice,
       user         : req.user,
       hostname     : req.CONFIG.hostname,
-	  });  // end render
+    });  // end render
   }
-    // benchmarking
+  // benchmarking
   helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
 
 }); // end fxn
@@ -370,20 +370,20 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   res.render('visuals/visuals_index', {
-      title       : 'VAMPS: Select Datasets',
-      subtitle    : 'Dataset Selection Page',
-      proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-      constants   : JSON.stringify(needed_constants),
-      md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-      md_names    : AllMetadataNames,
-      filtering   : 0,
-      portal_to_show : '',
-      data_to_open: JSON.stringify(DATA_TO_OPEN),
-      user        : req.user,
-      hostname    : req.CONFIG.hostname,
+    title       : 'VAMPS: Select Datasets',
+    subtitle    : 'Dataset Selection Page',
+    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    constants   : JSON.stringify(needed_constants),
+    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+    md_names    : AllMetadataNames,
+    filtering   : 0,
+    portal_to_show : '',
+    data_to_open: JSON.stringify(DATA_TO_OPEN),
+    user        : req.user,
+    hostname    : req.CONFIG.hostname,
 
   });
-  });
+});
 
 // test: show page
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
@@ -426,17 +426,17 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
 
   res.render('visuals/visuals_index', {
-      title       : 'VAMPS: Select Datasets',
-      subtitle    : 'Dataset Selection Page',
-      proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-      constants   : JSON.stringify(C),
-      md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-      md_names    : AllMetadataNames,
-      filtering   : 0,
-      portal_to_show : '',
-      data_to_open: JSON.stringify(DATA_TO_OPEN),
-      user        : req.user,
-      hostname    : req.CONFIG.hostname,
+    title       : 'VAMPS: Select Datasets',
+    subtitle    : 'Dataset Selection Page',
+    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    constants   : JSON.stringify(C),
+    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
+    md_names    : AllMetadataNames,
+    filtering   : 0,
+    portal_to_show : '',
+    data_to_open: JSON.stringify(DATA_TO_OPEN),
+    user        : req.user,
+    hostname    : req.CONFIG.hostname,
 
   });
 });
@@ -450,22 +450,22 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
   for (let n in req.session.chosen_id_order){
-      let did = req.session.chosen_id_order[n];
-      let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-      selected_dataset_order.names.push(pjds);
-      selected_dataset_order.ids.push(did);
+    let did = req.session.chosen_id_order[n];
+    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    selected_dataset_order.names.push(pjds);
+    selected_dataset_order.ids.push(did);
   }
 
 
   console.log(req.session);
   res.render('visuals/reorder_datasets', {
-                              title   : 'VAMPS: Reorder Datasets',
-                              selected_datasets: JSON.stringify(selected_dataset_order),
-                              constants    : JSON.stringify(C),
-                              referer: req.body.referer,
-                              ts : ts,
-                              user: req.user, hostname: req.CONFIG.hostname,
-                          });
+    title   : 'VAMPS: Reorder Datasets',
+    selected_datasets: JSON.stringify(selected_dataset_order),
+    constants    : JSON.stringify(C),
+    referer: req.body.referer,
+    ts : ts,
+    user: req.user, hostname: req.CONFIG.hostname,
+  });
 
 });
 //
@@ -482,8 +482,8 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // let dataset_ids = [];
   fs.readFile(file_path, 'utf8', function readFile(err,data) {
     if (err) {
-        let msg = 'ERROR Message ' + err;
-        helpers.render_error_page(req,res,msg);
+      let msg = 'ERROR Message ' + err;
+      helpers.render_error_page(req,res,msg);
     } else {
       console.log(data);
       res.send(data);
@@ -527,15 +527,15 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
       env:{'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
       detached: true,
       stdio: 'pipe' // stdin,  stdout,  stderr
-  });
+    });
   let stdout = '';
   dendrogram_process.stdout.on('data',  function dendrogramProcessStdout(data) {
     stdout += data.toString();
   });
   dendrogram_process.on('close',  function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
-  let lines = [];
-  let tmp = [];
+    let lines = [];
+    let tmp = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
         print_log_if_not_vamps(req, 'stdout: ' + stdout);
@@ -742,415 +742,98 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
       html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
 
- return;
- }
+      return;
+    }
     else{
       //console.log('ERROR');
       res.send('Python Script Error: ' + stderr1);
     }
- });
- /////////////////////////////////////////////////
+  });
+  /////////////////////////////////////////////////
 });
 
-function is_object(data) {
-  return data && (data.constructor === Object);
+//
+// DATA BROWSER
+//
+// test: "data browser Krona" viz.
+function format_sumator(allData) {
+  let array = [""];
+  printList(allData);
+  array.push("");
+  // console.log(array);
+
+  function printList(items) {
+    if (helpers.is_object(items)) {
+      getChildren(items);
+    }
+    else if (helpers.is_array(items)) {
+      printArray(items);
+    }
+    else {
+      array.push("<val>" + items + "</val>");
+    }
+  }
+
+  function getChildren(parent) {
+    const fields_w_val = ["rank", "seqcount", "val"];
+    const fields2skip = ["depth", "name", "parent", "children"];
+
+    for (let child in parent) {
+      if (fields_w_val.includes(child)) {
+        array.push(`<${child}>`);
+        printList(parent[child]);
+        array.push(`</${child}>`);
+      }
+      else if (!fields2skip.includes(child)) {
+        array.push(`<node name='${child}'>`);
+        printList(parent[child]);
+        array.push("</node>");
+      }
+    }
+  }
+
+  function printArray(myArray){
+    for(let i = 0; i < myArray.length; i++){
+      //console.log(myArray[i]);
+      array.push("<val>" + myArray[i] + "</val>");
+    }
+  }
+  return array.join("");
 }
 
-function is_array(data) {
-  return data && (Array.isArray(data));
-}
-
-// function recursive_sumator_read(data, res_arr, iter_num) {
-//   iter_num++;
-//   let key;
-//   let temp_arr = [];
-//   let inner_obj = {};
-//   let all_keys = ["name", "rank", "seqcount", "val"];
-//   for (key in data) {
-//     if (!data.hasOwnProperty(key)) { continue }
-//     if (all_keys.includes(key)) {
-//       continue;
-//     }
-//     if (is_object(data[key]) && (key === data[key].name)) {
-//       temp_arr.push(data[key]);
-//       data = recursive_sumator_read(data[key], temp_arr, iter_num);
-//     }
-//     res_arr.push(temp_arr);
-//   }
-//   return [data, res_arr, iter_num];
-//
-//
-//   // let all_keys = ["name", "rank", "seqcount"];
-//   // Object.keys(data).forEach(function (k, ind) {
-//   //   if (is_object(data[k])) {
-//   //     console.log(k in all_keys);
-//   //     new_res[ind] = [];
-//   //     recursive_sumator_read(new_res, data[k]);
-//   //     // return;
-//   //   }
-//   //   else {
-//   //     new_res[ind].push(data[k]);
-//   //   }
-//   // });
-//
-//   // if (is_object(data)) {
-//   //   Object.keys(data).forEach(recursive_sumator_read(new_res, data))
-//   //
-//   // }
-//   // else {
-//   //   new_res.push(data);
-//   // }
-//   // return new_res;
-//     // return is_object(data) ? make_array_of_summator_obj(data)
-//     //   : Object.entries(data).map ( ([key, value]) => {
-//     //     return { [key]: recursive_sumator_read(value) };
-//     //   });
-// }
-
-// old - working
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-
-  var ts = req.session.ts;
+  let ts = req.session.ts;
   console.log('in dbrowser');
-  console.log(req.session)
-  var html='';
-  var matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
-  var biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'))
-  var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-
-  //console.log('max_total_count '+max_total_count.toString());
-  console.time("TIME: get_sumator old");
+  // console.log(req.session);
+  let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
+  let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
   // sum counts
-  var sumator = get_sumator(req, biom_matrix);
-  console.timeEnd("TIME: get_sumator old");
+  console.time("TIME: get_sumator new");
+  const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
 
-  //console.log(JSON.stringify(sumator))
-  console.time("TIME:  format sumator old");
+  let sumator_new = taxonomy_class.get_sumator(biom_matrix);
 
-  for(var d in sumator['domain']){
+  console.timeEnd("TIME: get_sumator new");
 
-    // #### DOMAIN ####
-    //var dnode_name =  dname
-    html += "<node name='"+d+"'>\n";
-    html += " <seqcount>";
-    for(var c_domain in sumator['domain'][d]['knt']){
-      html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+  console.time("TIME: format_sumator sumator new");
 
-    }
-    html += "</seqcount>\n";
-    html += " <rank><val>domain</val></rank>\n";
+  let result_xml = format_sumator(sumator_new);
+  console.timeEnd("TIME: format_sumator sumator new");
 
-    // #### PHYLUM ####
-    for(p in sumator['domain'][d]['phylum']){
-      html += " <node name='"+p+"'>\n";
-      html += "  <seqcount>";
-      for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
-      }
-
-      html += "</seqcount>\n";
-      html += "  <rank><val>phylum</val></rank>\n";
-///
-      // #### KLASS ####
-      for(k in sumator['domain'][d]['phylum'][p]['klass']){
-        html += "  <node name='"+k+"'>\n";
-        html += "   <seqcount>";
-        for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
-        }
-        html += "</seqcount>\n";
-        html += "   <rank><val>klass</val></rank>\n";
-
-        // #### ORDER ####
-        for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-          html += "   <node name='"+o+"'>\n";
-          html += "    <seqcount>";
-          for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-          }
-          html += "</seqcount>\n";
-          html += "    <rank><val>order</val></rank>\n";
-
-          // #### FAMILY ####
-          for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-            html += "    <node name='"+f+"'>\n";
-            html += "     <seqcount>";
-            for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-              html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-            }
-            html += "</seqcount>\n";
-            html += "     <rank><val>family</val></rank>\n";
-
-            // #### GENUS ####
-            for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-              html += "     <node name='"+g+"'>\n";
-              html += "      <seqcount>";
-              for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-              }
-              html += "</seqcount>\n";
-              html += "      <rank><val>genus</val></rank>\n";
-
-              // #### SPECIES ####
-              for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-                html += "     <node name='"+s+"'>\n";
-                html += "      <seqcount>";
-                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                  html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-                }
-                html += "</seqcount>\n";
-                html += "      <rank><val>species</val></rank>\n";
-
-                // #### STRAIN ####
-                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-                  html += "     <node name='"+st+"'>\n";
-                  html += "      <seqcount>";
-                  for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-                  }
-                  html += "</seqcount>\n";
-                  html += "      <rank><val>strain</val></rank>\n";
-                  ///// DONE //////
-                  html += "     </node>\n";
-                }  // end strain
-
-                html += "     </node>\n";
-              }  // end species
-
-
-              html += "     </node>\n";
-            }  // end genus
-            html += "    </node>\n";
-          }  // end family
-          html += "   </node>\n";
-        }  // end order
-        html += "  </node>\n";
-      }  // end klass
-      html += " </node>\n";
-    }  // end phylum
-    html += "</node>\n";
-  }    // end domain
-  html += "  </node>\n";
-  console.timeEnd("TIME:  format sumator old");
-
-
-  // write html to a file and open it
-
-  console.log("render visuals/dbrowser")
-
+  // console.log("result_xml: ");
+  // console.log(result_xml);
+  console.log("render visuals/dbrowser");
 
   res.render('visuals/dbrowser', {
     title: 'VAMPS:Taxonomy Browser (Krona)',
     user:                req.user,
-    html:                html,
+    html:                result_xml,
     max_total_count:     max_total_count,
     matrix:              JSON.stringify(biom_matrix)
-
   });
 });
-
-
-// new
-//
-// DATA BROWSER
-//
-//test: "data browser Krona" viz.
-// err: Message: Cannot read property 'phylum' of undefined
-// TODO: JSHint: This function's cyclomatic complexity is too high. (17) (W074)
-// router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-//   let ts = req.session.ts;
-//   console.log('in dbrowser');
-//   console.log(req.session);
-//   let html = '';
-//   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
-//   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
-//   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-//
-//   // sum counts
-//   console.time("TIME: get_sumator new");
-//   // const sumator_class =  new visualization_controller.sumator(req);
-//
-//   const taxa_counts_class = new biom_matrix_controller.TaxaCounts(req, req.session, req.session.chosen_id_order);
-//   const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
-//   const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
-//
-//   let sumator_new = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
-//   console.timeEnd("TIME: get_sumator new");
-//   console.log(JSON.stringify(sumator_new));
-//
-//
-//   let sumator = taxonomy_lookup_module.make_array_of_sumator(sumator_new);
-//
-//   // console.time("TIME: get_sumator orig");
-//   // let sumator = get_sumator(req, biom_matrix);
-//   // console.timeEnd("TIME: get_sumator orig");
-//   // console.log(JSON.stringify(sumator));
-//   console.time("TIME: over sumator new");
-//   // let new_xmp = js2xmlparser.parse("node", sumator_new);
-//   // let options = {compact: true};
-//   // let new_object_sum = {};
-//   // new_object_sum["node"] = {};
-//   // for (let i = 0; i < Object.keys(sumator_new).length; i++) {
-//   //   let key = Object.keys(sumator_new)[i];
-//   //   new_object_sum["node name"] = key;
-//   //   let curr_obj = sumator_new[key];
-//   //   Object.assign(new_object_sum["node"], {curr_obj});
-//   // }
-//   // console.log("new_object_sum : ");
-//   // console.log(new_object_sum);
-//   // let all_keys = ["name", "rank", "seqcount"];
-//   // let arr_obj = [];
-//   // for (let i = 0; i < Object.keys(sumator_new).length; i++) {
-//   //   let k = Object.keys(sumator_new)[i];
-//   //   let entry = sumator_new[k];
-//   //   if (k in all_keys) {}
-//   //   new_arr.push(entry);
-//   // }
-//   //
-//   //
-//   // let result_string = "";
-//   //
-//   // const toXml = (data) => {
-//   //   return data.reduce((result, el) => {
-//   //     return result + `<trkpt lat="${el.lat}" lon="${el.lon}"><ele>${el.ele}</ele></trkpt>\n`
-//   //   }, '')
-//   //
-//
-//
-//     let options = {compact: true,
-//     elementNameFn: function(val) {return val.replace('foo:','');}};
-//   // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
-//
-//   let result_xml = xml_convert.js2xml(sumator, options);     // to convert javascript object to xml text
-//
-//   console.log("result_xml = ");
-//   console.log(result_xml);
-//   html = result_xml;
-//   console.timeEnd("TIME: over sumator new");
-//
-//
-// //   console.time("TIME: over sumator orig");
-// //
-// //   for (let d in sumator['domain']) {
-// //
-// //     // #### DOMAIN ####
-// //     //let dnode_name =  dname
-// //     html += "<node name='"+d+"'>\n";
-// //     html += " <seqcount>";
-// //     for (let c_domain in sumator['domain'][d]['knt']) {
-// //         html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-// //     }
-// //       html += "</seqcount>\n";
-// //       html += " <rank><val>domain</val></rank>\n";
-// //
-// //       // #### PHYLUM ####
-// //       for (let p in sumator['domain'][d]['phylum']){
-// //         html += " <node name='" + p + "'>\n";
-// //         html += "  <seqcount>";
-// //         for (let c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-// //             html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString() + "</val>";
-// //         }
-// //         html += "</seqcount>\n";
-// //         html += "  <rank><val>phylum</val></rank>\n";
-// //         ///
-// //         // #### KLASS ####
-// //         for (let k in sumator['domain'][d]['phylum'][p]['klass'])
-// //         {
-// //           html += "  <node name='" + k + "'>\n";
-// //           html += "   <seqcount>";
-// //           for (let c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-// //               html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
-// //           }
-// //           html += "</seqcount>\n";
-// //           html += "   <rank><val>klass</val></rank>\n";
-// //
-// //             // #### ORDER ####
-// //           for (let o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']) {
-// //             html += "   <node name='" + o + "'>\n";
-// //             html += "    <seqcount>";
-// //             for (let c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']) {
-// //               html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-// //             }
-// //             html += "</seqcount>\n";
-// //             html += "    <rank><val>order</val></rank>\n";
-// //
-// //             // #### FAMILY ####
-// //             for (let f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-// //               html += "    <node name='"+f+"'>\n";
-// //               html += "     <seqcount>";
-// //               // TODO: JSHint: Blocks are nested too deeply. (6) (W073)
-// //               for (let c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']) {
-// //                 html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-// //               }
-// //               html += "</seqcount>\n";
-// //               html += "     <rank><val>family</val></rank>\n";
-// //
-// //               // #### GENUS ####
-// //               for (let g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']) {
-// //                 html += "     <node name='"+g+"'>\n";
-// //                 html += "      <seqcount>";
-// //                 for (let c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-// //                     html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-// //                 }
-// //                 html += "</seqcount>\n";
-// //                 html += "      <rank><val>genus</val></rank>\n";
-// //
-// //                 // #### SPECIES ####
-// //                 for (let s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']) {
-// //                   html += "     <node name='" + s + "'>\n";
-// //                   html += "      <seqcount>";
-// //                   for (let c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-// //                       html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-// //                   }
-// //                   html += "</seqcount>\n";
-// //                   html += "      <rank><val>species</val></rank>\n";
-// //
-// //                   // #### STRAIN ####
-// //                   for (let st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-// //                         html += "     <node name='"+st+"'>\n";
-// //                         html += "      <seqcount>";
-// //                         for (let c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-// //                             html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-// //                 }
-// //                 html += "</seqcount>\n";
-// //                 html += "      <rank><val>strain</val></rank>\n";
-// // ///// DONE //////
-// //                 html += "     </node>\n";
-// //                   }  // end strain
-// //                   html += "     </node>\n";
-// //                 }  // end species
-// //                 html += "     </node>\n";
-// //               }  // end genus
-// //               html += "    </node>\n";
-// //             }  // end family
-// //             html += "   </node>\n";
-// //           }  // end order
-// //           html += "  </node>\n";
-// //         }  // end klass
-// //         html += " </node>\n";
-// //       }  // end phylum
-// //       html += "</node>\n";
-// //   }    // end domain
-// //   html += "  </node>\n";
-// //   console.timeEnd("TIME: over sumator orig");
-// //
-//
-//   // write html to a file and open it
-//
-//   console.log("render visuals/dbrowser");
-//   // let file_name = ts + '_krona.html';
-//   // let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-//   // fs.writeFileSync(html_path, JSON.stringify(html));
-//
-//   res.render('visuals/dbrowser', {
-//     title: 'VAMPS:Taxonomy Browser (Krona)',
-//     user:                req.user,
-//     html:                html,
-//     max_total_count:     max_total_count,
-//     matrix:              JSON.stringify(biom_matrix)
-//   });
-// });
 
 //
 // OLIGOTYPING
@@ -1205,7 +888,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
   let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
   if (fill === 'Klass'){
-      fill = 'Class';
+    fill = 'Class';
   }
   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
   let html = '';
@@ -1249,383 +932,64 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
   console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
-          env:{'PATH':req.CONFIG.PATH},
-          detached: true,
-          //stdio: [ 'ignore', null, log ]
-          stdio: 'pipe'  // stdin, stdout, stderr
+    env:{'PATH':req.CONFIG.PATH},
+    detached: true,
+    //stdio: [ 'ignore', null, log ]
+    stdio: 'pipe'  // stdin, stdout, stderr
   });
   let stdout = '';
   let lastline = '';
   phyloseq_process.stdout.on('data', function phyloseqProcessStdout(data) {
-      lastline = data;
-      stdout += data;
+    lastline = data;
+    stdout += data;
   });
   let stderr = '';
   phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
-      stderr += data;
+    stderr += data;
   });
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
-        console.log('phyloseq_process process exited with code ' + code);
-        //distance_matrix = JSON.parse(output);
-        //let last_line = ary[ary.length - 1];
-        if (code === 0){   // SUCCESS
-          console.log('last: ' + lastline);
-          if (lastline.toString().substring(0,5) === 'ERROR'){
-                  console.log('ERROR-1');
-                  html = lastline;
-          } else {
+    console.log('phyloseq_process process exited with code ' + code);
+    //distance_matrix = JSON.parse(output);
+    //let last_line = ary[ary.length - 1];
+    if (code === 0){   // SUCCESS
+      console.log('last: ' + lastline);
+      if (lastline.toString().substring(0,5) === 'ERROR'){
+        console.log('ERROR-1');
+        html = lastline;
+      } else {
 
-            //   let image = '/'+ts+'_heatmap.pdf';
-            // //console.log(image)
-            // html = "<div id='pdf'>";
-            // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-            // html += " <p>ERROR in loading pdf file</p>";
-            // html += "</object></div>";
-            // res.send(html);
+        //   let image = '/'+ts+'_heatmap.pdf';
+        // //console.log(image)
+        // html = "<div id='pdf'>";
+        // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+        // html += " <p>ERROR in loading pdf file</p>";
+        // html += "</object></div>";
+        // res.send(html);
 
-            // return;
+        // return;
 
 
-               if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-               //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-                    html = "<div id='pdf'>";
-                    html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-                    html += " <p>ERROR in loading pdf file</p>";
-                    html += "</object></div>";
-               } else {
-                    html = "<img src='/"+image_file+"'  >";
-              }
-          }
-
+        if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+          //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
+          html = "<div id='pdf'>";
+          html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+          html += " <p>ERROR in loading pdf file</p>";
+          html += "</object></div>";
         } else {
-          console.log('ERROR-2');
-          html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
+          html = "<img src='/"+image_file+"'  >";
         }
-        //console.log(html);
-        res.send(html);
+      }
+
+    } else {
+      console.log('ERROR-2');
+      html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
+    }
+    //console.log(html);
+    res.send(html);
 
   });
 
 });
-
-//
-//  for dbrowser
-//
-// TODO: JSHint: This function's cyclomatic complexity is too high. (35) (W074)
-// function get_sumator(req, biom_matrix){
-//
-//   let sumator = {};
-//   sumator['domain'] = {};
-//
-//   for (let r in biom_matrix.rows){
-//     let tax_string = biom_matrix.rows[r].id;
-//     let tax_items = tax_string.split(';');
-//     // let key = tax_items[0];
-//       //console.log(tax_items);
-//     for (let t in tax_items){
-//       let taxa = tax_items[t];
-//       let rank = C.RANKS[t];
-//       if (rank === 'domain'){
-//          let d = taxa;
-//          for (let i in req.session.chosen_id_order){
-//              if (d in sumator['domain']){
-//                  if (i in sumator['domain'][d]['knt']){
-//                      sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                  }
-//                  else {
-//                      sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                  }
-//              } else {
-//                  sumator['domain'][d]={};
-//                  sumator['domain'][d]['phylum'] = {};
-//                  sumator['domain'][d]['knt'] = [];
-//                  sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          }
-//       }
-//       if (rank === 'phylum'){
-//          let p = taxa;
-//          for (let i in req.session.chosen_id_order){
-//              if (p in sumator['domain'][d]['phylum']){
-//                  if (i in sumator['domain'][d]['phylum'][p]['knt']){
-//                      sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                  } else {
-//                      sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                  }
-//              } else {
-//                  sumator['domain'][d]['phylum'][p]={};
-//                  sumator['domain'][d]['phylum'][p]['klass']={};
-//                  sumator['domain'][d]['phylum'][p]['knt']=[];
-//                  sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          }
-//       }
-//       if (rank === 'klass'){
-//          let k = taxa;
-//          for (let i in req.session.chosen_id_order){
-//              if (k in sumator['domain'][d]['phylum'][p]['klass']){
-//                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-//                      sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                  } else {
-//                      sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                  }
-//              } else {
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          }
-//       }
-//       if (rank === 'order'){
-//          let o = taxa;
-//          for (let i in req.session.chosen_id_order){
-//              if (o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-//                  if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-//                      sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                  }
-//                  else {
-//                    sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                  }
-//              } else {
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          }
-//       }
-//       if (rank === 'family'){
-//        let f = taxa;
-//        for (let i in req.session.chosen_id_order){
-//            if (f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-//                if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-//                    sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                  } else {
-//                      sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                  }
-//              } else {
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          }
-//       }
-//       if (rank === 'genus'){
-//       let g = taxa;
-//       for (let i in req.session.chosen_id_order){
-//          if (g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-//              if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//              } else {
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//              }
-//          } else {
-//              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
-//              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
-//              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
-//              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//          }
-//       }
-//       }
-//       if (rank === 'species'){
-//         let s = taxa;
-//
-//         for (let i in req.session.chosen_id_order){
-//            if (s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-//                if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-//                    sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                } else {
-//                    sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                }
-//            } else {
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
-//
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//            }
-//         }
-//       }
-//       if (rank === 'strain'){
-//         let st = taxa;
-//         for (let i in req.session.chosen_id_order){
-//           if (st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-//             if (i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-//               sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-//                }
-//                else {
-//                  sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//                }
-//            }
-//            else {
-//              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
-//                //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
-//                sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-//            }
-//         }
-//       }
-//     }
-//   }
-//   return sumator;
-// }
-function get_sumator(req, biom_matrix){
-
-  var sumator = {};
-  sumator['domain']={};
-
-  for(r in biom_matrix.rows){
-    tax_string = biom_matrix.rows[r].id;
-    tax_items = tax_string.split(';');
-    key = tax_items[0];
-    //console.log(tax_items);
-    for(t in tax_items){
-      var taxa = tax_items[t];
-      var rank = C.RANKS[t];
-      if(rank=='domain'){
-        d = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(d in sumator['domain']){
-            if(i in sumator['domain'][d]['knt']){
-              sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]={};
-            sumator['domain'][d]['phylum']={}
-            sumator['domain'][d]['knt']=[]
-            sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='phylum'){
-        p = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(p in sumator['domain'][d]['phylum']){
-            if(i in sumator['domain'][d]['phylum'][p]['knt']){
-              sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]={};
-            sumator['domain'][d]['phylum'][p]['klass']={};
-            sumator['domain'][d]['phylum'][p]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='klass'){
-        k = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(k in sumator['domain'][d]['phylum'][p]['klass']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='order'){
-        o = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='family'){
-        f = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='genus'){
-        g = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='species'){
-        s = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
-
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-      if(rank=='strain'){
-        st = tax_items[t]
-        for(i in req.session.chosen_id_order){
-          if(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
-            if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
-            }else{
-              sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-            }
-          }else{
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
-            //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
-            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
-          }
-        }
-      }
-    }
-  }
-  return sumator;
-}
-
 
 //
 //  G E O S P A T I A L (see view_selection.js)
@@ -1637,149 +1001,149 @@ function get_sumator(req, biom_matrix){
 // test: B A R - C H A R T  -- S I N G L E - (click on a bar)
 // JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
-    console.log('in routes_viz/bar_single');
-    let myurl = url.parse(req.url, true);
-    //console.log('in piechart_single',myurl.query)
-    //let ts = myurl.query.ts;
-    let selected_did = myurl.query.did;
-    let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
-    let value = myurl.query.val || 'z'; // a,z, min, max
-    let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-    //let ds_items = pjds.split('--');
-     //console.log('myurl.query')
-     //console.log(myurl.query)
-     //console.log('bar_single:session')
-     //console.log(req.session)
+  console.log('in routes_viz/bar_single');
+  let myurl = url.parse(req.url, true);
+  //console.log('in piechart_single',myurl.query)
+  //let ts = myurl.query.ts;
+  let selected_did = myurl.query.did;
+  let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
+  let value = myurl.query.val || 'z'; // a,z, min, max
+  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  //let ds_items = pjds.split('--');
+  //console.log('myurl.query')
+  //console.log(myurl.query)
+  //console.log('bar_single:session')
+  //console.log(req.session)
 
-    let pi = {};
-    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-    pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
-    pi.no_of_datasets=1;
-    pi.ts = req.session.ts;
-    pi.unit_choice = req.session.unit_choice;
-    pi.min_range = req.session.min_range;
-    pi.max_range = req.session.max_range;
-    pi.normalization = req.session.normalization;
-    pi.tax_depth = req.session.tax_depth;
-    pi.include_nas = req.session.include_nas;
-    pi.domains = req.session.domains;
-    let write_file = false;  // DO NOT OVERWRITE The Matrix File
-    // let new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-    console.time("TIME: biom_matrix_new_from_bar_single");
-    const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
-    let new_matrix = biom_matrix_obj.biom_matrix;
-    console.timeEnd("TIME: biom_matrix_new_from_bar_single");
+  let pi = {};
+  let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+  pi.chosen_datasets = [{did:selected_did, name:selected_pjds}];
+  pi.no_of_datasets=1;
+  pi.ts = req.session.ts;
+  pi.unit_choice = req.session.unit_choice;
+  pi.min_range = req.session.min_range;
+  pi.max_range = req.session.max_range;
+  pi.normalization = req.session.normalization;
+  pi.tax_depth = req.session.tax_depth;
+  pi.include_nas = req.session.include_nas;
+  pi.domains = req.session.domains;
+  let write_file = false;  // DO NOT OVERWRITE The Matrix File
+  // let new_matrix = MTX.get_biom_matrix(req, pi, write_file);
+  console.time("TIME: biom_matrix_new_from_bar_single");
+  const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
+  let new_matrix = biom_matrix_obj.biom_matrix;
+  console.timeEnd("TIME: biom_matrix_new_from_bar_single");
 
-    new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
-    new_matrix.did = selected_did;
-    new_matrix.total = 0;
+  new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
+  new_matrix.did = selected_did;
+  new_matrix.total = 0;
 
-    //let idx = -1;
+  //let idx = -1;
 
-    new_matrix = helpers.sort_json_matrix(new_matrix, order);
-    let new_order = {};
-    if (order.orderby === 'alpha' ){
-      if (order.value === 'a'){
-        new_order.alpha_value = 'z';
-      } else {
-        new_order.alpha_value = 'a';
-      }
-      new_order.count_value = '';
+  new_matrix = helpers.sort_json_matrix(new_matrix, order);
+  let new_order = {};
+  if (order.orderby === 'alpha' ){
+    if (order.value === 'a'){
+      new_order.alpha_value = 'z';
     } else {
-      if (order.value === 'min'){
-        new_order.count_value = 'max';
-      } else {
-        new_order.count_value = 'min';
-      }
-      new_order.alpha_value = '';
+      new_order.alpha_value = 'a';
     }
+    new_order.count_value = '';
+  } else {
+    if (order.value === 'min'){
+      new_order.count_value = 'max';
+    } else {
+      new_order.count_value = 'min';
+    }
+    new_order.alpha_value = '';
+  }
 
-    //console.log('order')
-    //console.log(order)
-    //console.log('new_order')
-    //console.log(new_order)
-    let timestamp = +new Date();  // millisecs since the epoch!
-    let filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json';
-    let file_path = path.join('tmp',filename);
-    //console.log(file_path)
-    let new_rows = {};
-    new_rows[selected_did] = [];
+  //console.log('order')
+  //console.log(order)
+  //console.log('new_order')
+  //console.log(new_order)
+  let timestamp = +new Date();  // millisecs since the epoch!
+  let filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json';
+  let file_path = path.join('tmp',filename);
+  //console.log(file_path)
+  let new_rows = {};
+  new_rows[selected_did] = [];
   // JSHint: This function has too many parameters. (4) (W072)
   // JSHint: 'project' is defined but never used. (W098)
   // JSHint: 'display' is defined but never used. (W098)
-    let LoadDataFinishRequest = function (req, res, project, display) {
-      console.log('LoadDataFinishRequest in bar_single');
-      let title = 'Taxonomic Data';
-      if (pi.unit_choice === 'OTUs'){
-          title = 'OTU Count Data';
-      }
-      res.render('visuals/user_viz_data/bar_single', {
-        title     : title,
-        ts        : timestamp,
-        matrix    : JSON.stringify(new_matrix),
-        post_items: JSON.stringify(pi),
-        bar_type  : 'single',
-        order     : JSON.stringify(new_order),
-        //html: html,
-        user: req.user, hostname: req.CONFIG.hostname,
-      });
-    };
-    if ( pi.unit_choice === 'OTUs'){
+  let LoadDataFinishRequest = function (req, res, project, display) {
+    console.log('LoadDataFinishRequest in bar_single');
+    let title = 'Taxonomic Data';
+    if (pi.unit_choice === 'OTUs'){
+      title = 'OTU Count Data';
+    }
+    res.render('visuals/user_viz_data/bar_single', {
+      title     : title,
+      ts        : timestamp,
+      matrix    : JSON.stringify(new_matrix),
+      post_items: JSON.stringify(pi),
+      bar_type  : 'single',
+      order     : JSON.stringify(new_order),
+      //html: html,
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
+  };
+  if ( pi.unit_choice === 'OTUs'){
 
-        LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
+    LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
 
-    } else {
+  } else {
 
-      connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
-        // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
+    connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
+      // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
       function mysqlSelectSeqsPerDID(err, rows){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
           res.send(err);
         } else {
-        //console.log(rows)
-        for (let s in rows){
-          //rows[s].seq = rows[s].seq.toString('utf8')
-          let did = rows[s].dataset_id;
+          //console.log(rows)
+          for (let s in rows){
+            //rows[s].seq = rows[s].seq.toString('utf8')
+            let did = rows[s].dataset_id;
 
-          let seq = rows[s].seq.toString('utf8');
-          let seq_cnt = rows[s].seq_count;
-          let gast = rows[s].gast_distance;
-          let classifier = rows[s].classifier;
-          let d_id = rows[s].domain_id;
-          let p_id = rows[s].phylum_id;
-          let k_id = rows[s].klass_id;
-          let o_id = rows[s].order_id;
-          let f_id = rows[s].family_id;
-          let g_id;
-          if (rows[s].hasOwnProperty("genus_id")){
-            if (rows[s].genus_id === 'undefined'){
+            let seq = rows[s].seq.toString('utf8');
+            let seq_cnt = rows[s].seq_count;
+            let gast = rows[s].gast_distance;
+            let classifier = rows[s].classifier;
+            let d_id = rows[s].domain_id;
+            let p_id = rows[s].phylum_id;
+            let k_id = rows[s].klass_id;
+            let o_id = rows[s].order_id;
+            let f_id = rows[s].family_id;
+            let g_id;
+            if (rows[s].hasOwnProperty("genus_id")){
+              if (rows[s].genus_id === 'undefined'){
                 g_id = 'genus_NA';
-            } else {
+              } else {
                 g_id = rows[s].genus_id;
+              }
+            } else {
+              g_id = '';
             }
-          } else {
-            g_id = '';
-          }
-          let sp_id = '';
+            let sp_id = '';
 
-          if (rows[s].hasOwnProperty("species_id")){
-            sp_id = rows[s].species_id;
+            if (rows[s].hasOwnProperty("species_id")){
+              sp_id = rows[s].species_id;
+            }
+            let st_id = rows[s].strain_id;
+            new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
           }
-          let st_id = rows[s].strain_id;
-          new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
+          // order by seq_count DESC
+          new_rows[selected_did].sort(function sortByCount(a, b) {
+            return b.seq_count - a.seq_count;
+          });
+
+          fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
+
+          LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
         }
-        // order by seq_count DESC
-        new_rows[selected_did].sort(function sortByCount(a, b) {
-          return b.seq_count - a.seq_count;
-        });
-
-        fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
-
-        LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order);
-      }
-    });
+      });
   }
 });
 
@@ -1864,68 +1228,68 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   //console.log(new_rows)
   // JSHint: This function has too many parameters. (6) (W072)
   let LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
-     console.log('LoadDataFinishRequest in bar_double');
+    console.log('LoadDataFinishRequest in bar_double');
     let title = 'Taxonomic Data';
     if (pi.unit_choice === 'OTUs'){
-          title = 'OTU Count Data';
-     }
-     res.render('visuals/user_viz_data/bar_double', {
-                title     : title,
-                ts        : timestamp,
-                matrix    : JSON.stringify(new_matrix),
-                post_items: JSON.stringify(pi),
-                bar_type  : 'double',
-                order     : JSON.stringify(new_order),
-                dist      : dist,
-                user: req.user, hostname: req.CONFIG.hostname,
-            });
+      title = 'OTU Count Data';
+    }
+    res.render('visuals/user_viz_data/bar_double', {
+      title     : title,
+      ts        : timestamp,
+      matrix    : JSON.stringify(new_matrix),
+      post_items: JSON.stringify(pi),
+      bar_type  : 'double',
+      order     : JSON.stringify(new_order),
+      dist      : dist,
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
   };
   if (pi.unit_choice === 'OTUs') {
     LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
   }
   else {
     connection.query(QUERY.get_sequences_perDID(did1+"','"+did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows){
-          if (err)  {
-            console.log('Query error: ' + err);
-            console.log(err.stack);
-            res.send(err);
-          }
-          else {
-            //console.log(rows)
-            // should write to a file? Or res.render here?
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        res.send(err);
+      }
+      else {
+        //console.log(rows)
+        // should write to a file? Or res.render here?
 
-            for (let s in rows) {
-                let did = rows[s].dataset_id;
+        for (let s in rows) {
+          let did = rows[s].dataset_id;
 
-                //console.log(did)
-                //rows[s].seq = rows[s].seq.toString('utf8')
-                let seq = rows[s].seq.toString('utf8');
-                let seq_cnt = rows[s].seq_count;
-                let gast = rows[s].gast_distance;
-                let classifier = rows[s].classifier;
-                let d_id = rows[s].domain_id;
-                let p_id = rows[s].phylum_id;
-                let k_id = rows[s].klass_id;
-                let o_id = rows[s].order_id;
-                let f_id = rows[s].family_id;
-                let g_id = rows[s].genus_id;
-                let sp_id = rows[s].species_id;
-                let st_id = rows[s].strain_id;
-                new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
-                //new_rows[did].seq = rows[s].seq.toString('utf8')
-            }
-            // order by seq_count DESC
-            //console.log(new_rows)
-            new_rows[did1].sort(function sortByCount(a, b) {
-                    return b.seq_count - a.seq_count;
-            });
-            new_rows[did2].sort(function sortByCount(a, b) {
-                    return b.seq_count - a.seq_count;
-            });
+          //console.log(did)
+          //rows[s].seq = rows[s].seq.toString('utf8')
+          let seq = rows[s].seq.toString('utf8');
+          let seq_cnt = rows[s].seq_count;
+          let gast = rows[s].gast_distance;
+          let classifier = rows[s].classifier;
+          let d_id = rows[s].domain_id;
+          let p_id = rows[s].phylum_id;
+          let k_id = rows[s].klass_id;
+          let o_id = rows[s].order_id;
+          let f_id = rows[s].family_id;
+          let g_id = rows[s].genus_id;
+          let sp_id = rows[s].species_id;
+          let st_id = rows[s].strain_id;
+          new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
+          //new_rows[did].seq = rows[s].seq.toString('utf8')
+        }
+        // order by seq_count DESC
+        //console.log(new_rows)
+        new_rows[did1].sort(function sortByCount(a, b) {
+          return b.seq_count - a.seq_count;
+        });
+        new_rows[did2].sort(function sortByCount(a, b) {
+          return b.seq_count - a.seq_count;
+        });
 
-            fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function writeFile(err) {
-              if (err) return console.log(err);
-              console.log('wrote file > '+file_path1);
+        fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function writeFile(err) {
+          if (err) return console.log(err);
+          console.log('wrote file > '+file_path1);
 
 
           fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
@@ -1933,11 +1297,11 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
             console.log('wrote file > '+file_path2);
 
             LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
+          });
         });
-      });
-    }
-  });
-}
+      }
+    });
+  }
 });
 
 //
@@ -1946,17 +1310,17 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on the barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
-	console.log('in sequences');
-	let myurl = url.parse(req.url, true);
-	console.log(myurl.query);
-	let search_tax = myurl.query.taxa;
-    let seqs_filename = myurl.query.filename;
+  console.log('in sequences');
+  let myurl = url.parse(req.url, true);
+  console.log(myurl.query);
+  let search_tax = myurl.query.taxa;
+  let seqs_filename = myurl.query.filename;
 
-    let seq_list = [];
-    let d,p,k,o,f,g,sp,st;
-    let selected_did = myurl.query.did;
-    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
-	if (seqs_filename){
+  let seq_list = [];
+  let d,p,k,o,f,g,sp,st;
+  let selected_did = myurl.query.did;
+  let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+  if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
@@ -1964,10 +1328,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       if (err) {
         console.log(err);
         if (req.session.unit_choice === 'OTUs'){
-            res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
+          res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
         }
         else {
-            res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
+          res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
         }
       }
       //console.log('parsing data')
@@ -1978,89 +1342,89 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       catch(e){
         console.log(e);
         res.render('visuals/user_viz_data/sequences', {
-                    title: 'Sequences',
-                    ds : pjds,
-                    did : selected_did,
-                    tax : search_tax,
-                    fname : seqs_filename,
-                    seq_list : 'Error Retrieving Sequences',
-                    user: req.user, hostname: req.CONFIG.hostname,
+          title: 'Sequences',
+          ds : pjds,
+          did : selected_did,
+          tax : search_tax,
+          fname : seqs_filename,
+          seq_list : 'Error Retrieving Sequences',
+          user: req.user, hostname: req.CONFIG.hostname,
         });
         return;
       }
 
       for (let i in clean_data){
 
-          let seq_tax = '';
-          let data = clean_data[i];
+        let seq_tax = '';
+        let data = clean_data[i];
 
-          d = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+        d = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
-          try {
-                p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
-          }catch(e){
-                p = 'phylum_NA';
-          }
-          try {
-                k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
-          }catch(e){
-                k = 'class_NA';
-          }
-          try {
-                o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
-          }catch(e){
-                o = 'order_NA';
-          }
-          try {
-                f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
-          }catch(e){
-                f = 'family_NA';
-          }
-          try {
-                g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
-          }catch(e){
-                g = 'genus_NA';
-          }
-          try {
-                sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
-          }
-          catch(e){
-                sp = 'species_NA';
-          }
-          try {
-                st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
-          }
-          catch(e){
-                st = 'strain_NA';
-          }
-          seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-          if (seq_tax.substring(0, search_tax.length) === search_tax){
-            seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});
-          }
+        try {
+          p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+        }catch(e){
+          p = 'phylum_NA';
+        }
+        try {
+          k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+        }catch(e){
+          k = 'class_NA';
+        }
+        try {
+          o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+        }catch(e){
+          o = 'order_NA';
+        }
+        try {
+          f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+        }catch(e){
+          f = 'family_NA';
+        }
+        try {
+          g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+        }catch(e){
+          g = 'genus_NA';
+        }
+        try {
+          sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+        }
+        catch(e){
+          sp = 'species_NA';
+        }
+        try {
+          st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+        }
+        catch(e){
+          st = 'strain_NA';
+        }
+        seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
+        if (seq_tax.substring(0, search_tax.length) === search_tax){
+          seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});
+        }
       }
 
       res.render('visuals/user_viz_data/sequences', {
-                    title: 'Sequences',
-                    ds : pjds,
-                    tax : search_tax,
-                    fname : seqs_filename,
-                    seq_list : JSON.stringify(seq_list),
-                    user: req.user, hostname: req.CONFIG.hostname,
+        title: 'Sequences',
+        ds : pjds,
+        tax : search_tax,
+        fname : seqs_filename,
+        seq_list : JSON.stringify(seq_list),
+        user: req.user, hostname: req.CONFIG.hostname,
       });
     });
   } else {
-      res.render('visuals/user_viz_data/sequences', {
-                    title: 'Sequences',
-                    ds : pjds,
-                    tax : search_tax,
-                    fname : '',
-                    seq_list : 'Error Retrieving Sequences',
-                    user: req.user, hostname: req.CONFIG.hostname,
-        });
+    res.render('visuals/user_viz_data/sequences', {
+      title: 'Sequences',
+      ds : pjds,
+      tax : search_tax,
+      fname : '',
+      seq_list : 'Error Retrieving Sequences',
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
 
   }
 
-	//   });
+  //   });
 
 });
 
@@ -2072,10 +1436,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 */
 //test: simple_taxonomy
 router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
-    console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'");
-    res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
-        doms : C.UNITSELECT.silva119_simple.domains
-    });
+  console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'");
+  res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
+    doms : C.UNITSELECT.silva119_simple.domains
+  });
 });
 
 //
@@ -2123,13 +1487,13 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
   print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
-	let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
-	helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
-	helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
-	//console.log(filename);
-	helpers.write_to_file(filename_path,req.body.datasets);
+  let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
+  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
+  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
+  //console.log(filename);
+  helpers.write_to_file(filename_path,req.body.datasets);
 
-	res.send('OK');
+  res.send('OK');
 
 
 });
@@ -2137,91 +1501,91 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 // test: click go to saved datasets
 router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
-    console.log('in show_saved_datasets');
-    if (req.user.username === 'guest'){
-      req.flash('fail', "The 'guest' user cannot save datasets");
-      res.redirect('/user_data/your_data');
-    } else {
-      //console.log('req.body: show_saved_datasets-->>');
-      //console.log(req.body);
-      //console.log('req.body: show_saved_datasets');
-      let acceptable_prefixes = ['datasets', 'image'];
-      let saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+  console.log('in show_saved_datasets');
+  if (req.user.username === 'guest'){
+    req.flash('fail', "The 'guest' user cannot save datasets");
+    res.redirect('/user_data/your_data');
+  } else {
+    //console.log('req.body: show_saved_datasets-->>');
+    //console.log(req.body);
+    //console.log('req.body: show_saved_datasets');
+    let acceptable_prefixes = ['datasets', 'image'];
+    let saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
-      let file_info = {};
-      let modify_times = [];
-      helpers.mkdirSync(saved_elements_dir);
-      fs.readdir(saved_elements_dir, function(err, files){
-          if (err){
+    let file_info = {};
+    let modify_times = [];
+    helpers.mkdirSync(saved_elements_dir);
+    fs.readdir(saved_elements_dir, function(err, files){
+      if (err){
 
-    				let msg = 'ERROR Message '+err;
-    				helpers.render_error_page(req,res,msg);
+        let msg = 'ERROR Message '+err;
+        helpers.render_error_page(req,res,msg);
 
 
-    		  } else {
-      		  for (let f in files){
-      	        let pts = files[f].split('-');
-      	        if (parseInt(acceptable_prefixes.indexOf(pts[0])) !== -1 ){
-      	          //file_info.files.push(files[f]);
-      	          let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
-      			       file_info[stat.mtime.getTime()] = {
-      			         'filename': files[f],
-                     'size': stat.size,
-                     'mtime': stat.mtime.toString()
-      			       };
-      			       modify_times.push(stat.mtime.getTime());
+      } else {
+        for (let f in files){
+          let pts = files[f].split('-');
+          if (parseInt(acceptable_prefixes.indexOf(pts[0])) !== -1 ){
+            //file_info.files.push(files[f]);
+            let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
+            file_info[stat.mtime.getTime()] = {
+              'filename': files[f],
+              'size': stat.size,
+              'mtime': stat.mtime.toString()
+            };
+            modify_times.push(stat.mtime.getTime());
 
-      	        }
-      	    }
-      		  modify_times.sort().reverse();
-      		  //console.log(JSON.stringify(file_info));
-      		}
+          }
+        }
+        modify_times.sort().reverse();
+        //console.log(JSON.stringify(file_info));
+      }
 
-      		res.render('visuals/saved_elements',
-      		    { title: 'saved_elements',
+      res.render('visuals/saved_elements',
+        { title: 'saved_elements',
 
-      		      finfo: JSON.stringify(file_info),
-      		      times: modify_times,
-      		      user: req.user, hostname: req.CONFIG.hostname,
-      		});
+          finfo: JSON.stringify(file_info),
+          times: modify_times,
+          user: req.user, hostname: req.CONFIG.hostname,
+        });
 
-      });
-    }
+    });
+  }
 
 });
 //
 //  R E S E T
 // test: from reorder_datasets click "reset order"
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
-        console.log('in reset_ds_order');
-        let html = '';
-        html += "<table id='drag_table' class='table table-condensed' >";
-        html += "<thead></thead>";
-        html += "  <tbody>";
+  console.log('in reset_ds_order');
+  let html = '';
+  html += "<table id='drag_table' class='table table-condensed' >";
+  html += "<thead></thead>";
+  html += "  <tbody>";
 
-        for (let i in req.session.chosen_id_order){
-             let did = req.session.chosen_id_order[i];
-             let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-             html += "<tr class='tooltip_row'>";
-             html += "<td class='dragHandle' id='"+did+"--"+name+"'> ";
-                 html += "<input type='hidden' name='ds_order[]' value='"+did+"'>";
-             html += (parseInt(i)+1).toString()+" (id:"+ did+") - "+name;
-             html += "</td>";
-             html += "   <td>";
-             html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+did+"--"+name+"\")'>^</a>";
-             html += "   </td>";
-             html += "</tr>";
-        }
-        html += "</tbody>";
-        html += "</table>";
-        res.send(html);
+  for (let i in req.session.chosen_id_order){
+    let did = req.session.chosen_id_order[i];
+    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    html += "<tr class='tooltip_row'>";
+    html += "<td class='dragHandle' id='"+did+"--"+name+"'> ";
+    html += "<input type='hidden' name='ds_order[]' value='"+did+"'>";
+    html += (parseInt(i)+1).toString()+" (id:"+ did+") - "+name;
+    html += "</td>";
+    html += "   <td>";
+    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+did+"--"+name+"\")'>^</a>";
+    html += "   </td>";
+    html += "</tr>";
+  }
+  html += "</tbody>";
+  html += "</table>";
+  res.send(html);
 });
 //
 // A L P H A - B E T I Z E
 // test: from re-order datasets, "Alphabetize"
 router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
-	console.log('in alphabetize_ds_order');
-	let html = '';
+  console.log('in alphabetize_ds_order');
+  let html = '';
   html += "<table id='drag_table' class='table table-condensed' >";
   html += "<thead></thead>";
   html += "  <tbody>";
@@ -2253,7 +1617,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   }
   html += "</tbody>";
   html += "</table>";
-	res.send(html);
+  res.send(html);
 });
 //
 // R E V E R S E  O R D E R
@@ -2289,103 +1653,103 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 //  C L U S T E R  D A T A S E T  O R D E R
 // test: from re-order datasets, "--Select distance metric to cluster by:". Should not be "undefined"
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
-    console.log('in cluster_ds_order');
-    let html = '';
-    let ts = req.body.ts;
-    let metric = req.body.metric;
-    // let biom_file_name = ts + '_count_matrix.biom';
-    let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-      // path.join(req.CONFIG.PROCESS_DIR, 'tmp', biom_file_name);
-    let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
+  console.log('in cluster_ds_order');
+  let html = '';
+  let ts = req.body.ts;
+  let metric = req.body.metric;
+  // let biom_file_name = ts + '_count_matrix.biom';
+  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  // path.join(req.CONFIG.PROCESS_DIR, 'tmp', biom_file_name);
+  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
 
   let pjds_lookup = {};
-    for (let i in req.session.chosen_id_order){
-        let did = req.session.chosen_id_order[i];
-        let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-        pjds_lookup[pjds] = did;
+  for (let i in req.session.chosen_id_order){
+    let did = req.session.chosen_id_order[i];
+    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    pjds_lookup[pjds] = did;
+  }
+  let options = {
+    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
+  };
+  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+
+  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+
+  let cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+    detached: true,
+    stdio: [ 'ignore', null, log ]
+  });  // stdin, stdout, stderr
+
+  //let heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
+  let output = '';
+  cluster_process.stdout.on('data', function clusterProcessStdout(data) {
+    //console.log('stdout: ' + data);
+    output += data.toString();
+  });
+
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
+  cluster_process.on('close', function clusterProcessOnClose(code) {
+    console.log('ds cluster process exited with code ' + code);
+    let lines = output.split(/\n/);
+    let ds_list = "";
+    for (let i in lines){
+      if (lines[i].substring(0,7) === 'DS_LIST'){
+        let tmp = lines[i].split('=');
+        ds_list = tmp[1];
+      }
     }
-    let options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
-    };
-    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+    print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
-    let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    //let last_line = ary[ary.length - 1];
+    if (code === 0){   // SUCCESS
+      try {
+        let dataset_list = JSON.parse(ds_list);
 
-    let cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-            detached: true,
-            stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr
+        let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
+        let ascii_file = ts + '_' + metric + '_tree.txt';
+        let ascii_file_path = path.join(pwd,'tmp',ascii_file);
+        fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
+          if (err) {
+            return console.log(err);
+          } else {
+            //console.log(data);
 
-    //let heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
-    let output = '';
-    cluster_process.stdout.on('data', function clusterProcessStdout(data) {
-        //console.log('stdout: ' + data);
-        output += data.toString();
-    });
+            html = '';
 
-    // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
-    cluster_process.on('close', function clusterProcessOnClose(code) {
-      console.log('ds cluster process exited with code ' + code);
-      let lines = output.split(/\n/);
-      let ds_list = "";
-      for (let i in lines){
-        if (lines[i].substring(0,7) === 'DS_LIST'){
-          let tmp = lines[i].split('=');
-          ds_list = tmp[1];
-        }
-      }
-      print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
-
-      //let last_line = ary[ary.length - 1];
-      if (code === 0){   // SUCCESS
-        try {
-          let dataset_list = JSON.parse(ds_list);
-
-          let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
-          let ascii_file = ts + '_' + metric + '_tree.txt';
-          let ascii_file_path = path.join(pwd,'tmp',ascii_file);
-          fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
-            if (err) {
-              return console.log(err);
-            } else {
-              //console.log(data);
-
-              html = '';
-
-              html += "<table id='drag_table' class='table table-condensed' >";
-              html += "<thead></thead>";
-              html += "  <tbody>";
-              for (let i in potential_chosen_id_name_hash.names){
-                  html += "<tr class='tooltip_row'>";
-                  html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-                  html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-                  html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
-                  html += "</td>";
-                  html += "   <td>";
-                  html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-                  html += "   </td>";
-                  html += "</tr>";
-              }
-              html += "</tbody>";
-              html += "</table>";
-              html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
-
-              res.send(html);
+            html += "<table id='drag_table' class='table table-condensed' >";
+            html += "<thead></thead>";
+            html += "  <tbody>";
+            for (let i in potential_chosen_id_name_hash.names){
+              html += "<tr class='tooltip_row'>";
+              html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+              html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+              html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+              html += "</td>";
+              html += "   <td>";
+              html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+              html += "   </td>";
+              html += "</tr>";
             }
-          });
+            html += "</tbody>";
+            html += "</table>";
+            html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
+
+            res.send(html);
+          }
+        });
       }
-        catch(err) {
-          res.send('Calculation Error: ' + err.toString());
-        }
+      catch(err) {
+        res.send('Calculation Error: ' + err.toString());
       }
-      // else {
-      //   //console.log('output')
-      //   //console.log(output);
-      //   //res.send(err);
-      // }
-    });
+    }
+    // else {
+    //   //console.log('output')
+    //   //console.log(output);
+    //   //res.send(err);
+    // }
+  });
 });
 //
 //
@@ -2425,95 +1789,95 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 });
 
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
-    console.log('in dheatmap_split_distance');
-    console.log(req.body);
+  console.log('in dheatmap_split_distance');
+  console.log(req.body);
 
+  let ts = req.session.ts;
+  let test_split_file_name = ts + '_distance_mh_bc.tsv';
+  let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
+  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
+
+  // let biom_file_name = ts + '_count_matrix.biom';
+  // let biom_file = path.join(pwd, 'tmp', biom_file_name);
+  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+
+  let FinishSplitFile = function(req, res){
     let ts = req.session.ts;
-    let test_split_file_name = ts + '_distance_mh_bc.tsv';
-    let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-    let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
+    //let suffix = split_file_suffixes[req.body.split_distance_choice]
+    let suffix = req.body.split_distance_choice;
+    //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
+    let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
+    let distmtx_file = path.join(config.PROCESS_DIR,'tmp', distmtx_file_name);
+    //console.log(distmtx_file)
+    fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
+      if (err) {
+        res.json({'err': err});
+      } else {
+        //console.log(mtxdata)
+        let split_distance_csv_matrix = mtxdata.split('\n');
 
-    // let biom_file_name = ts + '_count_matrix.biom';
-    // let biom_file = path.join(pwd, 'tmp', biom_file_name);
-    let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+        // IMAGES = require('../routes_images'); ?already required on top?
+        let metadata = {};
+        metadata.numbers_or_colors = req.body.numbers_or_colors;
+        metadata.split = true;
+        metadata.metric = suffix;
 
-    let FinishSplitFile = function(req, res){
-        let ts = req.session.ts;
-        //let suffix = split_file_suffixes[req.body.split_distance_choice]
-        let suffix = req.body.split_distance_choice;
-        //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
-        let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-        let distmtx_file = path.join(config.PROCESS_DIR,'tmp', distmtx_file_name);
-        //console.log(distmtx_file)
-        fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
-            if (err) {
-                res.json({'err': err});
-            } else {
-                //console.log(mtxdata)
-                let split_distance_csv_matrix = mtxdata.split('\n');
+        let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
-                // IMAGES = require('../routes_images'); ?already required on top?
-                let metadata = {};
-                metadata.numbers_or_colors = req.body.numbers_or_colors;
-                metadata.split = true;
-                metadata.metric = suffix;
+        let outfile_name = ts + '-dheatmap-api.html';
+        let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
 
-                let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
-
-                let outfile_name = ts + '-dheatmap-api.html';
-                let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
-
-                let data = {};
-                data.html = html;
-                data.numbers_or_colors = req.body.numbers_or_colors;
-                data.filename = outfile_name;
-                //res.send(outfile_name)
-                res.json(data);
-            }
-
-        });
-    };
-    if (helpers.fileExists(test_distmtx_file)){
-        console.log('Using Old Files');
-        FinishSplitFile(req, res);
-        return;
-    }
-
-    let options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
-    };
-    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-    let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-            detached: true,
-            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-            stdio: 'pipe'  // stdin, stdout, stderr
-    });
-
-    let stdout = '';
-    split_process.stdout.on('data', function splitsProcessStdout(data) {
-        //
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stdout += data;
+        let data = {};
+        data.html = html;
+        data.numbers_or_colors = req.body.numbers_or_colors;
+        data.filename = outfile_name;
+        //res.send(outfile_name)
+        res.json(data);
+      }
 
     });
-    let stderr = '';
-    split_process.stderr.on('data', function splitsProcessStderr(data) {
-        console.log('stderr: ' + data);
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        data = data.toString();
-        stderr += data;
-    });
-    split_process.on('close', function splitsProcessOnClose(code) {
-        console.log('finished code:'+code.toString());
-        console.log('Creating New Split Distance Files');
-        FinishSplitFile(req, res);
-        //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
+  };
+  if (helpers.fileExists(test_distmtx_file)){
+    console.log('Using Old Files');
+    FinishSplitFile(req, res);
+    return;
+  }
+
+  let options = {
+    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
+  };
+  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+  let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+    detached: true,
+    //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+    stdio: 'pipe'  // stdin, stdout, stderr
+  });
+
+  let stdout = '';
+  split_process.stdout.on('data', function splitsProcessStdout(data) {
+    //
+    //data = data.toString().replace(/^\s+|\s+$/g, '');
+    data = data.toString();
+    stdout += data;
+
+  });
+  let stderr = '';
+  split_process.stderr.on('data', function splitsProcessStderr(data) {
+    console.log('stderr: ' + data);
+    //data = data.toString().replace(/^\s+|\s+$/g, '');
+    data = data.toString();
+    stderr += data;
+  });
+  split_process.on('close', function splitsProcessOnClose(code) {
+    console.log('finished code:'+code.toString());
+    console.log('Creating New Split Distance Files');
+    FinishSplitFile(req, res);
+    //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
 
 
-    });
+  });
 });
 //
 //
@@ -2543,7 +1907,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     let file_name = ts+'_metadata.txt';
     res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
-    } else {
+  } else {
     // ERROR
     console.log('ERROR In download_file');
   }
@@ -2555,18 +1919,18 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
 //
 // test: clear by substring, first opening
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
-    //SHOW_DATA = ALL_DATASETS;
-    console.log('in clear filters');
-    //console.log(req.query)
-    //FILTER_ON = false
-    PROJECT_TREE_OBJ = [];
-    if (req.query.hasOwnProperty('btn') && req.query.btn === '1'){
-        DATA_TO_OPEN = {};
-    }
-    //DATA_TO_OPEN = {}
-    PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
-    res.json(PROJECT_FILTER);
+  //SHOW_DATA = ALL_DATASETS;
+  console.log('in clear filters');
+  //console.log(req.query)
+  //FILTER_ON = false
+  PROJECT_TREE_OBJ = [];
+  if (req.query.hasOwnProperty('btn') && req.query.btn === '1'){
+    DATA_TO_OPEN = {};
+  }
+  //DATA_TO_OPEN = {}
+  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
+  PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
+  res.json(PROJECT_FILTER);
 });
 
 function test_project_visibility_permissions(req, node) {
@@ -2860,16 +2224,16 @@ router.post('/check_units', function(req, res) {
 //   console.log(dataset_ids)
 
   for (let i in dataset_ids){
-        //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
-        path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
-        //console.log(path_to_file)
-        try {
-            jsonfile = require(path_to_file);
-        }
-        catch(e){
-            file_err='FAIL';
-            break;
-        }
+    //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
+    path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+    //console.log(path_to_file)
+    try {
+      jsonfile = require(path_to_file);
+    }
+    catch(e){
+      file_err='FAIL';
+      break;
+    }
   }
   res.send(file_err);
 });
@@ -2879,55 +2243,55 @@ router.post('/check_units', function(req, res) {
 // test: choose custom taxonomy, show tree
 // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/tax_custom_dhtmlx', function(req, res) {
-    //console.log('IN tax_custom_dhtmlx')
-    let myurl = url.parse(req.url, true);
-    let id = myurl.query.id;
-    //console.log('id='+id)
-    let json = {};
-    json.id = id;
-    json.item = [];
-    if (parseInt(id) === 0){
-      /*
-          return json for collapsed tree: 'domain' only
-              json = {"id":"0","item":[
-                  {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
-                  {"id":"214","text":"Archaea","tooltip":"domain","checked":true,"child":"1","item":[]},
-                  {"id":"338","text":"Unknown","tooltip":"domain","checked":true,"child":"1","item":[]},
-                  {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
-                  ]
-              }
-      */
+  //console.log('IN tax_custom_dhtmlx')
+  let myurl = url.parse(req.url, true);
+  let id = myurl.query.id;
+  //console.log('id='+id)
+  let json = {};
+  json.id = id;
+  json.item = [];
+  if (parseInt(id) === 0){
+    /*
+        return json for collapsed tree: 'domain' only
+            json = {"id":"0","item":[
+                {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
+                {"id":"214","text":"Archaea","tooltip":"domain","checked":true,"child":"1","item":[]},
+                {"id":"338","text":"Unknown","tooltip":"domain","checked":true,"child":"1","item":[]},
+                {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
+                ]
+            }
+    */
 
 
-        //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-        for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-            let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-            if (node.children_ids.length === 0){
-                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:0});
-            } else {
-                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:1, item:[]});
-            }
-        }
-        json.item.sort(function(a, b) {
-            return helpers.compareStrings_alpha(a.text, b.text);
-        });
-    } else {
-        for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-            let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-            let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
-            //console.log('node')
-            //console.log(node)
-            if (node.children_ids.length === 0){
-                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
-            } else {
-                json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
-            }
-        }
-        json.item.sort(function sortByAlpha(a, b) {
-            return helpers.compareStrings_alpha(a.text, b.text);
-        });
+    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+    for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+      let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+      if (node.children_ids.length === 0){
+        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:0});
+      } else {
+        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:1, item:[]});
+      }
     }
-    res.json(json);
+    json.item.sort(function(a, b) {
+      return helpers.compareStrings_alpha(a.text, b.text);
+    });
+  } else {
+    for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+      let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+      let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
+      //console.log('node')
+      //console.log(node)
+      if (node.children_ids.length === 0){
+        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
+      } else {
+        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
+      }
+    }
+    json.item.sort(function sortByAlpha(a, b) {
+      return helpers.compareStrings_alpha(a.text, b.text);
+    });
+  }
+  res.json(json);
 });
 //
 //  project_custom_dhtmlx
@@ -2950,35 +2314,35 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   if (parseInt(id) === 0){
     for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
 
-        let pid = PROJECT_TREE_PIDS[i];
-        let node = PROJECT_INFORMATION_BY_PID[pid];
-        //console.log('node',node)
-        let tt_pj_id = 'project/'+node.project+'/'+node.title;
-        if (node.public) {
-          tt_pj_id += '/public';
-        } else {
-          tt_pj_id += '/private';
-        }
-        let pid_str = pid.toString();
-        itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
-        itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-        if (node.public) {
-            itemtext += "<small> <i>(public)</i></small>";
-        } else {
-            itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
-        }
+      let pid = PROJECT_TREE_PIDS[i];
+      let node = PROJECT_INFORMATION_BY_PID[pid];
+      //console.log('node',node)
+      let tt_pj_id = 'project/'+node.project+'/'+node.title;
+      if (node.public) {
+        tt_pj_id += '/public';
+      } else {
+        tt_pj_id += '/private';
+      }
+      let pid_str = pid.toString();
+      itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
+      itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+      if (node.public) {
+        itemtext += "<small> <i>(public)</i></small>";
+      } else {
+        itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
+      }
 
-        if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-          json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
-        } else {
-          json.item.push({id:'p'+pid_str, text:itemtext, checked:false, child:1, item:[]});
-        }
+      if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
+      } else {
+        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, child:1, item:[]});
+      }
 
 
     }
     //console.log(JSON.stringify(json, null, 4))
 
-}
+  }
   else {
     //console.log(JSON.stringify(ALL_DATASETS))
     let this_project = {};
@@ -3002,21 +2366,21 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 
     let pname = this_project.name;
     for (let n in this_project.datasets){
-        let did   = this_project.datasets[n].did;
-        //console.log('didXX',did)
-        let dname = this_project.datasets[n].dname;
-        let ddesc = this_project.datasets[n].ddesc;
-        let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
-        itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
-        if (all_checked_dids.indexOf(parseInt(did)) === -1){
-          json.item.push({id:did, text:itemtext, child:0});
-        } else {
-          json.item.push({id:did, text:itemtext, checked:'1', child:0});
-        }
+      let did   = this_project.datasets[n].did;
+      //console.log('didXX',did)
+      let dname = this_project.datasets[n].dname;
+      let ddesc = this_project.datasets[n].ddesc;
+      let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
+      itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
+      if (all_checked_dids.indexOf(parseInt(did)) === -1){
+        json.item.push({id:did, text:itemtext, child:0});
+      } else {
+        json.item.push({id:did, text:itemtext, checked:'1', child:0});
+      }
     }
   }
   json.item.sort(function sortByAlpha(a, b){
-        return helpers.compareStrings_alpha(a.text, b.text);
+    return helpers.compareStrings_alpha(a.text, b.text);
   });
   //console.log(json.item)
   res.send(json);
@@ -3078,8 +2442,8 @@ router.get('/taxa_piechart', function(req, res) {
 module.exports = router;
 
 /**
-* F U N C T I O N S
-**/
+ * F U N C T I O N S
+ **/
 
 // Generally put fucntion in global.js or helpers.js
 //
