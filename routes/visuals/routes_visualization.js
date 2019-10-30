@@ -752,6 +752,10 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   /////////////////////////////////////////////////
 });
 
+//
+// DATA BROWSER
+//
+// test: "data browser Krona" viz.
 function format_sumator(allData) {
   let array = [""];
   printList(allData);
@@ -781,9 +785,6 @@ function format_sumator(allData) {
         array.push(`</${child}>`);
       }
       else if (!fields2skip.includes(child)) {
-      //   console.log();
-      // }
-      // else {
         array.push(`<node name='${child}'>`);
         printList(parent[child]);
         array.push("</node>");
@@ -800,69 +801,35 @@ function format_sumator(allData) {
   return array.join("");
 }
 
-
-//
-// DATA BROWSER
-//
-//test: "data browser Krona" viz.
-// err: Message: Cannot read property 'phylum' of undefined
-// TODO: JSHint: This function's cyclomatic complexity is too high. (17) (W074)
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let ts = req.session.ts;
   console.log('in dbrowser');
-  console.log(req.session);
-  let html = '';
+  // console.log(req.session);
   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
   // sum counts
   console.time("TIME: get_sumator new");
-  // const sumator_class =  new visualization_controller.sumator(req);
-
   const taxa_counts_class = new biom_matrix_controller.TaxaCounts(req, req.session, req.session.chosen_id_order);
   const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
   const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
 
   let sumator_new = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
   console.timeEnd("TIME: get_sumator new");
-  console.log(JSON.stringify(sumator_new));
 
-  // let sumator = taxonomy_lookup_module.refpormat_sumator(sumator_new);
+  console.time("TIME: format_sumator sumator new");
 
-  // console.time("TIME: get_sumator orig");
-  // let sumator = get_sumator(req, biom_matrix);
-  // console.timeEnd("TIME: get_sumator orig");
-  // console.log(JSON.stringify(sumator));
-  console.time("TIME: over sumator new");
-
-  // let options = {compact: true,
-  //   elementNameFn: function(val) {return val.replace('foo:','');}};
-  // // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
-  //
-  // let result_xml = xml_convert.js2xml(sumator, options);     // to convert javascript object to xml text
-
-  // let result_xml = convert_sumator_ob_to_xml(sumator_new);
-  // let result_xml = taxonomy_lookup_module.reformat_sumator(sumator_new);
   let result_xml = format_sumator(sumator_new);
 
-  console.log("result_xml = ");
-  console.log(result_xml);
-  html = result_xml;
-  console.timeEnd("TIME: over sumator new");
-
-  // write html to a file and open it
+  console.timeEnd("TIME: format_sumator sumator new");
 
   console.log("render visuals/dbrowser");
-  // let file_name = ts + '_krona.html';
-  // let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-  // fs.writeFileSync(html_path, JSON.stringify(html));
-
 
   res.render('visuals/dbrowser', {
     title: 'VAMPS:Taxonomy Browser (Krona)',
     user:                req.user,
-    html:                html,
+    html:                result_xml,
     max_total_count:     max_total_count,
     matrix:              JSON.stringify(biom_matrix)
   });
