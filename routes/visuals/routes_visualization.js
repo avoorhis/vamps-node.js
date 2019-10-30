@@ -1058,10 +1058,10 @@ function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
   }
   else {
     let new_rows = {};
-    // new_rows[selected_did] = [];
+    new_rows[selected_did] = [];
     new_rows = rows.reduce((ob, item) => {
       let did = item.dataset_id;
-      new_rows[did].push({
+      ob[did].push({
         seq: item.seq.toString('utf8'),
         seq_count: item.seq_count,
         gast_distance: item.gast_distance,
@@ -1075,41 +1075,9 @@ function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
         species_id: item.species_id,
         strain_id: item.strain_id}
       );
-
       return ob;
     }, new_rows);
 
-    // for (let s in rows){
-    //   //rows[s].seq = rows[s].seq.toString('utf8')
-    //   let did = rows[s].dataset_id;
-    //
-    //   let seq = item.seq.toString('utf8');
-    //   let seq_cnt = item.seq_count;
-    //   let gast = item.gast_distance;
-    //   let classifier = item.classifier;
-    //   let d_id = item.domain_id;
-    //   let p_id = item.phylum_id;
-    //   let k_id = item.klass_id;
-    //   let o_id = item.order_id;
-    //   let f_id = item.family_id;
-    //   let g_id;
-    //   if (item.hasOwnProperty("genus_id")){
-    //     if (item.genus_id === 'undefined'){
-    //       g_id = 'genus_NA';
-    //     } else {
-    //       g_id = item.genus_id;
-    //     }
-    //   } else {
-    //     g_id = '';
-    //   }
-    //   let sp_id = '';
-    //
-    //   if (item.hasOwnProperty("species_id")){
-    //     sp_id = item.species_id;
-    //   }
-    //   let st_id = item.strain_id;
-    //   new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
-    // }
     // order by seq_count DESC
     new_rows[selected_did].sort(function sortByCount(a, b) {
       return b.seq_count - a.seq_count;
