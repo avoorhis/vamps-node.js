@@ -533,7 +533,6 @@ class Taxonomy {
     this.chosen_dids.map((did, d_idx) => {
       const curr_tax_info_obj = tax_id_obj_by_did_filtered[did];
       curr_tax_info_obj.map(ob => {
-        // tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
         if (ob.tax_long_name) {
           tax_cnt_obj_arrs[ob.tax_long_name][d_idx] = ob.cnt;
         } else {
@@ -553,20 +552,6 @@ class Taxonomy {
     }
     return obj;
   }
-
-  // make_nested_tax_object(current_entry) {
-  //   let taxon_arr = current_entry.taxon_arr;
-  //   let taxon_cnts_per_d = current_entry.taxon_cnts_per_d;
-  //   let temp_obj = {};
-  //   for (let ptr = temp_obj, i = 0, j = taxon_arr.length; i < j; i++) {
-  //       ptr =
-  //         (ptr[taxon_arr[i]] = {});
-  //       ptr["t_name"] = taxon_arr[i];
-  //       ptr["rank"] = C.RANKS[i];
-  //       ptr["knt"] = taxon_cnts_per_d;
-  //     }
-  //   return temp_obj;
-  // }
 
   make_tax_cnt_obj_arrs_w_tax_arr() {
     return Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
@@ -600,12 +585,12 @@ class Taxonomy {
     return children_arr;
   }
 
-  make_sum_tax_name_cnt_obj_per_dataset() {
-    console.time("TIME: make_sum_tax_name_cnt_obj_per_dataset");
+  get_sumator() {
+    console.time("TIME: get_sumator");
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
     let initial_obj = {};
 
-    let summator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
+    let sumator = Object.keys(tax_cnt_obj_arrs_w_tax_arr).reduce((ob, taxa) => {
       let taxon_arr = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_arr"];
       let taxon_cnts_per_d = tax_cnt_obj_arrs_w_tax_arr[taxa]["taxon_cnts_per_d"];
       function sum_arrs(num, idx) {
@@ -622,52 +607,14 @@ class Taxonomy {
           ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
           ptr[taxon]["seqcount"] = taxon_cnts_per_d;
         }
-        // if (key_tax_exists && ptr[taxon]["seqcount"]["val"]) {
-        //   ptr[taxon]["seqcount"]["val"] = ptr[taxon]["seqcount"]["val"].map(sum_arrs);
-        // }
-        // else {
-        //   ptr[taxon] = this.make_new_entry_for_sumator(j, t_ind, taxon_arr);
-        //   ptr[taxon]["seqcount"]["val"] = taxon_cnts_per_d;
-        // }
-        // ptr[taxon]["children"] = this.add_children (ptr[taxon]["children"], taxon_arr, t_ind);
         ptr = ptr[taxon];
       }
       return ob;
     }, initial_obj);
 
-    console.timeEnd("TIME: make_sum_tax_name_cnt_obj_per_dataset");
-    return summator;
+    console.timeEnd("TIME: get_sumator");
+    return sumator;
   }
-
-  // reformat_sumator(sumator_new, ob_res = {}) {
-  //   console.time("TIME: reformat_sumator");
-  //   for (let k in Object.keys(sumator_new)){
-  //     let cur_obj = sumator_new[k];
-  //     str_res += '<node name=' + cur_obj["name"] + '>';
-  //     str_res += '<seqcount'> + cur_obj["name"] + '>';
-  //
-  //
-  //   }
-  //
-  //
-  //   let initial_obj = [];
-  //   let summator = Object.keys(sumator_new).reduce((ob, data_obj_key) => {
-  //     let curr_data_obj = sumator_new[data_obj_key];
-  //     let depth = curr_data_obj["depth"];
-  //     for (let temp_arr = ob, i = 0; i <= depth; i++) {
-  //       let temp_obj = {};
-  //       temp_obj["name"] = curr_data_obj["name"];
-  //       temp_obj["rank"] = curr_data_obj["rank"];
-  //       temp_obj["seqcount"] = curr_data_obj["seqcount"];
-  //       temp_arr.push(temp_obj);
-  //     }
-  //
-  //     return ob;
-  //   }, initial_obj);
-  //
-  //   console.timeEnd("TIME: reformat_sumator");
-  //   return summator;
-  // }
 }
 
 class TaxonomySimple extends Taxonomy {

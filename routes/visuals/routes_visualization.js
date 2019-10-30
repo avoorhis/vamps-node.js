@@ -815,7 +815,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   const taxonomy_factory = new biom_matrix_controller.TaxonomyFactory(req.session, taxa_counts_class, req.session.chosen_id_order);
   const taxonomy_lookup_module = taxonomy_factory.chosen_taxonomy;
 
-  let sumator_new = taxonomy_lookup_module.make_sum_tax_name_cnt_obj_per_dataset();
+  let sumator_new = taxonomy_lookup_module.get_sumator();
   console.timeEnd("TIME: get_sumator new");
 
   console.time("TIME: format_sumator sumator new");
