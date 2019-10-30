@@ -583,13 +583,9 @@ class Taxonomy {
 
   make_new_entry_for_sumator (j, t_ind, taxon_arr) {
     let t_ob = {};
-    // t_ob["depth"] = j - t_ind - 1; // exclude current level
-    // t_ob["parent"] = taxon_arr[t_ind - 1] || "";
     t_ob["name"] = taxon_arr[t_ind];
-    // t_ob["rank"] = {};
-    // t_ob["rank"]["val"] = C.RANKS[t_ind];
+    t_ob["seqcount"] = {};
     t_ob["rank"] = C.RANKS[t_ind];
-    // t_ob["seqcount"] = {};
     return t_ob;
   }
 

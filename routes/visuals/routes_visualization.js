@@ -752,70 +752,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   /////////////////////////////////////////////////
 });
 
-// function is_object(data) {
-//   return data && (data.constructor === Object);
-// }
-//
-// function is_array(data) {
-//   return data && (Array.isArray(data));
-// }
-
-// function recursive_sumator_read(data, res_arr, iter_num) {
-//   iter_num++;
-//   let key;
-//   let temp_arr = [];
-//   let inner_obj = {};
-//   let all_keys = ["name", "rank", "seqcount", "val"];
-//   for (key in data) {
-//     if (!data.hasOwnProperty(key)) { continue }
-//     if (all_keys.includes(key)) {
-//       continue;
-//     }
-//     if (is_object(data[key]) && (key === data[key].name)) {
-//       temp_arr.push(data[key]);
-//       data = recursive_sumator_read(data[key], temp_arr, iter_num);
-//     }
-//     res_arr.push(temp_arr);
-//   }
-//   return [data, res_arr, iter_num];
-//
-//
-//   // let all_keys = ["name", "rank", "seqcount"];
-//   // Object.keys(data).forEach(function (k, ind) {
-//   //   if (is_object(data[k])) {
-//   //     console.log(k in all_keys);
-//   //     new_res[ind] = [];
-//   //     recursive_sumator_read(new_res, data[k]);
-//   //     // return;
-//   //   }
-//   //   else {
-//   //     new_res[ind].push(data[k]);
-//   //   }
-//   // });
-//
-//   // if (is_object(data)) {
-//   //   Object.keys(data).forEach(recursive_sumator_read(new_res, data))
-//   //
-//   // }
-//   // else {
-//   //   new_res.push(data);
-//   // }
-//   // return new_res;
-//     // return is_object(data) ? make_array_of_summator_obj(data)
-//     //   : Object.entries(data).map ( ([key, value]) => {
-//     //     return { [key]: recursive_sumator_read(value) };
-//     //   });
-// }
-
 function format_sumator(allData) {
-  // let array = ["<node>"];
   let array = [""];
   printList(allData);
-  // array.push("<ul>");
   array.push("");
-//printList("string");
-  console.log(array);
-  // console.log(html);
+  // console.log(array);
 
   function printList(items) {
     if (helpers.is_object(items)) {
@@ -834,17 +775,15 @@ function format_sumator(allData) {
     const fields2skip = ["depth", "name", "parent", "children"];
 
     for (let child in parent) {
-      //console.log(child);
       if (fields_w_val.includes(child)) {
         array.push(`<${child}>`);
         printList(parent[child]);
         array.push(`</${child}>`);
       }
-      else if (fields2skip.includes(child)) {
-        // printList(parent[child]);
-        console.log();
-      }
-      else {
+      else if (!fields2skip.includes(child)) {
+      //   console.log();
+      // }
+      // else {
         array.push(`<node name='${child}'>`);
         printList(parent[child]);
         array.push("</node>");
@@ -860,93 +799,6 @@ function format_sumator(allData) {
   }
   return array.join("");
 }
-
-// function convert_sumator_ob_to_xml(sumator) {
-//   let options = {compact: true,
-//     declaration: {include: false},
-//     wrapHandlers: {
-//       "node": function() {
-//         return "@1";
-//       },
-//       "@1": function() {
-//         return "name";
-//       }
-//     },
-//     // elementNameFn: function(val) {return val.replace('name', 'node');}
-//   };
-//   // elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
-//
-//   let result_xml = xml_convert.js2xml(sumator, options);
-//   return result_xml;
-// }
-
-// function resetValuesToZero (obj) {
-//   Object.keys(obj).forEach(function (key) {
-//     if (typeof obj[key] === 'object') {
-//       return resetValuesToZero(obj[key]);
-//     }
-//     obj[key] = 0;
-//   });
-// }
-
-// function toArray(obj) {
-//   const result = [];
-//   for (const prop in obj) {
-//     const value = obj[prop];
-//     if (typeof value === 'object') {
-//       result.push(toArray(value)); // <- recursive call
-//     }
-//     else {
-//       result.push(value);
-//     }
-//   }
-//   return result;
-// }
-
-// function inner_convert() {
-//
-// }
-
-// function convert_sumator_ob_to_xml(obj) {
-//   let res_str = "";
-//   let result_xml = {};
-//   for (const prop in obj) {
-//     const value = obj[prop];
-//
-//     if (typeof value === 'object' && value.hasOwnProperty("depth")) {
-//       // result.push(toArray(value)); // <- recursive call
-//       result_xml["node"] = {};
-//       result_xml["node"]["@1"] = {};
-//       result_xml["node"]["@1"]["name"] = value["name"];
-//       result_xml["node"]["@1"]["name"]["seqcount"] = value["seqcount"];
-//       result_xml["node"]["@1"]["name"]["rank"] = value["rank"];
-//       result_xml = convert_sumator_ob_to_xml(result_xml);
-//     }
-//     // else {
-//       // result.push(value);
-//     // }
-//   }
-//   return result_xml;
-// }
-
-// function convert_sumator_ob_to_xml(ob) {
-//   let result_xml = {};
-//   Object.entries(ob).map ( ([key, value]) => {
-//     console.log(key);
-//     if (typeof value === 'object') {
-//       return convert_sumator_ob_to_xml(value);
-//     }
-//     else {
-//       let ob = {};
-//       ob["node"] = {};
-//       ob["node"]["@1"] = {};
-//       ob["node"]["@1"]["name"] = key;
-//       ob["node"]["@1"]["name"]["seqcount"] = value[key]["seqcount"];
-//       ob["node"]["@1"]["name"]["rank"] = value[key]["rank"];
-//     }
-//     return ob;
-//   });
-// }
 
 
 //
