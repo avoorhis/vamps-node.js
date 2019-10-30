@@ -586,7 +586,7 @@ class Taxonomy {
   }
 
   get_sumator() {
-    console.time("TIME: get_sumator");
+    console.time("TIME: get_sumator in controller");
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
     let initial_obj = {};
 
@@ -612,7 +612,7 @@ class Taxonomy {
       return ob;
     }, initial_obj);
 
-    console.timeEnd("TIME: get_sumator");
+    console.timeEnd("TIME: get_sumator in controller");
     return sumator;
   }
 }
