@@ -1092,14 +1092,15 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log(new_order)
   let timestamp = +new Date();  // millisecs since the epoch!
   let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
-  let file_path = path.join('tmp',filename);
+  let file_path = path.join('tmp', filename);
   //console.log(file_path)
   let new_rows = {};
   new_rows[selected_did] = [];
 
   if ( pi.unit_choice === 'OTUs'){
     LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
-  } else {
+  }
+  else {
     // TODO: DRY
     connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
       // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
@@ -1155,10 +1156,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
           // console.log(JSON.stringify(new_matrix));
           // console.log("JSON.stringify(new_order)");
           // console.log(JSON.stringify(new_order));
-          LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
+          // LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
         }
       }
       );
+    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
   }
 });
 
