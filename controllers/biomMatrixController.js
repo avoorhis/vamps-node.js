@@ -555,20 +555,6 @@ class Taxonomy {
     return obj;
   }
 
-
-  // make_tax_cnt_obj_arrs_w_tax_arr() {
-  //   return Object.keys(this.tax_cnt_obj_arrs).reduce((ob, taxon) => {
-  //     let taxon_arr = taxon.split(";");
-  //     ob[taxon] = {
-  //       taxon_name: taxon,
-  //       taxon_arr: taxon_arr,
-  //       taxon_cnts_per_d: this.tax_cnt_obj_arrs[taxon],
-  //       nest_taxa_obj: this.nest(taxon_arr)
-  //     };
-  //     return ob;
-  //   }, {});
-  // }
-
   make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(b_mtx) {
     return b_mtx["rows"].reduce((ob, curr_row_ob, idx) => {
       let taxon = curr_row_ob["id"];
@@ -581,7 +567,6 @@ class Taxonomy {
       };
       return ob;
     }, {});
-    // console.log(q);
   }
 
 
@@ -606,10 +591,6 @@ class Taxonomy {
 
   get_sumator(b_mtx) {
     console.time("TIME: get_sumator in controller");
-    // if (typeof tax_cnt_obj_arrs_w_tax_arr === "undefined") {
-    //   tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr();
-    // }
-
     let tax_cnt_obj_arrs_w_tax_arr = this.make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(b_mtx);
 
     let initial_obj = {};

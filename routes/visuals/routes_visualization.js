@@ -813,7 +813,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.time("TIME: get_sumator new");
   const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
 
-  // let tax_cnt_obj_arrs_w_tax_arr_from_b_mtx_ob = taxonomy_class.make_tax_cnt_obj_arrs_w_tax_arr_from_b_mtx(biom_matrix);
   let sumator_new = taxonomy_class.get_sumator(biom_matrix);
 
   console.timeEnd("TIME: get_sumator new");
@@ -823,8 +822,8 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let result_xml = format_sumator(sumator_new);
   console.timeEnd("TIME: format_sumator sumator new");
 
-  console.log("result_xml: ");
-  console.log(result_xml);
+  // console.log("result_xml: ");
+  // console.log(result_xml);
   console.log("render visuals/dbrowser");
 
   res.render('visuals/dbrowser', {
