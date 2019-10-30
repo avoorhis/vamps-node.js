@@ -1048,7 +1048,6 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-
 // TODO: compare with bar double and DRY
 // JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
@@ -1068,24 +1067,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
   let pi = make_pi(selected_did, req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
-
-  // let write_file = false;  // DO NOT OVERWRITE The Matrix File
-  // // let new_matrix = MTX.get_biom_matrix(req, pi, write_file);
-  // console.time("TIME: biom_matrix_new_from_bar_single");
-  // const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
-  // let new_matrix = biom_matrix_obj.biom_matrix;
-  // console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-  //
-  // new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project +'--'+DATASET_NAME_BY_DID[selected_did];
-  // new_matrix.did = selected_did;
-  // new_matrix.total = 0;
-  //
-  // //let idx = -1;
-  //
-  // new_matrix = helpers.sort_json_matrix(new_matrix, order);
-
-  console.log("JSON.stringify(new_matrix)");
-  console.log(JSON.stringify(new_matrix));
 
   // TODO: DRY
   let new_order = {};
@@ -1110,13 +1091,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log('new_order')
   //console.log(new_order)
   let timestamp = +new Date();  // millisecs since the epoch!
-  let filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json';
+  let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
   let file_path = path.join('tmp',filename);
   //console.log(file_path)
   let new_rows = {};
   new_rows[selected_did] = [];
-
-  // let LoadDataFinishRequest = LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
 
   if ( pi.unit_choice === 'OTUs'){
     LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
