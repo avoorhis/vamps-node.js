@@ -1059,11 +1059,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.order || 'alphaDown'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  //let ds_items = pjds.split('--');
-  //console.log('myurl.query')
-  //console.log(myurl.query)
-  //console.log('bar_single:session')
-  //console.log(req.session)
 
   let pi = make_pi(selected_did, req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
@@ -1097,14 +1092,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_rows = {};
   new_rows[selected_did] = [];
 
-  if ( pi.unit_choice === 'OTUs'){
-    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
-  }
-  else {
+  if ( pi.unit_choice !== 'OTUs'){
     // TODO: DRY
     connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
       // JSHint: This function's cyclomatic complexity is too high. (6) (W074)
-      function mysqlSelectSeqsPerDID(err, rows){
+      function mysqlSelectSeqsPerDID_to_file(err, rows){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
@@ -1156,7 +1148,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
           // console.log(JSON.stringify(new_matrix));
           // console.log("JSON.stringify(new_order)");
           // console.log(JSON.stringify(new_order));
-          // LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
         }
       }
       );
