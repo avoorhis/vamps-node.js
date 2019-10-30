@@ -819,11 +819,14 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
   //console.log('max_total_count '+max_total_count.toString());
+  console.time("TIME: get_sumator old");
 
   // sum counts
   var sumator = get_sumator(req, biom_matrix);
+  console.timeEnd("TIME: get_sumator old");
 
   //console.log(JSON.stringify(sumator))
+  console.time("TIME:  format sumator old");
 
   for(var d in sumator['domain']){
 
@@ -929,6 +932,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     html += "</node>\n";
   }    // end domain
   html += "  </node>\n";
+  console.timeEnd("TIME:  format sumator old");
 
 
   // write html to a file and open it
