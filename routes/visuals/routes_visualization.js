@@ -776,7 +776,8 @@ function format_sumator(allData) {
 
   function getChildren(parent) {
     const fields_w_val = ["rank", "seqcount", "val"];
-    const fields2skip = ["depth", "name", "parent", "children"];
+    // const fields2skip = ["depth", "name", "parent", "children"];
+    const fields2skip = ["name"];
 
     for (let child in parent) {
       if (fields_w_val.includes(child)) {
@@ -1048,7 +1049,13 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
+function get_file_path(req, selected_did) {
+  let timestamp = +new Date();  // millisecs since the epoch!
+  let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
+  return path.join('tmp', filename);
+}
+
+function mysqlSelectSeqsPerDID_to_file(err, req, res, rows, selected_did){
   console.time("mysqlSelectSeqsPerDID_to_file");
 
   if (err)  {
@@ -1061,6 +1068,7 @@ function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
     new_rows[selected_did] = [];
     new_rows = rows.reduce((ob, item) => {
       let did = item.dataset_id;
+      // ob[did] is the same as new_rows[selected_did]
       ob[did].push({
         seq: item.seq.toString('utf8'),
         seq_count: item.seq_count,
@@ -1073,8 +1081,8 @@ function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
         family_id: item.family_id,
         genus_id: item.genus_id,
         species_id: item.species_id,
-        strain_id: item.strain_id}
-      );
+        strain_id: item.strain_id
+      });
       return ob;
     }, new_rows);
 
@@ -1086,8 +1094,9 @@ function mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path){
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
+    let file_path = get_file_path(req, selected_did);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
-    console.log("seq file_path:", file_path);
+    // console.log("seq file_path:", file_path);
   }
   console.timeEnd("mysqlSelectSeqsPerDID_to_file");
 }
@@ -1129,16 +1138,15 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log(order)
   //console.log('new_order')
   //console.log(new_order)
-  let timestamp = +new Date();  // millisecs since the epoch!
-  let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
-  let file_path = path.join('tmp', filename);
+
   //console.log(file_path)
 
   if (pi.unit_choice !== 'OTUs'){
     connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
       function(err, rows) {
-        mysqlSelectSeqsPerDID_to_file(err, res, rows, selected_did, file_path);
+        mysqlSelectSeqsPerDID_to_file(err, req, res, rows, selected_did);
     });
+    let timestamp = +new Date();  // millisecs since the epoch!
     LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
   }
 });
