@@ -1100,9 +1100,15 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
   console.timeEnd("mysqlSelectedSeqsPerDID_to_file");
 }
 
-function get_new_order(order) {// TODO: Andy. Why do we need to inverse the order?
+// On the bar_single page with the single taxonomy bar and list of included taxonomies
+// when you click on the button: Ordering: Taxa Names it should toggle both the list and and bar to order
+// the taxonomic names a-z then to z-a and so forth.
+//
+// The button: Ordering: Counts is also a toggle but the ordering is by taxonomic counts and not alphabetical.
+
+function get_new_order(order) {
   let new_order = {};
-  if (order.orderby === 'alpha') {// TODO: Andy 'alpha' vs. 'alphaDown' ?
+  if (order.orderby === 'alpha') {
     if (order.value === 'a') {
       new_order.alpha_value = 'z';
     }
@@ -1437,20 +1443,17 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     }.bind());
   }
   else {
-    // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
-    res.render('visuals/user_viz_data/sequences', {
-      title: 'Sequences',
-      ds: pjds,
-      tax: search_tax,
-      fname: '',
-      seq_list: 'QError Retrieving Sequences',
-      user: req.user, hostname: req.CONFIG.hostname,
-    });
-
+    render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
+    // res.render('visuals/user_viz_data/sequences', {
+    //   title: 'Sequences',
+    //   ds: pjds,
+    //   tax: search_tax,
+    //   fname: '',
+    //   seq_list: 'Error Retrieving Sequences',
+    //   user: req.user, hostname: req.CONFIG.hostname,
+    // });
   }
-
   //   });
-
 });
 
 /*
