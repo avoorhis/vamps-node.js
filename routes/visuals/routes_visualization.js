@@ -1339,6 +1339,7 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
     });
     return;
   }
+  return clean_data;
 }
 
 
