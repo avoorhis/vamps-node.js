@@ -1342,7 +1342,7 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
   return clean_data;
 }
 
-function render_seq(req, res, pjds, search_tax, seqs_filename, seq_list)
+function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '')
 {
   res.render('visuals/user_viz_data/sequences', {
     title: 'Sequences',
@@ -1368,6 +1368,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let d,p,k,o,f,g,sp,st;
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+  seqs_filename = null;
   if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
@@ -1433,22 +1434,16 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       }
 
       render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-      // res.render('visuals/user_viz_data/sequences', {
-      //   title: 'Sequences',
-      //   ds: pjds,
-      //   tax: search_tax,
-      //   fname: seqs_filename,
-      //   seq_list: JSON.stringify(seq_list),
-      //   user: req.user, hostname: req.CONFIG.hostname,
-      // });
     }.bind());
-  } else {
+  }
+  else {
+    // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
     res.render('visuals/user_viz_data/sequences', {
       title: 'Sequences',
-      ds : pjds,
-      tax : search_tax,
-      fname : '',
-      seq_list : 'Error Retrieving Sequences',
+      ds: pjds,
+      tax: search_tax,
+      fname: '',
+      seq_list: 'QError Retrieving Sequences',
       user: req.user, hostname: req.CONFIG.hostname,
     });
 
