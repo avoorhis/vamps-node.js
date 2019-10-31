@@ -1,5 +1,5 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
-
+<% seqrows = JSON.parse(seq_list) %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <div class='title'><%= title %></div>
 <div class='subtitle'><%= ds %></div>
@@ -55,16 +55,13 @@
     
     </thead>
     <tbody>
-    <% if (seq_list && (Array.isArray(seq_list))) { %>
-      <% seqrows = JSON.parse(seq_list) %>
-
       <% for (r in seqrows) { %>
          <tr>
       	   <td><%= parseInt(r)+1 %></td>
       	   <td style='text-align:center'><%= seqrows[r].seq_count %></td>
       	   <% if(seqrows[r].classifier =='GAST') { %>
                 <td style='text-align:center'><%= seqrows[r].gast_distance %></td>
-      	   <% } else { %>
+      	   <% }else{ %>
                 <td style='text-align:center'>none</t>
            <% } %>
            <td style='text-align:center'><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
@@ -73,13 +70,10 @@
               
             <td><span class='hide_class_tax'><%= seqrows[r].tax %></span></td>
           
+      	   
          </tr>
          
       <% } %>
-    <% } else { %>
-      <!-- ERROR msg -->
-      <br><h2><%= seq_list %></h2>
-    <% } %>
   </tbody>
   </table>
 
