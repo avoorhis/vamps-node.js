@@ -1049,14 +1049,13 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-function get_file_path(req, selected_did) {
-  let timestamp = +new Date();  // millisecs since the epoch!
+function get_file_path(req, selected_did, timestamp) {
   let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
   return path.join('tmp', filename);
 }
 
-function mysqlSelectSeqsPerDID_to_file(err, req, res, rows, selected_did){
-  console.time("mysqlSelectSeqsPerDID_to_file");
+function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp){
+  console.time("mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
     console.log('Query error: ' + err);
@@ -1094,11 +1093,40 @@ function mysqlSelectSeqsPerDID_to_file(err, req, res, rows, selected_did){
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
-    let file_path = get_file_path(req, selected_did);
+    let file_path = get_file_path(req, selected_did, timestamp);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     // console.log("seq file_path:", file_path);
   }
-  console.timeEnd("mysqlSelectSeqsPerDID_to_file");
+  console.timeEnd("mysqlSelectedSeqsPerDID_to_file");
+}
+
+function get_new_order(order) {// TODO: Andy. Why do we need to inverse the order?
+  let new_order = {};
+  if (order.orderby === 'alpha') {// TODO: Andy 'alpha' vs. 'alphaDown' ?
+    if (order.value === 'a') {
+      new_order.alpha_value = 'z';
+    }
+    else {
+      new_order.alpha_value = 'a';
+    }
+    new_order.count_value = '';
+  }
+  else {
+    if (order.value === 'min') {
+      new_order.count_value = 'max';
+    } else {
+      new_order.count_value = 'min';
+    }
+    new_order.alpha_value = '';
+  }
+  return new_order;
+}
+
+function write_seq_file_async(req, res, selected_did, timestamp) {
+  connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
+    function (err, rows) {
+      mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp);
+    });
 }
 
 // TODO: compare with bar double and DRY
@@ -1117,22 +1145,23 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
 
   // TODO: DRY
-  let new_order = {};
-  if (order.orderby === 'alpha' ){
-    if (order.value === 'a'){
-      new_order.alpha_value = 'z';
-    } else {
-      new_order.alpha_value = 'a';
-    }
-    new_order.count_value = '';
-  } else {
-    if (order.value === 'min'){
-      new_order.count_value = 'max';
-    } else {
-      new_order.count_value = 'min';
-    }
-    new_order.alpha_value = '';
-  }
+  let new_order = get_new_order(order);
+  // let new_order = {};
+  // if (order.orderby === 'alpha' ){
+  //   if (order.value === 'a'){
+  //     new_order.alpha_value = 'z';
+  //   } else {
+  //     new_order.alpha_value = 'a';
+  //   }
+  //   new_order.count_value = '';
+  // } else {
+  //   if (order.value === 'min'){
+  //     new_order.count_value = 'max';
+  //   } else {
+  //     new_order.count_value = 'min';
+  //   }
+  //   new_order.alpha_value = '';
+  // }
 
   //console.log('order')
   //console.log(order)
@@ -1141,12 +1170,13 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
   //console.log(file_path)
 
-  if (pi.unit_choice !== 'OTUs'){
-    connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
-      function(err, rows) {
-        mysqlSelectSeqsPerDID_to_file(err, req, res, rows, selected_did);
-    });
-    let timestamp = +new Date();  // millisecs since the epoch!
+  if (pi.unit_choice !== 'OTUs') {
+    let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
+    write_seq_file_async(req, res, selected_did, timestamp);
+    // connection.query(QUERY.get_sequences_perDID([selected_did], pi.unit_choice),
+    //   function(err, rows) {
+    //     mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did);
+    // });
     LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
   }
 });
