@@ -1135,7 +1135,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let myurl = url.parse(req.url, true);
   //console.log('in piechart_single',myurl.query)
   let selected_did = myurl.query.did;
-  let orderby = myurl.query.order || 'alphaDown'; // alpha, count
+  let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
 
