@@ -1311,8 +1311,19 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //
 //  S E Q U E N C E S
 //
+
+function err_read_file(err, seqs_filename) {
+  console.log(err);
+  if (req.session.unit_choice === 'OTUs'){
+    res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
+  }
+  else {
+    res.send('<br><h3>No file found: ' + seqs_filename + "; Use the browsers 'Back' button and try again</h3>");
+  }
+}
+
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
-// click on the barchart row
+// click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   console.log('in sequences');
   let myurl = url.parse(req.url, true);
@@ -1330,13 +1341,14 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
     fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err,data) {
       if (err) {
-        console.log(err);
-        if (req.session.unit_choice === 'OTUs'){
-          res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
-        }
-        else {
-          res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
-        }
+        err_read_file(err, seqs_filename);
+        // console.log(err);
+        // if (req.session.unit_choice === 'OTUs'){
+        //   res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
+        // }
+        // else {
+        //   res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
+        // }
       }
       //console.log('parsing data')
       let clean_data = "";
