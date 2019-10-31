@@ -1312,7 +1312,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //  S E Q U E N C E S
 //
 
-function err_read_file(err, seqs_filename) {
+function err_read_file(err, req, res, seqs_filename) {
   console.log(err);
   if (req.session.unit_choice === 'OTUs'){
     res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
@@ -1321,6 +1321,26 @@ function err_read_file(err, seqs_filename) {
     res.send('<br><h3>No file found: ' + seqs_filename + "; Use the browsers 'Back' button and try again</h3>");
   }
 }
+
+function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
+  let clean_data = "";
+  try {
+    clean_data = JSON.parse(data);
+  } catch (e) {
+    console.log(e);
+    res.render('visuals/user_viz_data/sequences', {
+      title: 'Sequences',
+      ds: pjds,
+      did: selected_did,
+      tax: search_tax,
+      fname: seqs_filename,
+      seq_list: 'Error Retrieving Sequences',
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
+    return;
+  }
+}
+
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
@@ -1339,35 +1359,30 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
-    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err,data) {
+    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
       if (err) {
-        err_read_file(err, seqs_filename);
-        // console.log(err);
-        // if (req.session.unit_choice === 'OTUs'){
-        //   res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
-        // }
-        // else {
-        //   res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
-        // }
+        err_read_file(err, req, res, seqs_filename);
       }
       //console.log('parsing data')
-      let clean_data = "";
-      try {
-        clean_data = JSON.parse(data);
-      }
-      catch(e){
-        console.log(e);
-        res.render('visuals/user_viz_data/sequences', {
-          title: 'Sequences',
-          ds : pjds,
-          did : selected_did,
-          tax : search_tax,
-          fname : seqs_filename,
-          seq_list : 'Error Retrieving Sequences',
-          user: req.user, hostname: req.CONFIG.hostname,
-        });
-        return;
-      }
+
+      let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+      // let clean_data = "";
+      // try {
+      //   clean_data = JSON.parse(data);
+      // }
+      // catch(e){
+      //   console.log(e);
+      //   res.render('visuals/user_viz_data/sequences', {
+      //     title: 'Sequences',
+      //     ds : pjds,
+      //     did : selected_did,
+      //     tax : search_tax,
+      //     fname : seqs_filename,
+      //     seq_list : 'Error Retrieving Sequences',
+      //     user: req.user, hostname: req.CONFIG.hostname,
+      //   });
+      //   return;
+      // }
 
       for (let i in clean_data){
 
@@ -1427,7 +1442,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         seq_list : JSON.stringify(seq_list),
         user: req.user, hostname: req.CONFIG.hostname,
       });
-    });
+    }.bind());
   } else {
     res.render('visuals/user_viz_data/sequences', {
       title: 'Sequences',
