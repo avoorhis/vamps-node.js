@@ -1367,64 +1367,49 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       //console.log('parsing data')
 
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
-      // let clean_data = "";
-      // try {
-      //   clean_data = JSON.parse(data);
-      // }
-      // catch(e){
-      //   console.log(e);
-      //   res.render('visuals/user_viz_data/sequences', {
-      //     title: 'Sequences',
-      //     ds : pjds,
-      //     did : selected_did,
-      //     tax : search_tax,
-      //     fname : seqs_filename,
-      //     seq_list : 'Error Retrieving Sequences',
-      //     user: req.user, hostname: req.CONFIG.hostname,
-      //   });
-      //   return;
-      // }
+
+      const global_new_taxonomy = new_taxonomy;
 
       for (let i in clean_data){
 
         let seq_tax = '';
         let data = clean_data[i];
 
-        d = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+        d = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
         try {
-          p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+          p  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
         }catch(e){
           p = 'phylum_NA';
         }
         try {
-          k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+          k  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
         }catch(e){
           k = 'class_NA';
         }
         try {
-          o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+          o  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
         }catch(e){
           o = 'order_NA';
         }
         try {
-          f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+          f  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
         }catch(e){
           f = 'family_NA';
         }
         try {
-          g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+          g  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
         }catch(e){
           g = 'genus_NA';
         }
         try {
-          sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+          sp = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
         }
         catch(e){
           sp = 'species_NA';
         }
         try {
-          st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+          st = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
         }
         catch(e){
           st = 'strain_NA';
@@ -1437,10 +1422,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
       res.render('visuals/user_viz_data/sequences', {
         title: 'Sequences',
-        ds : pjds,
-        tax : search_tax,
-        fname : seqs_filename,
-        seq_list : JSON.stringify(seq_list),
+        ds: pjds,
+        tax: search_tax,
+        fname: seqs_filename,
+        seq_list: JSON.stringify(seq_list),
         user: req.user, hostname: req.CONFIG.hostname,
       });
     }.bind());
