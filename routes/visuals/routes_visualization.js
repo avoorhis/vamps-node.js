@@ -1342,6 +1342,18 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
   return clean_data;
 }
 
+function render_seq(req, res, pjds, search_tax, seqs_filename, seq_list)
+{
+  res.render('visuals/user_viz_data/sequences', {
+    title: 'Sequences',
+    ds: pjds,
+    tax: search_tax,
+    fname: seqs_filename,
+    seq_list: seq_list,
+    user: req.user, hostname: req.CONFIG.hostname,
+  });
+}
+
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
@@ -1420,14 +1432,15 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         }
       }
 
-      res.render('visuals/user_viz_data/sequences', {
-        title: 'Sequences',
-        ds: pjds,
-        tax: search_tax,
-        fname: seqs_filename,
-        seq_list: JSON.stringify(seq_list),
-        user: req.user, hostname: req.CONFIG.hostname,
-      });
+      render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+      // res.render('visuals/user_viz_data/sequences', {
+      //   title: 'Sequences',
+      //   ds: pjds,
+      //   tax: search_tax,
+      //   fname: seqs_filename,
+      //   seq_list: JSON.stringify(seq_list),
+      //   user: req.user, hostname: req.CONFIG.hostname,
+      // });
     }.bind());
   } else {
     res.render('visuals/user_viz_data/sequences', {
