@@ -1119,12 +1119,6 @@ function get_new_order_by_button(order) {
       }
       new_order.count_value = '';
       break;
-      // switch (order.value) {
-      //   case 'a':
-      //     new_order.alpha_value = 'z';
-      //     break;
-      //
-      // }
     case "count":
       if (order.value === 'min') {
         new_order.count_value = 'max';
@@ -1136,48 +1130,8 @@ function get_new_order_by_button(order) {
     default:
       break;
   }
-  // if (order.orderby === 'alpha') {
-  //   if (order.value === 'a') {
-  //     new_order.alpha_value = 'z';
-  //   }
-  //   else {
-  //     new_order.alpha_value = 'a';
-  //   }
-  //   new_order.count_value = '';
-  // }
-  // else {
-  //   if (order.value === 'min') {
-  //     new_order.count_value = 'max';
-  //   } else {
-  //     new_order.count_value = 'min';
-  //   }
-  //   new_order.alpha_value = '';
-  // }
   return new_order;
 }
-
-
-// function get_new_order_by_button(order) {
-//   let new_order = {};
-//   if (order.orderby === 'alpha') {
-//     if (order.value === 'a') {
-//       new_order.alpha_value = 'z';
-//     }
-//     else {
-//       new_order.alpha_value = 'a';
-//     }
-//     new_order.count_value = '';
-//   }
-//   else {
-//     if (order.value === 'min') {
-//       new_order.count_value = 'max';
-//     } else {
-//       new_order.count_value = 'min';
-//     }
-//     new_order.alpha_value = '';
-//   }
-//   return new_order;
-// }
 
 function write_seq_file_async(req, res, selected_did, timestamp) {
   connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
