@@ -1374,11 +1374,12 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let d,p,k,o,f,g,sp,st;
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
-  seqs_filename = null;
+  // seqs_filename = null;
   if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
+    console.time("TIME: readFile");
     fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
       if (err) {
         err_read_file(err, req, res, seqs_filename);
@@ -1388,11 +1389,76 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
       const global_new_taxonomy = new_taxonomy;
+      console.time("TIME: loop through clean_data");
+
+      let search_tax_arr = search_tax.split(";");
+      let search_tax_ob = search_tax_arr.reduce((ob, taxon, t_idx) => {
+        let curr_rank = C.RANKS[t_idx];
+        ob[taxon] = {
+          rank_idx: t_idx,
+          rank: curr_rank,
+          id_name: curr_rank + "_id"
+        };
+
+        // let ob.curr_id = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon
+        return ob;
+      }, {});
+
 
       for (let i in clean_data){
 
         let seq_tax = '';
         let data = clean_data[i];
+
+        // TODO: using ids from data get long taxonomy name
+        // use rank
+        // global_new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"].children_ids.filter(id => global_new_taxonomy.taxa_tree_dict_map_by_id[id].taxon === "Firmicutes")
+        // traverse using parent / children information
+        // data = {
+        //   "seq": "ACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGGGCGCAGACGGTTACTTAAGCAGGATGTGAAATCCCCGGGCTCAACCTGGGAACTGCGTTCTGAACTGGGTGACTAGAGTGTGTCAGAGGGAGGTAGAATTCCACGTGTAGCAGTGAAATGCGTAGAGATGTGGAGGAATACCGATGGCGAAGGCAGCCTCCTGGGATAACACTGACGTTCATGCCCGAAAGCGTGGGTAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCCTAAACGATGTCGATTAGCTGTTGGGCAGCATGACTGCTTAGTAGCGAAGCTAACGCGTGAAATCGACCGCCTGGGGAGTACGGTCGCAAGATTAAA",
+        //   "seq_count": 25715,
+        //   "gast_distance": "0.00000",
+        //   "classifier": "GAST",
+        //   "domain_id": 3,
+        //   "phylum_id": 8,
+        //   "klass_id": 49,
+        //   "order_id": 69,
+        //   "family_id": 63,
+        //   "genus_id": 1399,
+        //   "species_id": 160720,
+        //   "strain_id": 15063
+        // }
+
+        // global_new_taxonomy.taxa_tree_dict_map_by_id["11743"] =
+        // {
+        //   "parent_id": 9668,
+        //   "children_ids": [
+        //     11744,
+        //     12480,
+        //     12841,
+        //     12847,
+        //     12869
+        //   ],
+        //   "taxon": "Firmicutes",
+        //   "rank": "phylum",
+        //   "node_id": 11743,
+        //   "db_id": 4
+        // }
+
+        let a = Object.keys(search_tax_ob).map(taxon => {
+          let curr_id_name = search_tax_ob[taxon]["id_name"];
+          let taxon_db_id = data[curr_id_name];
+          return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
+        });
+
+        console.log(search_tax_ob);
+
+        // search_tax_ob = Object.keys(search_tax_ob).map(taxon => {
+        //   return Object.assign(search_tax_ob[taxon],
+        //     search_tax_ob[taxon].taxon_db_id = data[search_tax_ob[taxon]["curr_id_name"]];
+        //   );
+              // global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[]
+        // });
 
         d = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
 
@@ -1434,24 +1500,36 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
           st = 'strain_NA';
         }
         seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-        if (seq_tax.substring(0, search_tax.length) === search_tax){
-          seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});
+        if (seq_tax.substring(0, search_tax.length) === search_tax) {
+          // console.time("TIME: prettyseq");
+          let prettyseq = helpers.make_color_seq(data.seq);
+          // console.timeEnd("TIME: prettyseq");
+          seq_list.push({
+            prettyseq: prettyseq,
+            seq: data.seq,
+            seq_count: data.seq_count,
+            gast_distance: data.gast_distance,
+            classifier: data.classifier,
+            tax: seq_tax
+          });
         }
       }
+      console.timeEnd("TIME: loop through clean_data");
 
       render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
     }.bind());
+    console.timeEnd("TIME: readFile");
   }
   else {
-    render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
-    // res.render('visuals/user_viz_data/sequences', {
-    //   title: 'Sequences',
-    //   ds: pjds,
-    //   tax: search_tax,
-    //   fname: '',
-    //   seq_list: 'Error Retrieving Sequences',
-    //   user: req.user, hostname: req.CONFIG.hostname,
-    // });
+    // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
+    res.render('visuals/user_viz_data/sequences', {
+      title: 'Sequences',
+      ds: pjds,
+      tax: search_tax,
+      fname: '',
+      seq_list: 'Error Retrieving Sequences',
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
   }
   //   });
 });
