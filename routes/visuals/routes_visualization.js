@@ -20,11 +20,12 @@ const biom_matrix_controller = require(app_root + '/controllers/biomMatrixContro
 const visualization_controller = require(app_root + '/controllers/visualizationController');
 const spawn = require('child_process').spawn;
 // const app = express();
-const js2xmlparser = require("js2xmlparser");
-const xml_convert = require('xml-js');
+// const js2xmlparser = require("js2xmlparser");
+// const xml_convert = require('xml-js');
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
-
+const R = require('ramda');
+const R_ext = require('ramda-extension');
 
 // function get_process_dir(req) {
 //   return req.CONFIG.PROCESS_DIR;
@@ -1106,27 +1107,77 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
 //
 // The button: Ordering: Counts is also a toggle but the ordering is by taxonomic counts and not alphabetical.
 
-function get_new_order(order) {
+function get_new_order_by_button(order) {
   let new_order = {};
-  if (order.orderby === 'alpha') {
-    if (order.value === 'a') {
-      new_order.alpha_value = 'z';
-    }
-    else {
-      new_order.alpha_value = 'a';
-    }
-    new_order.count_value = '';
+  switch (order.orderby) {
+    case "alpha":
+      if (order.value === 'a') {
+        new_order.alpha_value = 'z';
+      }
+      else {
+        new_order.alpha_value = 'a';
+      }
+      new_order.count_value = '';
+      break;
+      // switch (order.value) {
+      //   case 'a':
+      //     new_order.alpha_value = 'z';
+      //     break;
+      //
+      // }
+    case "count":
+      if (order.value === 'min') {
+        new_order.count_value = 'max';
+      } else {
+        new_order.count_value = 'min';
+      }
+      new_order.alpha_value = '';
+      break;
+    default:
+      break;
   }
-  else {
-    if (order.value === 'min') {
-      new_order.count_value = 'max';
-    } else {
-      new_order.count_value = 'min';
-    }
-    new_order.alpha_value = '';
-  }
+  // if (order.orderby === 'alpha') {
+  //   if (order.value === 'a') {
+  //     new_order.alpha_value = 'z';
+  //   }
+  //   else {
+  //     new_order.alpha_value = 'a';
+  //   }
+  //   new_order.count_value = '';
+  // }
+  // else {
+  //   if (order.value === 'min') {
+  //     new_order.count_value = 'max';
+  //   } else {
+  //     new_order.count_value = 'min';
+  //   }
+  //   new_order.alpha_value = '';
+  // }
   return new_order;
 }
+
+
+// function get_new_order_by_button(order) {
+//   let new_order = {};
+//   if (order.orderby === 'alpha') {
+//     if (order.value === 'a') {
+//       new_order.alpha_value = 'z';
+//     }
+//     else {
+//       new_order.alpha_value = 'a';
+//     }
+//     new_order.count_value = '';
+//   }
+//   else {
+//     if (order.value === 'min') {
+//       new_order.count_value = 'max';
+//     } else {
+//       new_order.count_value = 'min';
+//     }
+//     new_order.alpha_value = '';
+//   }
+//   return new_order;
+// }
 
 function write_seq_file_async(req, res, selected_did, timestamp) {
   connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
@@ -1141,14 +1192,16 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let myurl = url.parse(req.url, true);
   //console.log('in piechart_single',myurl.query)
   let selected_did = myurl.query.did;
-  let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
+  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
 
   let pi = make_pi(selected_did, req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
 
-  let new_order = get_new_order(order);
+  console.time("TIME: get_new_order_by_button");
+  let new_order = get_new_order_by_button(order);
+  console.timeEnd("TIME: get_new_order_by_button");
 
   if (pi.unit_choice !== 'OTUs') {
     let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
@@ -1444,6 +1497,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         //   "node_id": 11743,
         //   "db_id": 4
         // }
+
+        //
 
         let a = Object.keys(search_tax_ob).map(taxon => {
           let curr_id_name = search_tax_ob[taxon]["id_name"];
