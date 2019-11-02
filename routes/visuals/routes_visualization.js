@@ -1434,8 +1434,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
-    console.time("TIME: readFile");
     fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
+      console.time("TIME: readFile");
       if (err) {
         err_read_file(err, req, res, seqs_filename);
       }
@@ -1446,28 +1446,11 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       console.time("TIME: loop through clean_data");
       let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
       let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-      // let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
-      //   let prettyseq = helpers.make_color_seq(curr_ob.seq);
-      //   let seq_tax_arr = get_long_tax_name(curr_ob);
-      //   let seq_tax = seq_tax_arr.join(";");
-      //   // console.timeEnd("TIME: prettyseq");
-      //   comb_list.push({
-      //     prettyseq: prettyseq,
-      //     seq: curr_ob.seq,
-      //     seq_count: curr_ob.seq_count,
-      //     gast_distance: curr_ob.gast_distance,
-      //     classifier: curr_ob.classifier,
-      //     tax: seq_tax
-      //   });
-      //
-      //   return comb_list;
-      // }, []);
-
       console.timeEnd("TIME: loop through clean_data");
 
       render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+      console.timeEnd("TIME: readFile");
     }.bind());
-    console.timeEnd("TIME: readFile");
   }
   else {
     // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
