@@ -1365,6 +1365,18 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
   });
 }
 
+function get_long_tax_name(curr_ob) {
+  return Object.keys(curr_ob).reduce((long_name_arr, key) => {
+    if (key.endsWith("_id")) {
+      let db_id = curr_ob[key];
+      let curr_rank_name = key.slice(0, -3);
+      let newStr = key.substring(0, key.length - 3);
+      let curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
+      long_name_arr.push(curr_ob[key]);
+    }
+    return long_name_arr;
+  }, []);
+}
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
@@ -1375,8 +1387,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let search_tax = myurl.query.taxa;
   let seqs_filename = myurl.query.filename;
 
-  let seq_list = [];
-  let d,p,k,o,f,g,sp,st;
+  // let d,p,k,o,f,g,sp,st;
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
   // seqs_filename = null;
@@ -1419,150 +1430,192 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         let db_id = curr_obj.db_id;
         return data_obj.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
       }
-      let curr_filtered_data = {};
 
-      Object.keys(search_tax_ob).map(key => {
-        let curr_obj = search_tax_ob[key];
-        if (curr_obj.rank === "domain") {
-          curr_filtered_data = filter_data_id(clean_data, curr_obj);
-        }
-        else {
-          curr_filtered_data = filter_data_id(curr_filtered_data, curr_obj);
-        }
-          // clean_data.filter(i => (i.domain_id === currentOb.taxon_id && i.phylum_id === 8));
-        return curr_filtered_data;
-      });
+      //TODO: instead just filter the lowest taxon
+      // [...new Set(curr_filtered_data.map(i => i.phylum_id))]
+      let last_elemene_number = search_tax_arr.length - 1;
+      let last_taxon = search_tax_arr[last_elemene_number];
+      let curr_rank = C.RANKS[last_elemene_number];
+      let rank_name_id = curr_rank + "_id";
+      let db_id = global_new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+      let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
+
+
+      // let filtered_data = {};
+
+      // Object.keys(search_tax_ob).map(key => {
+      //   let curr_obj = search_tax_ob[key];
+      //   if (curr_obj.rank === "domain") {
+      //     filtered_data = filter_data_id(clean_data, curr_obj);
+      //   }
+      //   else {
+      //     filtered_data = filter_data_id(filtered_data, curr_obj);
+      //   }
+      //   return filtered_data;
+      // });
+
+      // let seq_list = [];
+      let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
+        let prettyseq = helpers.make_color_seq(curr_ob.seq);
+        let seq_tax = get_long_tax_name(curr_ob);
+        // console.timeEnd("TIME: prettyseq");
+        comb_list.push({
+          prettyseq: prettyseq,
+          seq: curr_ob.seq,
+          seq_count: curr_ob.seq_count,
+          gast_distance: curr_ob.gast_distance,
+          classifier: curr_ob.classifier,
+          tax: seq_tax
+        });
+
+        return comb_list;
+      }, []);
+      // TODO: loop through filtered_data, make seq_list
+      //    {
+      //     // console.time("TIME: prettyseq");
+      //     let prettyseq = helpers.make_color_seq(data.seq);
+      //     // console.timeEnd("TIME: prettyseq");
+      //     seq_list.push({
+      //       prettyseq: prettyseq,
+      //       seq: data.seq,
+      //       seq_count: data.seq_count,
+      //       gast_distance: data.gast_distance,
+      //       classifier: data.classifier,
+      //       tax: seq_tax
+      //     });
+      //   }
+
       //   let curr_id_name = search_tax_ob[taxon]["id_name"];
       //   let taxon_db_id = data[curr_id_name];
       //   return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
       // });
 
-      for (let i in clean_data){
-
-        let seq_tax = '';
-        let data = clean_data[i];
-
-        // TODO: using ids from data get long taxonomy name
-        // use rank
-        // global_new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"].children_ids.filter(id => global_new_taxonomy.taxa_tree_dict_map_by_id[id].taxon === "Firmicutes")
-        // traverse using parent / children information
-        // data = {
-        //   "seq": "ACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGGGCGCAGACGGTTACTTAAGCAGGATGTGAAATCCCCGGGCTCAACCTGGGAACTGCGTTCTGAACTGGGTGACTAGAGTGTGTCAGAGGGAGGTAGAATTCCACGTGTAGCAGTGAAATGCGTAGAGATGTGGAGGAATACCGATGGCGAAGGCAGCCTCCTGGGATAACACTGACGTTCATGCCCGAAAGCGTGGGTAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCCTAAACGATGTCGATTAGCTGTTGGGCAGCATGACTGCTTAGTAGCGAAGCTAACGCGTGAAATCGACCGCCTGGGGAGTACGGTCGCAAGATTAAA",
-        //   "seq_count": 25715,
-        //   "gast_distance": "0.00000",
-        //   "classifier": "GAST",
-        //   "domain_id": 3,
-        //   "phylum_id": 8,
-        //   "klass_id": 49,
-        //   "order_id": 69,
-        //   "family_id": 63,
-        //   "genus_id": 1399,
-        //   "species_id": 160720,
-        //   "strain_id": 15063
-        // }
-
-        // global_new_taxonomy.taxa_tree_dict_map_by_id["11743"] =
-        // {
-        //   "parent_id": 9668,
-        //   "children_ids": [
-        //     11744,
-        //     12480,
-        //     12841,
-        //     12847,
-        //     12869
-        //   ],
-        //   "taxon": "Firmicutes",
-        //   "rank": "phylum",
-        //   "node_id": 11743,
-        //   "db_id": 4
-        // }
-
-        //
-
-        // let a = Object.keys(search_tax_ob).map(taxon => {
-        //   let curr_id_name = search_tax_ob[taxon]["id_name"];
-        //   let taxon_db_id = data[curr_id_name];
-        //   return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
-        // });
-
-
-        // let get_long_names_for_filtered_data =
-
-        // console.log("OOO search_tax_ob: ");
-        //
-        // console.log(search_tax_ob);
-        // { Bacteria:
-        //    { rank_idx: 0,
-        //      rank: 'domain',
-        //      id_name: 'domain_id',
-        //      taxon_db_id: 3 },
-        //   Firmicutes:
-        //    { rank_idx: 1,
-        //      rank: 'phylum',
-        //      id_name: 'phylum_id',
-        //      taxon_db_id: 4 } }
-        // repeats every iteration in the for loop with no diff!
-        // search_tax_ob = Object.keys(search_tax_ob).map(taxon => {
-        //   return Object.assign(search_tax_ob[taxon],
-        //     search_tax_ob[taxon].taxon_db_id = data[search_tax_ob[taxon]["curr_id_name"]];
-        //   );
-              // global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[]
-        // });
-
-        d = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
-
-        try {
-          p  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
-        }catch(e){
-          p = 'phylum_NA';
-        }
-        try {
-          k  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
-        }catch(e){
-          k = 'class_NA';
-        }
-        try {
-          o  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
-        }catch(e){
-          o = 'order_NA';
-        }
-        try {
-          f  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
-        }catch(e){
-          f = 'family_NA';
-        }
-        try {
-          g  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
-        }catch(e){
-          g = 'genus_NA';
-        }
-        try {
-          sp = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
-        }
-        catch(e){
-          sp = 'species_NA';
-        }
-        try {
-          st = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
-        }
-        catch(e){
-          st = 'strain_NA';
-        }
-        seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-        if (seq_tax.substring(0, search_tax.length) === search_tax) {
-          // console.time("TIME: prettyseq");
-          let prettyseq = helpers.make_color_seq(data.seq);
-          // console.timeEnd("TIME: prettyseq");
-          seq_list.push({
-            prettyseq: prettyseq,
-            seq: data.seq,
-            seq_count: data.seq_count,
-            gast_distance: data.gast_distance,
-            classifier: data.classifier,
-            tax: seq_tax
-          });
-        }
-      }
+      // for (let i in clean_data){
+      //
+      //   let seq_tax = '';
+      //   let data = clean_data[i];
+      //
+      //   // TODO: using ids from data get long taxonomy name
+      //   // use rank
+      //   // global_new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"].children_ids.filter(id => global_new_taxonomy.taxa_tree_dict_map_by_id[id].taxon === "Firmicutes")
+      //   // traverse using parent / children information
+      //   // data = {
+      //   //   "seq": "ACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGGGCGCAGACGGTTACTTAAGCAGGATGTGAAATCCCCGGGCTCAACCTGGGAACTGCGTTCTGAACTGGGTGACTAGAGTGTGTCAGAGGGAGGTAGAATTCCACGTGTAGCAGTGAAATGCGTAGAGATGTGGAGGAATACCGATGGCGAAGGCAGCCTCCTGGGATAACACTGACGTTCATGCCCGAAAGCGTGGGTAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCCTAAACGATGTCGATTAGCTGTTGGGCAGCATGACTGCTTAGTAGCGAAGCTAACGCGTGAAATCGACCGCCTGGGGAGTACGGTCGCAAGATTAAA",
+      //   //   "seq_count": 25715,
+      //   //   "gast_distance": "0.00000",
+      //   //   "classifier": "GAST",
+      //   //   "domain_id": 3,
+      //   //   "phylum_id": 8,
+      //   //   "klass_id": 49,
+      //   //   "order_id": 69,
+      //   //   "family_id": 63,
+      //   //   "genus_id": 1399,
+      //   //   "species_id": 160720,
+      //   //   "strain_id": 15063
+      //   // }
+      //
+      //   // global_new_taxonomy.taxa_tree_dict_map_by_id["11743"] =
+      //   // {
+      //   //   "parent_id": 9668,
+      //   //   "children_ids": [
+      //   //     11744,
+      //   //     12480,
+      //   //     12841,
+      //   //     12847,
+      //   //     12869
+      //   //   ],
+      //   //   "taxon": "Firmicutes",
+      //   //   "rank": "phylum",
+      //   //   "node_id": 11743,
+      //   //   "db_id": 4
+      //   // }
+      //
+      //   //
+      //
+      //   // let a = Object.keys(search_tax_ob).map(taxon => {
+      //   //   let curr_id_name = search_tax_ob[taxon]["id_name"];
+      //   //   let taxon_db_id = data[curr_id_name];
+      //   //   return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
+      //   // });
+      //
+      //
+      //   // let get_long_names_for_filtered_data =
+      //
+      //   // console.log("OOO search_tax_ob: ");
+      //   //
+      //   // console.log(search_tax_ob);
+      //   // { Bacteria:
+      //   //    { rank_idx: 0,
+      //   //      rank: 'domain',
+      //   //      id_name: 'domain_id',
+      //   //      taxon_db_id: 3 },
+      //   //   Firmicutes:
+      //   //    { rank_idx: 1,
+      //   //      rank: 'phylum',
+      //   //      id_name: 'phylum_id',
+      //   //      taxon_db_id: 4 } }
+      //   // repeats every iteration in the for loop with no diff!
+      //   // search_tax_ob = Object.keys(search_tax_ob).map(taxon => {
+      //   //   return Object.assign(search_tax_ob[taxon],
+      //   //     search_tax_ob[taxon].taxon_db_id = data[search_tax_ob[taxon]["curr_id_name"]];
+      //   //   );
+      //         // global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[]
+      //   // });
+      //
+      //   d = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+      //
+      //   try {
+      //     p  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+      //   }catch(e){
+      //     p = 'phylum_NA';
+      //   }
+      //   try {
+      //     k  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+      //   }catch(e){
+      //     k = 'class_NA';
+      //   }
+      //   try {
+      //     o  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+      //   }catch(e){
+      //     o = 'order_NA';
+      //   }
+      //   try {
+      //     f  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+      //   }catch(e){
+      //     f = 'family_NA';
+      //   }
+      //   try {
+      //     g  = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+      //   }catch(e){
+      //     g = 'genus_NA';
+      //   }
+      //   try {
+      //     sp = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+      //   }
+      //   catch(e){
+      //     sp = 'species_NA';
+      //   }
+      //   try {
+      //     st = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+      //   }
+      //   catch(e){
+      //     st = 'strain_NA';
+      //   }
+      //   seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
+      //   if (seq_tax.substring(0, search_tax.length) === search_tax) {
+      //     // console.time("TIME: prettyseq");
+      //     let prettyseq = helpers.make_color_seq(data.seq);
+      //     // console.timeEnd("TIME: prettyseq");
+      //     seq_list.push({
+      //       prettyseq: prettyseq,
+      //       seq: data.seq,
+      //       seq_count: data.seq_count,
+      //       gast_distance: data.gast_distance,
+      //       classifier: data.classifier,
+      //       tax: seq_tax
+      //     });
+      //   }
+      // }
       console.timeEnd("TIME: loop through clean_data");
 
       render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
