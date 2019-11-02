@@ -1336,7 +1336,12 @@ function err_read_file(err, req, res, seqs_filename) {
 function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
   let clean_data = "";
   try {
+    console.log("CCC = data");
+    console.log(data[5])
+    
     clean_data = JSON.parse(data);
+    console.log("CCC2 = clean_data");
+    console.log(clean_data[0])
   } catch (e) {
     console.log(e);
     res.render('visuals/user_viz_data/sequences', {
@@ -1372,8 +1377,6 @@ function filter_data_by_last_taxon(search_tax, clean_data) {
   let curr_rank = C.RANKS[last_element_number];
   let rank_name_id = curr_rank + "_id";
   let db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
-  console.log("CCC clean_data");
-  console.log(clean_data[0])
   let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
   return filtered_data;
 }
@@ -1444,6 +1447,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       //console.log('parsing data')
 
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+      console.log("CCC1 clean_data");
+      console.log(clean_data[0])
 
       console.time("TIME: loop through clean_data");
       let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
