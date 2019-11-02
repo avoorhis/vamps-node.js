@@ -1369,10 +1369,14 @@ function get_long_tax_name(curr_ob) {
   return Object.keys(curr_ob).reduce((long_name_arr, key) => {
     if (key.endsWith("_id")) {
       let db_id = curr_ob[key];
+      console.time("TIME: key.slice");
       let curr_rank_name = key.slice(0, -3);
+      console.timeEnd("TIME: key.slice");
+      console.time("TIME: key.substring");
       let newStr = key.substring(0, key.length - 3);
+      console.timeEnd("TIME: key.substring");
       let curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
-      long_name_arr.push(curr_ob[key]);
+      long_name_arr.push(curr_name);
     }
     return long_name_arr;
   }, []);
@@ -1431,7 +1435,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         return data_obj.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
       }
 
-      //TODO: instead just filter the lowest taxon
+      //TODO: make a function
       // [...new Set(curr_filtered_data.map(i => i.phylum_id))]
       let last_elemene_number = search_tax_arr.length - 1;
       let last_taxon = search_tax_arr[last_elemene_number];
