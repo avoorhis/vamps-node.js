@@ -1372,6 +1372,8 @@ function filter_data_by_last_taxon(search_tax, clean_data) {
   let curr_rank = C.RANKS[last_element_number];
   let rank_name_id = curr_rank + "_id";
   let db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+  console.log("CCC clean_data");
+  console.log(clean_data[0])
   let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
   return filtered_data;
 }
