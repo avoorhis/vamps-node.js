@@ -24,8 +24,8 @@ const spawn = require('child_process').spawn;
 // const xml_convert = require('xml-js');
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
-const R = require('ramda');
-const R_ext = require('ramda-extension');
+// const R = require('ramda');
+// const R_ext = require('ramda-extension');
 
 // function get_process_dir(req) {
 //   return req.CONFIG.PROCESS_DIR;
