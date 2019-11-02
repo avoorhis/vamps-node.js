@@ -1153,9 +1153,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let pi = make_pi(selected_did, req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
 
-  console.time("TIME: get_new_order_by_button");
   let new_order = get_new_order_by_button(order);
-  console.timeEnd("TIME: get_new_order_by_button");
 
   if (pi.unit_choice !== 'OTUs') {
     let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
@@ -1173,7 +1171,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_double');
 
   let myurl = url.parse(req.url, true);
-  console.log(myurl.query);
+  // console.log(myurl.query);
   let did1 = myurl.query.did1;
   let did2 = myurl.query.did2;
   let dist = myurl.query.dist;
@@ -1373,7 +1371,7 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   console.log('in sequences');
   let myurl = url.parse(req.url, true);
-  console.log(myurl.query);
+  // console.log(myurl.query);
   let search_tax = myurl.query.taxa;
   let seqs_filename = myurl.query.filename;
 
@@ -1401,16 +1399,43 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       let search_tax_arr = search_tax.split(";");
       let search_tax_ob = search_tax_arr.reduce((ob, taxon, t_idx) => {
         let curr_rank = C.RANKS[t_idx];
+        let db_id = global_new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === taxon).map(e => e.db_id);
         ob[taxon] = {
+          taxon_name: taxon,
           rank_idx: t_idx,
           rank: curr_rank,
-          id_name: curr_rank + "_id"
+          id_name: curr_rank + "_id",
+          db_id: db_id.join("")
         };
 
         // let ob.curr_id = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon
         return ob;
       }, {});
 
+      // filter clean data with the same beginning:
+
+      function filter_data_id(data_obj, curr_obj) {
+        let rank_name_id = curr_obj.id_name;
+        let db_id = curr_obj.db_id;
+        return data_obj.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
+      }
+      let curr_filtered_data = {};
+
+      Object.keys(search_tax_ob).map(key => {
+        let curr_obj = search_tax_ob[key];
+        if (curr_obj.rank === "domain") {
+          curr_filtered_data = filter_data_id(clean_data, curr_obj);
+        }
+        else {
+          curr_filtered_data = filter_data_id(curr_filtered_data, curr_obj);
+        }
+          // clean_data.filter(i => (i.domain_id === currentOb.taxon_id && i.phylum_id === 8));
+        return curr_filtered_data;
+      });
+      //   let curr_id_name = search_tax_ob[taxon]["id_name"];
+      //   let taxon_db_id = data[curr_id_name];
+      //   return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
+      // });
 
       for (let i in clean_data){
 
@@ -1454,14 +1479,29 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
         //
 
-        let a = Object.keys(search_tax_ob).map(taxon => {
-          let curr_id_name = search_tax_ob[taxon]["id_name"];
-          let taxon_db_id = data[curr_id_name];
-          return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
-        });
+        // let a = Object.keys(search_tax_ob).map(taxon => {
+        //   let curr_id_name = search_tax_ob[taxon]["id_name"];
+        //   let taxon_db_id = data[curr_id_name];
+        //   return Object.assign(search_tax_ob[taxon], search_tax_ob[taxon].taxon_db_id = taxon_db_id);
+        // });
 
-        console.log(search_tax_ob);
 
+        // let get_long_names_for_filtered_data =
+
+        // console.log("OOO search_tax_ob: ");
+        //
+        // console.log(search_tax_ob);
+        // { Bacteria:
+        //    { rank_idx: 0,
+        //      rank: 'domain',
+        //      id_name: 'domain_id',
+        //      taxon_db_id: 3 },
+        //   Firmicutes:
+        //    { rank_idx: 1,
+        //      rank: 'phylum',
+        //      id_name: 'phylum_id',
+        //      taxon_db_id: 4 } }
+        // repeats every iteration in the for loop with no diff!
         // search_tax_ob = Object.keys(search_tax_ob).map(taxon => {
         //   return Object.assign(search_tax_ob[taxon],
         //     search_tax_ob[taxon].taxon_db_id = data[search_tax_ob[taxon]["curr_id_name"]];
