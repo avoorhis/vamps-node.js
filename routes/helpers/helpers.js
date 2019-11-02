@@ -852,7 +852,7 @@ module.exports.make_color_seq = function (seq) {
   return_string = return_string.replace(/C/g, "<span class='base_color_blue'>C</span>");
   return_string = return_string.replace(/G/g, "<span class='base_color_black'>G</span>");
   return_string = return_string.replace(/T/g, "<span class='base_color_orange'>T</span>");
-  return_string = return_string.replace(/[^ACTG]/g, "<span class='base_color_darkgrey'>T</span>");
+  // return_string = return_string.replace(/([^ACTG])/g, "<span class='base_color_darkgrey'>\1</span>");
 
   // for (let i = 0; i < seq.length; i++) {
   //   let base = seq.charAt(i);
