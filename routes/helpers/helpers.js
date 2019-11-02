@@ -820,31 +820,63 @@ module.exports.get_PTREE_metadata = function (OBJ, q) {
   return projects;
 };
 
+// module.exports.make_color_seq = function (seq) {
+//
+//   var return_string = '';
+//   for (var i = 0; i < seq.length; i++) {
+//     var base = seq.charAt(i);
+//     if (base == 'A') {
+//       return_string += "<font color='red'>" + base + "</font>";
+//     }
+//     else if (base == 'C') {
+//       return_string += "<font color='blue'>" + base + "</font>";
+//     }
+//     else if (base == 'G') {
+//       return_string += "<font color='black'>" + base + "</font>";
+//     }
+//     else if (base == 'T') {
+//       return_string += "<font color='orange'>" + base + "</font>";
+//     }
+//     else {
+//       return_string += "<font color='darkgrey'>" + base + "</font>";
+//     }
+//
+//   }
+//
+//   return return_string;
+// };    //end of function make_color_seq
 module.exports.make_color_seq = function (seq) {
 
-  var return_string = '';
-  for (var i = 0; i < seq.length; i++) {
-    var base = seq.charAt(i);
-    if (base == 'A') {
-      return_string += "<font color='red'>" + base + "</font>";
-    }
-    else if (base == 'C') {
-      return_string += "<font color='blue'>" + base + "</font>";
-    }
-    else if (base == 'G') {
-      return_string += "<font color='black'>" + base + "</font>";
-    }
-    else if (base == 'T') {
-      return_string += "<font color='orange'>" + base + "</font>";
-    }
-    else {
-      return_string += "<font color='darkgrey'>" + base + "</font>";
-    }
+  let return_string = '';
+  return_string = seq.replace(/A/g, "<span class='base_color_red'>A</span>");
+  return_string = return_string.replace(/C/g, "<span class='base_color_blue'>C</span>");
+  return_string = return_string.replace(/G/g, "<span class='base_color_black'>G</span>");
+  return_string = return_string.replace(/T/g, "<span class='base_color_orange'>T</span>");
+  return_string = return_string.replace(/[^ACTG]/g, "<span class='base_color_darkgrey'>T</span>");
 
-  }
+  // for (let i = 0; i < seq.length; i++) {
+  //   let base = seq.charAt(i);
+  //   if (base == 'A') {
+  //     return_string += "<font color='red'>" + base + "</font>";
+  //   }
+  //   else if (base == 'C') {
+  //     return_string += "<font color='blue'>" + base + "</font>";
+  //   }
+  //   else if (base == 'G') {
+  //     return_string += "<font color='black'>" + base + "</font>";
+  //   }
+  //   else if (base == 'T') {
+  //     return_string += "<font color='orange'>" + base + "</font>";
+  //   }
+  //   else {
+  //     return_string += "<font color='darkgrey'>" + base + "</font>";
+  //   }
+  //
+  // }
 
   return return_string;
 };    //end of function make_color_seq
+
 
 module.exports.update_project_information_global_object = function (pid, form, user_obj) {
   console.log('Updating PROJECT_INFORMATION_BY_PID');
