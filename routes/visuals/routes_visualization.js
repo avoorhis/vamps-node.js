@@ -1395,6 +1395,28 @@ function get_long_tax_name(curr_ob) {
   }, []);
 }
 
+function make_seq_list_by_filtered_data_loop(filtered_data) {
+  let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
+    // console.time("TIME: prettyseq");
+    let prettyseq = helpers.make_color_seq(curr_ob.seq);
+    // console.timeEnd("TIME: prettyseq");
+    let seq_tax_arr = get_long_tax_name(curr_ob);
+    let seq_tax = seq_tax_arr.join(";");
+    comb_list.push({
+      prettyseq: prettyseq,
+      seq: curr_ob.seq,
+      seq_count: curr_ob.seq_count,
+      gast_distance: curr_ob.gast_distance,
+      classifier: curr_ob.classifier,
+      tax: seq_tax
+    });
+
+    return comb_list;
+  }, []);
+
+  return seq_list;
+}
+
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
@@ -1422,71 +1444,24 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
       console.time("TIME: loop through clean_data");
-
-      // let search_tax_ob = search_tax_arr.reduce((ob, taxon, t_idx) => {
-      //   let curr_rank = C.RANKS[t_idx];
-      //   let db_id = global_new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === taxon).map(e => e.db_id);
-      //   ob[taxon] = {
-      //     taxon_name: taxon,
-      //     rank_idx: t_idx,
-      //     rank: curr_rank,
-      //     id_name: curr_rank + "_id",
-      //     db_id: db_id.join("")
-      //   };
-      //
-      //   // let ob.curr_id = global_new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon
-      //   return ob;
-      // }, {});
-
-      // filter clean data with the same beginning:
-
-      // function filter_data_id(data_obj, curr_obj) {
-      //   let rank_name_id = curr_obj.id_name;
-      //   let db_id = curr_obj.db_id;
-      //   return data_obj.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
-      // }
-
       let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-        //TODO: make a function
-      // [...new Set(curr_filtered_data.map(i => i.phylum_id))]
-      // let search_tax_arr = search_tax.split(";");
-      // let last_element_number = search_tax_arr.length - 1;
-      // let last_taxon = search_tax_arr[last_element_number];
-      // let curr_rank = C.RANKS[last_element_number];
-      // let rank_name_id = curr_rank + "_id";
-      // let db_id = global_new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
-      // let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
-
-      let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
-        let prettyseq = helpers.make_color_seq(curr_ob.seq);
-        let seq_tax_arr = get_long_tax_name(curr_ob);
-        let seq_tax = seq_tax_arr.join(";");
-        // console.timeEnd("TIME: prettyseq");
-        comb_list.push({
-          prettyseq: prettyseq,
-          seq: curr_ob.seq,
-          seq_count: curr_ob.seq_count,
-          gast_distance: curr_ob.gast_distance,
-          classifier: curr_ob.classifier,
-          tax: seq_tax
-        });
-
-        return comb_list;
-      }, []);
-      // TODO: loop through filtered_data, make seq_list
-      //    {
-      //     // console.time("TIME: prettyseq");
-      //     let prettyseq = helpers.make_color_seq(data.seq);
-      //     // console.timeEnd("TIME: prettyseq");
-      //     seq_list.push({
-      //       prettyseq: prettyseq,
-      //       seq: data.seq,
-      //       seq_count: data.seq_count,
-      //       gast_distance: data.gast_distance,
-      //       classifier: data.classifier,
-      //       tax: seq_tax
-      //     });
-      //   }
+      let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+      // let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
+      //   let prettyseq = helpers.make_color_seq(curr_ob.seq);
+      //   let seq_tax_arr = get_long_tax_name(curr_ob);
+      //   let seq_tax = seq_tax_arr.join(";");
+      //   // console.timeEnd("TIME: prettyseq");
+      //   comb_list.push({
+      //     prettyseq: prettyseq,
+      //     seq: curr_ob.seq,
+      //     seq_count: curr_ob.seq_count,
+      //     gast_distance: curr_ob.gast_distance,
+      //     classifier: curr_ob.classifier,
+      //     tax: seq_tax
+      //   });
+      //
+      //   return comb_list;
+      // }, []);
 
       console.timeEnd("TIME: loop through clean_data");
 
