@@ -1369,13 +1369,14 @@ function get_long_tax_name(curr_ob) {
   return Object.keys(curr_ob).reduce((long_name_arr, key) => {
     if (key.endsWith("_id")) {
       let db_id = curr_ob[key];
-      console.time("TIME: key.slice");
-      let curr_rank_name = key.slice(0, -3);
-      console.timeEnd("TIME: key.slice");
-      console.time("TIME: key.substring");
-      let newStr = key.substring(0, key.length - 3);
-      console.timeEnd("TIME: key.substring");
-      let curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
+      let curr_rank_name = key.substring(0, key.length - 3);
+      let curr_name = "";
+      try {
+        curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
+      }
+      catch(e) {
+        curr_name = curr_rank_name + "_NA";
+      }
       long_name_arr.push(curr_name);
     }
     return long_name_arr;
@@ -1461,7 +1462,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       // let seq_list = [];
       let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
         let prettyseq = helpers.make_color_seq(curr_ob.seq);
-        let seq_tax = get_long_tax_name(curr_ob);
+        let seq_tax_arr = get_long_tax_name(curr_ob);
+        let seq_tax = seq_tax_arr.join(";");
         // console.timeEnd("TIME: prettyseq");
         comb_list.push({
           prettyseq: prettyseq,
