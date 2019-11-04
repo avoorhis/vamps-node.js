@@ -849,6 +849,9 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"
     // Ev9:  ACACGACGACAACCTGAAAGGGAT
     var task = 'blastn'
+    if(req.body.query.length >200){
+        task = 'megablast'
+    }
     if(req.body.query.length < 50){
         task = 'blastn-short'
     }
@@ -872,21 +875,22 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         //             stdio: 'pipe'  // stdin, stdout, stderr
         //     } );
             var blast_process = exec( blast_options.args.join(' '), (e, stdout, stderr)=> {
-            if (e) {
-                console.error(e);
-                return
-            }
-            var obj = require(out_file_path);
+            
+                if (e) {
+                    console.error(e);
+                    return
+                }
+                var obj = require(out_file_path);
     
-            res.render('search/search_result_blast', {
-                    title    : 'VAMPS: BLAST Result',
-                    data     : JSON.stringify(obj),
-                    show     : 'blast_result',
-                    dbs      : JSON.stringify(db_collector_short),
-                    query    : req.body.query,
-                    user     : req.user,hostname: req.CONFIG.hostname,
+                res.render('search/search_result_blast', {
+                        title    : 'VAMPS: BLAST Result',
+                        data     : JSON.stringify(obj),
+                        show     : 'blast_result',
+                        dbs      : JSON.stringify(db_collector_short),
+                        query    : req.body.query,
+                        user     : req.user,hostname: req.CONFIG.hostname,
+                });
             });
-        });
         
     }
     });
