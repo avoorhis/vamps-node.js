@@ -848,11 +848,26 @@ module.exports.get_PTREE_metadata = function (OBJ, q) {
 module.exports.make_color_seq = function (seq) {
 
   let return_string = '';
-  return_string = seq.replace(/A/g, "<span class='base_color_red'>A</span>");
-  return_string = return_string.replace(/C/g, "<span class='base_color_blue'>C</span>");
-  return_string = return_string.replace(/G/g, "<span class='base_color_black'>G</span>");
-  return_string = return_string.replace(/T/g, "<span class='base_color_orange'>T</span>");
-  // return_string = return_string.replace(/([^ACTG])/g, "<span class='base_color_darkgrey'>\1</span>");
+  for (let i = 0; i < seq.length; i++) {
+    let base = seq.charAt(i);
+    switch (base) {
+      case 'A':
+        return_string += ("<span class='base_color_red'>" + base + "</span>");
+        break;
+      case 'C':
+        return_string += ("<span class='base_color_blue'>" + base + "</span>");
+        break;
+      case 'G':
+        return_string += ("<span class='base_color_black'>" + base + "</span>");
+        break;
+      case 'T':
+        return_string += ("<span class='base_color_orange'>" + base + "</span>");
+        break;
+      default:
+        return_string += ("<span class='base_color_darkgrey'>" + base + "</span>");
+        break;
+    }
+  }
 
   // for (let i = 0; i < seq.length; i++) {
   //   let base = seq.charAt(i);
