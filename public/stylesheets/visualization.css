@@ -589,3 +589,24 @@ i.icon-minus-sign {
 #seqs_table tbody tr td{
     font-size:small
 }
+
+/* color */
+.base_color_red {
+    color: red;
+}
+
+.base_color_black {
+    color: black;
+}
+
+.base_color_blue {
+    color: blue;
+}
+
+.base_color_orange {
+    color: orange;
+}
+
+.base_color_darkgrey {
+    color: darkgrey;
+}

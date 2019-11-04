@@ -20,11 +20,12 @@ const biom_matrix_controller = require(app_root + '/controllers/biomMatrixContro
 const visualization_controller = require(app_root + '/controllers/visualizationController');
 const spawn = require('child_process').spawn;
 // const app = express();
-const js2xmlparser = require("js2xmlparser");
-const xml_convert = require('xml-js');
+// const js2xmlparser = require("js2xmlparser");
+// const xml_convert = require('xml-js');
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
-
+// const R = require('ramda');
+// const R_ext = require('ramda-extension');
 
 // function get_process_dir(req) {
 //   return req.CONFIG.PROCESS_DIR;
@@ -1100,24 +1101,34 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
   console.timeEnd("mysqlSelectedSeqsPerDID_to_file");
 }
 
-function get_new_order(order) {// TODO: Andy. Why do we need to inverse the order?
+// On the bar_single page with the single taxonomy bar and list of included taxonomies
+// when you click on the button: Ordering: Taxa Names it should toggle both the list and and bar to order
+// the taxonomic names a-z then to z-a and so forth.
+//
+// The button: Ordering: Counts is also a toggle but the ordering is by taxonomic counts and not alphabetical.
+
+function get_new_order_by_button(order) {
   let new_order = {};
-  if (order.orderby === 'alpha') {// TODO: Andy 'alpha' vs. 'alphaDown' ?
-    if (order.value === 'a') {
-      new_order.alpha_value = 'z';
-    }
-    else {
-      new_order.alpha_value = 'a';
-    }
-    new_order.count_value = '';
-  }
-  else {
-    if (order.value === 'min') {
-      new_order.count_value = 'max';
-    } else {
-      new_order.count_value = 'min';
-    }
-    new_order.alpha_value = '';
+  switch (order.orderby) {
+    case "alpha":
+      if (order.value === 'a') {
+        new_order.alpha_value = 'z';
+      }
+      else {
+        new_order.alpha_value = 'a';
+      }
+      new_order.count_value = '';
+      break;
+    case "count":
+      if (order.value === 'min') {
+        new_order.count_value = 'max';
+      } else {
+        new_order.count_value = 'min';
+      }
+      new_order.alpha_value = '';
+      break;
+    default:
+      break;
   }
   return new_order;
 }
@@ -1135,14 +1146,15 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let myurl = url.parse(req.url, true);
   //console.log('in piechart_single',myurl.query)
   let selected_did = myurl.query.did;
-  let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
+  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
+  // let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
 
   let pi = make_pi(selected_did, req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
 
-  let new_order = get_new_order(order);
+  let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
     let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
@@ -1160,7 +1172,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_double');
 
   let myurl = url.parse(req.url, true);
-  console.log(myurl.query);
+  // console.log(myurl.query);
   let did1 = myurl.query.did1;
   let did2 = myurl.query.did2;
   let dist = myurl.query.dist;
@@ -1311,125 +1323,148 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //
 //  S E Q U E N C E S
 //
+
+function err_read_file(err, req, res, seqs_filename) {
+  console.log(err);
+  if (req.session.unit_choice === 'OTUs'){
+    res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
+  }
+  else {
+    res.send('<br><h3>No file found: ' + seqs_filename + "; Use the browsers 'Back' button and try again</h3>");
+  }
+}
+
+function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
+  let clean_data = "";
+  try {
+    clean_data = JSON.parse(data);
+  } catch (e) {
+    console.log(e);
+    res.render('visuals/user_viz_data/sequences', {
+      title: 'Sequences',
+      ds: pjds,
+      did: selected_did,
+      tax: search_tax,
+      fname: seqs_filename,
+      seq_list: 'Error Retrieving Sequences',
+      user: req.user, hostname: req.CONFIG.hostname,
+    });
+    return;
+  }
+  return clean_data;
+}
+
+function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '')
+{
+  res.render('visuals/user_viz_data/sequences', {
+    title: 'Sequences',
+    ds: pjds,
+    tax: search_tax,
+    fname: seqs_filename,
+    seq_list: seq_list,
+    user: req.user, hostname: req.CONFIG.hostname,
+  });
+}
+
+function filter_data_by_last_taxon(search_tax, clean_data) {
+  let search_tax_arr = search_tax.split(";");
+  let last_element_number = search_tax_arr.length - 1;
+  let last_taxon = search_tax_arr[last_element_number];
+  let curr_rank = C.RANKS[last_element_number];
+  let rank_name_id = curr_rank + "_id";
+  let db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+  let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
+  return filtered_data;
+}
+
+
+function get_long_tax_name(curr_ob) {
+  return Object.keys(curr_ob).reduce((long_name_arr, key) => {
+    if (key.endsWith("_id")) {
+      let db_id = curr_ob[key];
+      let curr_rank_name = key.substring(0, key.length - 3);
+      let curr_name = "";
+      try {
+        curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
+      }
+      catch(e) {
+        curr_name = curr_rank_name + "_NA";
+      }
+      long_name_arr.push(curr_name);
+    }
+    return long_name_arr;
+  }, []);
+}
+
+function make_seq_list_by_filtered_data_loop(filtered_data) {
+  let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
+    // console.time("TIME: prettyseq");
+    let prettyseq = helpers.make_color_seq(curr_ob.seq);
+    // console.timeEnd("TIME: prettyseq");
+    let seq_tax_arr = get_long_tax_name(curr_ob);
+    let seq_tax = seq_tax_arr.join(";");
+    comb_list.push({
+      prettyseq: prettyseq,
+      seq: curr_ob.seq,
+      seq_count: curr_ob.seq_count,
+      gast_distance: curr_ob.gast_distance,
+      classifier: curr_ob.classifier,
+      tax: seq_tax
+    });
+
+    return comb_list;
+  }, []);
+
+  return seq_list;
+}
+
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
-// click on the barchart row
+// click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   console.log('in sequences');
   let myurl = url.parse(req.url, true);
-  console.log(myurl.query);
+  // console.log(myurl.query);
   let search_tax = myurl.query.taxa;
   let seqs_filename = myurl.query.filename;
 
-  let seq_list = [];
-  let d,p,k,o,f,g,sp,st;
+  // let d,p,k,o,f,g,sp,st;
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+  // seqs_filename = null;
   if (seqs_filename){
     //console.log('found filename',seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
-    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err,data) {
+    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
+      console.time("TIME: readFile");
       if (err) {
-        console.log(err);
-        if (req.session.unit_choice === 'OTUs'){
-          res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
-        }
-        else {
-          res.send('<br><h3>No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again</h3>");
-        }
+        err_read_file(err, req, res, seqs_filename);
       }
       //console.log('parsing data')
-      let clean_data = "";
-      try {
-        clean_data = JSON.parse(data);
-      }
-      catch(e){
-        console.log(e);
-        res.render('visuals/user_viz_data/sequences', {
-          title: 'Sequences',
-          ds : pjds,
-          did : selected_did,
-          tax : search_tax,
-          fname : seqs_filename,
-          seq_list : 'Error Retrieving Sequences',
-          user: req.user, hostname: req.CONFIG.hostname,
-        });
-        return;
-      }
 
-      for (let i in clean_data){
+      let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
-        let seq_tax = '';
-        let data = clean_data[i];
+      console.time("TIME: loop through clean_data");
+      let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+      let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+      console.timeEnd("TIME: loop through clean_data");
 
-        d = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
-
-        try {
-          p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
-        }catch(e){
-          p = 'phylum_NA';
-        }
-        try {
-          k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
-        }catch(e){
-          k = 'class_NA';
-        }
-        try {
-          o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
-        }catch(e){
-          o = 'order_NA';
-        }
-        try {
-          f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
-        }catch(e){
-          f = 'family_NA';
-        }
-        try {
-          g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
-        }catch(e){
-          g = 'genus_NA';
-        }
-        try {
-          sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
-        }
-        catch(e){
-          sp = 'species_NA';
-        }
-        try {
-          st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
-        }
-        catch(e){
-          st = 'strain_NA';
-        }
-        seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-        if (seq_tax.substring(0, search_tax.length) === search_tax){
-          seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});
-        }
-      }
-
-      res.render('visuals/user_viz_data/sequences', {
-        title: 'Sequences',
-        ds : pjds,
-        tax : search_tax,
-        fname : seqs_filename,
-        seq_list : JSON.stringify(seq_list),
-        user: req.user, hostname: req.CONFIG.hostname,
-      });
-    });
-  } else {
+      render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+      console.timeEnd("TIME: readFile");
+    }.bind());
+  }
+  else {
+    // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
     res.render('visuals/user_viz_data/sequences', {
       title: 'Sequences',
-      ds : pjds,
-      tax : search_tax,
-      fname : '',
-      seq_list : 'Error Retrieving Sequences',
+      ds: pjds,
+      tax: search_tax,
+      fname: '',
+      seq_list: 'Error Retrieving Sequences',
       user: req.user, hostname: req.CONFIG.hostname,
     });
-
   }
-
   //   });
-
 });
 
 /*

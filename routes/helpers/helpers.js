@@ -821,30 +821,32 @@ module.exports.get_PTREE_metadata = function (OBJ, q) {
 };
 
 module.exports.make_color_seq = function (seq) {
+  // default color  = #333 - dark grey
 
-  var return_string = '';
-  for (var i = 0; i < seq.length; i++) {
-    var base = seq.charAt(i);
-    if (base == 'A') {
-      return_string += "<font color='red'>" + base + "</font>";
+  let return_string = '';
+  for (const base of seq) {
+    switch (base) {
+      case 'A':
+        return_string += "<span class='base_color_red'>A</span>";
+        break;
+      case 'C':
+        return_string += "<span class='base_color_blue'>C</span>";
+        break;
+      case 'G':
+        return_string += "<span class='base_color_black'>G</span>";
+        break;
+      case 'T':
+        return_string += "<span class='base_color_orange'>T</span>";
+        break;
+      default:
+        return_string += "<span class='base_color_darkgrey'>" + base + "</span>";
+        break;
     }
-    else if (base == 'C') {
-      return_string += "<font color='blue'>" + base + "</font>";
-    }
-    else if (base == 'G') {
-      return_string += "<font color='black'>" + base + "</font>";
-    }
-    else if (base == 'T') {
-      return_string += "<font color='orange'>" + base + "</font>";
-    }
-    else {
-      return_string += "<font color='darkgrey'>" + base + "</font>";
-    }
-
   }
 
   return return_string;
 };    //end of function make_color_seq
+
 
 module.exports.update_project_information_global_object = function (pid, form, user_obj) {
   console.log('Updating PROJECT_INFORMATION_BY_PID');
