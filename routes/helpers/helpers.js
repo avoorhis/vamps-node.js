@@ -821,9 +821,9 @@ module.exports.get_PTREE_metadata = function (OBJ, q) {
 };
 
 module.exports.make_color_seq = function (seq) {
-  let return_string = '';
-  // default color #333 - dark grey
+  // default color  = #333 - dark grey
 
+  let return_string = '';
   for (const base of seq) {
     switch (base) {
       case 'A':
