@@ -820,33 +820,7 @@ module.exports.get_PTREE_metadata = function (OBJ, q) {
   return projects;
 };
 
-// module.exports.make_color_seq = function (seq) {
-//
-//   var return_string = '';
-//   for (var i = 0; i < seq.length; i++) {
-//     var base = seq.charAt(i);
-//     if (base == 'A') {
-//       return_string += "<font color='red'>" + base + "</font>";
-//     }
-//     else if (base == 'C') {
-//       return_string += "<font color='blue'>" + base + "</font>";
-//     }
-//     else if (base == 'G') {
-//       return_string += "<font color='black'>" + base + "</font>";
-//     }
-//     else if (base == 'T') {
-//       return_string += "<font color='orange'>" + base + "</font>";
-//     }
-//     else {
-//       return_string += "<font color='darkgrey'>" + base + "</font>";
-//     }
-//
-//   }
-//
-//   return return_string;
-// };    //end of function make_color_seq
 module.exports.make_color_seq = function (seq) {
-  // seq_arr = seq.split('');
   let return_string = '';
 
   for (const base of seq) {
@@ -868,47 +842,6 @@ module.exports.make_color_seq = function (seq) {
         break;
     }
   }
-
-  // for (let i = 0; i < seq_arr.length; i++) {
-  //   let base = seq.charAt(i);
-  //   switch (base) {
-  //     case 'A':
-  //       return_string += ("<span class='base_color_red'>" + base + "</span>");
-  //       break;
-  //     case 'C':
-  //       return_string += ("<span class='base_color_blue'>" + base + "</span>");
-  //       break;
-  //     case 'G':
-  //       return_string += ("<span class='base_color_black'>" + base + "</span>");
-  //       break;
-  //     case 'T':
-  //       return_string += ("<span class='base_color_orange'>" + base + "</span>");
-  //       break;
-  //     default:
-  //       return_string += ("<span class='base_color_darkgrey'>" + base + "</span>");
-  //       break;
-  //   }
-  // }
-
-  // for (let i = 0; i < seq.length; i++) {
-  //   let base = seq.charAt(i);
-  //   if (base == 'A') {
-  //     return_string += "<font color='red'>" + base + "</font>";
-  //   }
-  //   else if (base == 'C') {
-  //     return_string += "<font color='blue'>" + base + "</font>";
-  //   }
-  //   else if (base == 'G') {
-  //     return_string += "<font color='black'>" + base + "</font>";
-  //   }
-  //   else if (base == 'T') {
-  //     return_string += "<font color='orange'>" + base + "</font>";
-  //   }
-  //   else {
-  //     return_string += "<font color='darkgrey'>" + base + "</font>";
-  //   }
-  //
-  // }
 
   return return_string;
 };    //end of function make_color_seq
