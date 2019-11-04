@@ -863,7 +863,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
               args :       [ blast_cmd,"-db ",dbs_string,"-outfmt","15","-query",query_file_path,"-out",out_file_path,'-task',task ],
             };
             //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
-            //console.log(blast_options.args.join(' '))
+            console.log(blast_options.args.join(' '))
             //return   TTTAGAGGGGTTTTGCGCAGCTAACGCG
            //  var blast_process = exec( "sh",blast_options.args, {
         //             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
