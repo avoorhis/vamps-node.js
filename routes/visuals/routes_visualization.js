@@ -1402,9 +1402,9 @@ function get_long_tax_name(curr_ob) {
 
 function make_seq_list_by_filtered_data_loop(filtered_data) {
   let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
-    console.time("TIME: prettyseq");
+    // console.time("TIME: prettyseq");
     let prettyseq = helpers.make_color_seq(curr_ob.seq);
-    console.timeEnd("TIME: prettyseq");
+    // console.timeEnd("TIME: prettyseq");
     let seq_tax_arr = get_long_tax_name(curr_ob);
     let seq_tax = seq_tax_arr.join(";");
     comb_list.push({
