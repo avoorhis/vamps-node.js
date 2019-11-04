@@ -1402,9 +1402,9 @@ function get_long_tax_name(curr_ob) {
 
 function make_seq_list_by_filtered_data_loop(filtered_data) {
   let seq_list = filtered_data.reduce((comb_list, curr_ob) => {
-    // console.time("TIME: prettyseq");
+    console.time("TIME: prettyseq");
     let prettyseq = helpers.make_color_seq(curr_ob.seq);
-    // console.timeEnd("TIME: prettyseq");
+    console.timeEnd("TIME: prettyseq");
     let seq_tax_arr = get_long_tax_name(curr_ob);
     let seq_tax = seq_tax_arr.join(";");
     comb_list.push({
@@ -1448,7 +1448,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
       console.log("CCC1 clean_data");
-      console.log(clean_data[0])
+      console.log(clean_data[0]);
 
       console.time("TIME: loop through clean_data");
       let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
