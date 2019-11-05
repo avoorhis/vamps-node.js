@@ -953,8 +953,8 @@ function create_pcoa(ts, image_type, new_window) {
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
             clearInterval(myWaitVar);
-            var response = xmlhttp.responseText;
-            pcoa_div.innerHTML = response;
+            var data = JSON.parse(xmlhttp.response)
+            pcoa_div.innerHTML = data.html;
             if(image_type === '2d'){
               document.getElementById('pcoa_dnld_btn').disabled = false
             }else{
