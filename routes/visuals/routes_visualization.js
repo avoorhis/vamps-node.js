@@ -1201,7 +1201,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   //let ts   = myurl.query.ts;
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
-  let order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
+  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
   // let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project + '--' + DATASET_NAME_BY_DID[did1];
   // let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project + '--' + DATASET_NAME_BY_DID[did2];
 
@@ -1233,24 +1233,26 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   //DOUBLE
   //console.log(JSON.stringify(new_matrix))
-  new_matrix = helpers.sort_json_matrix(new_matrix,order);
-  let new_order = {};
-  if (order.orderby === 'alpha' ){
-    if (order.value === 'a'){
-      new_order.alpha_value = 'z';
-    } else {
-      new_order.alpha_value = 'a';
-    }
-    new_order.count_value = '';
-  }
-  else {
-    if (order.value === 'min'){
-      new_order.count_value = 'max';
-    } else {
-      new_order.count_value = 'min';
-    }
-    new_order.alpha_value = '';
-  }
+  new_matrix = helpers.sort_json_matrix(new_matrix, order);
+  let new_order = get_new_order_by_button(order);
+
+  // let new_order = {};
+  // if (order.orderby === 'alpha' ){
+  //   if (order.value === 'a'){
+  //     new_order.alpha_value = 'z';
+  //   } else {
+  //     new_order.alpha_value = 'a';
+  //   }
+  //   new_order.count_value = '';
+  // }
+  // else {
+  //   if (order.value === 'min'){
+  //     new_order.count_value = 'max';
+  //   } else {
+  //     new_order.count_value = 'min';
+  //   }
+  //   new_order.alpha_value = '';
+  // }
 
   let timestamp = +new Date();  // millisecs since the epoch!
   console.log('TS HM File',timestamp);
