@@ -1039,24 +1039,6 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   return pi;
 }
 
-// function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order}) {
-//   console.log('LoadDataFinishRequest in bar_single');
-//   let title = 'Taxonomic Data';
-//   if (pi.unit_choice === 'OTUs') {
-//     title = 'OTU Count Data';
-//   }
-//   res.render('visuals/user_viz_data/bar_single', {
-//     title: title,
-//     ts: timestamp,
-//     matrix: JSON.stringify(new_matrix),
-//     post_items: JSON.stringify(pi),
-//     bar_type: 'single',
-//     order: JSON.stringify(new_order),
-//     //html: html,
-//     user: req.user, hostname: req.CONFIG.hostname,
-//   });
-// }
-
 function make_new_matrix(req, pi, selected_did, order) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_single");
@@ -1185,44 +1167,8 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   }
 });
 
-
-//LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, url, bar_type}) {
-//   console.log('LoadDataFinishRequest in bar_single');
-//   let title = 'Taxonomic Data';
-//   if (pi.unit_choice === 'OTUs') {
-//     title = 'OTU Count Data';
-//   }
-//   res.render('visuals/user_viz_data/bar_single', {
-//     title: title,
-//     ts: timestamp,
-//     matrix: JSON.stringify(new_matrix),
-//     post_items: JSON.stringify(pi),
-//     bar_type: 'single',
-//     order: JSON.stringify(new_order),
-//     //html: html,
-//     user: req.user, hostname: req.CONFIG.hostname,
-//   });
-
-// function LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist) {
-//   console.log('LoadDataFinishRequest in bar_double');
-//   let title = 'Taxonomic Data';
-//   if (pi.unit_choice === 'OTUs'){
-//     title = 'OTU Count Data';
-//   }
-//   res.render('visuals/user_viz_data/bar_double', {
-//     title     : title,
-//     ts        : timestamp,
-//     matrix    : JSON.stringify(new_matrix),
-//     post_items: JSON.stringify(pi),
-//     bar_type  : 'double',
-//     order     : JSON.stringify(new_order),
-//     dist      : dist,
-//     user: req.user, hostname: req.CONFIG.hostname,
-//   });
-// }
-
 function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist = ""}) {
-  console.log('LoadDataFinishRequest in bar_single');
+  console.log('LoadDataFinishRequest in bar_' + bar_type);
   let title = 'Taxonomic Data';
   if (pi.unit_choice === 'OTUs') {
     title = 'OTU Count Data';
@@ -1244,7 +1190,6 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_ord
 // B A R - C H A R T  -- D O U B L E
 //
 // test: click on cell of distance heatmap
-// JSHint: This function's cyclomatic complexity is too high. (7) (W074)
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_double');
 
@@ -1254,126 +1199,29 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   let did2 = myurl.query.did2;
   let dist = myurl.query.dist;
   let metric = myurl.query.metric;
-  //let ts   = myurl.query.ts;
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  // let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project + '--' + DATASET_NAME_BY_DID[did1];
-  // let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project + '--' + DATASET_NAME_BY_DID[did2];
-
-  //let ds_items = pjds.split('--');
-
-  //console.log(ds1, ds2)
   let pi = make_pi([did1, did2], req, metric);
-  let write_file = false;  // DO NOT OVERWRITE The Matrix File
+
+  let overwrite_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_double");
-  const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, write_file);
+  const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new_from_bar_double");
 
   //DOUBLE
   //console.log(JSON.stringify(new_matrix))
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
+
   let new_order = get_new_order_by_button(order);
 
-  // let timestamp = +new Date();  // millisecs since the epoch!
-  // console.log('TS HM File', timestamp);
-  // if (pi.unit_choice !== 'OTUs') {
   let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
-  [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
-  // LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist);
+  write_seq_file_async(req, res, did1, timestamp);
+  write_seq_file_async(req, res, did2, timestamp);
+  // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
   let bar_type = "double";
   LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist});
-  // }
-
-
-  // LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
-  
-  // let filename1 = req.user.username + '_' + did1 + '_' + timestamp + '_sequences.json';
-  // let file_path1 = path.join('tmp', filename1);
-  // let filename2 = req.user.username + '_' + did2 + '_' + timestamp + '_sequences.json';
-  // let file_path2 = path.join('tmp', filename2);
-  // //console.log(file_path)
-  // let new_rows = {};
-  // new_rows[did1] = [];
-  // new_rows[did2] = [];
-  // //console.log(new_rows)
-  // // JSHint: This function has too many parameters. (6) (W072)
-  // let LoadDataFinishRequest = function (req, res, timestamp, new_matrix, new_order, dist) {
-  //   console.log('LoadDataFinishRequest in bar_double');
-  //   let title = 'Taxonomic Data';
-  //   if (pi.unit_choice === 'OTUs'){
-  //     title = 'OTU Count Data';
-  //   }
-  //   res.render('visuals/user_viz_data/bar_double', {
-  //     title     : title,
-  //     ts        : timestamp,
-  //     matrix    : JSON.stringify(new_matrix),
-  //     post_items: JSON.stringify(pi),
-  //     bar_type  : 'double',
-  //     order     : JSON.stringify(new_order),
-  //     dist      : dist,
-  //     user: req.user, hostname: req.CONFIG.hostname,
-  //   });
-  // };
-  // if (pi.unit_choice === 'OTUs') {
-  //   LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
-  // }
-  // else {
-  //   connection.query(QUERY.get_sequences_perDID(did1 + "','" + did2, pi.unit_choice), function mysqlSelectSeqsPerDID(err, rows){
-  //     if (err)  {
-  //       console.log('Query error: ' + err);
-  //       console.log(err.stack);
-  //       res.send(err);
-  //     }
-  //     else {
-  //       //console.log(rows)
-  //       // should write to a file? Or res.render here?
-  //
-  //       for (let s in rows) {
-  //         let did = rows[s].dataset_id;
-  //
-  //         //console.log(did)
-  //         //rows[s].seq = rows[s].seq.toString('utf8')
-  //         let seq = rows[s].seq.toString('utf8');
-  //         let seq_cnt = rows[s].seq_count;
-  //         let gast = rows[s].gast_distance;
-  //         let classifier = rows[s].classifier;
-  //         let d_id = rows[s].domain_id;
-  //         let p_id = rows[s].phylum_id;
-  //         let k_id = rows[s].klass_id;
-  //         let o_id = rows[s].order_id;
-  //         let f_id = rows[s].family_id;
-  //         let g_id = rows[s].genus_id;
-  //         let sp_id = rows[s].species_id;
-  //         let st_id = rows[s].strain_id;
-  //         new_rows[did].push({seq:seq, seq_count:seq_cnt, gast_distance:gast, classifier:classifier, domain_id:d_id, phylum_id:p_id, klass_id:k_id, order_id:o_id, family_id:f_id, genus_id:g_id, species_id:sp_id, strain_id:st_id});
-  //         //new_rows[did].seq = rows[s].seq.toString('utf8')
-  //       }
-  //       // order by seq_count DESC
-  //       //console.log(new_rows)
-  //       new_rows[did1].sort(function sortByCount(a, b) {
-  //         return b.seq_count - a.seq_count;
-  //       });
-  //       new_rows[did2].sort(function sortByCount(a, b) {
-  //         return b.seq_count - a.seq_count;
-  //       });
-  //
-  //       fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function writeFile(err) {
-  //         if (err) return console.log(err);
-  //         console.log('wrote file > '+file_path1);
-  //
-  //
-  //         fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function writeFile(err) {
-  //           if (err) return console.log(err);
-  //           console.log('wrote file > '+file_path2);
-  //
-  //           LoadDataFinishRequest(req, res, timestamp, new_matrix, new_order, dist);
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
 });
 
 //
