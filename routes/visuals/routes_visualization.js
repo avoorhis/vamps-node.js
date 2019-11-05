@@ -1250,6 +1250,7 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
     clean_data = JSON.parse(data);
   } catch (e) {
     console.log(e);
+    // TODO: Andy, how to test this?
     res.render('visuals/user_viz_data/sequences', {
       title: 'Sequences',
       ds: pjds,
@@ -1286,7 +1287,6 @@ function filter_data_by_last_taxon(search_tax, clean_data) {
   let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
   return filtered_data;
 }
-
 
 function get_long_tax_name(curr_ob) {
   return Object.keys(curr_ob).reduce((long_name_arr, key) => {
@@ -1337,12 +1337,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let search_tax = myurl.query.taxa;
   let seqs_filename = myurl.query.filename;
 
-  // let d,p,k,o,f,g,sp,st;
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
-  // seqs_filename = null;
   if (seqs_filename){
-    //console.log('found filename',seqs_filename)
+    //console.log('found filename', seqs_filename)
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
     fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
@@ -1364,6 +1362,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     }.bind());
   }
   else {
+    // TODO: Andy, how to test this?
     // render_seq(req, res, pjds, search_tax, '', 'Error Retrieving Sequences');
     res.render('visuals/user_viz_data/sequences', {
       title: 'Sequences',
@@ -1374,7 +1373,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       user: req.user, hostname: req.CONFIG.hostname,
     });
   }
-  //   });
 });
 
 /*
