@@ -736,13 +736,25 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
-      let html = "** <a href='/static_base/tmp/" + dir_name + "/index.html' target='_blank'>Open Emperor</a> **"
+      
+      var index_file_name = dir_name+ '/index.html'
+      let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **"
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
       html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
 
-      return;
+      //return;
+      
+      
+      var data = {}
+      data.html = html
+      data.filename = index_file_name   // returns data and local file_name to be written to
+      res.json(data)
+      return
+
+      
+      
     }
     else{
       //console.log('ERROR');
