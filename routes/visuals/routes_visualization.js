@@ -1039,23 +1039,23 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   return pi;
 }
 
-function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order}) {
-  console.log('LoadDataFinishRequest in bar_single');
-  let title = 'Taxonomic Data';
-  if (pi.unit_choice === 'OTUs') {
-    title = 'OTU Count Data';
-  }
-  res.render('visuals/user_viz_data/bar_single', {
-    title: title,
-    ts: timestamp,
-    matrix: JSON.stringify(new_matrix),
-    post_items: JSON.stringify(pi),
-    bar_type: 'single',
-    order: JSON.stringify(new_order),
-    //html: html,
-    user: req.user, hostname: req.CONFIG.hostname,
-  });
-}
+// function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order}) {
+//   console.log('LoadDataFinishRequest in bar_single');
+//   let title = 'Taxonomic Data';
+//   if (pi.unit_choice === 'OTUs') {
+//     title = 'OTU Count Data';
+//   }
+//   res.render('visuals/user_viz_data/bar_single', {
+//     title: title,
+//     ts: timestamp,
+//     matrix: JSON.stringify(new_matrix),
+//     post_items: JSON.stringify(pi),
+//     bar_type: 'single',
+//     order: JSON.stringify(new_order),
+//     //html: html,
+//     user: req.user, hostname: req.CONFIG.hostname,
+//   });
+// }
 
 function make_new_matrix(req, pi, selected_did, order) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
@@ -1180,41 +1180,62 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   if (pi.unit_choice !== 'OTUs') {
     let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
     write_seq_file_async(req, res, selected_did, timestamp);
-    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order});
+    let bar_type = 'single';
+    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type});
   }
 });
 
-function LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist) {
-  console.log('LoadDataFinishRequest in bar_double');
-  let title = 'Taxonomic Data';
-  if (pi.unit_choice === 'OTUs'){
-    title = 'OTU Count Data';
-  }
-  res.render('visuals/user_viz_data/bar_double', {
-    title     : title,
-    ts        : timestamp,
-    matrix    : JSON.stringify(new_matrix),
-    post_items: JSON.stringify(pi),
-    bar_type  : 'double',
-    order     : JSON.stringify(new_order),
-    dist      : dist,
-    user: req.user, hostname: req.CONFIG.hostname,
-  });
-}
-function LoadDataSnglFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order}) {
+
+//LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, url, bar_type}) {
+//   console.log('LoadDataFinishRequest in bar_single');
+//   let title = 'Taxonomic Data';
+//   if (pi.unit_choice === 'OTUs') {
+//     title = 'OTU Count Data';
+//   }
+//   res.render('visuals/user_viz_data/bar_single', {
+//     title: title,
+//     ts: timestamp,
+//     matrix: JSON.stringify(new_matrix),
+//     post_items: JSON.stringify(pi),
+//     bar_type: 'single',
+//     order: JSON.stringify(new_order),
+//     //html: html,
+//     user: req.user, hostname: req.CONFIG.hostname,
+//   });
+
+// function LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist) {
+//   console.log('LoadDataFinishRequest in bar_double');
+//   let title = 'Taxonomic Data';
+//   if (pi.unit_choice === 'OTUs'){
+//     title = 'OTU Count Data';
+//   }
+//   res.render('visuals/user_viz_data/bar_double', {
+//     title     : title,
+//     ts        : timestamp,
+//     matrix    : JSON.stringify(new_matrix),
+//     post_items: JSON.stringify(pi),
+//     bar_type  : 'double',
+//     order     : JSON.stringify(new_order),
+//     dist      : dist,
+//     user: req.user, hostname: req.CONFIG.hostname,
+//   });
+// }
+
+function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist = ""}) {
   console.log('LoadDataFinishRequest in bar_single');
   let title = 'Taxonomic Data';
   if (pi.unit_choice === 'OTUs') {
     title = 'OTU Count Data';
   }
-  res.render('visuals/user_viz_data/bar_single', {
+  let url = 'visuals/user_viz_data/bar_' + bar_type;
+  res.render(url, {
     title: title,
     ts: timestamp,
     matrix: JSON.stringify(new_matrix),
     post_items: JSON.stringify(pi),
-    bar_type: 'single',
+    bar_type: bar_type,
     order: JSON.stringify(new_order),
-    //html: html,
+    dist: dist,
     user: req.user, hostname: req.CONFIG.hostname,
   });
 }
@@ -1260,7 +1281,9 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   // if (pi.unit_choice !== 'OTUs') {
   let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
   [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
-  LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist);
+  // LoadDataDblFinishRequestFunc(req, res, pi, timestamp, new_matrix, new_order, dist);
+  let bar_type = "double";
+  LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist});
   // }
 
 
