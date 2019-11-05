@@ -1731,8 +1731,9 @@ function create_phyloseq(ts, code, new_window) {
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           var response = xmlhttp.responseText;
-           phylo_div.innerHTML = response;
+           //var response = xmlhttp.responseText;
+           var data = JSON.parse(xmlhttp.response)
+           phylo_div.innerHTML = data.html;
            if(code == 'bar'){
               document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
             }else if(code == 'heatmap'){
