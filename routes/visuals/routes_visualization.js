@@ -591,9 +591,8 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 //   let image_file = ts+'_pcoa.pdf';
 //   let biom_file_name = ts+'_count_matrix.biom';
 //   let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
-//   let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
+
 //   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-//   let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 //
 //   let md1 = req.body.md1 || "Project";
 //   let md2 = req.body.md2 || "Description";
@@ -884,59 +883,60 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let dist_metric = req.body.metric;
   let plot_type = req.body.plot_type;
-  let image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
+  let svgfile_name = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
+  let svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);
   let phy,md1,md2,ordtype,maxdist,script;
 
-  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.PROCESS_DIR;
   let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
   if (fill === 'Klass'){
     fill = 'Class';
   }
-  let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+  
+  //let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let html = '';
   //console.log(biom_file)
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, ts ],
+    args :       [ tmp_file_path, ts ],
   };
   if (plot_type === 'bar'){
     script = 'phyloseq_bar.R';
     phy = req.body.phy;
-    options.args = options.args.concat([image_file, phy, fill]);
+    options.args = options.args.concat([svgfile_name, phy, fill]);
   }else if (plot_type === 'heatmap'){
     script = 'phyloseq_heatmap.R';
     //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
     phy = req.body.phy;
     md1 = req.body.md1;
     ordtype = req.body.ordtype;
-    options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
+    options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
   }else if (plot_type === 'network'){
     script = 'phyloseq_network.R';
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
     maxdist = req.body.maxdist || "0.3";
-    options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
+    options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
   }else if (plot_type === 'ord'){
     script = 'phyloseq_ord.R';
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
     ordtype = req.body.ordtype || "PCoA";
-    options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
+    options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
   }else if (plot_type === 'tree'){
     script = 'phyloseq_tree.R';
     md1 = req.body.md1 || "Description";
-    options.args = options.args.concat([image_file, dist_metric, md1]);
+    options.args = options.args.concat([svgfile_name, dist_metric, md1]);
   }
   // else {
   //   //ERROR
   // }
-  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
   console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
     env:{'PATH':req.CONFIG.PATH},
     detached: true,
-    //stdio: [ 'ignore', null, log ]
+    //stdio: [ 'ignore', null, null ]
     stdio: 'pipe'  // stdin, stdout, stderr
   });
   let stdout = '';
@@ -951,43 +951,49 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   });
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
+    console.log('looking for svgfile_name: ' + svgfile_name);
+    console.log('looking for svgfile_path: ' + svgfile_path);
     //distance_matrix = JSON.parse(output);
     //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
-      console.log('last: ' + lastline);
-      if (lastline.toString().substring(0,5) === 'ERROR'){
-        console.log('ERROR-1');
-        html = lastline;
-      } else {
+      // console.log('last: ' + lastline);
+//       if (lastline.toString().substring(0,5) === 'ERROR'){
+//         console.log('ERROR-1');
+//         html = lastline;
+//       } else {
 
-        //   let image = '/'+ts+'_heatmap.pdf';
-        // //console.log(image)
-        // html = "<div id='pdf'>";
-        // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-        // html += " <p>ERROR in loading pdf file</p>";
-        // html += "</object></div>";
-        // res.send(html);
+        
+            
+            fs.readFile(svgfile_path, 'utf8', function(err, contents){
+                if(err){ res.send('ERROR reading file')}
 
-        // return;
+                //console.log(contents)
+                var data = {}
+                data.html = contents
+                data.filename = svgfile_name   // returns data and local file_name to be written to
+                res.json(data)
+                return
+
+            })
 
 
-        if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-          //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-          html = "<div id='pdf'>";
-          html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-          html += " <p>ERROR in loading pdf file</p>";
-          html += "</object></div>";
-        } else {
-          html = "<img src='/"+image_file+"'  >";
-        }
-      }
+        // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+//           //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
+//           html = "<div id='pdf'>";
+//           html += "<object data='/"+svgfile_name+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+//           html += " <p>ERROR in loading pdf file</p>";
+//           html += "</object></div>";
+//         } else {
+//           html = "<img src='/"+svgfile_name+"'  >";
+//         }
+      //}
 
     } else {
       console.log('ERROR-2');
       html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
     }
     //console.log(html);
-    res.send(html);
+    //res.send(html);
 
   });
 
@@ -1602,9 +1608,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   let metric = req.body.metric;
   // let biom_file_name = ts + '_count_matrix.biom';
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-  // path.join(req.CONFIG.PROCESS_DIR, 'tmp', biom_file_name);
-  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
-
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  
   let pjds_lookup = {};
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
@@ -1613,16 +1618,15 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   }
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', pwd, '--prefix', ts],
+    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', ts],
   };
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
-  let log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
   let cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
     detached: true,
-    stdio: [ 'ignore', null, log ]
+    stdio: [ 'ignore', null, null ]
   });  // stdin, stdout, stderr
 
   //let heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
@@ -1652,7 +1656,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
         let ascii_file = ts + '_' + metric + '_tree.txt';
-        let ascii_file_path = path.join(pwd,'tmp',ascii_file);
+        let ascii_file_path = path.join(tmp_file_path,ascii_file);
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
           if (err) {
             return console.log(err);
@@ -1738,11 +1742,9 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   let ts = req.session.ts;
   let test_split_file_name = ts + '_distance_mh_bc.tsv';
   let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-  let pwd = req.CONFIG.PROCESS_DIR || req.CONFIG.TMP_FILES;
-
-  // let biom_file_name = ts + '_count_matrix.biom';
-  // let biom_file = path.join(pwd, 'tmp', biom_file_name);
+  
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let FinishSplitFile = function(req, res){
     let ts = req.session.ts;
@@ -1750,7 +1752,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     let suffix = req.body.split_distance_choice;
     //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
     let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-    let distmtx_file = path.join(config.PROCESS_DIR,'tmp', distmtx_file_name);
+    let distmtx_file = path.join(tmp_file_path, distmtx_file_name);
     //console.log(distmtx_file)
     fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
       if (err) {
@@ -1768,7 +1770,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
         let outfile_name = ts + '-dheatmap-api.html';
-        let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+        let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
 
         let data = {};
         data.html = html;
@@ -1788,13 +1790,12 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', pwd, '--prefix', ts ],
+    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', ts ],
   };
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
   let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
     detached: true,
-    //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
     stdio: 'pipe'  // stdin, stdout, stderr
   });
 

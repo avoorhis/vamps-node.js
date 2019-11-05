@@ -875,7 +875,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         //             stdio: 'pipe'  // stdin, stdout, stderr
         //     } );
             var blast_process = exec( blast_options.args.join(' '), (e, stdout, stderr)=> {
-            
+
                 if (e) {
                     console.error(e);
                     return
