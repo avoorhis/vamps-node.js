@@ -998,15 +998,32 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //
 
 //
-// B A R - C H A R T  -- S I N G L E
+// BAR-CHART -- SINGLE
 //
-// test: B A R - C H A R T  -- S I N G L E - (click on a bar)
+// test: BAR-CHART -- SINGLE - (click on a bar)
 
-function make_pi(selected_did, req) {
+// function get_selected_pjds() {
+//   pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
+//   pi.no_of_datasets=2;
+// }
+
+function get_chosen_datasets(selected_did_arr) {
+  if (!helpers.is_array(selected_did_arr)) {
+    selected_did_arr = [selected_did_arr];
+  }
+  return selected_did_arr.reduce((res_arr, did) => {
+    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+    res_arr.push({did: did, name: selected_pjds});
+    return res_arr;
+  }, []);
+}
+
+function make_pi(selected_did_arr, req, metric = undefined) {
   let pi = {};
-  let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-  pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
-  pi.no_of_datasets = 1;
+  pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
+  // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+  // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
+  pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = req.session.ts;
   pi.unit_choice = req.session.unit_choice;
   pi.min_range = req.session.min_range;
@@ -1015,6 +1032,10 @@ function make_pi(selected_did, req) {
   pi.tax_depth = req.session.tax_depth;
   pi.include_nas = req.session.include_nas;
   pi.domains = req.session.domains;
+  if (metric) {
+    pi.selected_distance = metric;
+  }
+
   return pi;
 }
 
@@ -1151,7 +1172,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
 
-  let pi = make_pi(selected_did, req);
+  let pi = make_pi([selected_did], req);
   let new_matrix = make_new_matrix(req, pi, selected_did, order);
 
   let new_order = get_new_order_by_button(order);
@@ -1181,25 +1202,25 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby:orderby, value:value}; // orderby: alpha: a,z or count: min,max
-  let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project + '--' + DATASET_NAME_BY_DID[did1];
-  let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project + '--' + DATASET_NAME_BY_DID[did2];
+  // let ds1  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did1]].project + '--' + DATASET_NAME_BY_DID[did1];
+  // let ds2  = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did2]].project + '--' + DATASET_NAME_BY_DID[did2];
 
   //let ds_items = pjds.split('--');
 
   //console.log(ds1, ds2)
-
-  let pi = {};
-  pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
-  pi.no_of_datasets=2;
-  pi.ts = req.session.ts;
-  pi.unit_choice = req.session.unit_choice;
-  pi.min_range = req.session.min_range;
-  pi.max_range = req.session.max_range;
-  pi.normalization = req.session.normalization;
-  pi.tax_depth = req.session.tax_depth;
-  pi.include_nas = req.session.include_nas;
-  pi.domains = req.session.domains;
-  pi.selected_distance = metric;
+  let pi = make_pi([did1, did2], req, metric);
+  // let pi = {};
+  // pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
+  // pi.no_of_datasets=2;
+  // pi.ts = req.session.ts;
+  // pi.unit_choice = req.session.unit_choice;
+  // pi.min_range = req.session.min_range;
+  // pi.max_range = req.session.max_range;
+  // pi.normalization = req.session.normalization;
+  // pi.tax_depth = req.session.tax_depth;
+  // pi.include_nas = req.session.include_nas;
+  // pi.domains = req.session.domains;
+  // pi.selected_distance = metric;
   let write_file = false;  // DO NOT OVERWRITE The Matrix File
   // let new_matrix = MTX.get_biom_matrix(req, pi, write_file);
   console.time("TIME: biom_matrix_new_from_bar_double");
