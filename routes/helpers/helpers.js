@@ -2434,7 +2434,8 @@ exports.retrieve_needed_constants = function(cnsts, view)
     else if(view === 'visuals_index'){  // visuals_index
         obj.TARGETS = cnsts.TARGETS;
         obj.PORTALS = cnsts.PORTALS;
-    }else if(view === 'export'){
+    }
+    else if(view === 'export'){
         obj.DOMAINS = cnsts.DOMAINS;
     }
     return obj;

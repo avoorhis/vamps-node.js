@@ -371,21 +371,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // TODO: DRY. Duplicate with another "res.render('visuals/visuals_index'" 3 times alltogether
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   render_visuals_index(res, req, needed_constants);
-  // res.render('visuals/visuals_index', {
-  //   title       : 'VAMPS: Select Datasets',
-  //   subtitle    : 'Dataset Selection Page',
-  //   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-  //   constants   : JSON.stringify(needed_constants),
-  //   md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-  //   md_names    : AllMetadataNames,
-  //   filtering   : 0,
-  //   portal_to_show : '',
-  //   data_to_open: JSON.stringify(DATA_TO_OPEN),
-  //   user        : req.user,
-  //   hostname    : req.CONFIG.hostname,
-  //
-  // });
-});
+  });
 
 // test: show page
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
@@ -413,21 +399,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
   let needed_constants = C;
   render_visuals_index(res, req, needed_constants);
-  // res.render('visuals/visuals_index', {
-  //   title       : 'VAMPS: Select Datasets',
-  //   subtitle    : 'Dataset Selection Page',
-  //   proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-  //   constants   : JSON.stringify(C),
-  //   md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-  //   md_names    : AllMetadataNames,
-  //   filtering   : 0,
-  //   portal_to_show : '',
-  //   data_to_open: JSON.stringify(DATA_TO_OPEN),
-  //   user        : req.user,
-  //   hostname    : req.CONFIG.hostname,
-  //
-  // });
-});
+  });
 
 //
 //
