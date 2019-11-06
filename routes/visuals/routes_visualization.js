@@ -349,20 +349,6 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   METADATA  = {};
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
-  // if (req.body.data_to_open) {
-  //   // open many projects
-  //   let obj = JSON.parse(req.body.data_to_open);
-  //   for (let pj in obj){
-  //     let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-  //     DATA_TO_OPEN[pid] = obj[pj];
-  //   }
-  //   //console.log('got data to open '+data_to_open)
-  // } else if (req.body.project){
-  //   // open whole project
-  //   DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-  // }
-  // console.log('DATA_TO_OPEN');
-  // console.log(DATA_TO_OPEN);
 
   // TODO: DRY. Duplicate with another "res.render('visuals/visuals_index'" 3 times alltogether
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
@@ -405,24 +391,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   METADATA  = {};
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
-  // DATA_TO_OPEN = {};
-  // if (req.body.data_to_open) {// TODO: DRY, the similar peace above
-  //   // open many projects
-  //   let obj = JSON.parse(req.body.data_to_open);
-  //   for (let pj in obj){
-  //     let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-  //     DATA_TO_OPEN[pid] = obj[pj];
-  //   }
-  //   //console.log('got data to open '+data_to_open)
-  // }
-  // else if (req.body.project) {
-  //   // open whole project
-  //   DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-  // }
-  // console.log('DATA_TO_OPEN');
-  // console.log(DATA_TO_OPEN);
-
-
+  
   res.render('visuals/visuals_index', {
     title       : 'VAMPS: Select Datasets',
     subtitle    : 'Dataset Selection Page',
