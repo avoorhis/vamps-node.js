@@ -24,32 +24,7 @@ const spawn = require('child_process').spawn;
 // const xml_convert = require('xml-js');
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
-// const R = require('ramda');
-// const R_ext = require('ramda-extension');
 
-// function get_process_dir(req) {
-//   return req.CONFIG.PROCESS_DIR;
-// }
-//
-// function get_user_file_path(req) {
-//   const user_file_path = req.CONFIG.USER_FILES_BASE;
-//   return path.join(user_file_path, req.body.user, req.body.filename);
-// }
-//
-// function get_json_files_prefix(req) {
-//   return path.join(req.CONFIG.JSON_FILES_BASE,
-//     NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
-// }
-//
-// function get_biom_file_path(req, ts) {
-//   let biom_file_name = ts + '_count_matrix.biom';
-//   return path.join(req.CONFIG.TMP_FILES,  biom_file_name);
-// }
-//
-// function get_tmp_file_path(req) {
-//   return req.CONFIG.TMP_FILES;
-// }
-//
 function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
   if (req.CONFIG.site === 'vamps') {
     console.log(msg_prod);
@@ -330,6 +305,25 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 /*
  * GET visualization page.
  */
+
+function get_data_to_open(req) {
+  let DATA_TO_OPEN = {};
+  if (req.body.data_to_open) {
+    // open many projects
+    let obj = JSON.parse(req.body.data_to_open);
+    for (let pj in obj){
+      let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+      DATA_TO_OPEN[pid] = obj[pj];
+    }
+    //console.log('got data to open '+data_to_open)
+  } else if (req.body.project){
+    // open whole project
+    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+  }
+  console.log('DATA_TO_OPEN');
+  console.log(DATA_TO_OPEN);
+  return DATA_TO_OPEN;
+}
 // test: first page
 router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   console.log('in GET visuals_index');
@@ -349,26 +343,28 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
+  // TODO: DRY. Duplicate SHOW_DATA = ALL_DATASETS;... console.log(DATA_TO_OPEN); in router.post('/visuals_index'
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = {};
-  if (req.body.data_to_open){
-    // open many projects
-    let obj = JSON.parse(req.body.data_to_open);
-    for (let pj in obj){
-      let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-      DATA_TO_OPEN[pid] = obj[pj];
-    }
-    //console.log('got data to open '+data_to_open)
-  } else if (req.body.project){
-    // open whole project
-    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-  }
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
+  DATA_TO_OPEN = get_data_to_open(req);
+  // if (req.body.data_to_open) {
+  //   // open many projects
+  //   let obj = JSON.parse(req.body.data_to_open);
+  //   for (let pj in obj){
+  //     let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+  //     DATA_TO_OPEN[pid] = obj[pj];
+  //   }
+  //   //console.log('got data to open '+data_to_open)
+  // } else if (req.body.project){
+  //   // open whole project
+  //   DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+  // }
+  // console.log('DATA_TO_OPEN');
+  // console.log(DATA_TO_OPEN);
 
+  // TODO: DRY. Duplicate with another "res.render('visuals/visuals_index'" 3 times alltogether
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   res.render('visuals/visuals_index', {
     title       : 'VAMPS: Select Datasets',
@@ -408,22 +404,23 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = {};
-  if (req.body.data_to_open) {// TODO: DRY, the similar peace above
-    // open many projects
-    let obj = JSON.parse(req.body.data_to_open);
-    for (let pj in obj){
-      let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
-      DATA_TO_OPEN[pid] = obj[pj];
-    }
-    //console.log('got data to open '+data_to_open)
-  }
-  else if (req.body.project) {
-    // open whole project
-    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-  }
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
+  DATA_TO_OPEN = get_data_to_open(req);
+  // DATA_TO_OPEN = {};
+  // if (req.body.data_to_open) {// TODO: DRY, the similar peace above
+  //   // open many projects
+  //   let obj = JSON.parse(req.body.data_to_open);
+  //   for (let pj in obj){
+  //     let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+  //     DATA_TO_OPEN[pid] = obj[pj];
+  //   }
+  //   //console.log('got data to open '+data_to_open)
+  // }
+  // else if (req.body.project) {
+  //   // open whole project
+  //   DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+  // }
+  // console.log('DATA_TO_OPEN');
+  // console.log(DATA_TO_OPEN);
 
 
   res.render('visuals/visuals_index', {
@@ -533,6 +530,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   dendrogram_process.stdout.on('data',  function dendrogramProcessStdout(data) {
     stdout += data.toString();
   });
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
   dendrogram_process.on('close',  function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
     let lines = [];
@@ -736,25 +734,22 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   pcoa_process.on('close', function pcoaProcessOnClose(code) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
-      
-      var index_file_name = dir_name+ '/index.html'
-      let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **"
+
+      var index_file_name = dir_name + '/index.html';
+      let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
       html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
 
       //return;
-      
-      
-      var data = {}
-      data.html = html
-      data.filename = index_file_name   // returns data and local file_name to be written to
-      res.json(data)
-      return
 
-      
-      
+
+      var data = {};
+      data.html = html;
+      data.filename = index_file_name ;  // returns data and local file_name to be written to
+      res.json(data);
+      return;
     }
     else{
       //console.log('ERROR');
@@ -886,7 +881,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: choose phylum, "Phyloseq Bars (R/svg)"
-// TODO: JSHint: This function's cyclomatic complexity is too high. (15) (W074)
+// TODO: JSHint: This function's cyclomatic complexity is too high. (14) (W074)
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
   //console.log(req.body)
@@ -903,7 +898,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   if (fill === 'Klass'){
     fill = 'Class';
   }
-  
+
   //let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let html = '';
@@ -916,14 +911,16 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     script = 'phyloseq_bar.R';
     phy = req.body.phy;
     options.args = options.args.concat([svgfile_name, phy, fill]);
-  }else if (plot_type === 'heatmap'){
+  }
+  else if (plot_type === 'heatmap'){
     script = 'phyloseq_heatmap.R';
     //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
     phy = req.body.phy;
     md1 = req.body.md1;
     ordtype = req.body.ordtype;
     options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
-  }else if (plot_type === 'network'){
+  }
+  else if (plot_type === 'network'){
     script = 'phyloseq_network.R';
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
@@ -946,7 +943,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
   console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
-    env:{'PATH':req.CONFIG.PATH},
+    env: {'PATH': req.CONFIG.PATH},
     detached: true,
     //stdio: [ 'ignore', null, null ]
     stdio: 'pipe'  // stdin, stdout, stderr
@@ -957,6 +954,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     lastline = data;
     stdout += data;
   });
+
   let stderr = '';
   phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
     stderr += data;
@@ -974,22 +972,22 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //         html = lastline;
 //       } else {
 
-        
-            
-            fs.readFile(svgfile_path, 'utf8', function(err, contents){
-                if(err){ res.send('ERROR reading file')}
-
-                //console.log(contents)
-                var data = {}
-                data.html = contents
-                data.filename = svgfile_name   // returns data and local file_name to be written to
-                res.json(data)
-                return
-
-            })
 
 
-        // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+      fs.readFile(svgfile_path, 'utf8', function(err, contents){
+        if(err){ res.send('ERROR reading file')}
+
+        //console.log(contents)
+        var data = {};
+        data.html = contents;
+        data.filename = svgfile_name  ; // returns data and local file_name to be written to
+        res.json(data);
+        return;
+
+      });
+
+
+      // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
 //           //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
 //           html = "<div id='pdf'>";
 //           html += "<object data='/"+svgfile_name+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
@@ -1057,6 +1055,7 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   return pi;
 }
 
+// TODO: JSHint: This function has too many parameters. (4) (W072)
 function make_new_matrix(req, pi, selected_did, order) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_single");
@@ -1091,7 +1090,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
       let did = item.dataset_id;
       // ob[did] is the same as new_rows[selected_did]
       ob[did].push({
-        seq: item.seq.toString('utf8'),
+        seq: item.seq.toString(),
         seq_count: item.seq_count,
         gast_distance: item.gast_distance,
         classifier: item.classifier,
@@ -1619,7 +1618,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   // let biom_file_name = ts + '_count_matrix.biom';
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  
+
   let pjds_lookup = {};
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
@@ -1717,8 +1716,8 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   console.log(req.body);
 
   let ts = req.session.ts;
-  let distmtx_file_name = ts+'_distance.json';
-  let distmtx_file = path.join(config.PROCESS_DIR,'tmp',distmtx_file_name);
+  let distmtx_file_name = ts + '_distance.json';
+  let distmtx_file = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
   //console.log(distmtx_file)
   let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')); // function (err, distance_matrix) {
 
@@ -1732,7 +1731,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   //console.log(html)
   let outfile_name = ts + '-dheatmap-api.html';
-  let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
+  // let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
   //console.log('outfile_path:',outfile_path)
   //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
   //console.log(result)
@@ -1752,7 +1751,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   let ts = req.session.ts;
   let test_split_file_name = ts + '_distance_mh_bc.tsv';
   let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
-  
+
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
@@ -1780,6 +1779,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
         let outfile_name = ts + '-dheatmap-api.html';
+        // TODO: Unused variable outfile_path
         let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
 
         let data = {};
@@ -1789,9 +1789,9 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         //res.send(outfile_name)
         res.json(data);
       }
-
     });
   };
+
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
     FinishSplitFile(req, res);
@@ -1802,9 +1802,10 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', ts ],
   };
+
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
   let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+    env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
     detached: true,
     stdio: 'pipe'  // stdin, stdout, stderr
   });
@@ -1817,6 +1818,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     stdout += data;
 
   });
+
   let stderr = '';
   split_process.stderr.on('data', function splitsProcessStderr(data) {
     console.log('stderr: ' + data);
@@ -2034,6 +2036,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
   }
 
   PROJECT_FILTER.target = gene_target;
+  //TODO: projects_to_filter is not used here
   let projects_to_filter = [];
   if (portal) {
     projects_to_filter = helpers.get_portal_projects(req, portal);
@@ -2064,6 +2067,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   }
 
   PROJECT_FILTER.portal = select_box_portal;
+  //TODO: projects_to_filter is not used here
   let projects_to_filter = [];
   if (portal){
     projects_to_filter = helpers.get_portal_projects(req, portal);
@@ -2127,6 +2131,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   PROJECT_FILTER['metadata'+num] = q;
   //PROJECT_FILTER.metadata_num = num
 
+  //TODO: DRY
   let projects_to_filter = "";
   if (portal){
     projects_to_filter = helpers.get_portal_projects(req, portal);
