@@ -174,27 +174,10 @@ function get_dataset_ids(req) {
   return dataset_ids;
 }
 
-function LoadFailureRequest(req, res, needed_constants) {
-  // return to
-  res.render('visuals/visuals_index', {
-    title       : 'VAMPS: Select Datasets',
-    subtitle    : 'Dataset Selection Page',
-    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-    constants   : JSON.stringify(needed_constants),
-    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-    md_names    : AllMetadataNames,
-    filtering   : 0,
-    portal_to_show : '',
-    data_to_open: JSON.stringify(DATA_TO_OPEN),
-    user        : req.user,
-    hostname    : req.CONFIG.hostname,
-  });
-}
-
 function no_data(req, res, needed_constants) {
   console.log('redirecting back -- no data selected');
   req.flash('fail', 'Select Some Datasets');
-  LoadFailureRequest(req, res, needed_constants);
+  render_visuals_index(req, res, needed_constants);
 }
 
 function test_if_json_file_exists(req, i, dataset_ids, did) {
@@ -238,7 +221,6 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
-  let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   /*
   * I call this here and NOT in view_selection
   A user can jump here directly from geo_search
@@ -250,6 +232,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
+  let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
     no_data(req, res, needed_constants);
     return;
@@ -338,7 +321,6 @@ function render_visuals_index(res, req, needed_constants = C) {
     data_to_open: JSON.stringify(DATA_TO_OPEN),
     user        : req.user,
     hostname    : req.CONFIG.hostname,
-
   });
 }
 
@@ -368,7 +350,6 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
 
-  // TODO: DRY. Duplicate with another "res.render('visuals/visuals_index'" 3 times alltogether
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   render_visuals_index(res, req, needed_constants);
   });
@@ -415,7 +396,6 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     selected_dataset_order.names.push(pjds);
     selected_dataset_order.ids.push(did);
   }
-
 
   console.log(req.session);
   res.render('visuals/reorder_datasets', {
