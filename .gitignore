@@ -88,3 +88,4 @@ venv
 .idea/
 newrelic.js
 /.clinic/
+Rplots.pdf

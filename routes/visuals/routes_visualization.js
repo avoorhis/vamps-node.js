@@ -837,9 +837,9 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   if (fill === 'Klass'){
     fill = 'Class';
   }
-
+  // ts = "ashipunova_1573072637513";
   let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
-  svgfile_name = "ashipunova_1573072637513_phyloseq_bar_82098"  + '.svg'
+  // svgfile_name = "ashipunova_1573072637513_phyloseq_bar_82098"  + '.svg';
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let svgfile_path = path.join(tmp_file_path, svgfile_name);
   let html = '';
