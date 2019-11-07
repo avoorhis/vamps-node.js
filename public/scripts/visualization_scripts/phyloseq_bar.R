@@ -8,9 +8,9 @@ prefix   <- args[2]
 out_file <- args[3]
 phy   	 <- args[4]
 rank     <- args[5]
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+biom_file <- paste(tmp_path, '/', prefix, '_count_matrix.biom', sep='')
+tax_file <- paste(tmp_path, '/', prefix, '_taxonomy.txt', sep='')
+map_file <- paste(tmp_path, '/', prefix, '_metadata.txt', sep='')
 
 
 #biom_file<- "andy_1443630794574_count_matrix.biom"
@@ -19,17 +19,15 @@ map_file <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 library(phyloseq)
 library(ggplot2)
-TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
+TAX <- as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
 OTU <- import_biom(biom_file)
 MAP <- import_qiime_sample_data(map_file)
 TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
-physeq <- phyloseq(OTU,TAX,MAP)
+physeq <- phyloseq(OTU, TAX, MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
-
-
-ds_count<-ncol(OTU)
+ds_count <- ncol(OTU)
 w = floor(ds_count/5)
 print(w)
 if(w <= 7){ w = 10 }
@@ -44,22 +42,25 @@ print(w)
 # }
 theme_set(theme_bw())
 
+gp.ch = subset_taxa(physeq, Phylum == phy)
+plot_title = paste('Phylum:', phy, sep=' ')
+tryCatch({ 
+  plot_bar(gp.ch, fill = rank, title = plot_title)
+}, error = function(err) {
+  cat(paste("ERROR -- no data. Try using more data or deeper taxa\n",sep=''))
+  q()
+},
+finally = { 
 
-	out_file = paste(tmp_path,'/',out_file,sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+})
 
-	gp.ch = subset_taxa(physeq, Phylum == phy)
-	plot_title = paste('Phylum:',phy, sep=' ')
-	    tryCatch({ 
-			  plot_bar(gp.ch, fill = rank, title=plot_title)
-		}, error = function(err) {
- 			  cat(paste("ERROR -- no data. Try using more data or deeper taxa\n",sep=''))
-  		  q()
-	    },
-	    finally = { 
-			
-	})
-
+out_file = paste(tmp_path, '/', out_file, sep='')
+i <- Sys.info()
+if (i['nodename'] == "AnnasMacBook.local") {
+  ggsave(out_file)  
+} else {
+  svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+}
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
