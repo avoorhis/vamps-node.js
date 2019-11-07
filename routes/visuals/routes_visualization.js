@@ -819,37 +819,19 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
 //
 // });
 
-//
-//
-// test: choose phylum, "Phyloseq Bars (R/svg)"
-// TODO: JSHint: This function's cyclomatic complexity is too high. (14) (W074)
-router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
-  console.log('in phyloseq post');
-  //console.log(req.body)
-
-  let ts = req.body.ts;
-  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-  let dist_metric = req.body.metric;
-  let plot_type = req.body.plot_type;
-  let phy, md1, md2, ordtype, maxdist, script;
-
+function get_fill(req) {
   let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
-  if (fill === 'Klass'){
+  if (fill === 'Klass') {
     fill = 'Class';
   }
-  // ts = "ashipunova_1573072637513";
-  let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
-  // svgfile_name = "ashipunova_1573072637513_phyloseq_bar_82098"  + '.svg';
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  let svgfile_path = path.join(tmp_file_path, svgfile_name);
-  let html = '';
-  //console.log(biom_file)
-  let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args:       [ tmp_file_path, ts ],
-  };
+  return fill;
+}
 
-  console.time("TIME: plot_type = " + plot_type);
+function get_plot_specific_options(plot_type, req, options, svgfile_name) {
+  let phy, md1, md2, ordtype, maxdist, script;
+  let dist_metric = req.body.metric;
+  let fill = get_fill(req);
+
   switch(plot_type) {
     case 'bar':
       script = 'phyloseq_bar.R';
@@ -884,6 +866,74 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       options.args = options.args.concat([svgfile_name, dist_metric, md1]);
       break;
   }
+  return [script, options.args];
+
+}
+
+//
+//
+// test: choose phylum, "Phyloseq Bars (R/svg)"
+// TODO: JSHint: This function's cyclomatic complexity is too high. (14) (W074)
+router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
+  console.log('in phyloseq post');
+  //console.log(req.body)
+
+  let ts = req.body.ts;
+  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+  let plot_type = req.body.plot_type;
+  // let phy, md1, md2, ordtype, maxdist, script;
+
+  // let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
+  // if (fill === 'Klass'){
+  //   fill = 'Class';
+  // }
+  // ts = "ashipunova_1573072637513";
+  let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
+  // svgfile_name = "ashipunova_1573072637513_phyloseq_bar_82098"  + '.svg';
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  let svgfile_path = path.join(tmp_file_path, svgfile_name);
+  let html = '';
+  //console.log(biom_file)
+  let options = {
+    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args:       [ tmp_file_path, ts ],
+  };
+
+  console.time("TIME: plot_type = " + plot_type);
+  // switch(plot_type) {
+  //   case 'bar':
+  //     script = 'phyloseq_bar.R';
+  //     phy = req.body.phy;
+  //     options.args = options.args.concat([svgfile_name, phy, fill]);
+  //     break;
+  //   case 'heatmap':
+  //     script = 'phyloseq_heatmap.R';
+  //     //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
+  //     phy = req.body.phy;
+  //     md1 = req.body.md1;
+  //     ordtype = req.body.ordtype;
+  //     options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
+  //     break;
+  //   case 'network':
+  //     script = 'phyloseq_network.R';
+  //     md1 = req.body.md1 || "Project";
+  //     md2 = req.body.md2 || "Description";
+  //     maxdist = req.body.maxdist || "0.3";
+  //     options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
+  //     break;
+  //   case 'ord':
+  //     script = 'phyloseq_ord.R';
+  //     md1 = req.body.md1 || "Project";
+  //     md2 = req.body.md2 || "Description";
+  //     ordtype = req.body.ordtype || "PCoA";
+  //     options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
+  //     break;
+  //   case 'tree':
+  //     script = 'phyloseq_tree.R';
+  //     md1 = req.body.md1 || "Description";
+  //     options.args = options.args.concat([svgfile_name, dist_metric, md1]);
+  //     break;
+  // }
 
   // if (plot_type === 'bar'){
   //   script = 'phyloseq_bar.R';
@@ -921,6 +971,10 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   // else {
   //   //ERROR
   // }
+
+  let values = get_plot_specific_options(plot_type, req, options, svgfile_name);
+  let script = values[0];
+  options.args = values[1];
 
   console.log(path.join(options.scriptPath, script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
