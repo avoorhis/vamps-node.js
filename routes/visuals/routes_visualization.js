@@ -343,7 +343,6 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  // TODO: DRY. Duplicate SHOW_DATA = ALL_DATASETS;... console.log(DATA_TO_OPEN); in router.post('/visuals_index'
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
@@ -832,22 +831,22 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let dist_metric = req.body.metric;
   let plot_type = req.body.plot_type;
-  let svgfile_name = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
-  let svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);
-  let phy,md1,md2,ordtype,maxdist,script;
+  let phy, md1, md2, ordtype, maxdist, script;
 
   let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
   if (fill === 'Klass'){
     fill = 'Class';
   }
 
-  //let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
+  let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
+  svgfile_name = "ashipunova_1573072637513_phyloseq_bar_82098"  + '.svg'
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  let svgfile_path = path.join(tmp_file_path, svgfile_name);
   let html = '';
   //console.log(biom_file)
   let options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_file_path, ts ],
+    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args:       [ tmp_file_path, ts ],
   };
   if (plot_type === 'bar'){
     script = 'phyloseq_bar.R';
@@ -862,19 +861,21 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     ordtype = req.body.ordtype;
     options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
   }
-  else if (plot_type === 'network'){
+  else if (plot_type === 'network') {
     script = 'phyloseq_network.R';
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
     maxdist = req.body.maxdist || "0.3";
     options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
-  }else if (plot_type === 'ord'){
+  }
+  else if (plot_type === 'ord'){
     script = 'phyloseq_ord.R';
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
     ordtype = req.body.ordtype || "PCoA";
     options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
-  }else if (plot_type === 'tree'){
+  }
+  else if (plot_type === 'tree'){
     script = 'phyloseq_tree.R';
     md1 = req.body.md1 || "Description";
     options.args = options.args.concat([svgfile_name, dist_metric, md1]);
@@ -883,7 +884,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   //   //ERROR
   // }
 
-  console.log(path.join(options.scriptPath, script)+' '+options.args.join(' '));
+  console.log(path.join(options.scriptPath, script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
     env: {'PATH': req.CONFIG.PATH},
     detached: true,
@@ -901,20 +902,13 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   phyloseq_process.stderr.on('data', function phyloseqProcessStderr(data) {
     stderr += data;
   });
+
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
     console.log('looking for svgfile_name: ' + svgfile_name);
     console.log('looking for svgfile_path: ' + svgfile_path);
-    //distance_matrix = JSON.parse(output);
-    //let last_line = ary[ary.length - 1];
+
     if (code === 0){   // SUCCESS
-      // console.log('last: ' + lastline);
-//       if (lastline.toString().substring(0,5) === 'ERROR'){
-//         console.log('ERROR-1');
-//         html = lastline;
-//       } else {
-
-
 
       fs.readFile(svgfile_path, 'utf8', function(err, contents){
         if(err){ res.send('ERROR reading file')}
@@ -928,18 +922,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
       });
 
-
       // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-//           //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-//           html = "<div id='pdf'>";
-//           html += "<object data='/"+svgfile_name+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-//           html += " <p>ERROR in loading pdf file</p>";
-//           html += "</object></div>";
-//         } else {
-//           html = "<img src='/"+svgfile_name+"'  >";
-//         }
-      //}
-
     } else {
       console.log('ERROR-2');
       html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
