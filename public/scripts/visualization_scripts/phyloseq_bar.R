@@ -56,9 +56,12 @@ finally = {
 
 out_file = paste(tmp_path, '/', out_file, sep='')
 i <- Sys.info()
+print(i['nodename'])
 if (i['nodename'] == "AnnasMacBook.local") {
-  ggsave(out_file)  
+  print("ggsave")
+  ggsave(out_file)
 } else {
+  print(svg)
   svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 }
 
