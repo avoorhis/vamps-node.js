@@ -848,38 +848,76 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args:       [ tmp_file_path, ts ],
   };
-  if (plot_type === 'bar'){
-    script = 'phyloseq_bar.R';
-    phy = req.body.phy;
-    options.args = options.args.concat([svgfile_name, phy, fill]);
+
+  console.time("TIME: plot_type = " + plot_type);
+  switch(plot_type) {
+    case 'bar':
+      script = 'phyloseq_bar.R';
+      phy = req.body.phy;
+      options.args = options.args.concat([svgfile_name, phy, fill]);
+      break;
+    case 'heatmap':
+      script = 'phyloseq_heatmap.R';
+      //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
+      phy = req.body.phy;
+      md1 = req.body.md1;
+      ordtype = req.body.ordtype;
+      options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
+      break;
+    case 'network':
+      script = 'phyloseq_network.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      maxdist = req.body.maxdist || "0.3";
+      options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
+      break;
+    case 'ord':
+      script = 'phyloseq_ord.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      ordtype = req.body.ordtype || "PCoA";
+      options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
+      break;
+    case 'tree':
+      script = 'phyloseq_tree.R';
+      md1 = req.body.md1 || "Description";
+      options.args = options.args.concat([svgfile_name, dist_metric, md1]);
+      break;
   }
-  else if (plot_type === 'heatmap'){
-    script = 'phyloseq_heatmap.R';
-    //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
-    phy = req.body.phy;
-    md1 = req.body.md1;
-    ordtype = req.body.ordtype;
-    options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
-  }
-  else if (plot_type === 'network') {
-    script = 'phyloseq_network.R';
-    md1 = req.body.md1 || "Project";
-    md2 = req.body.md2 || "Description";
-    maxdist = req.body.maxdist || "0.3";
-    options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
-  }
-  else if (plot_type === 'ord'){
-    script = 'phyloseq_ord.R';
-    md1 = req.body.md1 || "Project";
-    md2 = req.body.md2 || "Description";
-    ordtype = req.body.ordtype || "PCoA";
-    options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
-  }
-  else if (plot_type === 'tree'){
-    script = 'phyloseq_tree.R';
-    md1 = req.body.md1 || "Description";
-    options.args = options.args.concat([svgfile_name, dist_metric, md1]);
-  }
+
+  // if (plot_type === 'bar'){
+  //   script = 'phyloseq_bar.R';
+  //   phy = req.body.phy;
+  //   options.args = options.args.concat([svgfile_name, phy, fill]);
+  // }
+  // else if (plot_type === 'heatmap'){
+  //   script = 'phyloseq_heatmap.R';
+  //   //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
+  //   phy = req.body.phy;
+  //   md1 = req.body.md1;
+  //   ordtype = req.body.ordtype;
+  //   options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
+  // }
+  // else if (plot_type === 'network') {
+  //   script = 'phyloseq_network.R';
+  //   md1 = req.body.md1 || "Project";
+  //   md2 = req.body.md2 || "Description";
+  //   maxdist = req.body.maxdist || "0.3";
+  //   options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
+  // }
+  // else if (plot_type === 'ord'){
+  //   script = 'phyloseq_ord.R';
+  //   md1 = req.body.md1 || "Project";
+  //   md2 = req.body.md2 || "Description";
+  //   ordtype = req.body.ordtype || "PCoA";
+  //   options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
+  // }
+  // else if (plot_type === 'tree'){
+  //   script = 'phyloseq_tree.R';
+  //   md1 = req.body.md1 || "Description";
+  //   options.args = options.args.concat([svgfile_name, dist_metric, md1]);
+  // }
+
   // else {
   //   //ERROR
   // }
@@ -931,6 +969,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     //res.send(html);
 
   });
+  console.timeEnd("TIME: plot_type = " + plot_type);
 
 });
 
