@@ -690,7 +690,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       data.html = html;
       data.filename = index_file_name ;  // returns data and local file_name to be written to
       res.json(data);
-      return;
+      // return;
     }
     else{
       //console.log('ERROR');
@@ -956,7 +956,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       data.html = html;
       data.filename = svgfile_name  ; // returns data and local file_name to be written to
       res.json(data);
-      return;
+      // return;
     }
     //console.log(html);
     //res.send(html);
