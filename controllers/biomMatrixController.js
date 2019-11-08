@@ -81,8 +81,8 @@ class BiomMatrix {
 
     this.biom_matrix = this.create_biom_matrix();
     // console.timeEnd('TIME: create_biom_matrix');
-    console.log("GGG0 this.visual_post_items");
-    console.log(this.visual_post_items);
+    // console.log("GGG0 this.visual_post_items");
+    // console.log(this.visual_post_items);
 
     let true_meaning = [true, 1, "1"];
     if (this.visual_post_items.update_data in true_meaning) {
