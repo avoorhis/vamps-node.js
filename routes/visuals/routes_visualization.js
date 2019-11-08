@@ -866,6 +866,8 @@ function get_plot_specific_options(plot_type, req, options, svgfile_name) {
       options.args = options.args.concat([svgfile_name, dist_metric, md1]);
       break;
   }
+  // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+
   return [script, options.args];
 
 }
@@ -898,7 +900,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   };
 
   console.time("TIME: plot_type = " + plot_type);
-  let scriptOutput = "";
 
   let values = get_plot_specific_options(plot_type, req, options, svgfile_name);
   let script = values[0];
@@ -923,11 +924,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     stderr += data;
   });
 
-  //   if (code !== 0) {
-  //     console.log(`ps process exited with code ${code}`);
-  //   }
-  //   grep.stdin.end();
-
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
 
@@ -940,23 +936,14 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       fs.readFile(svgfile_path, 'utf8', function(err, contents){
 
         if(err){ res.send('ERROR reading file')}
-
         show_data(res, contents, svgfile_name);
-        // let data = {};
-        // data.html = contents;
-        // data.filename = svgfile_name  ; // returns data and local file_name to be written to
-        // res.json(data);
-      });
 
-      // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+      });
     }
     else {
       console.log('ERROR-2');
       html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
       show_data(res, html, svgfile_name);
-     // data.html = html;
-     //  data.filename = svgfile_name  ; // returns data and local file_name to be written to
-     //  res.json(data);
     }
   });
   console.timeEnd("TIME: plot_type = " + plot_type);
