@@ -444,61 +444,45 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   let ts = req.body.ts;
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
+  const script = '/distance_and_ordination.py';
   let image_type = req.body.image_type; // png(python script) or svg
-//console.log('image_type '+image_type);
-// see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
-//   let biom_file_name = ts + '_count_matrix.biom';
-  // let biom_file = path.join(req.CONFIG.TMP_FILES,  biom_file_name);
+  //console.log('image_type '+image_type);
+  // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
+
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
-  // let html = '';
-  // let title = 'VAMPS';
-  // let distmtx_file_name = ts + '_distance.csv';
-  // let distmtx_file_path = path.join(req.CONFIG.TMP_FILES,  distmtx_file_name);
   let options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args : [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', ts ],
+    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', ts ],
   };
-  console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
-  let dendrogram_process = spawn( options.scriptPath + '/distance_and_ordination.py',
+  console.log(options.scriptPath + script + ' ' + options.args.join(' '));
+
+  let dendrogram_process = spawn( options.scriptPath + script,
     options.args, {
-      env:{'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+      env: {'PATH': req.CONFIG.PATH,
+        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
       detached: true,
       stdio: 'pipe' // stdin,  stdout,  stderr
     });
+
   let stdout = '';
   dendrogram_process.stdout.on('data',  function dendrogramProcessStdout(data) {
     stdout += data.toString();
   });
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (8) (W074)
+
   dendrogram_process.on('close',  function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
     let lines = [];
-    // let tmp = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
         const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
         let newick = "";
         try {
-
           newick = startsWith_newick.split('=')[1];
-          print_log_if_not_vamps(req, 'NWK->' + newick);
-        // console.log('FOUND NEWICK ' + newick);
-
-        // for(let n in lines){
-        //   if (lines[n].substring(0, 6) === 'NEWICK' ){
-        //     tmp = lines[n].split('=');
-        //     console.log('FOUND NEWICK ' + tmp[1]);
-        //     // continue
-        //   }
-        // }
-        // try {
-          //newick = JSON.parse(tmp[1]);
-          // newick = tmp[1];
           // print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err) {
@@ -511,14 +495,6 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     else{
       console.log('stdout: ' + stdout);
     }
-    // lines = stdout.split('\n');
-    // for(let n in lines) {
-    //   if (lines[n].substring(0, 6) === 'NEWICK' ){
-    //     tmp = lines[n].split('=');
-    //     console.log('FOUND NEWICK '+tmp[1]);
-    //     // continue
-    //   }
-    // }
   });
 });
 
@@ -665,8 +641,8 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   };
 
   console.log('outdir: ' + dir_path);
-  console.log(options1.scriptPath + '/distance_and_ordination.py ' + options1.args.join(' '));
-  let pcoa_process = spawn( options1.scriptPath + '/distance_and_ordination.py', options1.args, {
+  console.log(options1.scriptPath + script + ' ' + options1.args.join(' '));
+  let pcoa_process = spawn( options1.scriptPath + script, options1.args, {
     env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
