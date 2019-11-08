@@ -1526,7 +1526,10 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   }, []);
 
   name_ids.sort(compare_by_key_name_asc("d_name"));
-  let dids_sorted_by_dname = name_ids.reduce((did_arr, ob) => {did_arr.push(ob["did"]); return did_arr}, []);
+  let dids_sorted_by_dname = name_ids.reduce((did_arr, ob) => {
+    did_arr.push(ob["did"]);
+    return did_arr;
+  }, []);
 
   let html = '';
   html += reverse_or_reset_datasets(dids_sorted_by_dname);
