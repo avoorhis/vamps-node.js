@@ -1510,21 +1510,11 @@ function compare_by_key_name_asc(key_name) {
 }
 
 
-
 //
 // A L P H A - B E T I Z E
 // test: from re-order datasets, "Alphabetize"
 router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in alphabetize_ds_order');
-  let html = '';
-  html += "<table id='drag_table' class='table table-condensed' >";
-  html += "<thead></thead>";
-  html += "  <tbody>";
-  //console.log(req.session)
-  let names = [];
-  let ids = [];
-
-  // objs.sort( compare_by_key_name_asc(n) );
 
   let name_ids = req.session.chosen_id_order.reduce((arr_of_obj, did) => {
     let temp_obj = {
@@ -1536,23 +1526,11 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   }, []);
 
   name_ids.sort(compare_by_key_name_asc("d_name"));
+  let dids_sorted_by_dname = name_ids.reduce((did_arr, ob) => {did_arr.push(ob["did"]); return did_arr}, []);
 
-  for (let i in req.session.chosen_id_order){
-    let did = req.session.chosen_id_order[i];
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    names.push(name);
-    ids.push(did);
-  }
+  let html = '';
+  html += reverse_or_reset_datasets(dids_sorted_by_dname);
 
-  let names_copy = names.slice();  // slice make an independant copy of the array
-  names_copy.sort(); // alpha sort
-  for (let i in names_copy){
-    let id = ids[names.indexOf(names_copy[i])];
-    let name = names_copy[i];
-    html += reorder_did_html(id, name, i);
-  }
-  html += "</tbody>";
-  html += "</table>";
   res.send(html);
 });
 
