@@ -870,6 +870,13 @@ function get_plot_specific_options(plot_type, req, options, svgfile_name) {
 
 }
 
+function show_data(res, contents, svgfile_name) {
+  let data = {};
+  data.html = contents;
+  data.filename = svgfile_name; // returns data and local file_name to be written to
+  res.json(data);
+}
+
 //
 //
 // test: choose phylum, "Phyloseq Bars (R/svg)"
@@ -923,7 +930,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
-    console.time("TIME: phyloseq_process.on('close'");
 
     // console.log('looking for svgfile_name: ' + svgfile_name);
     // console.log('looking for svgfile_path: ' + svgfile_path);
@@ -935,32 +941,23 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
         if(err){ res.send('ERROR reading file')}
 
-        // console.log(contents);
-        // [2019/11/08 10:14:53.234] [LOG]    phyloseq_process process exited with code 0
-        // [2019/11/08 10:14:53.236] [LOG]    <?xml version="1.0" encoding="UTF-8"?>
-        // <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720pt" height="504pt" viewBox="0 0 720 504" version="1.1">
-        let data = {};
-        data.html = contents;
-        data.filename = svgfile_name  ; // returns data and local file_name to be written to
-        res.json(data);
-        console.timeEnd("TIME: phyloseq_process.on('close'");
-        // return;
+        show_data(res, contents, svgfile_name);
+        // let data = {};
+        // data.html = contents;
+        // data.filename = svgfile_name  ; // returns data and local file_name to be written to
+        // res.json(data);
       });
 
       // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
     }
     else {
       console.log('ERROR-2');
-      let data = {};
       html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
-      data.html = html;
-      data.filename = svgfile_name  ; // returns data and local file_name to be written to
-      res.json(data);
-      // return;
+      show_data(res, html, svgfile_name);
+     // data.html = html;
+     //  data.filename = svgfile_name  ; // returns data and local file_name to be written to
+     //  res.json(data);
     }
-    //console.log(html);
-    //res.send(html);
-
   });
   console.timeEnd("TIME: plot_type = " + plot_type);
 
