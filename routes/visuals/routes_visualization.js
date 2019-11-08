@@ -1496,6 +1496,21 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
   res.send(html);
 });
 
+function compare_by_key_name_asc(key_name) {
+  return function compare( a, b ) {
+    if ( a[key_name] < b[key_name] ){
+      return -1;
+    }
+    if ( a[key_name] > b[key_name] ){
+      return 1;
+    }
+    return 0;
+  };
+
+}
+
+
+
 //
 // A L P H A - B E T I Z E
 // test: from re-order datasets, "Alphabetize"
@@ -1508,6 +1523,19 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   //console.log(req.session)
   let names = [];
   let ids = [];
+
+  // objs.sort( compare_by_key_name_asc(n) );
+
+  let name_ids = req.session.chosen_id_order.reduce((arr_of_obj, did) => {
+    let temp_obj = {
+      did: did,
+      d_name: PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did]
+    };
+    arr_of_obj.push(temp_obj);
+    return arr_of_obj;
+  }, []);
+
+  name_ids.sort(compare_by_key_name_asc("d_name"));
 
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
@@ -1522,15 +1550,6 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
     let id = ids[names.indexOf(names_copy[i])];
     let name = names_copy[i];
     html += reorder_did_html(id, name, i);
-    // html += "<tr class='tooltip_row'>";
-    // html += "<td class='dragHandle' id='" + id + "--" + name + "'> ";
-    // html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
-    // html += (parseInt(i)+1).toString()+" (id:"+ id +") - "+name;
-    // html += "</td>";
-    // html += "   <td>";
-    // html += "       <a href='#' onclick='move_to_the_top(" + (parseInt(i) + 1).toString() + ",\"" + id + "--" + name + "\")'>^</a>";
-    // html += "   </td>";
-    // html += "</tr>";
   }
   html += "</tbody>";
   html += "</table>";
