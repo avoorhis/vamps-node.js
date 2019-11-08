@@ -891,6 +891,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   };
 
   console.time("TIME: plot_type = " + plot_type);
+  let scriptOutput = "";
 
   let values = get_plot_specific_options(plot_type, req, options, svgfile_name);
   let script = values[0];
@@ -915,8 +916,15 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     stderr += data;
   });
 
+  //   if (code !== 0) {
+  //     console.log(`ps process exited with code ${code}`);
+  //   }
+  //   grep.stdin.end();
+
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
+    console.time("TIME: phyloseq_process.on('close'");
+
     // console.log('looking for svgfile_name: ' + svgfile_name);
     // console.log('looking for svgfile_path: ' + svgfile_path);
 
@@ -924,23 +932,31 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     if (code === 0){   // SUCCESS
 
       fs.readFile(svgfile_path, 'utf8', function(err, contents){
-        // console.time("TIME: readFile");
 
         if(err){ res.send('ERROR reading file')}
 
-        //console.log(contents)
+        // console.log(contents);
+        // [2019/11/08 10:14:53.234] [LOG]    phyloseq_process process exited with code 0
+        // [2019/11/08 10:14:53.236] [LOG]    <?xml version="1.0" encoding="UTF-8"?>
+        // <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720pt" height="504pt" viewBox="0 0 720 504" version="1.1">
         let data = {};
         data.html = contents;
         data.filename = svgfile_name  ; // returns data and local file_name to be written to
         res.json(data);
-        // console.timeEnd("TIME: readFile");
-        return;
+        console.timeEnd("TIME: phyloseq_process.on('close'");
+        // return;
       });
 
       // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-    } else {
+    }
+    else {
       console.log('ERROR-2');
-      html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
+      let data = {};
+      html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
+      data.html = html;
+      data.filename = svgfile_name  ; // returns data and local file_name to be written to
+      res.json(data);
+      return;
     }
     //console.log(html);
     //res.send(html);
@@ -1017,7 +1033,7 @@ function get_file_path(req, selected_did, timestamp) {
 }
 
 function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp){
-  console.time("mysqlSelectedSeqsPerDID_to_file");
+  console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
     console.log('Query error: ' + err);
@@ -1059,7 +1075,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     // console.log("seq file_path:", file_path);
   }
-  console.timeEnd("mysqlSelectedSeqsPerDID_to_file");
+  console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
 }
 
 // On the bar_single page with the single taxonomy bar and list of included taxonomies
@@ -1294,7 +1310,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
-    // TODO: JSHint: This function's cyclomatic complexity is too high. (13) (W074)
     fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
       console.time("TIME: readFile");
       if (err) {
