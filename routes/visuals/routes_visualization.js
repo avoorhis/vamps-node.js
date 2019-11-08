@@ -475,27 +475,34 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   dendrogram_process.on('close',  function dendrogramProcessOnClose(code) {
     console.log('dendrogram_process process exited with code ' + code);
     let lines = [];
-    let tmp = [];
+    // let tmp = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
         print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
-        for(let n in lines){
-          if (lines[n].substring(0, 6) === 'NEWICK' ){
-            tmp = lines[n].split('=');
-            console.log('FOUND NEWICK ' + tmp[1]);
-            // continue
-          }
-        }
+        const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
         let newick = "";
         try {
-          //newick = JSON.parse(tmp[1]);
-          newick = tmp[1];
+
+          newick = startsWith_newick.split('=')[1];
           print_log_if_not_vamps(req, 'NWK->' + newick);
+        // console.log('FOUND NEWICK ' + newick);
+
+        // for(let n in lines){
+        //   if (lines[n].substring(0, 6) === 'NEWICK' ){
+        //     tmp = lines[n].split('=');
+        //     console.log('FOUND NEWICK ' + tmp[1]);
+        //     // continue
+        //   }
+        // }
+        // try {
+          //newick = JSON.parse(tmp[1]);
+          // newick = tmp[1];
+          // print_log_if_not_vamps(req, 'NWK->' + newick);
         }
-        catch(err){
-          newick = {"ERROR":err};
+        catch(err) {
+          newick = {"ERROR": err};
         }
         res.send(newick);
         return;
@@ -504,14 +511,14 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     else{
       console.log('stdout: ' + stdout);
     }
-    lines = stdout.split('\n');
-    for(let n in lines) {
-      if (lines[n].substring(0, 6) === 'NEWICK' ){
-        tmp = lines[n].split('=');
-        console.log('FOUND NEWICK '+tmp[1]);
-        // continue
-      }
-    }
+    // lines = stdout.split('\n');
+    // for(let n in lines) {
+    //   if (lines[n].substring(0, 6) === 'NEWICK' ){
+    //     tmp = lines[n].split('=');
+    //     console.log('FOUND NEWICK '+tmp[1]);
+    //     // continue
+    //   }
+    // }
   });
 });
 
