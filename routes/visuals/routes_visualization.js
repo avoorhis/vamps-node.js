@@ -1451,6 +1451,31 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
   }
 
 });
+
+// html += add_html(dataset_arr, did, name);
+
+function reorder_did_html(did, name, idx) {
+  let html = ""
+  html += "<tr class='tooltip_row'>";
+  html += "<td class='dragHandle' id = '" + did + "--" + name + "'> ";
+  html += "<input type = 'hidden' name = 'ds_order[]' value='" + did + "'>";
+  html += (parseInt(idx)+1).toString() + " (id:" + did + ") - " + name;
+  html += "</td>";
+  html += "   <td>";
+  html += "       <a href='#' onclick='move_to_the_top(" + (parseInt(idx) + 1).toString() + ",\"" + did + "--" + name + "\")'>^</a>";
+  html += "   </td>";
+  html += "</tr>";
+
+  return html;
+}
+
+// function add_html_to_reorder_datasets(dataset_arr, did, name) {
+//   return dataset_arr.reduce((html, dataset_id) => {
+//
+//   }, "");
+//
+// }
+
 //
 //  R E S E T
 // test: from reorder_datasets click "reset order"
@@ -1461,6 +1486,18 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
   html += "<thead></thead>";
   html += "  <tbody>";
 
+  console.time("TIME: req.session.chosen_id_order.reduce");
+  html += req.session.chosen_id_order.reduce((html_txt, did, idx) => {
+    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    return html_txt += reorder_did_html(did, name, idx);
+  }, "");
+  console.timeEnd("TIME: req.session.chosen_id_order.reduce");
+
+  html = '';
+  html += "<table id='drag_table' class='table table-condensed' >";
+  html += "<thead></thead>";
+  html += "  <tbody>";
+  console.time("TIME: req.session.chosen_id_order for");
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
     let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
@@ -1474,6 +1511,8 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
     html += "   </td>";
     html += "</tr>";
   }
+  console.timeEnd("TIME: req.session.chosen_id_order for");
+
   html += "</tbody>";
   html += "</table>";
   res.send(html);
