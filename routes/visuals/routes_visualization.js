@@ -924,6 +924,8 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     if (code === 0){   // SUCCESS
 
       fs.readFile(svgfile_path, 'utf8', function(err, contents){
+        // console.time("TIME: readFile");
+
         if(err){ res.send('ERROR reading file')}
 
         //console.log(contents)
@@ -931,6 +933,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
         data.html = contents;
         data.filename = svgfile_name  ; // returns data and local file_name to be written to
         res.json(data);
+        // console.timeEnd("TIME: readFile");
         return;
       });
 
@@ -938,7 +941,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     } else {
       console.log('ERROR-2');
       html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's";
-      res.send(html);
     }
     //console.log(html);
     //res.send(html);
