@@ -592,7 +592,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     if (code === 0) {   // SUCCESS
 
       html = "<div id='pdf'>";
-      html += "<embed src='/static_base/tmp/"+image_file+"' type='application/pdf' width='1000' height='600' />";
+      html += "<embed src='/static_base/tmp/" + image_file + "' type='application/pdf' width='1000' height='600' />";
       html += " <p>ERROR in loading pdf file</p>";
       html += "</object></div>";
 
@@ -1084,7 +1084,6 @@ function write_seq_file_async(req, res, selected_did, timestamp) {
     });
 }
 
-// TODO: compare with bar double and DRY
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_viz/bar_single');
   let myurl = url.parse(req.url, true);
@@ -1773,27 +1772,53 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   let ts = req.body.ts;
   let file_type = req.body.file_type;
   let file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-  if (file_type === 'matrix'){
-    res.setHeader('Content-Type', 'text');
+  
+  const type_name_obj = {
+    'biom': ts + '_count_matrix.biom',
+    'tax': ts + '_taxonomy.txt',
+    'meta': ts + '_metadata.txt',
+  };
+
+  res.setHeader('Content-Type', 'text');
+
+  if (file_type === 'matrix') {
     let out_file_name = ts + '_count_matrix.txt';
     let biom_file_name = ts + '_count_matrix.biom';
     helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
-  }else if (file_type === 'biom'){
-    let file_name = ts+'_count_matrix.biom';
-    res.setHeader('Content-Type', 'text');
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if (file_type === 'tax'){
-    let file_name = ts+'_taxonomy.txt';
-    res.setHeader('Content-Type', 'text');
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  }else if (file_type === 'meta'){
-    let file_name = ts+'_metadata.txt';
-    res.setHeader('Content-Type', 'text');
+  }
+  else if (type_name_obj.hasOwnProperty(file_type)) {
+    const file_name = type_name_obj[file_type];
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   } else {
     // ERROR
     console.log('ERROR In download_file');
   }
+
+
+
+
+  // if (file_type === 'matrix'){
+  //   res.setHeader('Content-Type', 'text');
+  //   let out_file_name = ts + '_count_matrix.txt';
+  //   let biom_file_name = ts + '_count_matrix.biom';
+  //   helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
+  // }
+  // else if (file_type === 'biom'){
+  //   let file_name = ts+'_count_matrix.biom';
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
+  // }else if (file_type === 'tax'){
+  //   let file_name = ts+'_taxonomy.txt';
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
+  // }else if (file_type === 'meta'){
+  //   let file_name = ts+'_metadata.txt';
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
+  // } else {
+  //   // ERROR
+  //   console.log('ERROR In download_file');
+  // }
 
 });
 
