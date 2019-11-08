@@ -1455,7 +1455,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 // html += add_html(dataset_arr, did, name);
 
 function reorder_did_html(did, name, idx) {
-  let html = ""
+  let html = "";
   html += "<tr class='tooltip_row'>";
   html += "<td class='dragHandle' id = '" + did + "--" + name + "'> ";
   html += "<input type = 'hidden' name = 'ds_order[]' value='" + did + "'>";
@@ -1469,30 +1469,40 @@ function reorder_did_html(did, name, idx) {
   return html;
 }
 
-// function add_html_to_reorder_datasets(dataset_arr, did, name) {
-//   return dataset_arr.reduce((html, dataset_id) => {
-//
-//   }, "");
-//
-// }
+function reverse_or_reset_datasets(ids) {
+  let html = '';
+
+  html += "<table id='drag_table' class='table table-condensed' >";
+  html += "<thead></thead>";
+  html += "  <tbody>";
+  html += ids.reduce((html_txt, did, idx) => {
+    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+    return html_txt += reorder_did_html(did, name, idx);
+  }, "");
+  html += "</tbody>";
+  html += "</table>";
+  return html;
+}
 
 //
 //  R E S E T
 // test: from reorder_datasets click "reset order"
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reset_ds_order');
+
   let html = '';
-  html += "<table id='drag_table' class='table table-condensed' >";
-  html += "<thead></thead>";
-  html += "  <tbody>";
+  html += reverse_or_reset_datasets(req.session.chosen_id_order);
+  // html += "<table id='drag_table' class='table table-condensed' >";
+  // html += "<thead></thead>";
+  // html += "  <tbody>";
 
-  html += req.session.chosen_id_order.reduce((html_txt, did, idx) => {
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-    return html_txt += reorder_did_html(did, name, idx);
-  }, "");
-
-  html += "</tbody>";
-  html += "</table>";
+  // html += req.session.chosen_id_order.reduce((html_txt, did, idx) => {
+  //   let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+  //   return html_txt += reorder_did_html(did, name, idx);
+  // }, "");
+  //
+  // html += "</tbody>";
+  // html += "</table>";
   res.send(html);
 });
 
@@ -1543,38 +1553,43 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reverse_ds_order');
   let ids = JSON.parse(req.body.ids);
-  let html = '';
-  //console.log(req.session)
-  html += "<table id='drag_table' class='table table-condensed' >";
-  html += "<thead></thead>";
-  html += "  <tbody>";
   ids.reverse();
-  html += ids.reduce((html_txt, did, idx) => {
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    return html_txt += reorder_did_html(did, name, idx);
-  }, "");
-  console.log("reduce html: " + html);
 
-  html = '';
-  //console.log(req.session)
-  html += "<table id='drag_table' class='table table-condensed' >";
-  html += "<thead></thead>";
-  html += "  <tbody>";
-  for (let i in ids){
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]];
-    html += "<tr class='tooltip_row'>";
-    html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
-    html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
-    html += (parseInt(i)+1).toString()+" (id:"+ ids[i] +") - "+name;
-    html += "</td>";
-    html += "   <td>";
-    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
-    html += "   </td>";
-    html += "</tr>";
-  }
-  console.log("for html: " + html);
-  html += "</tbody>";
-  html += "</table>";
+  let html = '';
+  html += reverse_or_reset_datasets(ids);
+  // let html = '';
+  // //console.log(req.session)
+  // html += "<table id='drag_table' class='table table-condensed' >";
+  // html += "<thead></thead>";
+  // html += "  <tbody>";
+  // html += ids.reduce((html_txt, did, idx) => {
+  //   let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+  //   return html_txt += reorder_did_html(did, name, idx);
+  // }, "");
+  // html += "</tbody>";
+  // html += "</table>";
+  // console.log("reduce html: " + html);
+
+  // html = '';
+  // //console.log(req.session)
+  // html += "<table id='drag_table' class='table table-condensed' >";
+  // html += "<thead></thead>";
+  // html += "  <tbody>";
+  // for (let i in ids){
+  //   let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ids[i]]].project+'--'+DATASET_NAME_BY_DID[ids[i]];
+  //   html += "<tr class='tooltip_row'>";
+  //   html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
+  //   html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
+  //   html += (parseInt(i)+1).toString()+" (id:"+ ids[i] +") - "+name;
+  //   html += "</td>";
+  //   html += "   <td>";
+  //   html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
+  //   html += "   </td>";
+  //   html += "</tr>";
+  // }
+  // console.log("for html: " + html);
+  // html += "</tbody>";
+  // html += "</table>";
   res.send(html);
 });
 //
