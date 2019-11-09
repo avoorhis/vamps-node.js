@@ -2453,38 +2453,35 @@ exports.is_array = function(data) {
   return data && (Array.isArray(data));
 };
 
-exports.create_matrix_from_biom = function(res, file_path, infile_name, outfile_name){
+exports.create_matrix_from_biom = function(res, file_path, ts){
     console.log('IN create_matrix_from_biom');
-    biom_file_path = path.join(file_path, infile_name);
-    out_file_path = path.join(file_path,  outfile_name);
-    console.log(biom_file_path);
-    console.log(out_file_path);
-    fs.readFile(biom_file_path,  function(err, data){
-        if(err){ console.log(err);return; }
-        var d = JSON.parse(data);
-        // console.log('d')
-        // console.log(d)
-        var txt = '';
-        var tmp_txt = [];
-        for(let n in d.columns){
-            ds = d.columns[n].id;
+    let out_file_name = ts + '_count_matrix.txt';
+    let biom_file_name = ts + '_count_matrix.biom';
+    let biom_file_path = path.join(file_path, biom_file_name);
+    let out_file_path = path.join(file_path,  out_file_name);
+    console.log("biom_file_path: " + biom_file_path);
+    console.log("out_file_path: " + out_file_path);
+    fs.readFile(biom_file_path, function(err, data){
+        if(err){ console.log(err); return; }
+        const parsed_data = JSON.parse(data);
+        let txt = '';
+        let tmp_txt = [];
+        for(let n in parsed_data.columns){
+            ds = parsed_data.columns[n].id;
             tmp_txt.push(ds);
         }
         txt += '\t' + tmp_txt.join('\t') + '\n';
-        for(let n in d.rows){
-            txt += d.rows[n].id +'\t'+d.data[n].join('\t') + '\n';
+        for(let n in parsed_data.rows){
+            txt += parsed_data.rows[n].id + '\t' + parsed_data.data[n].join('\t') + '\n';
         }        
         fs.writeFile(out_file_path, txt, function(err, data) {
-            if (err) { console.log(err);return; }
+            if (err) { console.log(err); return; }
             console.log("Successfully Written to File.");
             
             res.download(out_file_path); // Set disposition and send it.
         });
-        
     });
-    
-    
-}
+};
 
 // module.exports.validate_name = function (name) {
 //     console.log('helpers.validate_name: '+name)
