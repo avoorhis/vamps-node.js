@@ -1262,6 +1262,22 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
   return seq_list;
 }
 
+function get_seq_file_path(req, seqs_filename) {
+  const biom_file_path = file_path_obj.get_tmp_file_path(req);
+  const seq_file_path = path.join(biom_file_path, seqs_filename);
+  try {
+    if (fs.existsSync(seq_file_path)) {
+      //file exists
+      return seq_file_path;
+    }
+  } catch(err) {
+    console.log("Can't read file: ", seq_file_path);
+    console.error(err);
+  }
+}
+
+
+
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
@@ -1269,14 +1285,18 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let myurl = url.parse(req.url, true);
   // console.log(myurl.query);
   let search_tax = myurl.query.taxa;
-  let seqs_filename = myurl.query.filename;
 
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+
+  let seqs_filename = myurl.query.filename;
+  const seqs_file_path = get_seq_file_path(req, seqs_filename);
+
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
+    // fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
 
-    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
+    fs.readFile(seqs_file_path, 'utf8', function readFile(err, data) {
       console.time("TIME: readFile");
       if (err) {
         err_read_file(err, req, res, seqs_filename);
