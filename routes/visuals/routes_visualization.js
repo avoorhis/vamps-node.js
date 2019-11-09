@@ -1767,10 +1767,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 // test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
-  // let html = '';
   let ts = req.body.ts;
   let file_type = req.body.file_type;
-  // let file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
   let file_path = file_path_obj.get_tmp_file_path(req);
 
   const type_name_obj = {
@@ -1780,51 +1778,18 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   };
 
   res.setHeader('Content-Type', 'text/plain');
-  // if (string == 'undefined') { string = 'application/json' }
-
-  // console.log("RRR0 res, look fof header" + res["Symbol(outHeadersKey)"]["content-type"]);
-  console.log("RRR1 file_path: " + file_path);
 
   if (file_type === 'matrix') {
-    let out_file_name = ts + '_count_matrix.txt';
-    let biom_file_name = ts + '_count_matrix.biom';
-    // res.setHeader('Content-Type', 'text');
-    helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
+
+    helpers.create_matrix_from_biom(res, file_path, ts);
   }
   else if (type_name_obj.hasOwnProperty(file_type)) {
     const file_name = type_name_obj[file_type];
-    // res.setHeader('Content-Type', 'text/plain');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   } else {
     // ERROR
     console.log('ERROR In download_file');
   }
-
-
-
-
-  // if (file_type === 'matrix'){
-  //   res.setHeader('Content-Type', 'text');
-  //   let out_file_name = ts + '_count_matrix.txt';
-  //   let biom_file_name = ts + '_count_matrix.biom';
-  //   helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
-  // }
-  // else if (file_type === 'biom'){
-  //   let file_name = ts+'_count_matrix.biom';
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  // }else if (file_type === 'tax'){
-  //   let file_name = ts+'_taxonomy.txt';
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  // }else if (file_type === 'meta'){
-  //   let file_name = ts+'_metadata.txt';
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  // } else {
-  //   // ERROR
-  //   console.log('ERROR In download_file');
-  // }
 
 });
 
