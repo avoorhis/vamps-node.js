@@ -12,6 +12,8 @@ const path   = require("path");
 const extend = require('util')._extend;
 
 let helpers = require(app_root + '/routes/helpers/helpers');
+const visualization_controller = require(app_root + '/controllers/visualizationController');
+const file_path_obj = new visualization_controller.visualizationFiles();
 
 class BiomMatrix {
 
@@ -61,8 +63,11 @@ class BiomMatrix {
 
     this.ordered_list_of_lists_of_tax_counts = [];
     let date = new Date();
+
+    let user_timestamp = file_path_obj.get_user_timestamp(req);
+
     this.biom_matrix = {
-      id: this.visual_post_items.ts,
+      id: user_timestamp || this.visual_post_items.ts,
       format: "Biological Observation Matrix 0.9.1-dev",
       format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
       type: "OTU table",
@@ -91,8 +96,8 @@ class BiomMatrix {
 
     // console.time('TIME: write_matrix_files');
     if (this.write_file === true || this.write_file === undefined) {//TODO: refactor
-      let write_matrix_file_mod = new module.exports.WriteMatrixFile(this.visual_post_items, this.biom_matrix);
-      write_matrix_file_mod.write_matrix_files();
+      let write_matrix_file_mod = new module.exports.WriteMatrixFile(req, this.visual_post_items, this.biom_matrix);
+      write_matrix_file_mod.write_matrix_files(req);
     }
     // console.timeEnd('TIME: write_matrix_files');
   }
@@ -842,19 +847,25 @@ class TaxonomyRDP extends TaxonomySimple {
 
 class WriteMatrixFile {
 
-  constructor(post_items, biom_matrix) {
+  constructor(req, post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    this.tmp_path = CONFIG.TMP_FILES;    //app_root + '/tmp/'; // get_tmp_file_path(req)
+    // this.tmp_path = CONFIG.TMP_FILES;    //app_root + '/tmp/'; // get_tmp_file_path(req)
+    this.tmp_path = file_path_obj.get_tmp_file_path(req);
   }
 
-  write_matrix_files() {
-    let common_file_name_part = this.tmp_path +'/'+ this.post_items.ts;
-    let tax_file_name = common_file_name_part + '_taxonomy.txt';
-    COMMON.output_tax_file(tax_file_name, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
+  write_matrix_files(req) {
+    // let common_file_name_part = this.tmp_path +'/'+ this.post_items.ts;
+    const tax_file_name = file_path_obj.get_file_names(req)['taxonomy.txt'];
+    const tax_file_name_path = path.join(this.tmp_path, tax_file_name);
+      // || common_file_name_part + '_taxonomy.txt';
+    COMMON.output_tax_file(tax_file_name_path, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
 
-    let matrix_file_name = common_file_name_part + '_count_matrix.biom';
-    COMMON.write_file(matrix_file_name, JSON.stringify(this.biom_matrix,null,2) );
+    // let matrix_file_name = common_file_name_part + '_count_matrix.biom';
+    const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+    const matrix_file_path = path.join(this.tmp_path, matrix_file_name);
+      // || common_file_name_part + '_count_matrix.biom';
+    COMMON.write_file(matrix_file_path, JSON.stringify(this.biom_matrix,null,2) );
   }
 }
 

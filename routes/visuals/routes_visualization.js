@@ -17,12 +17,12 @@ const C = require('../../public/constants');
 const META    = require('./routes_visuals_metadata');
 const IMAGES = require('../routes_images');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
-const visualization_controller = require(app_root + '/controllers/visualizationController');
 const spawn = require('child_process').spawn;
 // const app = express();
 // const js2xmlparser = require("js2xmlparser");
 // const xml_convert = require('xml-js');
 
+const visualization_controller = require(app_root + '/controllers/visualizationController');
 const file_path_obj = new visualization_controller.visualizationFiles();
 
 function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
@@ -96,9 +96,9 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
   let visual_post_items = start_visual_post_items(req);
 
-  let curr_timestamp = file_path_obj.get_user_timestamp(req);
-  visual_post_items.ts = curr_timestamp;
-  // req.session.ts = curr_timestamp;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  visual_post_items.ts = user_timestamp;
+  // req.session.ts = user_timestamp;
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
@@ -357,7 +357,9 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-  let ts = req.session.ts;
+  // let ts = req.session.ts;
+  let curr_timestamp = file_path_obj.get_user_timestamp(req);
+
   let selected_dataset_order = {};
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
@@ -374,7 +376,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     selected_datasets: JSON.stringify(selected_dataset_order),
     constants    : JSON.stringify(C),
     referer: req.body.referer,
-    ts : ts,
+    ts : curr_timestamp,
     user: req.user, hostname: req.CONFIG.hostname,
   });
 
@@ -413,7 +415,9 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   console.log('req.body dnd');
   file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
-  let ts = req.body.ts;
+  // let ts = req.body.ts;
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
+
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
   const script = '/distance_and_ordination.py';
@@ -421,13 +425,14 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   //console.log('image_type '+image_type);
   // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  // let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'];
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   console.log("tmp_file_path from dendrogram: " + tmp_file_path);
 
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', ts ],
+    args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
   console.log(options.scriptPath + script + ' ' + options.args.join(' '));
 
@@ -537,12 +542,14 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
   console.log('in PCoA');
   //console.log(metadata);
-  let ts = req.body.ts;
+  // let ts = req.body.ts;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+
   // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let metric = req.body.metric;
   // let image_type = req.body.image_type;
   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-  let image_file = ts + '_pcoa.pdf';
+  let image_file = user_timestamp + '_pcoa.pdf';
   console.log("image_file from pcoa: " + image_file);
 
   let md1 = req.body.md1 || "Project";
@@ -550,7 +557,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
   let options2 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
+    args :       [ req.CONFIG.PATH_TO_STATIC_BASE, user_timestamp, metric, md1, md2, image_file],
   };
   console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
   const script = 'pcoa2.R';
@@ -589,18 +596,20 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   console.log('POST in 3D');
 
   const metric = req.session.selected_distance;
-  const ts = req.session.ts;
+  // TODO: use file_path_obj for ts and files
+  // const ts = req.session.ts;
 
-  const pc_file_name = ts + '_pc.txt';
-  const biom_file_name = ts + '_count_matrix.biom';
-  const biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-  const mapping_file_name = ts + '_metadata.txt';
+  const pc_file_name = user_timestamp + '_pc.txt';
+  const biom_file_name = user_timestamp + '_count_matrix.biom';
+  // const biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  const biom_file_path = file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'];
+  const mapping_file_name = user_timestamp + '_metadata.txt';
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const mapping_file = path.join(tmp_file_path, mapping_file_name);
   console.log("tmp_file_path from pcoa3d (mapping_file): " + mapping_file);
 
-  const dist_file_name = ts + '_distance.csv';
-  const dir_name = ts + '_pcoa3d';
+  const dist_file_name = user_timestamp + '_distance.csv';
+  const dir_name = user_timestamp + '_pcoa3d';
   const static_script_file_path = file_path_obj.get_static_script_file_path(req);
   const dir_path = path.join(static_script_file_path, dir_name);
   const viz_scripts_path = file_path_obj.get_viz_scripts_path(req);
@@ -616,7 +625,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       '--basedir',
       tmp_file_path,
       '--prefix',
-      ts,
+      user_timestamp,
       '-m',
       mapping_file],
   };
@@ -716,10 +725,13 @@ function format_sumator(allData) {
 }
 
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-  let ts = req.session.ts;
   console.log('in dbrowser');
   // console.log(req.session);
-  let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
+// TODO: use file_path_obj for ts and files
+//   let ts = req.session.ts;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  // let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
+  const matrix_file_path = file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'];
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -851,17 +863,16 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
   //console.log(req.body)
 
-  let ts = req.body.ts;
-  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-  let plot_type = req.body.plot_type;
-  let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
-
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  let svgfile_path = path.join(tmp_file_path, svgfile_name);
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  const plot_type = req.body.plot_type;
+  // let svgfile_name = user_timestamp + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
+  const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, user_timestamp);
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const svgfile_path = path.join(tmp_file_path, svgfile_name);
   //console.log(biom_file)
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args:       [ tmp_file_path, ts ],
+    args:       [ tmp_file_path, user_timestamp ],
   };
 
   console.time("TIME: plot_type = " + plot_type);
@@ -946,7 +957,7 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
   // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
   pi.no_of_datasets = pi.chosen_datasets.length;
-  pi.ts = req.session.ts;
+  pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
   pi.min_range = req.session.min_range;
   pi.max_range = req.session.max_range;
@@ -976,12 +987,12 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-function get_sequences_json_file_path(req, selected_did, timestamp) {
-  let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
-  return path.join('tmp', filename);
-}
+// function get_sequences_json_file_path(req, selected_did, timestamp) {
+//   let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
+//   return path.join('tmp', filename);
+// }
 
-function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp){
+function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
   console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
@@ -1020,7 +1031,8 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
-    let file_path = get_sequences_json_file_path(req, selected_did, timestamp);
+    // let file_path = get_sequences_json_file_path(req, selected_did, timestamp);
+    const file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
     console.log("file_path, from mysqlSelectedSeqsPerDID_to_file: " + file_path);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     // console.log("seq file_path:", file_path);
@@ -1083,10 +1095,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
-    let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
-    write_seq_file_async(req, res, selected_did, timestamp);
+    // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
+    const user_timestamp = file_path_obj.get_user_timestamp(req);
+    write_seq_file_async(req, res, selected_did, user_timestamp);
     let bar_type = 'single';
-    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type});
+    LoadDataFinishRequestFunc({req, res, pi, user_timestamp, new_matrix, new_order, bar_type});
   }
 });
 
@@ -1139,12 +1152,12 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let new_order = get_new_order_by_button(order);
 
-  let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
-  write_seq_file_async(req, res, did1, timestamp);
-  write_seq_file_async(req, res, did2, timestamp);
-  // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
+  let timestamp_only = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
+  write_seq_file_async(req, res, did1, timestamp_only);
+  write_seq_file_async(req, res, did2, timestamp_only);
+  // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp_only));
   let bar_type = "double";
-  LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist});
+  LoadDataFinishRequestFunc({req, res, pi, timestamp: timestamp_only, new_matrix, new_order, bar_type, dist});
 });
 
 //
@@ -1245,22 +1258,14 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
   return seq_list;
 }
 
-function get_seq_file_path(req, seqs_filename) {
-  const biom_file_path = file_path_obj.get_tmp_file_path(req);
-  const seq_file_path = path.join(biom_file_path, seqs_filename);
-  console.log("seq_file_path: " + seq_file_path);
-  return seq_file_path;
-
-  // try {
-  //   if (fs.existsSync(seq_file_path)) {
-  //     //file exists
-  //     return seq_file_path;
-  //   }
-  // } catch(err) {
-  //   console.log("Can't read file: ", seq_file_path);
-  //   console.error(err);
-  // }
-}
+// function get_seq_file_path(req, seqs_filename) {
+//   const biom_file_path = file_path_obj.get_tmp_file_path(req);
+//   const seq_file_path = path.join(biom_file_path, seqs_filename);
+//   console.log("seq_file_path: " + seq_file_path);
+//   return seq_file_path;
+//
+//
+// }
 
 
 
@@ -1276,7 +1281,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
 
   let seqs_filename = myurl.query.filename;
-  const seqs_file_path = get_seq_file_path(req, seqs_filename);
+  const seqs_file_path = file_path_obj.get_seq_file_path_from_name(req, seqs_filename);
   console.log("SSSS seq_file_path: " + seqs_file_path);
 
   if (seqs_filename){
@@ -1546,10 +1551,10 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in cluster_ds_order');
   let html = '';
-  let ts = req.body.ts;
+  let user_ts = file_path_obj.get_user_timestamp(req);
   let metric = req.body.metric;
   // let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_file_names(req, user_ts)['count_matrix.biom'];
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let pjds_lookup = {};
@@ -1560,7 +1565,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   }
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', ts],
+    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_ts],
   };
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
@@ -1597,7 +1602,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let dataset_list = JSON.parse(ds_list);
 
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
-        let ascii_file = ts + '_' + metric + '_tree.txt';
+        let ascii_file = user_ts + '_' + metric + '_tree.txt';
         let ascii_file_path = path.join(tmp_file_path,ascii_file);
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
           if (err) {
@@ -1648,8 +1653,10 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   console.log('in dheatmap_number_to_color');
   console.log(req.body);
 
-  let ts = req.session.ts;
-  let distmtx_file_name = ts + '_distance.json';
+  // let ts = req.session.ts;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+
+  let distmtx_file_name = user_timestamp + '_distance.json';
   let distmtx_file = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
   //console.log(distmtx_file)
   let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')); // function (err, distance_matrix) {
@@ -1663,7 +1670,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   let html = IMAGES.create_hm_table(req, distance_matrix, metadata );
 
   //console.log(html)
-  let outfile_name = ts + '-dheatmap-api.html';
+  let outfile_name = user_timestamp + '-dheatmap-api.html';
   // let outfile_path = path.join(config.PROCESS_DIR,'tmp', outfile_name);  // file name save to user_location
   //console.log('outfile_path:',outfile_path)
   //result = IMAGES.save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
@@ -1681,19 +1688,22 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   console.log('in dheatmap_split_distance');
   console.log(req.body);
 
-  let ts = req.session.ts;
-  let test_split_file_name = ts + '_distance_mh_bc.tsv';
+  // let ts = req.session.ts;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+
+  let test_split_file_name = user_timestamp + '_distance_mh_bc.tsv';
   let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
 
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  // let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  const biom_file_path = file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'];
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let FinishSplitFile = function(req, res){
-    let ts = req.session.ts;
+    // let ts = req.session.ts;
     //let suffix = split_file_suffixes[req.body.split_distance_choice]
     let suffix = req.body.split_distance_choice;
     //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
-    let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
+    let distmtx_file_name = user_timestamp + '_distance_' + suffix + '.tsv';
     let distmtx_file = path.join(tmp_file_path, distmtx_file_name);
     //console.log(distmtx_file)
     fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
@@ -1711,9 +1721,9 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 
         let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
-        let outfile_name = ts + '-dheatmap-api.html';
+        let outfile_name = user_timestamp + '-dheatmap-api.html';
         // TODO: Unused variable outfile_path
-        let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
+        // let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
 
         let data = {};
         data.html = html;
@@ -1723,7 +1733,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
         res.json(data);
       }
     });
-  };
+  }.bind();
 
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
@@ -1733,7 +1743,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', ts ],
+    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
 
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
@@ -1774,21 +1784,22 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 // test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
-  let ts = req.body.ts;
+  // let ts = req.body.ts;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
   let file_type = req.body.file_type;
   let file_path = file_path_obj.get_tmp_file_path(req);
 
   const type_name_obj = {
-    'biom': ts + '_count_matrix.biom',
-    'tax': ts + '_taxonomy.txt',
-    'meta': ts + '_metadata.txt',
+    'biom': file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'],
+    'tax': file_path_obj.get_file_names(req, user_timestamp)['taxonomy.txt'],
+    'meta': file_path_obj.get_file_names(req, user_timestamp)['metadata.txt'],
   };
 
   res.setHeader('Content-Type', 'text/plain');
 
+  // TODO: path from file_path_obj
   if (file_type === 'matrix') {
-
-    helpers.create_matrix_from_biom(res, file_path, ts);
+    helpers.create_matrix_from_biom(res, file_path, user_timestamp);
   }
   else if (type_name_obj.hasOwnProperty(file_type)) {
     const file_name = type_name_obj[file_type];
@@ -2281,11 +2292,9 @@ router.get('/taxa_piechart', function(req, res) {
   console.log('IN taxa_piechart - routes_visualizations');
   let myurl = url.parse(req.url, true);
   let tax = myurl.query.tax;
-  let timestamp = +new Date();  // millisecs since the epoch!
-  let ts = req.session.ts;
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  // let matrix_file_path = path.join(config.PROCESS_DIR, 'tmp', ts + '_count_matrix.biom');
-  let matrix_file_path = path.join(tmp_file_path, ts + '_count_matrix.biom');
+  let timestamp_only = +new Date();  // millisecs since the epoch!
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  let matrix_file_path = file_path_obj.get_file_names(req, user_timestamp)['count_matrix.biom'];
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
@@ -2323,7 +2332,7 @@ router.get('/taxa_piechart', function(req, res) {
         tax : tax,
         datasets : JSON.stringify(cols),
         counts : data,
-        ts : timestamp,
+        ts : timestamp_only,
         user: req.user, hostname: req.CONFIG.hostname,
       });
     }

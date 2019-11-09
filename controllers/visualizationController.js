@@ -185,6 +185,14 @@ class visualizationFiles {
     return req.CONFIG.TMP_FILES;
   }
 
+  get_static_script_file_path(req) {
+    return req.CONFIG.PATH_TO_STATIC_BASE;
+  }
+
+  get_viz_scripts_path(req) {
+    return req.CONFIG.PATH_TO_VIZ_SCRIPTS;
+  }
+
   print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
     if (req.CONFIG.site === 'vamps') {
       console.log(msg_prod);
@@ -193,10 +201,69 @@ class visualizationFiles {
     }
   }
 
-  get_timestamp(req) {
-    let timestamp = +new Date();  // millisecs since the epoch!
-    return req.user.username + '_' + timestamp;
+  get_user_timestamp(req) {
+    let curr_timestamp = "";
+    let user_timestamp = "";
+    if (req.session.ts) {
+      user_timestamp = req.session.ts;
+    }
+    else {
+      curr_timestamp = +new Date();  // millisecs since the epoch!
+      user_timestamp = req.user.username + '_' + curr_timestamp;
+    }
+    req.session.ts = user_timestamp;
+    return user_timestamp;
   }
+
+  get_seq_file_path_from_name(req, seqs_filename) {
+    const biom_file_path = this.get_tmp_file_path(req);
+    const seq_file_path = path.join(biom_file_path, seqs_filename);
+    console.log("seq_file_path: " + seq_file_path);
+    return seq_file_path;
+  }
+
+  get_sequences_json_file_path(req, selected_did, user_timestamp = "") {
+    if (user_timestamp === "") {
+      user_timestamp = this.get_user_timestamp(req);
+    }
+    const user_timestamp_arr = user_timestamp.split("_");
+    const timestamp_only = user_timestamp_arr[user_timestamp_arr.length - 1];
+    const user_name = user_timestamp_arr.slice(0, -1).join("_");
+    // const filename = user_timestamp + '_' + selected_did + '_sequences.json';
+    const filename = user_name + '_' + selected_did + '_' + timestamp_only + '_sequences.json';
+    const tmp_path = this.get_tmp_file_path(req);
+    return path.join(tmp_path, filename);
+  }
+
+  get_file_names(req, user_ts = "") {
+    if (user_ts === "") {
+      user_ts = this.get_user_timestamp(req);
+    }
+    return {
+      'adiversity-api.csv': user_ts + '-adiversity-api.csv',
+      'dheatmap-api.html': user_ts + '-dheatmap-api.html',
+      'piecharts-api.svg': user_ts + '-piecharts-api.svg',
+      'count_matrix.biom': user_ts + '_count_matrix.biom',
+      'distance.R': user_ts + '_distance.R',
+      'distance.csv': user_ts + '_distance.csv',
+      'distance.json': user_ts + '_distance.json',
+      'fheatmap.svg': user_ts + '_fheatmap.svg',
+      'metadata.txt': user_ts + '_metadata.txt',
+      'outtree.tre': user_ts + '_outtree.tre',
+      'taxonomy.txt': user_ts + '_taxonomy.txt',
+    //      let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
+    };
+  }
+
+  phyloseq_svgfile_name(req, user_timestamp = "") {
+    if (user_timestamp === "") {
+      user_timestamp = this.get_user_timestamp(req);
+    }
+    const rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+    const plot_type = req.body.plot_type;
+    return (user_timestamp + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg');
+  }
+
 }
 
 class sumator {
