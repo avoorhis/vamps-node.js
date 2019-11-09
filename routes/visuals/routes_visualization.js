@@ -1779,15 +1779,20 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     'meta': ts + '_metadata.txt',
   };
 
-  res.setHeader('Content-Type', 'text');
+  // res.setHeader('Content-Type', 'text');
+  // if (string == 'undefined') { string = 'application/json' }
+
+  console.log("RRR0 res, look fof header" + JSON.stringify(res));
 
   if (file_type === 'matrix') {
     let out_file_name = ts + '_count_matrix.txt';
     let biom_file_name = ts + '_count_matrix.biom';
+    res.setHeader('Content-Type', 'text');
     helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
   }
   else if (type_name_obj.hasOwnProperty(file_type)) {
     const file_name = type_name_obj[file_type];
+    res.setHeader('Content-Type', 'text');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   } else {
     // ERROR
