@@ -1265,15 +1265,18 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
 function get_seq_file_path(req, seqs_filename) {
   const biom_file_path = file_path_obj.get_tmp_file_path(req);
   const seq_file_path = path.join(biom_file_path, seqs_filename);
-  try {
-    if (fs.existsSync(seq_file_path)) {
-      //file exists
-      return seq_file_path;
-    }
-  } catch(err) {
-    console.log("Can't read file: ", seq_file_path);
-    console.error(err);
-  }
+  console.log("seq_file_path: " + seq_file_path);
+  return seq_file_path;
+
+  // try {
+  //   if (fs.existsSync(seq_file_path)) {
+  //     //file exists
+  //     return seq_file_path;
+  //   }
+  // } catch(err) {
+  //   console.log("Can't read file: ", seq_file_path);
+  //   console.error(err);
+  // }
 }
 
 
@@ -1291,6 +1294,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
   let seqs_filename = myurl.query.filename;
   const seqs_file_path = get_seq_file_path(req, seqs_filename);
+  console.log("SSSS seq_file_path: " + seqs_file_path);
 
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
