@@ -2454,25 +2454,25 @@ exports.is_array = function(data) {
 };
 
 exports.create_matrix_from_biom = function(res, file_path, infile_name, outfile_name){
-    console.log('IN create_matrix_from_biom')
+    console.log('IN create_matrix_from_biom');
     biom_file_path = path.join(file_path, infile_name);
     out_file_path = path.join(file_path,  outfile_name);
-    console.log(biom_file_path)
-    console.log(out_file_path)
+    console.log(biom_file_path);
+    console.log(out_file_path);
     fs.readFile(biom_file_path,  function(err, data){
         if(err){ console.log(err);return; }
-        var d = JSON.parse(data)
-        console.log('d')
-        console.log(d)
-        var txt = ''
-        var tmp_txt = []
-        for(n in d.columns){
-            ds = d.columns[n].id
-            tmp_txt.push(ds)        
+        var d = JSON.parse(data);
+        // console.log('d')
+        // console.log(d)
+        var txt = '';
+        var tmp_txt = [];
+        for(let n in d.columns){
+            ds = d.columns[n].id;
+            tmp_txt.push(ds);
         }
-        txt += '\t' + tmp_txt.join('\t') + '\n'        
-        for(n in d.rows){            
-            txt += d.rows[n].id +'\t'+d.data[n].join('\t') + '\n'        
+        txt += '\t' + tmp_txt.join('\t') + '\n';
+        for(let n in d.rows){
+            txt += d.rows[n].id +'\t'+d.data[n].join('\t') + '\n';
         }        
         fs.writeFile(out_file_path, txt, function(err, data) {
             if (err) { console.log(err);return; }
