@@ -23,20 +23,7 @@ const spawn = require('child_process').spawn;
 // const js2xmlparser = require("js2xmlparser");
 // const xml_convert = require('xml-js');
 
-const file_path_obj =  new visualization_controller.visualizationFiles();
-
-function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
-  if (req.CONFIG.site === 'vamps') {
-    console.log(msg_prod);
-  } else {
-    console.log(msg);
-  }
-}
-
-function get_timestamp(req) {
-  let timestamp = +new Date();  // millisecs since the epoch!
-  return req.user.username + '_' + timestamp;
-}
+const file_path_obj = new visualization_controller.visualizationFiles();
 
 function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 // get dataset_ids the add names for biom file output:
@@ -60,7 +47,7 @@ function start_visual_post_items(req) {
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  print_log_if_not_vamps(req, msg);
+  file_path_obj.print_log_if_not_vamps(req, msg);
   console.log('<<VS--visual_post_items');
 
   return visual_post_items;
@@ -101,32 +88,17 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   */
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
   let image_to_open = {};
 
-  // const visualization_obj = new visualization_controller.viewSelectionFactory(req);
-  // let dataset_ids = visualization_obj.dataset_ids;
-  // let visual_post_items = visualization_obj.visual_post_items;
-  //
-  // visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
-  //
-  // let curr_timestamp = get_timestamp(req);
-  // visual_post_items.ts = curr_timestamp;
-  // req.session.ts = curr_timestamp;
-  //
-  // console.log('VS--visual_post_items and id-hash:>>');
-  // let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  // print_log_if_not_vamps(req, msg);
-  // console.log('<<VS--visual_post_items');
-
   let visual_post_items = start_visual_post_items(req);
 
-  let curr_timestamp = get_timestamp(req);
+  let curr_timestamp = file_path_obj.get_user_timestamp(req);
   visual_post_items.ts = curr_timestamp;
-  req.session.ts = curr_timestamp;
+  // req.session.ts = curr_timestamp;
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
@@ -182,7 +154,7 @@ function no_data(req, res, needed_constants) {
 
 function test_if_json_file_exists(req, i, dataset_ids, did) {
   let files_prefix = file_path_obj.get_json_files_prefix(req);
-  let path_to_file = path.join(files_prefix, did + '.json');
+  let path_to_file = path.join(files_prefix, did + '.json'); // TODO: use get_file_names
   let error_msg = "";
   try {
     require(path_to_file);
@@ -217,7 +189,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  print_log_if_not_vamps(req, JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -230,7 +202,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
+  file_path_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
@@ -262,7 +234,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
     console.log('chosen_dataset_order-->');
-    print_log_if_not_vamps(req, chosen_dataset_order);
+    file_path_obj.print_log_if_not_vamps(req, chosen_dataset_order);
     console.log('<--chosen_dataset_order');
 
     // else {
@@ -417,7 +389,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // console.log('XX'+JSON.stringify(req.body));
   // let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   let file_path = file_path_obj.get_user_file_path(req);
-  console.log(file_path);
+  console.log("file_path from view_saved_datasets" + file_path);
   // let dataset_ids = [];
   fs.readFile(file_path, 'utf8', function readFile(err,data) {
     if (err) {
@@ -439,7 +411,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 ///// It passes the newick string back to view_selection.js
 ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let ts = req.body.ts;
   let metric = req.body.metric;
@@ -450,7 +422,8 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  console.log("tmp_file_path from dendrogram: " + tmp_file_path);
 
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -476,14 +449,14 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     let lines = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        // print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // file_path_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
         const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
-          // print_log_if_not_vamps(req, 'NWK->' + newick);
+          // file_path_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err) {
           newick = {"ERROR": err};
@@ -569,7 +542,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   let metric = req.body.metric;
   // let image_type = req.body.image_type;
   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-  let image_file = ts+'_pcoa.pdf';
+  let image_file = ts + '_pcoa.pdf';
+  console.log("image_file from pcoa: " + image_file);
 
   let md1 = req.body.md1 || "Project";
   let md2 = req.body.md2 || "Description";
@@ -579,8 +553,9 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
   };
   console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
+  const script = 'pcoa2.R';
 
-  let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+  let pcoa_process = spawn( options2.scriptPath + '/' + script, options2.args, {
     env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
@@ -613,19 +588,25 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   console.log('POST in 3D');
 
-  let metric = req.session.selected_distance;
-  let ts = req.session.ts;
+  const metric = req.session.selected_distance;
+  const ts = req.session.ts;
 
-  let pc_file_name = ts + '_pc.txt';
-  let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
-  let mapping_file_name = ts + '_metadata.txt';
-  let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
-  let dist_file_name = ts + '_distance.csv';
-  let dir_name = ts + '_pcoa3d';
-  let dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
+  const pc_file_name = ts + '_pc.txt';
+  const biom_file_name = ts + '_count_matrix.biom';
+  const biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  const mapping_file_name = ts + '_metadata.txt';
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const mapping_file = path.join(tmp_file_path, mapping_file_name);
+  console.log("tmp_file_path from pcoa3d (mapping_file): " + mapping_file);
+
+  const dist_file_name = ts + '_distance.csv';
+  const dir_name = ts + '_pcoa3d';
+  const static_script_file_path = file_path_obj.get_static_script_file_path(req);
+  const dir_path = path.join(static_script_file_path, dir_name);
+  const viz_scripts_path = file_path_obj.get_viz_scripts_path(req);
+
   let options1 = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath : viz_scripts_path,
     args : [ '-in',
       biom_file_path,
       '-metric',
@@ -633,7 +614,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       '--function',
       'pcoa_3d',
       '--basedir',
-      req.CONFIG.TMP_FILES,
+      tmp_file_path,
       '--prefix',
       ts,
       '-m',
@@ -641,11 +622,12 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   };
 
   console.log('outdir: ' + dir_path);
+  const script = "distance_and_ordination.py";
   console.log(options1.scriptPath + script + ' ' + options1.args.join(' '));
   let pcoa_process = spawn( options1.scriptPath + script, options1.args, {
-    env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+    env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
-    stdio:['pipe', 'pipe', 'pipe']
+    stdio: ['pipe', 'pipe', 'pipe']
   });
   // pcoa_process.stdout.on('data', function pcoaProcessStdout(data) {
   //   //console.log('1stdout: ' + data);
@@ -659,8 +641,8 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
 
-      var index_file_name = dir_name + '/index.html';
-      let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **";
+      const index_file_name = dir_name + '/index.html';
+      let html = "** <a href='/static_base/tmp/" + index_file_name + "' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
@@ -669,7 +651,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //return;
 
 
-      var data = {};
+      let data = {};
       data.html = html;
       data.filename = index_file_name ;  // returns data and local file_name to be written to
       res.json(data);
@@ -994,7 +976,7 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-function get_file_path(req, selected_did, timestamp) {
+function get_sequences_json_file_path(req, selected_did, timestamp) {
   let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
   return path.join('tmp', filename);
 }
@@ -1038,7 +1020,8 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
-    let file_path = get_file_path(req, selected_did, timestamp);
+    let file_path = get_sequences_json_file_path(req, selected_did, timestamp);
+    console.log("file_path, from mysqlSelectedSeqsPerDID_to_file: " + file_path);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     // console.log("seq file_path:", file_path);
   }
@@ -1388,7 +1371,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -1606,7 +1589,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         ds_list = tmp[1];
       }
     }
-    print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
+    file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
@@ -1919,7 +1902,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  print_log_if_not_vamps(req, 'PROJECT_FILTER');
+  file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
 
   console.log(PROJECT_FILTER);
 
@@ -2262,13 +2245,13 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     if (Object.keys(DATA_TO_OPEN).length > 0){
 
       console.log('dto');
-      print_log_if_not_vamps(req, 'DATA_TO_OPEN');
+      file_path_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+    file_path_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
     for (let n in this_project.datasets){
@@ -2329,7 +2312,7 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+      file_path_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
 
       let cols =  biom_matrix.columns;
 
