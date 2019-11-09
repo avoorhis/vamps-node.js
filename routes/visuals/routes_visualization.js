@@ -1781,7 +1781,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   res.setHeader('Content-Type', 'text/plain');
   // if (string == 'undefined') { string = 'application/json' }
 
-  console.log("RRR0 res, look fof header" + res["Symbol(outHeadersKey)"]["content-type"]);
+  // console.log("RRR0 res, look fof header" + res["Symbol(outHeadersKey)"]["content-type"]);
   console.log("RRR1 file_path" + file_path);
 
   if (file_type === 'matrix') {
