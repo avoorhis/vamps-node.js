@@ -1770,8 +1770,9 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   // let html = '';
   let ts = req.body.ts;
   let file_type = req.body.file_type;
-  let file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
-  
+  // let file_path = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  let file_path = file_path_obj.get_tmp_file_path(req);
+
   const type_name_obj = {
     'biom': ts + '_count_matrix.biom',
     'tax': ts + '_taxonomy.txt',
@@ -1782,7 +1783,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   // if (string == 'undefined') { string = 'application/json' }
 
   // console.log("RRR0 res, look fof header" + res["Symbol(outHeadersKey)"]["content-type"]);
-  console.log("RRR1 file_path" + file_path);
+  console.log("RRR1 file_path: " + file_path);
 
   if (file_type === 'matrix') {
     let out_file_name = ts + '_count_matrix.txt';
@@ -2310,7 +2311,9 @@ router.get('/taxa_piechart', function(req, res) {
   let tax = myurl.query.tax;
   let timestamp = +new Date();  // millisecs since the epoch!
   let ts = req.session.ts;
-  let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
+  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  // let matrix_file_path = path.join(config.PROCESS_DIR, 'tmp', ts + '_count_matrix.biom');
+  let matrix_file_path = path.join(tmp_file_path, ts + '_count_matrix.biom');
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
