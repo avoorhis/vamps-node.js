@@ -1765,7 +1765,6 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 //
 //
 // test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
-// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
   // let html = '';
@@ -1779,20 +1778,21 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     'meta': ts + '_metadata.txt',
   };
 
-  // res.setHeader('Content-Type', 'text');
+  res.setHeader('Content-Type', 'text/plain');
   // if (string == 'undefined') { string = 'application/json' }
 
-  console.log("RRR0 res, look fof header" + JSON.stringify(res));
+  console.log("RRR0 res, look fof header" + res["Symbol(outHeadersKey)"]["content-type"]);
+  console.log("RRR1 file_path" + file_path);
 
   if (file_type === 'matrix') {
     let out_file_name = ts + '_count_matrix.txt';
     let biom_file_name = ts + '_count_matrix.biom';
-    res.setHeader('Content-Type', 'text');
+    // res.setHeader('Content-Type', 'text');
     helpers.create_matrix_from_biom(res, file_path, biom_file_name, out_file_name);
   }
   else if (type_name_obj.hasOwnProperty(file_type)) {
     const file_name = type_name_obj[file_type];
-    res.setHeader('Content-Type', 'text');
+    // res.setHeader('Content-Type', 'text/plain');
     res.download(path.join(file_path, file_name)); // Set disposition and send it.
   } else {
     // ERROR
