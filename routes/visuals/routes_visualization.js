@@ -1512,12 +1512,9 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in cluster_ds_order');
   let html = '';
-  // let ts = req.body.ts;
-  // console.log("ts from cluster_ds_order: ", ts); //anna10_1573510754524
   const user_timestamp = file_path_obj.get_user_timestamp(req);
 
   let metric = req.body.metric;
-  // let biom_file_name = ts + '_count_matrix.biom';
   let biom_file_path = file_path_obj.get_biom_file_path(req);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
@@ -1543,7 +1540,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   //let heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
   let output = '';
   cluster_process.stdout.on('data', function clusterProcessStdout(data) {
-    //console.log('stdout: ' + data);
     output += data.toString();
   });
 
@@ -1566,7 +1562,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
         let ascii_file = file_path_obj.get_tree_file_name(req, metric);
-          // ts + '_' + metric + '_tree.txt';
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
@@ -1602,11 +1597,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         res.send('Calculation Error: ' + err.toString());
       }
     }
-    // else {
-    //   //console.log('output')
-    //   //console.log(output);
-    //   //res.send(err);
-    // }
   });
 });
 //
