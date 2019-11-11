@@ -1076,9 +1076,9 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
-    const timestamp_only = file_path_obj.get_timestamp_only(req);
     write_seq_file_async(req, res, selected_did);
-    let bar_type = 'single';
+    const bar_type = 'single';
+    const timestamp_only = file_path_obj.get_timestamp_only(req);
     LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
   }
 });
@@ -1132,7 +1132,6 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let new_order = get_new_order_by_button(order);
 
-  // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
   const timestamp_only = file_path_obj.get_timestamp_only(req);
   write_seq_file_async(req, res, did1);
   write_seq_file_async(req, res, did2);
@@ -2250,19 +2249,22 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 // test: click on row (index 1...) of taxonomy table
 router.get('/taxa_piechart', function(req, res) {
   console.log('IN taxa_piechart - routes_visualizations');
-  let myurl = url.parse(req.url, true);
-  let tax = myurl.query.tax;
-  let timestamp = +new Date();  // millisecs since the epoch!
-  let ts = req.session.ts;
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const myurl = url.parse(req.url, true);
+  const tax = myurl.query.tax;
+  // let timestamp = +new Date();  // millisecs since the epoch!
+  // let ts = req.session.ts;
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   // let matrix_file_path = path.join(config.PROCESS_DIR, 'tmp', ts + '_count_matrix.biom');
-  let matrix_file_path = path.join(tmp_file_path, ts + '_count_matrix.biom');
+  // let matrix_file_path = path.join(tmp_file_path, ts + '_count_matrix.biom');
+  // console.log("piechart temp file 0: ", matrix_file_path);
+  const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+  const matrix_file_path = path.join(tmp_file_path, matrix_file_name);
+  console.log("piechart temp file 1: ", matrix_file_path);
 
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
     if (err) {
       let msg = 'ERROR Message '+err;
-      helpers.render_error_page(req,res,msg);
+      helpers.render_error_page(req, res, msg);
     } else {
       let biom_matrix = JSON.parse(mtxdata);
       let data = [];
@@ -2287,6 +2289,7 @@ router.get('/taxa_piechart', function(req, res) {
 
       let cols =  biom_matrix.columns;
 
+      const timestamp_only = file_path_obj.get_timestamp_only(req);
       res.render('visuals/user_viz_data/pie_single_tax', {
         title: 'Datasets PieChart',
         matrix    :           JSON.stringify(new_matrix),
@@ -2294,7 +2297,7 @@ router.get('/taxa_piechart', function(req, res) {
         tax : tax,
         datasets : JSON.stringify(cols),
         counts : data,
-        ts : timestamp,
+        ts : timestamp_only,
         user: req.user, hostname: req.CONFIG.hostname,
       });
     }
