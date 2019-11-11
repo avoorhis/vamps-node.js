@@ -107,26 +107,11 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   helpers.start = process.hrtime();
   let image_to_open = {};
 
-  // const visualization_obj = new visualization_controller.viewSelectionFactory(req);
-  // let dataset_ids = visualization_obj.dataset_ids;
-  // let visual_post_items = visualization_obj.visual_post_items;
-  //
-  // visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
-  //
-  // let curr_timestamp = get_timestamp(req);
-  // visual_post_items.ts = curr_timestamp;
-  // req.session.ts = curr_timestamp;
-  //
-  // console.log('VS--visual_post_items and id-hash:>>');
-  // let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  // print_log_if_not_vamps(req, msg);
-  // console.log('<<VS--visual_post_items');
-
   let visual_post_items = start_visual_post_items(req);
 
-  let curr_timestamp = get_timestamp(req);
-  visual_post_items.ts = curr_timestamp;
-  req.session.ts = curr_timestamp;
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  visual_post_items.ts = user_timestamp;
+  // req.session.ts = curr_timestamp;
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
