@@ -1105,6 +1105,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
 function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist = ""}) {
   console.log('LoadDataFinishRequest in bar_' + bar_type);
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
   let title = 'Taxonomic Data';
   if (pi.unit_choice === 'OTUs') {
     title = 'OTU Count Data';
@@ -1112,7 +1113,7 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_ord
   let url = 'visuals/user_viz_data/bar_' + bar_type;
   res.render(url, {
     title: title,
-    ts: timestamp,
+    ts: user_timestamp,
     matrix: JSON.stringify(new_matrix),
     post_items: JSON.stringify(pi),
     bar_type: bar_type,
