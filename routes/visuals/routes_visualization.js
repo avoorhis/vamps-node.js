@@ -855,19 +855,21 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
   //console.log(req.body)
 
-  let ts = req.body.ts;
-  console.log("ts from phyloseq: ", ts);
+  // let userTimestamp = req.body.userTimestamp;
+  // console.log("userTimestamp from phyloseq: ", userTimestamp);
+  let userTimestamp = file_path_obj.get_user_timestamp(req);
 
-  let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+  // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let plot_type = req.body.plot_type;
-  let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
+  const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, userTimestamp);
+  // let svgfile_name = userTimestamp + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
 
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let svgfile_path = path.join(tmp_file_path, svgfile_name);
   //console.log(biom_file)
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args:       [ tmp_file_path, ts ],
+    args:       [ tmp_file_path, userTimestamp ],
   };
 
   console.time("TIME: plot_type = " + plot_type);
