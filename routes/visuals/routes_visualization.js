@@ -2251,15 +2251,9 @@ router.get('/taxa_piechart', function(req, res) {
   console.log('IN taxa_piechart - routes_visualizations');
   const myurl = url.parse(req.url, true);
   const tax = myurl.query.tax;
-  // let timestamp = +new Date();  // millisecs since the epoch!
-  // let ts = req.session.ts;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  // let matrix_file_path = path.join(config.PROCESS_DIR, 'tmp', ts + '_count_matrix.biom');
-  // let matrix_file_path = path.join(tmp_file_path, ts + '_count_matrix.biom');
-  // console.log("piechart temp file 0: ", matrix_file_path);
   const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
   const matrix_file_path = path.join(tmp_file_path, matrix_file_name);
-  console.log("piechart temp file 1: ", matrix_file_path);
 
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
     if (err) {
@@ -2292,12 +2286,12 @@ router.get('/taxa_piechart', function(req, res) {
       const timestamp_only = file_path_obj.get_timestamp_only(req);
       res.render('visuals/user_viz_data/pie_single_tax', {
         title: 'Datasets PieChart',
-        matrix    :           JSON.stringify(new_matrix),
-        //post_items:           JSON.stringify(visual_post_items),
-        tax : tax,
-        datasets : JSON.stringify(cols),
-        counts : data,
-        ts : timestamp_only,
+        matrix: JSON.stringify(new_matrix),
+        //post_items: JSON.stringify(visual_post_items),
+        tax: tax,
+        datasets: JSON.stringify(cols),
+        counts: data,
+        ts: timestamp_only,
         user: req.user, hostname: req.CONFIG.hostname,
       });
     }
