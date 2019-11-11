@@ -999,7 +999,7 @@ function get_file_path(req, selected_did, timestamp) {
   return path.join('tmp', filename);
 }
 
-function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp){
+function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp_only){
   console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
@@ -1038,7 +1038,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
-    let file_path = get_file_path(req, selected_did, timestamp);
+    let file_path = get_file_path(req, selected_did, timestamp_only);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     // console.log("seq file_path:", file_path);
   }
@@ -1077,10 +1077,10 @@ function get_new_order_by_button(order) {
   return new_order;
 }
 
-function write_seq_file_async(req, res, selected_did, timestamp) {
+function write_seq_file_async(req, res, selected_did, timestamp_only) {
   connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
     function (err, rows) {
-      mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp);
+      mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp_only);
     });
 }
 
@@ -1090,7 +1090,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   //console.log('in piechart_single',myurl.query)
   let selected_did = myurl.query.did;
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
-  // let orderby = myurl.query.orderby || 'alphaDown'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
 
@@ -1100,11 +1099,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
-    // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
-    // timestamp = "1573506149602";
-    // req.session.ts
-    // const user_timestamp_arr = req.session.ts.split("_");
-    // timestamp = user_timestamp_arr[user_timestamp_arr.length - 1];
     const timestamp_only = file_path_obj.get_timestamp_only(req);
     write_seq_file_async(req, res, selected_did, timestamp_only);
     let bar_type = 'single';
@@ -1161,12 +1155,13 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let new_order = get_new_order_by_button(order);
 
-  let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
-  write_seq_file_async(req, res, did1, timestamp);
-  write_seq_file_async(req, res, did2, timestamp);
+  // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
+  const timestamp_only = file_path_obj.get_timestamp_only(req);
+  write_seq_file_async(req, res, did1, timestamp_only);
+  write_seq_file_async(req, res, did2, timestamp_only);
   // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
   let bar_type = "double";
-  LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist});
+  LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist});
 });
 
 //
