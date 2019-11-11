@@ -1512,8 +1512,9 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in cluster_ds_order');
   let html = '';
-  let ts = req.body.ts;
-  console.log("ts from cluster_ds_order: ", ts); //anna10_1573510754524
+  // let ts = req.body.ts;
+  // console.log("ts from cluster_ds_order: ", ts); //anna10_1573510754524
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
 
   let metric = req.body.metric;
   // let biom_file_name = ts + '_count_matrix.biom';
@@ -1528,7 +1529,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   }
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', ts],
+    args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
   };
   console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
 
@@ -1546,7 +1547,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     output += data.toString();
   });
 
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
     let lines = output.split(/\n/);
@@ -1557,7 +1557,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         ds_list = tmp[1];
       }
     }
-    print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
+    file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
@@ -1565,9 +1565,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let dataset_list = JSON.parse(ds_list);
 
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
-        let ascii_file = ts + '_' + metric + '_tree.txt';
-        let ascii_file_path = path.join(tmp_file_path,ascii_file);
-        fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err,ascii_tree_data) {
+        let ascii_file = file_path_obj.get_tree_file_name(req, metric);
+          // ts + '_' + metric + '_tree.txt';
+        let ascii_file_path = path.join(tmp_file_path, ascii_file);
+        fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
             return console.log(err);
           } else {
@@ -1580,18 +1581,18 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
             html += "  <tbody>";
             for (let i in potential_chosen_id_name_hash.names){
               html += "<tr class='tooltip_row'>";
-              html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-              html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-              html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+              html += "<td class='dragHandle' id='" + potential_chosen_id_name_hash.ids[i] + "--" + potential_chosen_id_name_hash.names[i] + "'> ";
+              html += "<input type='hidden' name='ds_order[]' value='" + potential_chosen_id_name_hash.ids[i] + "'>";
+              html += (parseInt(i) + 1).toString() + " (id:" +  potential_chosen_id_name_hash.ids[i] + ") - " + potential_chosen_id_name_hash.names[i];
               html += "</td>";
               html += "   <td>";
-              html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+              html += "       <a href='#' onclick='move_to_the_top(" + (parseInt(i) + 1).toString() + ",\"" + potential_chosen_id_name_hash.ids[i] + "--" + potential_chosen_id_name_hash.names[i] + "\")'>^</a>";
               html += "   </td>";
               html += "</tr>";
             }
             html += "</tbody>";
             html += "</table>";
-            html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
+            html += '/////<pre style="font-size:10px">' + metric + '<br><small>' + ascii_tree_data + '</small></pre>';
 
             res.send(html);
           }
