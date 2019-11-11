@@ -176,9 +176,10 @@ class visualizationFiles {
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
   }
 
-  get_biom_file_path(req, ts) {
-    let biom_file_name = ts + '_count_matrix.biom';
-    return path.join(req.CONFIG.TMP_FILES,  biom_file_name);
+  get_biom_file_path(req) {
+    const biom_file_name = this.get_file_names(req)['count_matrix.biom'];
+    const tmp_path = this.get_tmp_file_path(req);
+    return path.join(tmp_path, biom_file_name);
   }
 
   get_tmp_file_path(req) {
@@ -250,6 +251,7 @@ class visualizationFiles {
       'fheatmap.svg': user_ts + '_fheatmap.svg',
       'metadata.txt': user_ts + '_metadata.txt',
       'outtree.tre': user_ts + '_outtree.tre',
+      'pc.txt': user_ts + '_pc.txt',
       'taxonomy.txt': user_ts + '_taxonomy.txt',
     //      let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
     };
