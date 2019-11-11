@@ -853,25 +853,19 @@ function show_data(res, contents, svgfile_name) {
 // test: choose phylum, "Phyloseq Bars (R/svg)"
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
-  //console.log(req.body)
 
-  // let userTimestamp = req.body.userTimestamp;
-  // console.log("userTimestamp from phyloseq: ", userTimestamp);
-  let userTimestamp = file_path_obj.get_user_timestamp(req);
-
-  // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-  let plot_type = req.body.plot_type;
+  const userTimestamp = file_path_obj.get_user_timestamp(req);
   const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, userTimestamp);
-  // let svgfile_name = userTimestamp + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
 
-  let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  let svgfile_path = path.join(tmp_file_path, svgfile_name);
-  //console.log(biom_file)
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const svgfile_path = path.join(tmp_file_path, svgfile_name);
+
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args:       [ tmp_file_path, userTimestamp ],
   };
 
+  let plot_type = req.body.plot_type;
   console.time("TIME: plot_type = " + plot_type);
 
   let values = get_plot_specific_options(plot_type, req, options, svgfile_name);
@@ -899,9 +893,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
-
-    // console.log('looking for svgfile_name: ' + svgfile_name);
-    // console.log('looking for svgfile_path: ' + svgfile_path);
 
     let html = '';
     if (code === 0){   // SUCCESS
