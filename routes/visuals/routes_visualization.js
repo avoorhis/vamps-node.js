@@ -994,12 +994,7 @@ function make_new_matrix(req, pi, selected_did, order) {
   return new_matrix;
 }
 
-function get_file_path(req, selected_did, timestamp) {
-  let filename = req.user.username + '_' + selected_did + '_' + timestamp + '_sequences.json';
-  return path.join('tmp', filename);
-}
-
-function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp_only){
+function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
   console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
@@ -1035,11 +1030,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
       return b.seq_count - a.seq_count;
     });
 
-    // console.log("JSON.stringify(new_rows[selected_did])");
-    // console.log(JSON.stringify(new_rows[selected_did]));
-
     let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
-      // get_file_path(req, selected_did, timestamp_only);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     console.log("seq file_path:", file_path);
   }
@@ -1078,10 +1069,10 @@ function get_new_order_by_button(order) {
   return new_order;
 }
 
-function write_seq_file_async(req, res, selected_did, timestamp_only) {
+function write_seq_file_async(req, res, selected_did) {
   connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
     function (err, rows) {
-      mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, timestamp_only);
+      mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did);
     });
 }
 
@@ -1101,7 +1092,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
   if (pi.unit_choice !== 'OTUs') {
     const timestamp_only = file_path_obj.get_timestamp_only(req);
-    write_seq_file_async(req, res, selected_did, timestamp_only);
+    write_seq_file_async(req, res, selected_did);
     let bar_type = 'single';
     LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
   }
@@ -1158,8 +1149,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
   const timestamp_only = file_path_obj.get_timestamp_only(req);
-  write_seq_file_async(req, res, did1, timestamp_only);
-  write_seq_file_async(req, res, did2, timestamp_only);
+  write_seq_file_async(req, res, did1);
+  write_seq_file_async(req, res, did2);
   // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
   let bar_type = "double";
   LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist});
