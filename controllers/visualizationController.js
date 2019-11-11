@@ -222,6 +222,13 @@ class visualizationFiles {
     return seq_file_path;
   }
 
+  get_timestamp_only(req) {
+    const curr_ts = this.get_user_timestamp(req);
+    const user_timestamp_arr = curr_ts.split("_");
+    const timestamp_only = user_timestamp_arr[user_timestamp_arr.length - 1];
+    return timestamp_only;
+  }
+
   get_sequences_json_file_path(req, selected_did, user_timestamp = "") {
     if (user_timestamp === "") {
       user_timestamp = this.get_user_timestamp(req);

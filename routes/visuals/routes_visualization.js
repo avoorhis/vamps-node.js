@@ -1100,18 +1100,19 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
-    let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
+    // let timestamp = +new Date();  // millisecs since the epoch! Should be the same in render and the file_name
     // timestamp = "1573506149602";
     // req.session.ts
-    const user_timestamp_arr = req.session.ts.split("_");
-    timestamp = user_timestamp_arr[user_timestamp_arr.length - 1];
-    write_seq_file_async(req, res, selected_did, timestamp);
+    // const user_timestamp_arr = req.session.ts.split("_");
+    // timestamp = user_timestamp_arr[user_timestamp_arr.length - 1];
+    const timestamp_only = file_path_obj.get_timestamp_only(req);
+    write_seq_file_async(req, res, selected_did, timestamp_only);
     let bar_type = 'single';
-    LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type});
+    LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
   }
 });
 
-function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_order, bar_type, dist = ""}) {
+function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist = ""}) {
   console.log('LoadDataFinishRequest in bar_' + bar_type);
   let title = 'Taxonomic Data';
   if (pi.unit_choice === 'OTUs') {
@@ -1120,7 +1121,7 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp, new_matrix, new_ord
   let url = 'visuals/user_viz_data/bar_' + bar_type;
   res.render(url, {
     title: title,
-    ts: timestamp,
+    ts: timestamp_only,
     matrix: JSON.stringify(new_matrix),
     post_items: JSON.stringify(pi),
     bar_type: bar_type,
