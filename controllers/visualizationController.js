@@ -236,6 +236,13 @@ class visualizationFiles {
     return path.join(tmp_path, filename);
   }
 
+  get_tree_file_name(req, metric, user_timestamp) {
+    if (user_timestamp === "") {
+      user_timestamp = this.get_user_timestamp(req);
+    }
+    return user_timestamp + '_' + metric + '_tree.txt';
+  }
+
   get_file_names(req, user_ts = "") {
     if (user_ts === "") {
       user_ts = this.get_user_timestamp(req);
