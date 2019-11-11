@@ -1038,9 +1038,10 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did, time
     // console.log("JSON.stringify(new_rows[selected_did])");
     // console.log(JSON.stringify(new_rows[selected_did]));
 
-    let file_path = get_file_path(req, selected_did, timestamp_only);
+    let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
+      // get_file_path(req, selected_did, timestamp_only);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
-    // console.log("seq file_path:", file_path);
+    console.log("seq file_path:", file_path);
   }
   console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
 }
