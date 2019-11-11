@@ -103,7 +103,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
 
   let visual_post_items = start_visual_post_items(req);
-  
+
   visual_post_items.ts = file_path_obj.get_user_timestamp(req);
 
   console.log('entering MTX.get_biom_matrix');
@@ -363,7 +363,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-  let ts = req.session.ts;
+  let ts = file_path_obj.get_user_timestamp(req);
   let selected_dataset_order = {};
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
@@ -420,6 +420,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let ts = req.body.ts;
+  console.log("ts from dendrogram: ", ts);
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
   const script = '/distance_and_ordination.py';
@@ -543,6 +544,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   console.log('in PCoA');
   //console.log(metadata);
   let ts = req.body.ts;
+  console.log("ts from pcoa 2d: ", ts);
+
   // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let metric = req.body.metric;
   // let image_type = req.body.image_type;
@@ -592,7 +595,9 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   console.log('POST in 3D');
 
   let metric = req.session.selected_distance;
-  let ts = req.session.ts;
+  let ts = file_path_obj.get_user_timestamp(req);
+  //   req.session.ts;
+  // console.log("ts from pcoa 3D: ", ts);
 
   let pc_file_name = ts + '_pc.txt';
   let biom_file_name = ts + '_count_matrix.biom';
@@ -712,8 +717,11 @@ function format_sumator(allData) {
 }
 
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
-  let ts = req.session.ts;
   console.log('in dbrowser');
+  let ts = file_path_obj.get_user_timestamp(req);
+  //   req.session.ts;
+  // console.log("ts from dbrowser: ", ts);
+
   // console.log(req.session);
   let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
@@ -848,6 +856,8 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   //console.log(req.body)
 
   let ts = req.body.ts;
+  console.log("ts from phyloseq: ", ts);
+
   let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let plot_type = req.body.plot_type;
   let svgfile_name = ts + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg';
@@ -942,7 +952,7 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
   // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
   pi.no_of_datasets = pi.chosen_datasets.length;
-  pi.ts = req.session.ts;
+  pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
   pi.min_range = req.session.min_range;
   pi.max_range = req.session.max_range;
@@ -1125,11 +1135,10 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let new_order = get_new_order_by_button(order);
 
-  const timestamp_only = file_path_obj.get_timestamp_only(req);
   write_seq_file_async(req, res, did1);
   write_seq_file_async(req, res, did2);
-  // [did1, did2].map(did => write_seq_file_async(req, res, did, timestamp));
   let bar_type = "double";
+  const timestamp_only = file_path_obj.get_timestamp_only(req);
   LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist});
 });
 
@@ -1176,7 +1185,8 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
     tax: search_tax,
     fname: seqs_filename,
     seq_list: seq_list,
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user,
+    hostname: req.CONFIG.hostname,
   });
 }
 
@@ -1510,6 +1520,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in cluster_ds_order');
   let html = '';
   let ts = req.body.ts;
+  console.log("ts from cluster_ds_order: ", ts); //anna10_1573510754524
+
   let metric = req.body.metric;
   // let biom_file_name = ts + '_count_matrix.biom';
   let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
@@ -1611,7 +1623,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   console.log('in dheatmap_number_to_color');
   console.log(req.body);
 
-  let ts = req.session.ts;
+  let ts = file_path_obj.get_user_timestamp(req);
   let distmtx_file_name = ts + '_distance.json';
   let distmtx_file = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
   //console.log(distmtx_file)
@@ -1644,7 +1656,10 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   console.log('in dheatmap_split_distance');
   console.log(req.body);
 
-  let ts = req.session.ts;
+  let ts = file_path_obj.get_user_timestamp(req);
+    // req.session.ts;
+  // console.log("ts from dheatmap_split_distance: ", ts);
+
   let test_split_file_name = ts + '_distance_mh_bc.tsv';
   let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
 
@@ -1652,7 +1667,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let FinishSplitFile = function(req, res){
-    let ts = req.session.ts;
+    let ts = file_path_obj.get_user_timestamp(req);
+      // req.session.ts;
     //let suffix = split_file_suffixes[req.body.split_distance_choice]
     let suffix = req.body.split_distance_choice;
     //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
@@ -1738,6 +1754,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
   let ts = req.body.ts;
+  console.log("ts from download_file: ", ts);
+
   let file_type = req.body.file_type;
   let file_path = file_path_obj.get_tmp_file_path(req);
 
