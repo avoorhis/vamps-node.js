@@ -419,8 +419,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   console.log('req.body dnd');
   print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
-  let ts = req.body.ts;
-  console.log("ts from dendrogram: ", ts);
+  let ts = file_path_obj.get_user_timestamp(req);
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
   const script = '/distance_and_ordination.py';
@@ -428,7 +427,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   //console.log('image_type '+image_type);
   // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_biom_file_path(req);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let options = {
@@ -601,7 +600,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   let pc_file_name = ts + '_pc.txt';
   let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_biom_file_path(req);
   let mapping_file_name = ts + '_metadata.txt';
   let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
   let dist_file_name = ts + '_distance.csv';
@@ -624,6 +623,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   };
 
   console.log('outdir: ' + dir_path);
+  const script = "distance_and_ordination.py";
   console.log(options1.scriptPath + script + ' ' + options1.args.join(' '));
   let pcoa_process = spawn( options1.scriptPath + script, options1.args, {
     env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
@@ -723,7 +723,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // console.log("ts from dbrowser: ", ts);
 
   // console.log(req.session);
-  let matrix_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let matrix_file_path = file_path_obj.get_biom_file_path(req);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -1524,7 +1524,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
   let metric = req.body.metric;
   // let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_biom_file_path(req);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let pjds_lookup = {};
@@ -1663,7 +1663,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   let test_split_file_name = ts + '_distance_mh_bc.tsv';
   let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
 
-  let biom_file_path = file_path_obj.get_biom_file_path(req, ts);
+  let biom_file_path = file_path_obj.get_biom_file_path(req);
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let FinishSplitFile = function(req, res){
@@ -1711,11 +1711,11 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   }
 
   let options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', ts ],
+    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args:       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', ts ],
   };
 
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+  console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
   let split_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
     env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
     detached: true,
