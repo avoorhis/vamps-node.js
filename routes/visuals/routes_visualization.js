@@ -33,11 +33,6 @@ function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no pri
   }
 }
 
-function get_timestamp(req) {
-  let timestamp = +new Date();  // millisecs since the epoch!
-  return req.user.username + '_' + timestamp;
-}
-
 function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 // get dataset_ids the add names for biom file output:
 // chosen_id_order was set in unit_select and added to session variable
@@ -108,10 +103,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
 
   let visual_post_items = start_visual_post_items(req);
-
-  let user_timestamp = file_path_obj.get_user_timestamp(req);
-  visual_post_items.ts = user_timestamp;
-  // req.session.ts = curr_timestamp;
+  
+  visual_post_items.ts = file_path_obj.get_user_timestamp(req);
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
