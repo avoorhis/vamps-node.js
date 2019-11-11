@@ -215,12 +215,12 @@ class visualizationFiles {
     return user_timestamp;
   }
 
-  get_seq_file_path_from_name(req, seqs_filename) {
-    const biom_file_path = this.get_tmp_file_path(req);
-    const seq_file_path = path.join(biom_file_path, seqs_filename);
-    console.log("seq_file_path: " + seq_file_path);
-    return seq_file_path;
-  }
+  // get_seq_file_path_from_name(req, seqs_filename) {
+  //   const biom_file_path = this.get_tmp_file_path(req);
+  //   const seq_file_path = path.join(biom_file_path, seqs_filename);
+  //   console.log("seq_file_path: " + seq_file_path);
+  //   return seq_file_path;
+  // }
 
   get_timestamp_only(req) {
     const curr_ts = this.get_user_timestamp(req);
