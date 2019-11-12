@@ -427,7 +427,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   //console.log('image_type '+image_type);
   // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  let biom_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let options = {
@@ -600,7 +600,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
 
   let pc_file_name = ts + '_pc.txt';
   let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let mapping_file_name = ts + '_metadata.txt';
   let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
   let dist_file_name = ts + '_distance.csv';
@@ -723,7 +723,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   // console.log("ts from dbrowser: ", ts);
 
   // console.log(req.session);
-  let matrix_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  let matrix_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -1515,7 +1515,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   const user_timestamp = file_path_obj.get_user_timestamp(req);
 
   let metric = req.body.metric;
-  let biom_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let pjds_lookup = {};
@@ -1665,7 +1665,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     return;
   }
 
-  const biom_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   const user_timestamp = file_path_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {

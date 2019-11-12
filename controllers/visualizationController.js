@@ -176,11 +176,12 @@ class visualizationFiles {
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
   }
 
-  get_biom_file_tmp_path(req) {
-    const biom_file_name = this.get_file_names(req)['count_matrix.biom'];
-    const tmp_path = this.get_tmp_file_path(req);
-    return path.join(tmp_path, biom_file_name);
-  }
+  // get_biom_file_tmp_path(req) {
+  //   return this.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  //   // const biom_file_name = this.get_file_names(req)['count_matrix.biom'];
+  //   // const tmp_path = this.get_tmp_file_path(req);
+  //   // return path.join(tmp_path, biom_file_name);
+  // }
 
   get_tmp_file_path(req) {
     return req.CONFIG.TMP_FILES;
