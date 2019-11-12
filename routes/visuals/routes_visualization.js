@@ -1663,14 +1663,11 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   const user_timestamp = file_path_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const test_split_file_name = file_path_obj.get_file_names(req)['distance_mh_bc.tsv'];
-    // user_timestamp + '_distance_mh_bc.tsv';
-  // let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
   const test_distmtx_file = path.join(tmp_file_path, test_split_file_name);
-  // let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
-    FinishSplitFile(req, res, user_timestamp);
+    FinishSplitFile(req, res);
     return;
   }
 
@@ -1706,7 +1703,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   split_process.on('close', function splitsProcessOnClose(code) {
     console.log('finished code:' + code.toString());
     console.log('Creating New Split Distance Files');
-    FinishSplitFile(req, res, user_timestamp);
+    FinishSplitFile(req, res);
     //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
 
 
