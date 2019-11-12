@@ -269,6 +269,13 @@ class visualizationFiles {
     return test_distmtx_file_path;
   }
 
+  get_file_tmp_path_by_ending(req, ending) {
+    const tmp_file_path = this.get_tmp_file_path(req);
+    const file_name = this.get_file_names(req)[ending];
+    const file_tmp_path = path.join(tmp_file_path, file_name);
+    return file_tmp_path;
+}
+
   get_file_names(req, user_ts = "") {
     if (user_ts === "") {
       user_ts = this.get_user_timestamp(req);

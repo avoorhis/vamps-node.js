@@ -1604,12 +1604,16 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 // test heatmap
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
   console.log('in dheatmap_number_to_color');
-  console.log(req.body);
+  // console.log(req.body);
 
-  let ts = file_path_obj.get_user_timestamp(req);
-  let distmtx_file_name = ts + '_distance.json';
-  let distmtx_file = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
-  let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file, 'utf8')); // function (err, distance_matrix) {
+  // const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  // const distmtx_file_name = file_path_obj.get_file_names(req)['distance.json'];
+  // const distmtx_file_tmp_path = path.join(tmp_file_path, distmtx_file_name);
+  const distmtx_file_tmp_path = file_path_obj.get_file_tmp_path_by_ending(req, 'distance.json');
+
+// let distmtx_file_name = user_timestamp + '_distance.json';
+//   let distmtx_file_tmp_path = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
+  let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file_tmp_path, 'utf8')); // function (err, distance_matrix) {
 
   let metadata = {};
   metadata.numbers_or_colors = req.body.numbers_or_colors;
@@ -1618,7 +1622,8 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   let html = IMAGES.create_hm_table(req, distance_matrix, metadata );
 
   //console.log(html)
-  let outfile_name = ts + '-dheatmap-api.html';
+  // let outfile_name = user_timestamp + '-dheatmap-api.html';
+  const outfile_name = file_path_obj.get_file_names(req)['dheatmap-api.html'];
 
   let data = {};
   data.html = html;
