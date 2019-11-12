@@ -401,7 +401,6 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   console.log('req.body dnd');
   print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
-  let ts = file_path_obj.get_user_timestamp(req);
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
   const script = '/distance_and_ordination.py';
@@ -412,9 +411,10 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
+  let user_timestamp = file_path_obj.get_user_timestamp(req);
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', ts ],
+    args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
   console.log(options.scriptPath + script + ' ' + options.args.join(' '));
 
@@ -527,10 +527,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   let ts = req.body.ts;
   console.log("ts from pcoa 2d: ", ts);
 
-  // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
   let metric = req.body.metric;
-  // let image_type = req.body.image_type;
-  //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
   let image_file = ts+'_pcoa.pdf';
 
   let md1 = req.body.md1 || "Project";
@@ -542,7 +539,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   };
   console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
 
-  let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+  let pcoa_process = spawn( options2.scriptPath + '/pcoa2.R', options2.args, {
     env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
@@ -700,11 +697,6 @@ function format_sumator(allData) {
 
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log('in dbrowser');
-  let ts = file_path_obj.get_user_timestamp(req);
-  //   req.session.ts;
-  // console.log("ts from dbrowser: ", ts);
-
-  // console.log(req.session);
   let matrix_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
