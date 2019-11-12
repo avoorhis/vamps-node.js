@@ -1635,6 +1635,45 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   res.json(data);
 });
 
+function FinishSplitFile(req, res){
+  let userTimestamp = file_path_obj.get_user_timestamp(req);
+
+  let suffix = req.body.split_distance_choice;
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+
+  //let distmtx_file_name = userTimestamp+'_distance_'+suffix+'.json';
+  let distmtx_file_name = userTimestamp + '_distance_' + suffix + '.tsv';
+  let distmtx_file = path.join(tmp_file_path, distmtx_file_name);
+  //console.log(distmtx_file)
+  fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
+    if (err) {
+      res.json({'err': err});
+    } else {
+      //console.log(mtxdata)
+      let split_distance_csv_matrix = mtxdata.split('\n');
+
+      // IMAGES = require('../routes_images'); ?already required on top?
+      let metadata = {};
+      metadata.numbers_or_colors = req.body.numbers_or_colors;
+      metadata.split = true;
+      metadata.metric = suffix;
+
+      let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
+
+      let outfile_name = userTimestamp + '-dheatmap-api.html';
+      // TODO: Unused variable outfile_path
+      // let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
+
+      let data = {};
+      data.html = html;
+      data.numbers_or_colors = req.body.numbers_or_colors;
+      data.filename = outfile_name;
+      //res.send(outfile_name)
+      res.json(data);
+    }
+  });
+}
+
 
 router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
   console.log('in dheatmap_split_distance');
@@ -1647,44 +1686,6 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   // let test_distmtx_file = path.join(config.PROCESS_DIR,'tmp',test_split_file_name );
   const test_distmtx_file = path.join(tmp_file_path, test_split_file_name);
   // let tmp_file_path = file_path_obj.get_tmp_file_path(req);
-
-  let FinishSplitFile = function(req, res){
-    let ts = file_path_obj.get_user_timestamp(req);
-    // req.session.ts;
-    //let suffix = split_file_suffixes[req.body.split_distance_choice]
-    let suffix = req.body.split_distance_choice;
-    //let distmtx_file_name = ts+'_distance_'+suffix+'.json';
-    let distmtx_file_name = ts+'_distance_'+suffix+'.tsv';
-    let distmtx_file = path.join(tmp_file_path, distmtx_file_name);
-    //console.log(distmtx_file)
-    fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
-      if (err) {
-        res.json({'err': err});
-      } else {
-        //console.log(mtxdata)
-        let split_distance_csv_matrix = mtxdata.split('\n');
-
-        // IMAGES = require('../routes_images'); ?already required on top?
-        let metadata = {};
-        metadata.numbers_or_colors = req.body.numbers_or_colors;
-        metadata.split = true;
-        metadata.metric = suffix;
-
-        let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
-
-        let outfile_name = ts + '-dheatmap-api.html';
-        // TODO: Unused variable outfile_path
-        let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
-
-        let data = {};
-        data.html = html;
-        data.numbers_or_colors = req.body.numbers_or_colors;
-        data.filename = outfile_name;
-        //res.send(outfile_name)
-        res.json(data);
-      }
-    });
-  };
 
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
