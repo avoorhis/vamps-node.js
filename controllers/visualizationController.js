@@ -252,20 +252,21 @@ class visualizationFiles {
     return (user_timestamp + '_phyloseq_' + plot_type + '_' + rando.toString() + '.svg');
   }
 
-  get_distmtx_file_name(req, suffix, user_timestamp = "") {
+  get_distmtx_file_name(req, user_timestamp = "") {
     if (user_timestamp === "") {
       user_timestamp = this.get_user_timestamp(req);
     }
+    let suffix = req.body.split_distance_choice;
     const distmtx_file_name = user_timestamp + '_distance_' + suffix + '.tsv';
     return distmtx_file_name;
   }
 
   get_tmp_distmtx_file_path(req) {
-    const test_split_file_name = this.get_file_names(req)['distance_mh_bc.tsv'];
-    const test_distmtx_file = path.join(tmp_file_path, test_split_file_name);
-
+    const test_split_file_name = this.get_distmtx_file_name(req);
     const tmp_path = this.get_tmp_file_path(req);
-    return path.join(tmp_path, distmtx_file_name);
+    const test_distmtx_file_path = path.join(tmp_path, test_split_file_name);
+
+    return test_distmtx_file_path;
   }
 
   get_file_names(req, user_ts = "") {

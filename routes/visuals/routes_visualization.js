@@ -1636,14 +1636,14 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 });
 
 function FinishSplitFile(req, res){
-  let userTimestamp = file_path_obj.get_user_timestamp(req);
+  // let userTimestamp = file_path_obj.get_user_timestamp(req);
 
-  let suffix = req.body.split_distance_choice;
-  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  // const tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   //let distmtx_file_name = userTimestamp+'_distance_'+suffix+'.json';
-  let distmtx_file_name = userTimestamp + '_distance_' + suffix + '.tsv';
-  let distmtx_file = path.join(tmp_file_path, distmtx_file_name);
+  // let distmtx_file_name = userTimestamp + '_distance_' + suffix + '.tsv';
+  let distmtx_file = file_path_obj.get_tmp_distmtx_file_path(req);
+    // path.join(tmp_file_path, distmtx_file_name);
   //console.log(distmtx_file)
   fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
     if (err) {
@@ -1656,11 +1656,12 @@ function FinishSplitFile(req, res){
       let metadata = {};
       metadata.numbers_or_colors = req.body.numbers_or_colors;
       metadata.split = true;
-      metadata.metric = suffix;
+      metadata.metric = req.body.split_distance_choice;
 
       let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
-      let outfile_name = userTimestamp + '-dheatmap-api.html';
+      let outfile_name = file_path_obj.get_file_names(req)['dheatmap-api.html'];
+        // userTimestamp + '-dheatmap-api.html';
       // TODO: Unused variable outfile_path
       // let outfile_path = path.join(tmp_file_path, outfile_name);  // file name save to user_location
 
