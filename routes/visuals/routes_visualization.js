@@ -1604,16 +1604,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 // test heatmap
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
   console.log('in dheatmap_number_to_color');
-  // console.log(req.body);
 
-  // const tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  // const distmtx_file_name = file_path_obj.get_file_names(req)['distance.json'];
-  // const distmtx_file_tmp_path = path.join(tmp_file_path, distmtx_file_name);
   const distmtx_file_tmp_path = file_path_obj.get_file_tmp_path_by_ending(req, 'distance.json');
 
-// let distmtx_file_name = user_timestamp + '_distance.json';
-//   let distmtx_file_tmp_path = path.join(config.PROCESS_DIR, 'tmp', distmtx_file_name);
-  let distance_matrix = JSON.parse(fs.readFileSync(distmtx_file_tmp_path, 'utf8')); // function (err, distance_matrix) {
+  const distance_matrix = JSON.parse(fs.readFileSync(distmtx_file_tmp_path, 'utf8'));
 
   let metadata = {};
   metadata.numbers_or_colors = req.body.numbers_or_colors;
@@ -1621,8 +1615,6 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   metadata.metric = req.session.selected_distance;  // revert back to selected
   let html = IMAGES.create_hm_table(req, distance_matrix, metadata );
 
-  //console.log(html)
-  // let outfile_name = user_timestamp + '-dheatmap-api.html';
   const outfile_name = file_path_obj.get_file_names(req)['dheatmap-api.html'];
 
   let data = {};
@@ -1665,10 +1657,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   console.log('in dheatmap_split_distance');
   console.log(req.body);
 
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
-  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  const test_split_file_name = file_path_obj.get_file_names(req)['distance_mh_bc.tsv'];
-  const test_distmtx_file = path.join(tmp_file_path, test_split_file_name);
+  const test_distmtx_file = file_path_obj.get_file_tmp_path_by_ending(req, 'distance_mh_bc.tsv');
 
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
@@ -1677,6 +1666,8 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   }
 
   const biom_file_path = file_path_obj.get_biom_file_tmp_path(req);
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args:       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', user_timestamp ],
