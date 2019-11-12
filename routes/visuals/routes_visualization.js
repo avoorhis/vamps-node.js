@@ -345,7 +345,6 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-  let ts = file_path_obj.get_user_timestamp(req);
   let selected_dataset_order = {};
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
@@ -356,13 +355,14 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     selected_dataset_order.ids.push(did);
   }
 
-  console.log(req.session);
+  // console.log(req.session);
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
   res.render('visuals/reorder_datasets', {
-    title   : 'VAMPS: Reorder Datasets',
+    title: 'VAMPS: Reorder Datasets',
     selected_datasets: JSON.stringify(selected_dataset_order),
-    constants    : JSON.stringify(C),
+    constants: JSON.stringify(C),
     referer: req.body.referer,
-    ts : ts,
+    ts : user_timestamp,
     user: req.user, hostname: req.CONFIG.hostname,
   });
 
