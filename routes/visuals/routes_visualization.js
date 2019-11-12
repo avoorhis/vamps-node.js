@@ -1528,11 +1528,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
   };
-  console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
+  console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
 
-
-  let cluster_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+  let cluster_process = spawn( options.scriptPath + '/distance_and_ordination.py', options.args, {
+    env:{'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
     detached: true,
     stdio: [ 'ignore', null, null ]
   });  // stdin, stdout, stderr
@@ -1560,7 +1559,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       try {
         let dataset_list = JSON.parse(ds_list);
 
-        let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list,pjds_lookup);
+        let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list, pjds_lookup);
         let ascii_file = file_path_obj.get_tree_file_name(req, metric);
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {

@@ -236,7 +236,7 @@ class visualizationFiles {
     return path.join(tmp_path, filename);
   }
 
-  get_tree_file_name(req, metric, user_timestamp) {
+  get_tree_file_name(req, metric, user_timestamp = "") {
     if (user_timestamp === "") {
       user_timestamp = this.get_user_timestamp(req);
     }
