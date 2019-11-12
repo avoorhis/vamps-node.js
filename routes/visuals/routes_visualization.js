@@ -1700,42 +1700,54 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     console.log('finished code:' + code.toString());
     console.log('Creating New Split Distance Files');
     FinishSplitFile(req, res);
-    //let split_distance_csv_matrix = JSON.parse(fs.readFile(distmtx_file, 'utf8', function)) // function (err, distance_matrix) {
-
 
   });
 });
+
 //
 //
 //
 // test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
 router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_visualization download_file');
-  let ts = req.body.ts;
-  console.log("ts from download_file: ", ts);
+  // let ts = req.body.ts;
+  // console.log("ts from download_file: ", ts);
 
-  let file_type = req.body.file_type;
-  let file_path = file_path_obj.get_tmp_file_path(req);
+  const file_type = req.body.file_type;
+  // const type_name_obj = {
+  //   'biom': file_path_obj.get_file_tmp_path_by_ending(req, '_count_matrix.biom'),
+  //   'tax': file_path_obj.get_file_tmp_path_by_ending(req, '_taxonomy.txt'),
+  //   'meta': file_path_obj.get_file_tmp_path_by_ending(req, '_metadata.txt'),
+  // };
 
-  const type_name_obj = {
-    'biom': ts + '_count_matrix.biom',
-    'tax': ts + '_taxonomy.txt',
-    'meta': ts + '_metadata.txt',
-  };
+  // switch (file_type) {
+  //   case 'biom':
+  //     return file_path_obj.get_file_tmp_path_by_ending(req, '_count_matrix.biom');
+  //   case 'tax':
+  //     return file_path_obj.get_file_tmp_path_by_ending(req, '_taxonomy.txt');
+  //   case 'meta':
+  //     return file_path_obj.get_file_tmp_path_by_ending(req, '_metadata.txt');
+  // }
+
+
 
   res.setHeader('Content-Type', 'text/plain');
 
   if (file_type === 'matrix') {
-
-    helpers.create_matrix_from_biom(res, file_path, ts);
+    let user_timestamp = file_path_obj.get_user_timestamp(req);
+    let tmp_file_path = file_path_obj.get_tmp_file_path(req);
+    helpers.create_matrix_from_biom(res, tmp_file_path, user_timestamp);
   }
-  else if (type_name_obj.hasOwnProperty(file_type)) {
-    const file_name = type_name_obj[file_type];
-    res.download(path.join(file_path, file_name)); // Set disposition and send it.
-  } else {
-    // ERROR
-    console.log('ERROR In download_file');
+  else {
+    // if (type_name_arr.hasOwnProperty(file_type)) {
+    const file_path = file_path_obj.get_file_names_switch(req, file_type);
+      // type_name_obj[file_type];
+    res.download(file_path); // Set disposition and send it.
   }
+  // else {
+  //   // ERROR
+  //   console.log('ERROR In download_file');
+  // }
 
 });
 

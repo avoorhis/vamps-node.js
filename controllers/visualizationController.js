@@ -272,10 +272,24 @@ class visualizationFiles {
 
   get_file_tmp_path_by_ending(req, ending) {
     const tmp_file_path = this.get_tmp_file_path(req);
-    const file_name = this.get_file_names(req)[ending];
+    const file_name_obj = this.get_file_names(req);
+    const file_name = file_name_obj[ending];
     const file_tmp_path = path.join(tmp_file_path, file_name);
     return file_tmp_path;
 }
+
+  get_file_names_switch(req, file_type) {
+    switch (file_type) {
+      case 'biom':
+        return this.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+      case 'tax':
+        return this.get_file_tmp_path_by_ending(req, 'taxonomy.txt');
+      case 'meta':
+        return this.get_file_tmp_path_by_ending(req, 'metadata.txt');
+      default:
+        console.log('ERROR In download_file');
+    }
+  }
 
   get_file_names(req, user_ts = "") {
     if (user_ts === "") {
