@@ -203,6 +203,24 @@ class visualizationFiles {
     }
   }
 
+  test_if_json_file_exists(req, i, dataset_ids, did) {
+    let files_prefix = this.get_json_files_prefix(req);
+    let path_to_file = path.join(files_prefix, did + '.json');
+    let error_msg = "";
+    try {
+      require(path_to_file);
+    } catch (err) {
+      console.log(err);
+      let pid = PROJECT_ID_BY_DID[dataset_ids[i]];
+      let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      let dname = DATASET_NAME_BY_DID[did];
+      error_msg = 'No Taxonomy found for this dataset (' + pname + '--' + dname + ' (did:' + did + ')) and possibly others. Try selecting other units.';
+    }
+    if (error_msg){
+      req.flash('fail', error_msg);
+    }
+  }
+
   get_user_timestamp(req) {
     let curr_timestamp = "";
     let user_timestamp = "";
