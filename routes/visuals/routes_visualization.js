@@ -1221,7 +1221,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
-    if (module.exports.fileExists(seqs_filename_path)) {
+    if (helpers.fileExists(seqs_filename_path)) {
       console.log("EEE: YES seqs_filename_path");
       console.log(seqs_filename_path);
     }
