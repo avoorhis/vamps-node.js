@@ -777,12 +777,12 @@ function get_plot_specific_options(plot_type, req, options, svgfile_name) {
 
   switch(plot_type) {
     case 'bar':
-      script = 'phyloseq_bar.R';
+      options.script = 'phyloseq_bar.R';
       phy = req.body.phy;
       options.args = options.args.concat([svgfile_name, phy, fill]);
       break;
     case 'heatmap':
-      script = 'phyloseq_heatmap.R';
+      options.script = 'phyloseq_heatmap.R';
       //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
@@ -790,28 +790,28 @@ function get_plot_specific_options(plot_type, req, options, svgfile_name) {
       options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
       break;
     case 'network':
-      script = 'phyloseq_network.R';
+      options.script = 'phyloseq_network.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       maxdist = req.body.maxdist || "0.3";
       options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
       break;
     case 'ord':
-      script = 'phyloseq_ord.R';
+      options.script = 'phyloseq_ord.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       ordtype = req.body.ordtype || "PCoA";
       options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
       break;
     case 'tree':
-      script = 'phyloseq_tree.R';
+      options.script = 'phyloseq_tree.R';
       md1 = req.body.md1 || "Description";
       options.args = options.args.concat([svgfile_name, dist_metric, md1]);
       break;
   }
   // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
 
-  return [script, options.args];
+  return options;
 
 }
 
@@ -830,7 +830,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
   const user_timestamp = file_path_obj.get_user_timestamp(req);
   const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, user_timestamp);
-
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const svgfile_path = path.join(tmp_file_path, svgfile_name);
 
@@ -842,12 +841,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   let plot_type = req.body.plot_type;
   console.time("TIME: plot_type = " + plot_type);
 
-  let values = get_plot_specific_options(plot_type, req, options, svgfile_name);
-  let script = values[0];
-  options.args = values[1];
+  options = get_plot_specific_options(plot_type, req, options, svgfile_name);
+  // let script = values[0];
+  // options.args = values[1];
 
-  console.log(path.join(options.scriptPath, script) + ' ' + options.args.join(' '));
-  let phyloseq_process = spawn( path.join(options.scriptPath, script), options.args, {
+  console.log(path.join(options.scriptPath, options.script) + ' ' + options.args.join(' '));
+  let phyloseq_process = spawn( path.join(options.scriptPath, options.script), options.args, {
     env: {'PATH': req.CONFIG.PATH},
     detached: true,
     //stdio: [ 'ignore', null, null ]
