@@ -842,8 +842,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.time("TIME: plot_type = " + plot_type);
 
   options = get_plot_specific_options(plot_type, req, options, svgfile_name);
-  // let script = values[0];
-  // options.args = values[1];
 
   console.log(path.join(options.scriptPath, options.script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, options.script), options.args, {
