@@ -2,6 +2,7 @@ const COMMON = require(app_root + '/routes/visuals/routes_common');
 const helpers = require(app_root + '/routes/helpers/helpers');
 const path = require('path');
 const C = require(app_root + '/public/constants');
+const fs   = require('fs-extra');
 
 class viewSelectionGetData {
 
@@ -308,6 +309,38 @@ class visualizationFiles {
         console.log('ERROR In download_file');
     }
   }
+
+  checkExistsWithTimeout(filePath, timeout) {
+    // process.on('unhandledRejection', up => { throw up });
+    process.on('unhandledRejection', up => { console.log(up) });
+
+    return new Promise(function (resolve, reject) {
+
+      let timer = setTimeout(function () {
+        watcher.close();
+        reject(new Error('File did not exists and was not created during the timeout.'));
+      }, timeout);
+
+      fs.access(filePath, fs.constants.R_OK, function (err) {
+        if (!err) {
+          clearTimeout(timer);
+          watcher.close();
+          resolve();
+        }
+      });
+
+      let dir = path.dirname(filePath);
+      let basename = path.basename(filePath);
+      let watcher = fs.watch(dir, function (eventType, filename) {
+        if (eventType === 'rename' && filename === basename) {
+          clearTimeout(timer);
+          watcher.close();
+          resolve();
+        }
+      });
+    });
+  }
+
 
   get_file_names(req, user_ts = "") {
     if (user_ts === "") {

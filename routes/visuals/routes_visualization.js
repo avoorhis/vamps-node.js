@@ -1203,6 +1203,12 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
   return seq_list;
 }
 
+async function read_file_when_ready(seqs_filename_path) {
+  let a = await file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
+  console.log("AAA:");
+  console.log(a);
+}
+
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
@@ -1222,14 +1228,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
-    if (helpers.fileExists(seqs_filename_path)) {
-      console.log("EEE: YES seqs_filename_path");
-      console.log(seqs_filename_path);
-    }
-    else {
-      console.log("EEE0: NO seqs_filename_path");
-      console.log(seqs_filename_path);
-    }
+    // file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
+    read_file_when_ready(seqs_filename_path);
+
     fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
       console.time("TIME: readFile");
       if (err) {
