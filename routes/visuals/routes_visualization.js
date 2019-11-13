@@ -362,7 +362,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     selected_datasets: JSON.stringify(selected_dataset_order),
     constants: JSON.stringify(C),
     referer: req.body.referer,
-    ts : user_timestamp,
+    ts: user_timestamp,
     user: req.user, hostname: req.CONFIG.hostname,
   });
 
@@ -527,20 +527,20 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   let ts = req.body.ts;
   console.log("ts from pcoa 2d: ", ts);
 
-  let metric = req.body.metric;
+  const metric = req.body.metric;
   let image_file = ts+'_pcoa.pdf';
-
-  let md1 = req.body.md1 || "Project";
-  let md2 = req.body.md2 || "Description";
+  const md1 = req.body.md1 || "Project";
+  const md2 = req.body.md2 || "Description";
 
   let options2 = {
+    script: '/pcoa2.R',
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
   };
-  console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
+  console.log(options2.scriptPath + options2.script + ' ' + options2.args.join(' '));
 
-  let pcoa_process = spawn( options2.scriptPath + '/pcoa2.R', options2.args, {
-    env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+  let pcoa_process = spawn( options2.scriptPath + options2.script, options2.args, {
+    env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
   });
@@ -587,6 +587,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   let dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
   let options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    script: "distance_and_ordination.py",
     args : [ '-in',
       biom_file_path,
       '-metric',
@@ -602,10 +603,10 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   };
 
   console.log('outdir: ' + dir_path);
-  const script = "distance_and_ordination.py";
-  console.log(options1.scriptPath + script + ' ' + options1.args.join(' '));
-  let pcoa_process = spawn( options1.scriptPath + script, options1.args, {
-    env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+  const script_full_path = path.join(options1.scriptPath, options1.script);
+  console.log(script_full_path + ' ' + options1.args.join(' '));
+  let pcoa_process = spawn( script_full_path, options1.args, {
+    env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
   });
@@ -621,7 +622,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
 
-      var index_file_name = dir_name + '/index.html';
+      let index_file_name = dir_name + '/index.html';
       let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
@@ -631,7 +632,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       //return;
 
 
-      var data = {};
+      let data = {};
       data.html = html;
       data.filename = index_file_name ;  // returns data and local file_name to be written to
       res.json(data);
