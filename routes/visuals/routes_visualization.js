@@ -974,8 +974,8 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
     });
 
     let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
-    fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
     console.log("seq file_path:", file_path);
+    fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
   console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
 }
@@ -1213,11 +1213,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   const seqs_filename = myurl.query.filename;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const seqs_filename_path = path.join(tmp_file_path, seqs_filename);
-
-  let file_path2 = path.join('tmp', seqs_filename);
-  console.log("FFFF: file_path2");
-  console.log(file_path2);
-
 
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
