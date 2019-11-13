@@ -526,6 +526,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   //console.log(metadata);
   let ts = req.body.ts;
   console.log("ts from pcoa 2d: ", ts);
+  // Nov 13 12:06:36 bpcweb7 vamps2-nodejs[15842]: [2019/11/13 12:06:36.072] [LOG]    ts from pcoa 2d:  ashipunova_1573664792697
 
   const metric = req.body.metric;
   let image_file = ts+'_pcoa.pdf';
@@ -570,42 +571,29 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 // POST is for PC file link
 // test: "PCoA 3D Analyses (Emperor)"
 router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
-  console.log('POST in 3D');
+  console.log('POST in pcoa3d');
 
   let metric = req.session.selected_distance;
-  let ts = file_path_obj.get_user_timestamp(req);
-  //   req.session.ts;
-  // console.log("ts from pcoa 3D: ", ts);
+  // let ts = file_path_obj.get_user_timestamp(req);
 
-  const pc_file_name = file_path_obj.get_file_names(req)['pc.txt'];
-  // ts + '_pc.txt';
-  const biom_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
-    // ts + '_count_matrix.biom';
   const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  const mapping_file_name = file_path_obj.get_file_names(req)['metadata.txt'];
-    // ts + '_metadata.txt';
+  // const dir_path = path.join(file_path_obj.get_static_script_file_path(req), dir_name);
   const mapping_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'metadata.txt');
-
-  // path.join(req.CONFIG.TMP_FILES, mapping_file_name);
-  const dist_file_name = file_path_obj.get_file_names(req)['distance.csv'];
-    // ts + '_distance.csv';
-  const dir_name = file_path_obj.get_file_names(req)['pcoa3d'];
-    // ts + '_pcoa3d';
-  let dir_path = path.join(file_path_obj.get_static_script_file_path(req), dir_name);
   let options1 = {
     scriptPath : file_path_obj.get_viz_scripts_path(req),
     script: "distance_and_ordination.py",
-    args : [ '-in', biom_file_path,
+    args: ['-in', biom_file_path,
       '-metric', metric,
       '--function', 'pcoa_3d',
       '--basedir', file_path_obj.get_tmp_file_path(req),
-      '--prefix', ts,
-      '-m', mapping_file_path],
+      '--prefix', file_path_obj.get_user_timestamp(req),
+      '-m', mapping_file_path
+    ],
   };
 
-  console.log('outdir: ' + dir_path);
+  // console.log('outdir: ' + dir_path);
   const script_full_path = path.join(options1.scriptPath, options1.script);
-  console.log(script_full_path + ' ' + options1.args.join(' '));
+  // console.log(script_full_path + ' ' + options1.args.join(' '));
   let pcoa_process = spawn( script_full_path, options1.args, {
     env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
@@ -623,7 +611,12 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
 
-      let index_file_name = dir_name + '/index.html';
+      const pc_file_name = file_path_obj.get_file_names(req)['pc.txt'];
+      const biom_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+      const mapping_file_name = file_path_obj.get_file_names(req)['metadata.txt'];
+      const dist_file_name = file_path_obj.get_file_names(req)['distance.csv'];
+      const dir_name = file_path_obj.get_file_names(req)['pcoa3d'];
+      const index_file_name = dir_name + '/index.html';
       let html = "** <a href='/static_base/tmp/" + index_file_name + "' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
@@ -636,7 +629,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       res.json(data);
     }
     else{
-      //console.log('ERROR');
+      console.log('ERROR in PCOA 3D: ', stderr1);
       res.send('Python Script Error: ' + stderr1);
     }
   });
