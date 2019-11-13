@@ -535,11 +535,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   let image_file = ts+'_pcoa.pdf';
   const md1 = req.body.md1 || "Project";
   const md2 = req.body.md2 || "Description";
-
+  const tmp_path = file_path_obj.get_tmp_file_path(req);
   let options2 = {
     script: '/pcoa2.R',
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
+    args :       [ tmp_path, ts, metric, md1, md2, image_file],
   };
   console.log(options2.scriptPath + options2.script + ' ' + options2.args.join(' '));
 
