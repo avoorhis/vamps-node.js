@@ -377,8 +377,11 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // console.log('XX'+JSON.stringify(req.body));
   // let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   let file_path = file_path_obj.get_user_file_path(req);
+  console.log("file_path from view_saved_datasets");
   console.log(file_path);
   // let dataset_ids = [];
+
+  read_file_when_ready(file_path);
   fs.readFile(file_path, 'utf8', function readFile(err,data) {
     if (err) {
       let msg = 'ERROR Message ' + err;
@@ -689,6 +692,7 @@ function format_sumator(allData) {
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log('in dbrowser');
   let matrix_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  read_file_when_ready(matrix_file_path);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
@@ -859,6 +863,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     let html = '';
     if (code === 0){   // SUCCESS
 
+      read_file_when_ready(svgfile_path);
       fs.readFile(svgfile_path, 'utf8', function(err, contents){
 
         if(err){ res.send('ERROR reading file')}
@@ -1203,10 +1208,8 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
   return seq_list;
 }
 
-async function read_file_when_ready(seqs_filename_path) {
-  let a = await file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
-  console.log("AAA:");
-  console.log(a);
+async function read_file_when_ready(filename_path) {
+  return await file_path_obj.checkExistsWithTimeout(filename_path, 1000);
 }
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
@@ -1544,6 +1547,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list, pjds_lookup);
         let ascii_file = file_path_obj.get_tree_file_name(req, metric);
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
+        read_file_when_ready(ascii_file_path);
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
             return console.log(err);
@@ -1589,6 +1593,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 
   const distmtx_file_tmp_path = file_path_obj.get_file_tmp_path_by_ending(req, 'distance.json');
 
+  read_file_when_ready(distmtx_file_tmp_path);
   const distance_matrix = JSON.parse(fs.readFileSync(distmtx_file_tmp_path, 'utf8'));
 
   let metadata = {};
@@ -1608,9 +1613,10 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
 });
 
 function FinishSplitFile(req, res){
-  let distmtx_file = file_path_obj.get_tmp_distmtx_file_path(req);
+  let distmtx_file_path = file_path_obj.get_tmp_distmtx_file_path(req);
 
-  fs.readFile(distmtx_file, 'utf8', function readFile(err, mtxdata) {
+  read_file_when_ready(distmtx_file_path);
+  fs.readFile(distmtx_file_path, 'utf8', function readFile(err, mtxdata) {
     if (err) {
       res.json({'err': err});
     } else {
@@ -2192,9 +2198,10 @@ router.get('/taxa_piechart', function(req, res) {
   const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
   const matrix_file_path = path.join(tmp_file_path, matrix_file_name);
 
+  read_file_when_ready(matrix_file_path);
   fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
     if (err) {
-      let msg = 'ERROR Message '+err;
+      let msg = 'ERROR Message ' + err;
       helpers.render_error_page(req, res, msg);
     } else {
       let biom_matrix = JSON.parse(mtxdata);
