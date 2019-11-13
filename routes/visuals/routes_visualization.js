@@ -526,7 +526,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   //console.log(metadata);
   let ts = req.body.ts;
   console.log("ts from pcoa 2d: ", ts);
-  // Nov 13 12:06:36 bpcweb7 vamps2-nodejs[15842]: [2019/11/13 12:06:36.072] [LOG]    ts from pcoa 2d:  ashipunova_1573664792697
+  // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
   const metric = req.body.metric;
   let image_file = ts+'_pcoa.pdf';
@@ -1146,13 +1146,20 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
 }
 
 function filter_data_by_last_taxon(search_tax, clean_data) {
-  let search_tax_arr = search_tax.split(";");
-  let last_element_number = search_tax_arr.length - 1;
-  let last_taxon = search_tax_arr[last_element_number];
-  let curr_rank = C.RANKS[last_element_number];
-  let rank_name_id = curr_rank + "_id";
-  let db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
-  let filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
+  const search_tax_arr = search_tax.split(";");
+  const last_element_number = search_tax_arr.length - 1;
+  const last_taxon = search_tax_arr[last_element_number];
+  const curr_rank = C.RANKS[last_element_number];
+  const rank_name_id = curr_rank + "_id";
+  const db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+  let filtered_data = clean_data;
+
+  try {
+    filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
+  }
+  catch (e) {
+    console.log("No clean_data in filter_data_by_last_taxon");
+  }
   return filtered_data;
 }
 
@@ -1200,18 +1207,29 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
 // click on a barchart row
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   console.log('in sequences');
-  let myurl = url.parse(req.url, true);
+  const myurl = url.parse(req.url, true);
   // console.log(myurl.query);
-  let search_tax = myurl.query.taxa;
-  let seqs_filename = myurl.query.filename;
+  const search_tax = myurl.query.taxa;
+  const seqs_filename = myurl.query.filename;
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+  const seqs_filename_path = path.join(tmp_file_path, seqs_filename);
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
   let selected_did = myurl.query.did;
   let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
-    fs.readFile(path.join('tmp', seqs_filename), 'utf8', function readFile(err, data) {
+    if (module.exports.fileExists(seqs_filename_path)) {
+      console.log("EEE: YES seqs_filename_path");
+      console.log(seqs_filename_path);
+    }
+    else {
+      console.log("EEE0: NO seqs_filename_path");
+      console.log(seqs_filename_path);
+    }
+    fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
       console.time("TIME: readFile");
       if (err) {
         err_read_file(err, req, res, seqs_filename);
