@@ -577,29 +577,30 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   //   req.session.ts;
   // console.log("ts from pcoa 3D: ", ts);
 
-  let pc_file_name = ts + '_pc.txt';
-  let biom_file_name = ts + '_count_matrix.biom';
-  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  let mapping_file_name = ts + '_metadata.txt';
-  let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
-  let dist_file_name = ts + '_distance.csv';
-  let dir_name = ts + '_pcoa3d';
-  let dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
+  const pc_file_name = file_path_obj.get_file_names(req)['pc.txt'];
+  // ts + '_pc.txt';
+  const biom_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+    // ts + '_count_matrix.biom';
+  const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  const mapping_file_name = file_path_obj.get_file_names(req)['metadata.txt'];
+    // ts + '_metadata.txt';
+  const mapping_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'metadata.txt');
+
+  // path.join(req.CONFIG.TMP_FILES, mapping_file_name);
+  const dist_file_name = file_path_obj.get_file_names(req)['distance.csv'];
+    // ts + '_distance.csv';
+  const dir_name = file_path_obj.get_file_names(req)['pcoa3d'];
+    // ts + '_pcoa3d';
+  let dir_path = path.join(file_path_obj.get_static_script_file_path(req), dir_name);
   let options1 = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath : file_path_obj.get_viz_scripts_path(req),
     script: "distance_and_ordination.py",
-    args : [ '-in',
-      biom_file_path,
-      '-metric',
-      metric,
-      '--function',
-      'pcoa_3d',
-      '--basedir',
-      req.CONFIG.TMP_FILES,
-      '--prefix',
-      ts,
-      '-m',
-      mapping_file],
+    args : [ '-in', biom_file_path,
+      '-metric', metric,
+      '--function', 'pcoa_3d',
+      '--basedir', file_path_obj.get_tmp_file_path(req),
+      '--prefix', ts,
+      '-m', mapping_file_path],
   };
 
   console.log('outdir: ' + dir_path);
@@ -623,20 +624,16 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     if (code === 0){ // SUCCESS
 
       let index_file_name = dir_name + '/index.html';
-      let html = "** <a href='/static_base/tmp/"+index_file_name+"' target='_blank'>Open Emperor</a> **";
+      let html = "** <a href='/static_base/tmp/" + index_file_name + "' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
       html += "<br>Biom File: <a href='/static_base/tmp/" + biom_file_name + "' target='_blank'>" + biom_file_name + "</a>";
       html += "<br>Mapping (metadata) File: <a href='/static_base/tmp/" + mapping_file_name + "' target='_blank'>" + mapping_file_name + "</a>";
       html += "<br>Distance File: <a href='/static_base/tmp/" + dist_file_name + "' target='_blank'>" + dist_file_name + "</a>";
 
-      //return;
-
-
       let data = {};
       data.html = html;
       data.filename = index_file_name ;  // returns data and local file_name to be written to
       res.json(data);
-      // return;
     }
     else{
       //console.log('ERROR');

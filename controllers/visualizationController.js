@@ -325,6 +325,7 @@ class visualizationFiles {
       'fheatmap.svg': user_ts + '_fheatmap.svg',
       'metadata.txt': user_ts + '_metadata.txt',
       'outtree.tre': user_ts + '_outtree.tre',
+      'pcoa3d': user_ts + '_pcoa3d',
       'pc.txt': user_ts + '_pc.txt',
       'taxonomy.txt': user_ts + '_taxonomy.txt',
     };
