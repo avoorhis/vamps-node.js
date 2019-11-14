@@ -654,7 +654,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
   let options2 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ req.CONFIG.PATH_TO_STATIC_BASE, ts, metric, md1, md2, image_file],
+    args :       [ req.CONFIG.TMP_FILES, ts, metric, md1, md2, image_file],
   };
   console.log(options2.scriptPath + '/pcoa2.R ' + options2.args.join(' '));
 
@@ -701,7 +701,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   let mapping_file = path.join(req.CONFIG.TMP_FILES, mapping_file_name);
   let dist_file_name = ts + '_distance.csv';
   let dir_name = ts + '_pcoa3d';
-  let dir_path = path.join(req.CONFIG.PATH_TO_STATIC_BASE, dir_name);
+  
   let options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args : [ '-in',
@@ -718,7 +718,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       mapping_file],
   };
 
-  console.log('outdir: ' + dir_path);
+  
   console.log(options1.scriptPath + '/distance_and_ordination.py ' + options1.args.join(' '));
   let pcoa_process = spawn( options1.scriptPath + '/distance_and_ordination.py', options1.args, {
     env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
