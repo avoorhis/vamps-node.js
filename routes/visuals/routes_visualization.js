@@ -1236,27 +1236,60 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     //console.log('found filename', seqs_filename)
 
     // file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
-    read_file_when_ready(seqs_filename_path);
+    // read_file_when_ready(seqs_filename_path);
     console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
-    fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
-      console.time("TIME: readFile");
-      if (err) {
-        err_read_file(err, req, res, seqs_filename);
+    // path exists activity in do while loop
+
+    do {
+      console.log("Waitng");
+    }
+    while (!fs.access(seqs_filename_path))
+
+    fs.access(seqs_filename_path, error => {
+      if (error) {
+        console.log("Not ready yet: ", seqs_filename_path);
       }
-      //console.log('parsing data')
-      console.log("EEE3 seqs_filename", seqs_filename);
+      else {
+        fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
+          console.time("TIME: readFile");
+          if (err) {
+            err_read_file(err, req, res, seqs_filename);
+          }
+          //console.log('parsing data')
+          console.log("EEE3 seqs_filename", seqs_filename);
 
-      let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+          let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
-      console.time("TIME: loop through clean_data");
-      let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-      let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-      console.timeEnd("TIME: loop through clean_data");
+          console.time("TIME: loop through clean_data");
+          let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+          let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+          console.timeEnd("TIME: loop through clean_data");
 
-      render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-      console.timeEnd("TIME: readFile");
-    }.bind());
+          render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+          console.timeEnd("TIME: readFile");
+        }.bind());
+      }
+    });
+
+    // fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
+    //   console.time("TIME: readFile");
+    //   if (err) {
+    //     err_read_file(err, req, res, seqs_filename);
+    //   }
+    //   //console.log('parsing data')
+    //   console.log("EEE3 seqs_filename", seqs_filename);
+    //
+    //   let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+    //
+    //   console.time("TIME: loop through clean_data");
+    //   let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+    //   let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+    //   console.timeEnd("TIME: loop through clean_data");
+    //
+    //   render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+    //   console.timeEnd("TIME: readFile");
+    // }.bind());
   }
   else {
     // TODO: Andy, how to test this?
