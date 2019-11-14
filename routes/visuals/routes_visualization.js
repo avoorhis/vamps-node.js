@@ -1244,7 +1244,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     do {
       console.log("Waitng");
     }
-    while (!fs.access(seqs_filename_path))
+    while (!fs.access(seqs_filename_path));
+
+    console.log("fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
 
     fs.access(seqs_filename_path, error => {
       if (error) {
