@@ -1239,19 +1239,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     // read_file_when_ready(seqs_filename_path);
     console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
-    // path exists activity in do while loop
-
-    do {
-      console.log("Waitng");
-      console.log("FFF1 fs.accessSync(seqs_filename_path, fs.constants.R_OK): ", fs.accessSync(seqs_filename_path, fs.constants.R_OK));
-    }
-    while (!fs.accessSync(seqs_filename_path, fs.constants.R_OK));
-
-    console.log("FFF2 fs.accessSync(seqs_filename_path, fs.constants.R_OK): ", fs.accessSync(seqs_filename_path, fs.constants.R_OK));
-
     fs.access(seqs_filename_path, error => {
       if (error) {
-        console.log("Not ready yet: ", seqs_filename_path);
+        console.log("Not ready yet: ", seqs_filename_path)
       }
       else {
         fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
