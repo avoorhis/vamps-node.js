@@ -1118,6 +1118,7 @@ function err_read_file(err, req, res, seqs_filename) {
 
 function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
   let clean_data = "";
+  console.log("EEE1 seqs_filename", seqs_filename);
   try {
     clean_data = JSON.parse(data);
   } catch (e) {
@@ -1139,6 +1140,8 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
 
 function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '')
 {
+  console.log("EEE2 seqs_filename", seqs_filename);
+
   res.render('visuals/user_viz_data/sequences', {
     title: 'Sequences',
     ds: pjds,
@@ -1222,6 +1225,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   const seqs_filename = myurl.query.filename;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const seqs_filename_path = path.join(tmp_file_path, seqs_filename);
+  console.log("EEE1 seqs_filename_path", seqs_filename_path);
 
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
@@ -1233,6 +1237,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
     // file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
     read_file_when_ready(seqs_filename_path);
+    console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
       console.time("TIME: readFile");
@@ -1240,6 +1245,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         err_read_file(err, req, res, seqs_filename);
       }
       //console.log('parsing data')
+      console.log("EEE3 seqs_filename", seqs_filename);
 
       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
