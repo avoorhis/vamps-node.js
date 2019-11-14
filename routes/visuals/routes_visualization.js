@@ -979,7 +979,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
     });
 
     let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
-    console.log("seq file_path:", file_path);
+    console.log("EEE5 seq file_path:", file_path);
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
   console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");

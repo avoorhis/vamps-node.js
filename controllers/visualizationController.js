@@ -313,12 +313,12 @@ class visualizationFiles {
   checkExistsWithTimeout(filePath, timeout) {
     // process.on('unhandledRejection', up => { throw up });
     process.on('unhandledRejection', up => { console.log(up) });
-
+    console.log('Timeout = ', timeout);
     return new Promise(function (resolve, reject) {
 
       let timer = setTimeout(function () {
         watcher.close();
-        reject(new Error('File did not exists and was not created during the timeout.'));
+        reject(new Error('File did not exists and was not created during the timeout. Timeout = ', timeout));
       }, timeout);
 
       fs.access(filePath, fs.constants.R_OK, function (err) {
