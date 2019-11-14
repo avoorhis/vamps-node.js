@@ -1240,14 +1240,14 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     // path exists activity in do while loop
-    console.log("FFF1 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
 
     do {
       console.log("Waitng");
+      console.log("FFF1 fs.accessSync(seqs_filename_path, fs.constants.R_OK): ", fs.accessSync(seqs_filename_path, fs.constants.R_OK));
     }
     while (!fs.accessSync(seqs_filename_path, fs.constants.R_OK));
 
-    console.log("FFF2 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
+    console.log("FFF2 fs.accessSync(seqs_filename_path, fs.constants.R_OK): ", fs.accessSync(seqs_filename_path, fs.constants.R_OK));
 
     fs.access(seqs_filename_path, error => {
       if (error) {
