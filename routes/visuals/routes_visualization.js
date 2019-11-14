@@ -526,20 +526,19 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
   console.log('in PCoA');
-  //console.log(metadata);
-  let ts = req.body.ts;
-  console.log("ts from pcoa 2d: ", ts);
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
+  const user_timestamp = file_path_obj.get_user_timestamp(req);
   const metric = req.body.metric;
-  let image_file = ts+'_pcoa.pdf';
+  let image_file = file_path_obj.get_file_names(req)['pcoa.pdf'];
+    // user_timestamp + '_pcoa.pdf';
   const md1 = req.body.md1 || "Project";
   const md2 = req.body.md2 || "Description";
   const tmp_path = file_path_obj.get_tmp_file_path(req);
   let options2 = {
     script: '/pcoa2.R',
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, ts, metric, md1, md2, image_file],
+    args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
   };
   console.log(options2.scriptPath + options2.script + ' ' + options2.args.join(' '));
 
@@ -1230,18 +1229,16 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
   let selected_did = myurl.query.did;
-  let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project+'--'+DATASET_NAME_BY_DID[selected_did];
+  let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
 
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
-    // file_path_obj.checkExistsWithTimeout(seqs_filename_path, 1000);
-    // read_file_when_ready(seqs_filename_path);
     console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     fs.access(seqs_filename_path, error => {
       if (error) {
-        console.log("Not ready yet: ", seqs_filename_path)
+        console.log("Not ready yet: ", seqs_filename_path);
       }
       else {
         fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {

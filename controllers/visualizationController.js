@@ -359,6 +359,7 @@ class visualizationFiles {
       'metadata.txt': user_ts + '_metadata.txt',
       'outtree.tre': user_ts + '_outtree.tre',
       'pcoa3d': user_ts + '_pcoa3d',
+      'pcoa.pdf': user_ts + '_pcoa.pdf',
       'pc.txt': user_ts + '_pc.txt',
       'taxonomy.txt': user_ts + '_taxonomy.txt',
     };
