@@ -1240,40 +1240,75 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     // path exists activity in do while loop
-    console.log("FFF1 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
+    // console.log("FFF1 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
 
-    do {
-      console.log("Waitng");
+    // do {
+    //   console.log("Waitng");
+    // }
+    // while (!fs.access(seqs_filename_path));
+
+    // console.log("FFF2 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
+
+    const fsPromises = require('fs').promises;
+    async function openAndRead(seqs_filename_path) {
+      let filehandle;
+      try {
+        filehandle = await fsPromises.open(seqs_filename_path, 'r');
+        console.log("WWW1 waiting in openAndRead");
+      } finally {
+        if (filehandle !== undefined)
+        {
+          console.log("WWW1 waiting in openAndRead: filehandle !== undefined");
+
+          // fs.readFile
+          filehandle.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
+            console.time("TIME: readFile");
+            if (err) {
+              err_read_file(err, req, res, seqs_filename);
+            }
+            //console.log('parsing data')
+            console.log("EEE3 seqs_filename", seqs_filename);
+
+            let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+
+            console.time("TIME: loop through clean_data");
+            let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+            let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+            console.timeEnd("TIME: loop through clean_data");
+
+            render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+            console.timeEnd("TIME: readFile");
+          }.bind());
+        }
+      }
     }
-    while (!fs.access(seqs_filename_path));
 
-    console.log("FFF2 fs.access(seqs_filename_path: ", fs.access(seqs_filename_path));
 
-    fs.access(seqs_filename_path, error => {
-      if (error) {
-        console.log("Not ready yet: ", seqs_filename_path);
-      }
-      else {
-        fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
-          console.time("TIME: readFile");
-          if (err) {
-            err_read_file(err, req, res, seqs_filename);
-          }
-          //console.log('parsing data')
-          console.log("EEE3 seqs_filename", seqs_filename);
-
-          let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
-
-          console.time("TIME: loop through clean_data");
-          let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-          let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-          console.timeEnd("TIME: loop through clean_data");
-
-          render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-          console.timeEnd("TIME: readFile");
-        }.bind());
-      }
-    });
+    // fs.access(seqs_filename_path, error => {
+    //   if (error) {
+    //     console.log("Not ready yet: ", seqs_filename_path);
+    //   }
+    //   else {
+    //     fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
+    //       console.time("TIME: readFile");
+    //       if (err) {
+    //         err_read_file(err, req, res, seqs_filename);
+    //       }
+    //       //console.log('parsing data')
+    //       console.log("EEE3 seqs_filename", seqs_filename);
+    //
+    //       let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
+    //
+    //       console.time("TIME: loop through clean_data");
+    //       let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+    //       let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
+    //       console.timeEnd("TIME: loop through clean_data");
+    //
+    //       render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
+    //       console.timeEnd("TIME: readFile");
+    //     }.bind());
+    //   }
+    // });
 
     // fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
     //   console.time("TIME: readFile");
