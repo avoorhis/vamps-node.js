@@ -1859,15 +1859,8 @@ function get_envid_lst(req) {
   const env_name = items[1];
   let envid_lst = [];
 
-  if (env_name === 'human associated') {  // get id for 'human associated'
-    // envid_lst = [];
+  if (env_name === 'human associated') {  // get ids for 'human associated'
     envid_lst = Object.keys(MD_ENV_PACKAGE).filter(key => MD_ENV_PACKAGE[key].startsWith('human'));
-
-    // for (let key in MD_ENV_PACKAGE) {
-    //   if (MD_ENV_PACKAGE[key].substring(0, 5) === 'human') {
-    //     envid_lst.push(parseInt(key));
-    //   }
-    // }
   } else if (envid === '.....') {
     envid_lst = [];
   } else {
@@ -1886,33 +1879,14 @@ router.get('/livesearch_env/:envid', function(req, res) {
 
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
-  // let info = PROJECT_INFORMATION_BY_PID;
-
-  // let envid_lst = get_envid_lst(req);
-  // let envid = req.params.envid;
-  // let items = envid.split('--');
-  // envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
-  // let env_name = items[1];
-  // let envid_lst = [];
-  // if (env_name === 'human associated'){  // get id for 'human associated'
-  //   envid_lst = [];
-  //   for (let key in MD_ENV_PACKAGE){
-  //     if (MD_ENV_PACKAGE[key].substring(0,5) === 'human'){
-  //       envid_lst.push(parseInt(key));
-  //     }
-  //   }
-  // } else if (envid === '.....'){
-  //   envid_lst = [];
-  // } else {
-  //   envid_lst = [parseInt(envid)];
-  // }
 
   PROJECT_FILTER.env = get_envid_lst(req);
 
   let projects_to_filter = [];
-  if (portal){
+  if (portal) {
     projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
+  }
+  else {
     projects_to_filter = SHOW_DATA.projects;
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
