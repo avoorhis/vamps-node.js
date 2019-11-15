@@ -1853,19 +1853,21 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 function get_envid_lst(req) {
   console.log("get_envid_lst");
   console.time("TIME: get_envid_lst");
-  let envid = req.params.envid;
-  let items = envid.split('--');
-  envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
-  let env_name = items[1];
+  const env_id_name = req.params.envid;
+  const items = env_id_name.split('--');
+  let envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
+  const env_name = items[1];
   let envid_lst = [];
 
   if (env_name === 'human associated') {  // get id for 'human associated'
-    envid_lst = [];
-    for (let key in MD_ENV_PACKAGE) {
-      if (MD_ENV_PACKAGE[key].substring(0, 5) === 'human') {
-        envid_lst.push(parseInt(key));
-      }
-    }
+    // envid_lst = [];
+    envid_lst = Object.keys(MD_ENV_PACKAGE).filter(key => MD_ENV_PACKAGE[key].startsWith('human'));
+
+    // for (let key in MD_ENV_PACKAGE) {
+    //   if (MD_ENV_PACKAGE[key].substring(0, 5) === 'human') {
+    //     envid_lst.push(parseInt(key));
+    //   }
+    // }
   } else if (envid === '.....') {
     envid_lst = [];
   } else {
