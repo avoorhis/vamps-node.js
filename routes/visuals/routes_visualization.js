@@ -1855,7 +1855,7 @@ function get_envid_lst(req) {
   console.time("TIME: get_envid_lst");
   const env_id_name = req.params.envid;
   const items = env_id_name.split('--');
-  let envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
+  let envid = items[0];
   const env_name = items[1];
   let envid_lst = [];
 
@@ -1874,7 +1874,6 @@ function get_envid_lst(req) {
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
 // test click filter by ENV source on visuals_index
-// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/livesearch_env/:envid', function(req, res) {
 
   let myurl = url.parse(req.url, true);
@@ -2003,10 +2002,10 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
     q = '';
   }
 
-  PROJECT_FILTER['metadata'+num] = q;
+  PROJECT_FILTER['metadata' + num] = q;
   //PROJECT_FILTER.metadata_num = num
 
-  //TODO: DRY
+  //TODO: DRY with other places
   let projects_to_filter = "";
   if (portal){
     projects_to_filter = helpers.get_portal_projects(req, portal);
