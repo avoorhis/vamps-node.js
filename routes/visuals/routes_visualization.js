@@ -576,11 +576,9 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   console.log('POST in pcoa3d');
 
   let metric = req.session.selected_distance;
-  // let ts = file_path_obj.get_user_timestamp(req);
-
   const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  // const dir_path = path.join(file_path_obj.get_static_script_file_path(req), dir_name);
   const mapping_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'metadata.txt');
+
   let options1 = {
     scriptPath : file_path_obj.get_viz_scripts_path(req),
     script: "distance_and_ordination.py",
@@ -593,9 +591,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     ],
   };
 
-  // console.log('outdir: ' + dir_path);
   const script_full_path = path.join(options1.scriptPath, options1.script);
-  // console.log(script_full_path + ' ' + options1.args.join(' '));
   let pcoa_process = spawn( script_full_path, options1.args, {
     env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
