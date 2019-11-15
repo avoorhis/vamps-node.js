@@ -926,7 +926,6 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   return pi;
 }
 
-// TODO: JSHint: This function has too many parameters. (4) (W072)
 function make_new_matrix(req, pi, selected_did, order) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_single");
@@ -1851,35 +1850,62 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   res.json(PROJECT_FILTER);
 });
 
+function get_envid_lst(req) {
+  console.log("get_envid_lst");
+  console.time("TIME: get_envid_lst");
+  let envid = req.params.envid;
+  let items = envid.split('--');
+  envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
+  let env_name = items[1];
+  let envid_lst = [];
+
+  if (env_name === 'human associated') {  // get id for 'human associated'
+    envid_lst = [];
+    for (let key in MD_ENV_PACKAGE) {
+      if (MD_ENV_PACKAGE[key].substring(0, 5) === 'human') {
+        envid_lst.push(parseInt(key));
+      }
+    }
+  } else if (envid === '.....') {
+    envid_lst = [];
+  } else {
+    envid_lst = [parseInt(envid)];
+  }
+  console.timeEnd("TIME: get_envid_lst");
+  return envid_lst;
+}
+
 //
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
 // test click filter by ENV source on visuals_index
 // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/livesearch_env/:envid', function(req, res) {
-  let envid = req.params.envid;
-  let items = envid.split('--');
-  envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
-  let env_name = items[1];
+
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
   // let info = PROJECT_INFORMATION_BY_PID;
 
-  let envid_lst = [];
-  if (env_name === 'human associated'){  // get id for 'human associated'
-    envid_lst = [];
-    for (let key in MD_ENV_PACKAGE){
-      if (MD_ENV_PACKAGE[key].substring(0,5) === 'human'){
-        envid_lst.push(parseInt(key));
-      }
-    }
-  }else if (envid === '.....'){
-    envid_lst = [];
-  } else {
-    envid_lst = [parseInt(envid)];
-  }
+  // let envid_lst = get_envid_lst(req);
+  // let envid = req.params.envid;
+  // let items = envid.split('--');
+  // envid = items[0]; //TODO: why redefine here? was just defined 2 lines before.
+  // let env_name = items[1];
+  // let envid_lst = [];
+  // if (env_name === 'human associated'){  // get id for 'human associated'
+  //   envid_lst = [];
+  //   for (let key in MD_ENV_PACKAGE){
+  //     if (MD_ENV_PACKAGE[key].substring(0,5) === 'human'){
+  //       envid_lst.push(parseInt(key));
+  //     }
+  //   }
+  // } else if (envid === '.....'){
+  //   envid_lst = [];
+  // } else {
+  //   envid_lst = [parseInt(envid)];
+  // }
 
-  PROJECT_FILTER.env = envid_lst;
+  PROJECT_FILTER.env = get_envid_lst(req);
 
   let projects_to_filter = [];
   if (portal){
@@ -1891,6 +1917,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  console.log("PROJECT_FILTER: ");
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
