@@ -1903,7 +1903,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   PROJECT_FILTER = global_filter_vals.project_filter;
   NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
   PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
-  
+
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -1964,14 +1964,16 @@ router.post('/check_units', function(req, res) {
 // test: choose custom taxonomy, show tree
 // TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/tax_custom_dhtmlx', function(req, res) {
+  console.time("TIME: tax_custom_dhtmlx");
   //console.log('IN tax_custom_dhtmlx')
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
   //console.log('id='+id)
   let json = {};
   json.id = id;
-  json.item = [];
   if (parseInt(id) === 0){
+    console.time("TIME: id = 0");
+
     /*
         return json for collapsed tree: 'domain' only
             json = {"id":"0","item":[
@@ -1983,20 +1985,53 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             }
     */
 
+    // let js_array = [];
+    // json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
+    //   let ob = {
+    //     id: node.node_id,
+    //     text: node.taxon,
+    //     tooltip: node.rank,
+    //     checked:true
+    //   };
+    //   let has_children = 0;
+    //   if (node.children_ids && node.children_ids.length !== 0) {
+    //     has_children = 1;
+    //     ob.item = [];
+    //   }
+    //   ob.child = has_children;
+    //
+    //   js_array.push(ob);
+    //
+    //   return js_array;
+    // });
 
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+    json.item = [];
     for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
       let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+      let temp_ob = {
+            id: node.node_id,
+            text: node.taxon,
+            tooltip: node.rank,
+            checked: true
+          };
+
       if (node.children_ids.length === 0){
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:0});
+        temp_ob.child = 0;
       } else {
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:1, item:[]});
+        temp_ob.child = 1;
+        temp_ob.item = [];
       }
+      json.item.push(temp_ob);
     }
     json.item.sort(function(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
+
+    console.timeEnd("TIME: id = 0");
+
   } else {
+    console.time("TIME: id != 0");
+
     for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
       let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
       let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
@@ -2011,7 +2046,10 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     json.item.sort(function sortByAlpha(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
+    console.time("TIME: id != 0");
+
   }
+  console.timeEnd("TIME: tax_custom_dhtmlx");
   res.json(json);
 });
 //
