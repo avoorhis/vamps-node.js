@@ -1785,8 +1785,8 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   }
   PROJECT_FILTER.substring = substring;
 
-  const projects_to_filter = filters_obj.get_projects_to_filter(req);
-  const global_filter_vals = filters_obj.update_project_filter_length(req, projects_to_filter);
+  // const projects_to_filter = filters_obj.get_projects_to_filter(req);
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
   PROJECT_FILTER = global_filter_vals.project_filter;
   NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
   PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;

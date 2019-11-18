@@ -446,16 +446,21 @@ class visualizationFilters {
     return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
   }
 
-  update_project_filter_length(req, projects_to_filter) {
-    const project_filter = PROJECT_FILTER;
-    const newproject_tree_obj = helpers.filter_projects(req, projects_to_filter, project_filter);
+  get_global_filter_values(req) {
+    const projects_to_filter = this.get_projects_to_filter(req);
+    const newproject_tree_obj = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
     const project_tree_pids = this.filter_project_tree_for_permissions(req, newproject_tree_obj);
-    project_filter.pid_length = project_tree_pids.length;
+    this.update_project_filter_length(project_tree_pids);
+
     return {
-      project_filter: project_filter,
+      project_filter: PROJECT_FILTER,
       newproject_tree_obj: newproject_tree_obj,
       project_tree_pids: project_tree_pids
     };
+  }
+
+  update_project_filter_length(project_tree_pids) {
+    PROJECT_FILTER.pid_length = project_tree_pids.length;
   }
 
 }
