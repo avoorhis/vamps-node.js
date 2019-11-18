@@ -1787,9 +1787,14 @@ const filters_obj =  new visualization_controller.visualizationFilters();
 router.get('/livesearch_projects/:substring', function(req, res) {
   console.log('viz:in livesearch_projects/:substring');
   let substring = req.params.substring.toUpperCase();
-  PROJECT_FILTER.substring = filters_obj.check_if_empty_val(substring);
+  let empty_string = filters_obj.check_if_empty_val(substring);
+  if (empty_string) {
+    substring = "";
+  }
 
-  const projects_to_filter = filters_obj.get_projects_to_filter(req);
+  PROJECT_FILTER.substring = substring;
+
+    const projects_to_filter = filters_obj.get_projects_to_filter(req);
   // let portal = myurl.query.portal;
   // let projects_to_filter = [];
   // if (portal){

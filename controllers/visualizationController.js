@@ -376,7 +376,10 @@ class visualizationFilters {
 
   check_if_empty_val(val) {
     if (val === '.....'){
-      return "";
+      return true;
+    }
+    else {
+      return false;
     }
   }
 
