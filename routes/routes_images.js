@@ -357,8 +357,8 @@ fheatmap: function(req, res){
     stdout = '';
     fheatmap_process.stdout.on('data', function fheatmapProcessStdout(data) {
           stdout += data;
-          console.log('stdout-data:')
-          console.log(data.toString())
+          //console.log('stdout-data:')
+          //console.log(data.toString())
     });
     stderr = '';
     fheatmap_process.stderr.on('data', function fheatmapProcessStderr(data) {
