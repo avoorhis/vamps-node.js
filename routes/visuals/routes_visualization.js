@@ -555,8 +555,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
       html = "<div id='pdf'>";
       html += "<embed src='/static_base/tmp/" + image_file + "' type='application/pdf' width='1000' height='600' />";
-      html += " <p>ERROR in loading pdf file</p>";
-      html += "</object></div>";
+      html += "</div>";
       console.log(html);
       var data = {}
         data.html = html
