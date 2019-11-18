@@ -447,12 +447,15 @@ class visualizationFilters {
   }
 
   update_project_filter_length(req, projects_to_filter) {
-    let project_filter = PROJECT_FILTER;
-    let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, project_filter);
-
-    PROJECT_TREE_PIDS = this.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-    project_filter.pid_length = PROJECT_TREE_PIDS.length;
-    return project_filter;
+    const project_filter = PROJECT_FILTER;
+    const newproject_tree_obj = helpers.filter_projects(req, projects_to_filter, project_filter);
+    const project_tree_pids = this.filter_project_tree_for_permissions(req, newproject_tree_obj);
+    project_filter.pid_length = project_tree_pids.length;
+    return {
+      project_filter: project_filter,
+      newproject_tree_obj: newproject_tree_obj,
+      project_tree_pids: project_tree_pids
+    };
   }
 
 }
