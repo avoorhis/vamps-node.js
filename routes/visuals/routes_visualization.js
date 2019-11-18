@@ -1984,27 +1984,28 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
                 ]
             }
     */
+    console.time("TIME: json.item map");
 
-    // let js_array = [];
-    // json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
-    //   let ob = {
-    //     id: node.node_id,
-    //     text: node.taxon,
-    //     tooltip: node.rank,
-    //     checked:true
-    //   };
-    //   let has_children = 0;
-    //   if (node.children_ids && node.children_ids.length !== 0) {
-    //     has_children = 1;
-    //     ob.item = [];
-    //   }
-    //   ob.child = has_children;
-    //
-    //   js_array.push(ob);
-    //
-    //   return js_array;
-    // });
+    json.item = [];
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
+      let temp_ob = {
+        id: node.node_id,
+        text: node.taxon,
+        tooltip: node.rank,
+        checked: true
+      };
 
+      if (node.children_ids.length === 0){
+        temp_ob.child = 0;
+      } else {
+        temp_ob.child = 1;
+        temp_ob.item = [];
+      }
+      json.item.push(temp_ob);
+    });
+    console.timeEnd("TIME: json.item map");
+
+    console.time("TIME: json.item for");
     json.item = [];
     for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
       let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
@@ -2023,6 +2024,8 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
       }
       json.item.push(temp_ob);
     }
+    console.timeEnd("TIME: json.item for");
+
     json.item.sort(function(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
