@@ -1847,27 +1847,17 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 router.get('/livesearch_portal/:portal', function(req, res) {
   console.log('viz:in livesearch portal');
   let select_box_portal = req.params.portal;
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;  // we have this turned off: portal selection on portal page
-
-  if (select_box_portal === '.....') {
-    select_box_portal = '';
+  let empty_string = filters_obj.check_if_empty_val(select_box_portal);
+  if (empty_string) {
+    select_box_portal = "";
   }
-
   PROJECT_FILTER.portal = select_box_portal;
-  //TODO: projects_to_filter is not used here
-  let projects_to_filter = [];
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  //console.log(PROJECT_FILTER)
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
-  //console.log(NewPROJECT_TREE_OBJ)
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  //console.log(PROJECT_FILTER)
+
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+
   res.json(PROJECT_FILTER);
 
 });
@@ -1879,21 +1869,13 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 // test: click public/private on visuals_index
 router.get('/livesearch_status/:q', function(req, res) {
   console.log('viz:in livesearch status');
-  let q = req.params.q;
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
+  PROJECT_FILTER.public = req.params.q;
 
-  PROJECT_FILTER.public = q;
-  let projects_to_filter = "";
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -1908,28 +1890,20 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 
   let num = req.params.num;
   let q = req.params.q;
-  console.log('num '+num);
-  console.log('query '+q);
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
-  if (q === '.....'){
-    q = '';
-  }
+  console.log('num ' + num);
+  console.log('query ' + q);
 
+  let empty_string = filters_obj.check_if_empty_val(q);
+  if (empty_string) {
+    q = "";
+  }
   PROJECT_FILTER['metadata' + num] = q;
-  //PROJECT_FILTER.metadata_num = num
 
-  //TODO: DRY with other places
-  let projects_to_filter = "";
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
-
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
