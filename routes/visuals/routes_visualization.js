@@ -25,14 +25,6 @@ const spawn = require('child_process').spawn;
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
 
-function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
-  if (req.CONFIG.site === 'vamps') {
-    console.log(msg_prod);
-  } else {
-    console.log(msg);
-  }
-}
-
 function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 // get dataset_ids the add names for biom file output:
 // chosen_id_order was set in unit_select and added to session variable
@@ -55,7 +47,7 @@ function start_visual_post_items(req) {
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  print_log_if_not_vamps(req, msg);
+  file_path_obj.print_log_if_not_vamps(req, msg);
   console.log('<<VS--visual_post_items');
 
   return visual_post_items;
@@ -96,7 +88,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   */
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
@@ -177,7 +169,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  print_log_if_not_vamps(req, JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -190,7 +182,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
+  file_path_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
@@ -222,7 +214,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
     console.log('chosen_dataset_order-->');
-    print_log_if_not_vamps(req, chosen_dataset_order);
+    file_path_obj.print_log_if_not_vamps(req, chosen_dataset_order);
     console.log('<--chosen_dataset_order');
 
     // else {
@@ -402,7 +394,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 ///// It passes the newick string back to view_selection.js
 ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
@@ -439,14 +431,14 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     let lines = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        // print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // file_path_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
         const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
-          // print_log_if_not_vamps(req, 'NWK->' + newick);
+          // file_path_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err) {
           newick = {"ERROR": err};
@@ -1346,7 +1338,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -1791,23 +1783,11 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   if (empty_string) {
     substring = "";
   }
-
   PROJECT_FILTER.substring = substring;
+  const projects_to_filter = filters_obj.get_projects_to_filter(req);
+  PROJECT_FILTER = filters_obj.update_project_filter_length(req, projects_to_filter);
 
-    const projects_to_filter = filters_obj.get_projects_to_filter(req);
-  // let portal = myurl.query.portal;
-  // let projects_to_filter = [];
-  // if (portal){
-  //   projects_to_filter = helpers.get_portal_projects(req, portal);
-  // } else {
-  //   projects_to_filter = SHOW_DATA.projects;
-  // }
-  let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
-
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  print_log_if_not_vamps(req, 'PROJECT_FILTER');
-
+  file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
   console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
@@ -2133,13 +2113,13 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     if (Object.keys(DATA_TO_OPEN).length > 0){
 
       console.log('dto');
-      print_log_if_not_vamps(req, 'DATA_TO_OPEN');
+      file_path_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+    file_path_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
     for (let n in this_project.datasets){
@@ -2198,7 +2178,7 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+      file_path_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
 
       let cols =  biom_matrix.columns;
 

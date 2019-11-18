@@ -369,8 +369,7 @@ class visualizationFiles {
 }
 
 class visualizationFilters {
-  constructor(req) {
-    this.req = req;
+  constructor() {
     this.md_env_package = MD_ENV_PACKAGE;
   }
 
@@ -447,7 +446,14 @@ class visualizationFilters {
     return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
   }
 
+  update_project_filter_length(req, projects_to_filter) {
+    let project_filter = PROJECT_FILTER;
+    let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, project_filter);
 
+    PROJECT_TREE_PIDS = this.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+    project_filter.pid_length = PROJECT_TREE_PIDS.length;
+    return project_filter;
+  }
 
 }
 
