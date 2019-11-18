@@ -1971,6 +1971,23 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
   //console.log('id='+id)
   let json = {};
   json.id = id;
+  const make_json_item = node => {
+    let temp_ob = {
+      id: node.node_id,
+      text: node.taxon,
+      tooltip: node.rank,
+      checked: true
+    };
+
+    if (node.children_ids.length === 0){
+      temp_ob.child = 0;
+    } else {
+      temp_ob.child = 1;
+      temp_ob.item = [];
+    }
+    json.item.push(temp_ob);
+  };
+
   if (parseInt(id) === 0){
     console.time("TIME: id = 0");
 
@@ -1984,47 +2001,9 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
                 ]
             }
     */
-    console.time("TIME: json.item map");
 
     json.item = [];
-    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
-      let temp_ob = {
-        id: node.node_id,
-        text: node.taxon,
-        tooltip: node.rank,
-        checked: true
-      };
-
-      if (node.children_ids.length === 0){
-        temp_ob.child = 0;
-      } else {
-        temp_ob.child = 1;
-        temp_ob.item = [];
-      }
-      json.item.push(temp_ob);
-    });
-    console.timeEnd("TIME: json.item map");
-
-    console.time("TIME: json.item for");
-    json.item = [];
-    for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-      let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-      let temp_ob = {
-            id: node.node_id,
-            text: node.taxon,
-            tooltip: node.rank,
-            checked: true
-          };
-
-      if (node.children_ids.length === 0){
-        temp_ob.child = 0;
-      } else {
-        temp_ob.child = 1;
-        temp_ob.item = [];
-      }
-      json.item.push(temp_ob);
-    }
-    console.timeEnd("TIME: json.item for");
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(make_json_item);
 
     json.item.sort(function(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
@@ -2034,7 +2013,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 
   } else {
     console.time("TIME: id != 0");
-
+  // .map(make_json_item)
     for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
       let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
       let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
