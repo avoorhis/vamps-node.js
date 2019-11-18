@@ -384,7 +384,6 @@ class visualizationFilters {
 
   get_envid_lst(req) {
     console.log("get_envid_lst");
-    console.time("TIME: get_envid_lst");
     const env_id_name = req.params.envid;
     const items = env_id_name.split('--');
     let envid = items[0];
@@ -398,7 +397,6 @@ class visualizationFilters {
     } else {
       envid_lst = [parseInt(envid)];
     }
-    console.timeEnd("TIME: get_envid_lst");
     return envid_lst;
   }
 
