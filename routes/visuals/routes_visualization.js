@@ -1751,62 +1751,25 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     DATA_TO_OPEN = {};
   }
   //DATA_TO_OPEN = {}
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, SHOW_DATA.projects);
   PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
 });
 
-function test_project_visibility_permissions(req, node) {
-  let user_security_level_to_int = parseInt(req.user.security_level);
-  let is_admin_user = user_security_level_to_int <= 10;
-  let no_permissions = node.permissions.length === 0;
-  let owner_is_user = node.permissions.indexOf(req.user.user_id) !== -1;
-  let dco_project = (node.project).substring(0,3) === 'DCO';
-  let dco_editor_for_dco_project = (user_security_level_to_int === 45 && dco_project);
-
-  return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
-}
-
-//
-//
-//
-function filter_project_tree_for_permissions(req, obj){
-  console.log('Filtering tree projects for permissions');
-  let new_project_tree_pids = [];
-  for (let i in obj){
-    //node = PROJECT_INFORMATION_BY_PID[pid];
-    //console.log(obj[i])
-    let pid = obj[i].pid;
-    let node = PROJECT_INFORMATION_BY_PID[pid];
-    //console.log(node)
-    let is_visible = test_project_visibility_permissions(req, node);
-    if (is_visible) {
-      let not_metagenomic = parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
-      if (not_metagenomic){
-        new_project_tree_pids.push(pid);
-      }
-    }
-  }
-  //console.log(obj)
-  return new_project_tree_pids;
-}
 
 //
 //
 //
 
-//
-//
-//
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
   let portal = req.params.portal;
 
-  console.log('in load_portal: '+portal);
+  console.log('in load_portal: ' + portal);
   SHOW_DATA = ALL_DATASETS;
   PROJECT_TREE_OBJ = [];
 
   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   let PROJECT_FILTER = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
 });
@@ -1815,29 +1778,28 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
 //
+
+const filters_obj =  new visualization_controller.visualizationFilters();
+
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
 // test: search by substring
 router.get('/livesearch_projects/:substring', function(req, res) {
   console.log('viz:in livesearch_projects/:substring');
   let substring = req.params.substring.toUpperCase();
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
-  if (substring === '.....'){
-    substring = '';
-  }
+  PROJECT_FILTER.substring = filters_obj.check_if_empty_val(substring);
 
-  PROJECT_FILTER.substring = substring;
-
-  let projects_to_filter = [];
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
+  const projects_to_filter = filters_obj.get_projects_to_filter(req);
+  // let portal = myurl.query.portal;
+  // let projects_to_filter = [];
+  // if (portal){
+  //   projects_to_filter = helpers.get_portal_projects(req, portal);
+  // } else {
+  //   projects_to_filter = SHOW_DATA.projects;
+  // }
   let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   print_log_if_not_vamps(req, 'PROJECT_FILTER');
 
@@ -1846,25 +1808,6 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   res.json(PROJECT_FILTER);
 });
 
-function get_envid_lst(req) {
-  console.log("get_envid_lst");
-  console.time("TIME: get_envid_lst");
-  const env_id_name = req.params.envid;
-  const items = env_id_name.split('--');
-  let envid = items[0];
-  const env_name = items[1];
-  let envid_lst = [];
-
-  if (env_name === 'human associated') {  // get ids for 'human associated'
-    envid_lst = Object.keys(MD_ENV_PACKAGE).filter(key => MD_ENV_PACKAGE[key].startsWith('human'));
-  } else if (envid === '.....') {
-    envid_lst = [];
-  } else {
-    envid_lst = [parseInt(envid)];
-  }
-  console.timeEnd("TIME: get_envid_lst");
-  return envid_lst;
-}
 
 //
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
@@ -1875,7 +1818,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
   let myurl = url.parse(req.url, true);
   let portal = myurl.query.portal;
 
-  PROJECT_FILTER.env = get_envid_lst(req);
+  PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
 
   let projects_to_filter = [];
   if (portal) {
@@ -1886,7 +1829,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log("PROJECT_FILTER: ");
   console.log(PROJECT_FILTER);
@@ -1915,7 +1858,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
@@ -1947,7 +1890,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
   //console.log(PROJECT_FILTER)
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
   //console.log(NewPROJECT_TREE_OBJ)
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   //console.log(PROJECT_FILTER)
   res.json(PROJECT_FILTER);
@@ -1974,7 +1917,7 @@ router.get('/livesearch_status/:q', function(req, res) {
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
@@ -2010,7 +1953,7 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
   }
   NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
   PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);

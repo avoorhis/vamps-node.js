@@ -3,6 +3,7 @@ const helpers = require(app_root + '/routes/helpers/helpers');
 const path = require('path');
 const C = require(app_root + '/public/constants');
 const fs   = require('fs-extra');
+const url  = require('url');
 
 class viewSelectionGetData {
 
@@ -367,9 +368,90 @@ class visualizationFiles {
 
 }
 
+class visualizationFilters {
+  constructor(req) {
+    this.req = req;
+    this.md_env_package = MD_ENV_PACKAGE;
+  }
+
+  check_if_empty_val(val) {
+    if (val === '.....'){
+      return "";
+    }
+  }
+
+  get_envid_lst(req) {
+    console.log("get_envid_lst");
+    console.time("TIME: get_envid_lst");
+    const env_id_name = req.params.envid;
+    const items = env_id_name.split('--');
+    let envid = items[0];
+    const env_name = items[1];
+    let envid_lst = [];
+
+    if (env_name === 'human associated') {  // get ids for 'human associated'
+      envid_lst = Object.keys(this.md_env_package).filter(key => this.md_env_package[key].startsWith('human'));
+    } else if (envid === '.....') {
+      envid_lst = [];
+    } else {
+      envid_lst = [parseInt(envid)];
+    }
+    console.timeEnd("TIME: get_envid_lst");
+    return envid_lst;
+  }
+
+  get_projects_to_filter(req) {
+    const myurl = url.parse(req.url, true);
+    const portal = myurl.query.portal;
+    let projects_to_filter = [];
+    if (portal) {
+      projects_to_filter = helpers.get_portal_projects(req, portal);
+    } else {
+      projects_to_filter = SHOW_DATA.projects;
+    }
+    return projects_to_filter;
+  }
+
+  filter_project_tree_for_permissions(req, obj){
+    console.log('Filtering tree projects for permissions');
+    let new_project_tree_pids = [];
+    for (let i in obj){
+      //node = PROJECT_INFORMATION_BY_PID[pid];
+      //console.log(obj[i])
+      let pid = obj[i].pid;
+      let node = PROJECT_INFORMATION_BY_PID[pid];
+      //console.log(node)
+      let is_visible = this.test_project_visibility_permissions(req, node);
+      if (is_visible) {
+        let not_metagenomic = parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
+        if (not_metagenomic){
+          new_project_tree_pids.push(pid);
+        }
+      }
+    }
+    //console.log(obj)
+    return new_project_tree_pids;
+  }
+
+  test_project_visibility_permissions(req, node) {
+    let user_security_level_to_int = parseInt(req.user.security_level);
+    let is_admin_user = user_security_level_to_int <= 10;
+    let no_permissions = node.permissions.length === 0;
+    let owner_is_user = node.permissions.indexOf(req.user.user_id) !== -1;
+    let dco_project = (node.project).substring(0,3) === 'DCO';
+    let dco_editor_for_dco_project = (user_security_level_to_int === 45 && dco_project);
+
+    return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
+  }
+
+
+
+}
+
 module.exports = {
   viewSelectionGetData,
   viewSelectionFactory,
   visualizationFiles,
+  visualizationFilters
 };
 
