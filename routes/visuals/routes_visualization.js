@@ -2040,6 +2040,22 @@ function get_tt_pj_id(node) {
   return tt_pj_id;
 }
 
+function get_itemtext(i) {
+  let pid = PROJECT_TREE_PIDS[i];
+  let node = PROJECT_INFORMATION_BY_PID[pid];
+  //console.log('node',node)
+  let tt_pj_id = get_tt_pj_id(node);
+
+  let pid_str = pid.toString();
+  let itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
+  itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+  if (node.public) {
+    itemtext += "<small> <i>(public)</i></small>";
+  } else {
+    itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
+  }
+  return itemtext;
+}
 //  project_custom_dhtmlx
 //
 // test: show tree
@@ -2061,35 +2077,28 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   if (parseInt(id) === 0){
     for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
 
+      itemtext = get_itemtext(i);
       let pid = PROJECT_TREE_PIDS[i];
-      let node = PROJECT_INFORMATION_BY_PID[pid];
-      //console.log('node',node)
-      let tt_pj_id = get_tt_pj_id(node);
-      // let tt_pj_id = 'project/' + node.project + '/' + node.title;
-      // if (node.public) {
-      //   tt_pj_id += '/public';
-      // } else {
-      //   tt_pj_id += '/private';
-      // }
+      // let node = PROJECT_INFORMATION_BY_PID[pid];
+      // //console.log('node',node)
+      // let tt_pj_id = get_tt_pj_id(node);
+      //
       let pid_str = pid.toString();
-      itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
-      itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-      if (node.public) {
-        itemtext += "<small> <i>(public)</i></small>";
-      } else {
-        itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
-      }
-
+      // itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
+      // itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+      // if (node.public) {
+      //   itemtext += "<small> <i>(public)</i></small>";
+      // } else {
+      //   itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
+      // }
+      //
       if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-        json.item.push({id:'p'+pid_str, text: itemtext, checked: false, open: '1', child: 1, item: []});
+        json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
       } else {
-        json.item.push({id:'p'+pid_str, text: itemtext, checked: false, child: 1, item: []});
+        json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
       }
-
-
     }
     //console.log(JSON.stringify(json, null, 4))
-
   }
   else {
     //console.log(JSON.stringify(ALL_DATASETS))
@@ -2121,9 +2130,9 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
       if (all_checked_dids.indexOf(parseInt(did)) === -1){
-        json.item.push({id:did, text:itemtext, child:0});
+        json.item.push({id: did, text: itemtext, child: 0});
       } else {
-        json.item.push({id:did, text:itemtext, checked:'1', child:0});
+        json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
       }
     }
   }
