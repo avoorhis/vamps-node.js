@@ -2075,30 +2075,38 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
   let itemtext;
   if (parseInt(id) === 0){
-    for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
-
+    PROJECT_TREE_PIDS.map((pid, i) => {
       itemtext = get_itemtext(i);
-      let pid = PROJECT_TREE_PIDS[i];
-      // let node = PROJECT_INFORMATION_BY_PID[pid];
-      // //console.log('node',node)
-      // let tt_pj_id = get_tt_pj_id(node);
-      //
+
       let pid_str = pid.toString();
-      // itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
-      // itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-      // if (node.public) {
-      //   itemtext += "<small> <i>(public)</i></small>";
-      // } else {
-      //   itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
-      // }
-      //
       if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
         json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
-      } else {
+      }
+      else {
         json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
       }
-    }
-    //console.log(JSON.stringify(json, null, 4))
+      return json;
+    });
+    console.log("AAA0 JSON.stringify(json, null, 4)");
+    console.log(JSON.stringify(json, null, 4));
+
+    // json = {};
+    // json.id = id;
+    // json.item = [];
+    // for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
+    //
+    //   itemtext = get_itemtext(i);
+    //   let pid = PROJECT_TREE_PIDS[i];
+    //   let pid_str = pid.toString();
+    //
+    //   if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+    //     json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
+    //   } else {
+    //     json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
+    //   }
+    // }
+    // console.log("AAA1 JSON.stringify(json, null, 4)");
+    // console.log(JSON.stringify(json, null, 4));
   }
   else {
     //console.log(JSON.stringify(ALL_DATASETS))
@@ -2131,7 +2139,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
       if (all_checked_dids.indexOf(parseInt(did)) === -1){
         json.item.push({id: did, text: itemtext, child: 0});
-      } else {
+      }
+      else {
         json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
       }
     }
@@ -2139,7 +2148,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   json.item.sort(function sortByAlpha(a, b){
     return helpers.compareStrings_alpha(a.text, b.text);
   });
-  //console.log(json.item)
+  console.log("AAA2 json.item");
+  console.log(json.item);
   console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
