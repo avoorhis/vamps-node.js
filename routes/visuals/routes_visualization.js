@@ -456,64 +456,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 //
 // P C O A
 //
-//test: "PCoA 2D Analyses (R/pdf)"
-// router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
-//   console.log('in PCoA');
-//   //console.log(metadata);
-//   let ts = req.body.ts;
-//   // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-//   let metric = req.body.metric;
-//   // let image_type = req.body.image_type;
-//   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-//   let image_file = ts+'_pcoa.pdf';
-//   let biom_file_name = ts+'_count_matrix.biom';
-//   let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
 
-//   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-//
-//   let md1 = req.body.md1 || "Project";
-//   let md2 = req.body.md2 || "Description";
-//
-//     // let options = {
-//     //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//     //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-//     // };
-//     let options2 = {
-//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//       args :       [ tmp_path, ts, metric, md1, md2, image_file],
-//     };
-//     console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
-//
-//     let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-//         env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-//         detached: true,
-//         stdio: [ 'ignore', null, log ]
-//         //stdio: 'pipe' // stdin, stdout, stderr
-//     });
-//
-//     pcoa_process.on('close', function pcoaProcessOnClose(code) {
-//         //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-//         //distance_matrix = JSON.parse(output);
-//         //let last_line = ary[ary.length - 1];
-//       let html = "";
-//       if (code === 0){   // SUCCESS
-//
-//         //html = "<img src='/"+image_file+"'>";
-//         //let image = path.join('/tmp/',image_file);
-//         html = "<div id='pdf'>";
-//         html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-//         html += " <p>ERROR in loading pdf file</p>";
-//         html += "</object></div>";
-//         //console.log(html);
-//
-//       }
-//       else {
-//         console.log('ERROR');
-//         html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
-//       }
-//       res.send(html);
-//       });
-// });
 //test: "PCoA 2D Analyses (R/pdf)"
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
@@ -521,20 +464,24 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
   const user_timestamp = file_path_obj.get_user_timestamp(req);
-  const metric = req.body.metric;
+  // const metric = req.body.metric;
   let image_file = file_path_obj.get_file_names(req)['pcoa.pdf'];
     // user_timestamp + '_pcoa.pdf';
-  const md1 = req.body.md1 || "Project";
-  const md2 = req.body.md2 || "Description";
-  const tmp_path = file_path_obj.get_tmp_file_path(req);
-  let options2 = {
-    script: '/pcoa2.R',
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
-  };
-  console.log(options2.scriptPath + options2.script + ' ' + options2.args.join(' '));
+  // const md1 = req.body.md1 || "Project";
+  // const md2 = req.body.md2 || "Description";
+  // const tmp_path = file_path_obj.get_tmp_file_path(req);
+  // pcoa2
+  // let options2 = {
+  //   script: '/pcoa2.R',
+  //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+  //   args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
+  // };
 
-  let pcoa_process = spawn( options2.scriptPath + options2.script, options2.args, {
+  let options = get_plot_specific_options("pcoa2", req, user_timestamp, image_file);
+
+  console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
+
+  let pcoa_process = spawn( options.scriptPath + options.script, options.args, {
     env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
@@ -797,6 +744,13 @@ function get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name)
       md1 = req.body.md1 || "Description";
       options.args = options.args.concat([dist_metric, md1]);
       break;
+    case 'pcoa2':
+      options.script = 'pcoa2.R';
+      //   args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
+      // different order for this script!
+      options.args = [tmp_file_path, user_timestamp, dist_metric, md1, md2, svgfile_name];
+        // options.args.concat([dist_metric, md1, md2]);
+      break;
   }
   // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
 
@@ -821,11 +775,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, user_timestamp);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const svgfile_path = path.join(tmp_file_path, svgfile_name);
-
-  // let options = {
-  //   scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-  //   args:       [ tmp_file_path, user_timestamp ],
-  // };
 
   let plot_type = req.body.plot_type;
   console.time("TIME: plot_type = " + plot_type);
@@ -972,7 +921,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
     });
 
     let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
-    console.log("EEE5 seq file_path:", file_path);
+
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
   console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
@@ -1111,7 +1060,6 @@ function err_read_file(err, req, res, seqs_filename) {
 
 function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
   let clean_data = "";
-  console.log("EEE1 seqs_filename", seqs_filename);
   try {
     clean_data = JSON.parse(data);
   } catch (e) {
@@ -1133,8 +1081,6 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
 
 function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '')
 {
-  console.log("EEE2 seqs_filename", seqs_filename);
-
   res.render('visuals/user_viz_data/sequences', {
     title: 'Sequences',
     ds: pjds,
@@ -1218,7 +1164,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   const seqs_filename = myurl.query.filename;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const seqs_filename_path = path.join(tmp_file_path, seqs_filename);
-  console.log("EEE1 seqs_filename_path", seqs_filename_path);
 
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
@@ -1227,8 +1172,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
-
-    console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     fs.access(seqs_filename_path, error => {
       if (error) {
@@ -1241,7 +1184,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
             err_read_file(err, req, res, seqs_filename);
           }
           //console.log('parsing data')
-          console.log("EEE3 seqs_filename", seqs_filename);
 
           let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
@@ -1255,25 +1197,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         }.bind());
       }
     });
-
-    // fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
-    //   console.time("TIME: readFile");
-    //   if (err) {
-    //     err_read_file(err, req, res, seqs_filename);
-    //   }
-    //   //console.log('parsing data')
-    //   console.log("EEE3 seqs_filename", seqs_filename);
-    //
-    //   let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
-    //
-    //   console.time("TIME: loop through clean_data");
-    //   let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-    //   let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-    //   console.timeEnd("TIME: loop through clean_data");
-    //
-    //   render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-    //   console.timeEnd("TIME: readFile");
-    // }.bind());
   }
   else {
     // TODO: Andy, how to test this?
