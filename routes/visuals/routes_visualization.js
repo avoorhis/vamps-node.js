@@ -1985,7 +1985,6 @@ function json_item_collect(node, json_item, checked) {
 
 //
 // test: choose custom taxonomy, show tree
-// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/tax_custom_dhtmlx', function(req, res) {
   console.time("TIME: tax_custom_dhtmlx");
   //console.log('IN tax_custom_dhtmlx')
@@ -1997,8 +1996,6 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
   json.item = [];
 
   if (parseInt(id) === 0){
-    console.time("TIME: id = 0");
-
     /*
         return json for collapsed tree: 'domain' only
             json = {"id":"0","item":[
@@ -2017,11 +2014,8 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     json.item.sort(function(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
-
-    console.timeEnd("TIME: id = 0");
-
-  } else {
-    console.time("TIME: id != 0");
+  }
+  else {
     const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
     objects_w_this_parent_id.map(
       function(node) { return json_item_collect(node, json.item); }
@@ -2030,8 +2024,6 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     json.item.sort(function sortByAlpha(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
-    console.timeEnd("TIME: id != 0");
-
   }
   console.timeEnd("TIME: tax_custom_dhtmlx");
   res.json(json);
