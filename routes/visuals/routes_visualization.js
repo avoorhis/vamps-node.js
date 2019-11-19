@@ -2078,7 +2078,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       itemtext = get_itemtext(pid);
 
       let pid_str = pid.toString();
-      if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+      if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
         json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
       }
       else {
@@ -2086,19 +2086,20 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       }
       return json;
     });
-    console.log("AAA0 JSON.stringify(json, null, 4)");
-    console.log(JSON.stringify(json, null, 4));
+    // console.log("AAA0 JSON.stringify(json, null, 4)");
+    // console.log(JSON.stringify(json, null, 4));
 
   }
   else {
     //console.log(JSON.stringify(ALL_DATASETS))
-    let this_project = {};
-    id = id.substring(1);  // id = pxx
-    ALL_DATASETS.projects.forEach(function(prj) {
-      if (parseInt(prj.pid) === parseInt(id)){
-        this_project = prj;
-      }
-    });
+    id = id.substring(1);  // id = pxx// filter((line) => line.startsWith("NEWICK"));
+    // ALL_DATASETS.projects.forEach(function(prj) {
+    //   if (parseInt(prj.pid) === parseInt(id)){
+    //     this_project = prj;
+    //   }
+    // });
+    let this_project = ALL_DATASETS.projects.filter(prj => prj.pid === parseInt(id))[0];
+
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
 
@@ -2112,26 +2113,49 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     file_path_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
-    for (let n in this_project.datasets){
-      let did   = this_project.datasets[n].did;
-      //console.log('didXX',did)
-      let dname = this_project.datasets[n].dname;
-      let ddesc = this_project.datasets[n].ddesc;
+    this_project.datasets.map(dat => {
+
+      let did   = dat.did;
+      //console.log('didXX', did)
+      let dname = dat.dname;
+      let ddesc = dat.ddesc;
       let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
-      if (all_checked_dids.indexOf(parseInt(did)) === -1){
-        json.item.push({id: did, text: itemtext, child: 0});
-      }
-      else {
+
+      if (all_checked_dids.includes(parseInt(did))) {
         json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
       }
-    }
+      else {
+        json.item.push({id: did, text: itemtext, child: 0});
+      }
+
+      // if (all_checked_dids.indexOf(parseInt(did)) === -1){
+      //   json.item.push({id: did, text: itemtext, child: 0});
+      // }
+      // else {
+      //   json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
+      // }
+    });
+    // for (let n in this_project.datasets){
+    //   let did   = this_project.datasets[n].did;
+    //   //console.log('didXX',did)
+    //   let dname = this_project.datasets[n].dname;
+    //   let ddesc = this_project.datasets[n].ddesc;
+    //   let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
+    //   itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
+    //   if (all_checked_dids.indexOf(parseInt(did)) === -1){
+    //     json.item.push({id: did, text: itemtext, child: 0});
+    //   }
+    //   else {
+    //     json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
+    //   }
+    // }
   }
-  json.item.sort(function sortByAlpha(a, b){
+  json.item.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
-  console.log("AAA2 json.item");
-  console.log(json.item);
+  // console.log("AAA2 json.item");
+  // console.log(json.item);
   console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
