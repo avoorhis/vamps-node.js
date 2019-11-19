@@ -1988,12 +1988,11 @@ function map_callback(node) {
 //
 // }
 
-function map_callback2(node, json_item) {
+function map_callback2(node, json_item, checked) {
   let temp_ob = {
     id: node.node_id,
     text: node.taxon,
     tooltip: node.rank,
-    checked: true
   };
 
   if (node.children_ids.length === 0){
@@ -2002,8 +2001,12 @@ function map_callback2(node, json_item) {
     temp_ob.child = 1;
     temp_ob.item = [];
   }
+
+  if (typeof checked !== "undefined") {
+    temp_ob.checked = true;
+  }
+
   json_item.push(temp_ob);
-  // };
 
 }
 
@@ -2051,7 +2054,8 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             }
     */
 
-    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(  function(node) { return map_callback2(node, json.item); }
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(
+      function(node) { return map_callback2(node, json.item, "checked"); }
     );
     // json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(map_callback, {checked: true, temp_arr: []});
 
@@ -2068,7 +2072,10 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 
   } else {
     console.time("TIME: id != 0");
-    new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]).map(map_callback, {temp_arr: []});
+    const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
+    objects_w_this_parent_id.map(
+      function(node) { return map_callback2(node, json.item); }
+    );
     console.log("json.item 02:");
     console.log(JSON.stringify(json.item));
 
