@@ -464,21 +464,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
   const user_timestamp = file_path_obj.get_user_timestamp(req);
-  // const metric = req.body.metric;
   let image_file = file_path_obj.get_file_names(req)['pcoa.pdf'];
-    // user_timestamp + '_pcoa.pdf';
-  // const md1 = req.body.md1 || "Project";
-  // const md2 = req.body.md2 || "Description";
-  // const tmp_path = file_path_obj.get_tmp_file_path(req);
-  // pcoa2
-  // let options2 = {
-  //   script: '/pcoa2.R',
-  //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-  //   args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
-  // };
-
   let options = get_plot_specific_options("pcoa2", req, user_timestamp, image_file);
-
   console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
 
   let pcoa_process = spawn( options.scriptPath + options.script, options.args, {
@@ -496,18 +483,18 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       html += "<embed src='/static_base/tmp/" + image_file + "' type='application/pdf' width='1000' height='600' />";
       html += "</div>";
       console.log(html);
-      var data = {}
-        data.html = html
-        data.filename = image_file   // returns data and local file_name to be written to
-        res.json(data)
-        return
-      
+      let data = {};
+      data.html = html;
+      data.filename = image_file;   // returns data and local file_name to be written to
+      res.json(data);
     }
     else {
       console.log('ERROR');
-      html = 'PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>PCoA Script Failure -- Try a deeper rank, or more metadata or datasets</dev>";
+      console.log(data.html);
+      res.json(data);
     }
-    //res.send(html);
   });
 });
 //
@@ -571,7 +558,9 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     }
     else{
       console.log('ERROR in PCOA 3D: ', stderr1);
-      res.send('Python Script Error: ' + stderr1);
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+      res.json(data);
     }
   });
   /////////////////////////////////////////////////
@@ -811,13 +800,14 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
         if(err){ res.send('ERROR reading file')}
         show_data(res, contents, svgfile_name);
-
       });
     }
     else {
       console.log('ERROR-2');
-      html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
-      show_data(res, html, svgfile_name);
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
+      console.log(data.html);
+      res.json(data);
     }
   });
   console.timeEnd("TIME: plot_type = " + plot_type);
@@ -888,6 +878,9 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
   console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
+    // TODO: test
+    //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+    //       res.json(data);
     console.log('Query error: ' + err);
     console.log(err.stack);
     res.send(err);
@@ -1305,7 +1298,6 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
         let msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
 
-
       } else {
         for (let f in files){
           let pts = files[f].split('-');
@@ -1531,7 +1523,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         });
       }
       catch(err) {
+        // TODO: test
         res.send('Calculation Error: ' + err.toString());
+        //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+        //       res.json(data);
       }
     }
   });
@@ -1858,6 +1853,9 @@ function get_files_prefix(req) {
   } else if (units === taxonomies['generic']) {
     files_prefix = files_prefix + "generic";
   } else {
+    // TODO: test
+    //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+    //       res.json(data);
     console.log('ERROR: Units not found: ' + req.body.units); // ERROR
   }
   return files_prefix;
@@ -1888,7 +1886,10 @@ router.post('/check_units', function(req, res) {
       break;
     }
   }
+  // TODO: test
   res.send(file_err);
+  //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+  //       res.json(data);
 });
 //
 //
