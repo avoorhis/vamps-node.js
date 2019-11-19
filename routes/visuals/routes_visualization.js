@@ -2011,18 +2011,6 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
         json.item.push(options_obj);
       }
     );
-
-    // json.item.sort(function(a, b) {
-    //   return helpers.compareStrings_alpha(a.text, b.text);
-    // });
-    // console.log("AAA0: sort1");
-    // console.log(json.item);
-    // json.item.sort(function sortByAlpha(a, b) {
-    //   return helpers.compareStrings_alpha(a.text, b.text);
-    // });
-    // console.log("AAA1: sort2");
-    // console.log(json.item);
-
   }
   else {
     const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
@@ -2090,7 +2078,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 
       let pid_str = pid.toString();
       // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
-      //   // TODO: Andy, how to test this?
+        // TODO: Andy, how to test this?
       //   // TODO ? use json_item_collect(node, json_item, checked)
       //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
       // }
@@ -2106,16 +2094,14 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         item: [],
       };
       if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+        // TODO: Andy, how to test this?
         options_obj.open = '1';
       }
 
       json.item.push(options_obj);
 
-      return json;
+      // return json;
     });
-    // console.log("AAA0 JSON.stringify(json, null, 4)");
-    // console.log(JSON.stringify(json, null, 4));
-
   }
   else { //parseInt(id) !== 0
     //console.log(JSON.stringify(ALL_DATASETS))
@@ -2144,15 +2130,6 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
 
-      // // TODO ? use json_item_collect(node, json_item, checked)
-      // if (all_checked_dids.includes(parseInt(did))) {
-      //   json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
-      // }
-      // else {
-      //   json.item.push({id: did, text: itemtext, child: 0});
-      // }
-
-      // json.item = []; // TODO: DELETE!
       let options_obj = {
         id: did,
         text: itemtext,
@@ -2168,8 +2145,6 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   json.item.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
-  console.log("AAA2 json.item");
-  console.log(json.item);
   console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
