@@ -2029,15 +2029,27 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
   res.json(json);
 });
 //
+
+function get_tt_pj_id(node) {
+  let tt_pj_id = 'project/' + node.project + '/' + node.title;
+  if (node.public) {
+    tt_pj_id += '/public';
+  } else {
+    tt_pj_id += '/private';
+  }
+  return tt_pj_id;
+}
+
 //  project_custom_dhtmlx
 //
 // test: show tree
 // TODO: JSHint: This function's cyclomatic complexity is too high. (10) (W074)
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
+  console.time("TIME: project_dataset_tree_dhtmlx");
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
-  console.log('id='+id);
+  console.log('id = ' + id);
   let json = {};
   json.id = id;
   json.item = [];
@@ -2052,15 +2064,16 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       let pid = PROJECT_TREE_PIDS[i];
       let node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log('node',node)
-      let tt_pj_id = 'project/'+node.project+'/'+node.title;
-      if (node.public) {
-        tt_pj_id += '/public';
-      } else {
-        tt_pj_id += '/private';
-      }
+      let tt_pj_id = get_tt_pj_id(node);
+      // let tt_pj_id = 'project/' + node.project + '/' + node.title;
+      // if (node.public) {
+      //   tt_pj_id += '/public';
+      // } else {
+      //   tt_pj_id += '/private';
+      // }
       let pid_str = pid.toString();
-      itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
-      itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+      itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
+      itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
       if (node.public) {
         itemtext += "<small> <i>(public)</i></small>";
       } else {
@@ -2068,9 +2081,9 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       }
 
       if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
+        json.item.push({id:'p'+pid_str, text: itemtext, checked: false, open: '1', child: 1, item: []});
       } else {
-        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, child:1, item:[]});
+        json.item.push({id:'p'+pid_str, text: itemtext, checked: false, child: 1, item: []});
       }
 
 
@@ -2118,6 +2131,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
   //console.log(json.item)
+  console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
 //
