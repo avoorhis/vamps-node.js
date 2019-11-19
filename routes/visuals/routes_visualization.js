@@ -1511,6 +1511,19 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   html += reverse_or_reset_datasets(ids);
   res.send(html);
 });
+
+function get_ds_list(output) {
+  let lines = output.split(/\n/);
+  let ds_list = "";
+  let ds_list_line = lines.filter(l => l.startsWith('DS_LIST')).join("");
+  try {
+    ds_list = ds_list_line.split('=')[1];
+  }
+  catch (err) {
+    console.log("Err in DS_LIST", err);
+  }
+  return ds_list;
+}
 //
 //  C L U S T E R  D A T A S E T  O R D E R
 // test: from re-order datasets, "--Select distance metric to cluster by:". Should not be "undefined"
@@ -1526,7 +1539,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   let pjds_lookup = {};
   for (let i in req.session.chosen_id_order){
     let did = req.session.chosen_id_order[i];
-    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
     pjds_lookup[pjds] = did;
   }
   let options = {
@@ -1549,14 +1562,17 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
-    let lines = output.split(/\n/);
-    let ds_list = "";
-    for (let i in lines){
-      if (lines[i].substring(0,7) === 'DS_LIST'){
-        let tmp = lines[i].split('=');
-        ds_list = tmp[1];
-      }
-    }
+    let ds_list = get_ds_list(output);
+    // let lines = output.split(/\n/);
+    // let ds_list = "";
+    // let ds_list_line = lines.filter(l => l.startsWith('DS_LIST')).join("");
+    // try {
+    //   ds_list = ds_list_line.split('=')[1];
+    // }
+    // catch(err) {
+    //   console.log("Err in DS_LIST", err);
+    // }
+
     file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
@@ -2079,6 +2095,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 
       let pid_str = pid.toString();
       if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+        // TODO: Andy, how to test this?
         json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
       }
       else {
@@ -2090,19 +2107,14 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     // console.log(JSON.stringify(json, null, 4));
 
   }
-  else {
+  else { //parseInt(id) !== 0
     //console.log(JSON.stringify(ALL_DATASETS))
-    id = id.substring(1);  // id = pxx// filter((line) => line.startsWith("NEWICK"));
-    // ALL_DATASETS.projects.forEach(function(prj) {
-    //   if (parseInt(prj.pid) === parseInt(id)){
-    //     this_project = prj;
-    //   }
-    // });
+    id = id.substring(1);  // id = pxx
     let this_project = ALL_DATASETS.projects.filter(prj => prj.pid === parseInt(id))[0];
 
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
-
+      // TODO: Andy, how to test this?
       console.log('dto');
       file_path_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
@@ -2128,28 +2140,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       else {
         json.item.push({id: did, text: itemtext, child: 0});
       }
-
-      // if (all_checked_dids.indexOf(parseInt(did)) === -1){
-      //   json.item.push({id: did, text: itemtext, child: 0});
-      // }
-      // else {
-      //   json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
-      // }
     });
-    // for (let n in this_project.datasets){
-    //   let did   = this_project.datasets[n].did;
-    //   //console.log('didXX',did)
-    //   let dname = this_project.datasets[n].dname;
-    //   let ddesc = this_project.datasets[n].ddesc;
-    //   let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
-    //   itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
-    //   if (all_checked_dids.indexOf(parseInt(did)) === -1){
-    //     json.item.push({id: did, text: itemtext, child: 0});
-    //   }
-    //   else {
-    //     json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
-    //   }
-    // }
   }
   json.item.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.text, b.text);
