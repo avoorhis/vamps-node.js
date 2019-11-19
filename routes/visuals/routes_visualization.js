@@ -1961,7 +1961,6 @@ router.post('/check_units', function(req, res) {
 //
 //
 function map_callback(node) {
-  // return parseInt(element) + this.add;
   let checked = this.checked;
   let current_arr = this.temp_arr;
 
@@ -1983,6 +1982,29 @@ function map_callback(node) {
   current_arr.push(temp_ob);
 
   return current_arr;
+}
+
+// function reduce_callback(accumulator, currentValue) {
+//
+// }
+
+function map_callback2(node, json_item) {
+  let temp_ob = {
+    id: node.node_id,
+    text: node.taxon,
+    tooltip: node.rank,
+    checked: true
+  };
+
+  if (node.children_ids.length === 0){
+    temp_ob.child = 0;
+  } else {
+    temp_ob.child = 1;
+    temp_ob.item = [];
+  }
+  json_item.push(temp_ob);
+  // };
+
 }
 
 //
@@ -2029,8 +2051,9 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             }
     */
 
-    // new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(make_json_item);
-    json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(map_callback, {checked: true, temp_arr: []});
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(  function(node) { return map_callback2(node, json.item); }
+    );
+    // json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(map_callback, {checked: true, temp_arr: []});
 
     //map_callback(node) {
     //   // return parseInt(element) + this.add;
@@ -2049,27 +2072,27 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     console.log("json.item 02:");
     console.log(JSON.stringify(json.item));
 
-    json.item = [];
-    json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(map_callback, {json_item: json.item});
-
-    console.log("json.item 022:");
-    console.log(JSON.stringify(json.item));
-
-
-    json.item = [];
-    for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-      let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-      let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
-      //console.log('node')
-      //console.log(node)
-      if (node.children_ids && node.children_ids.length === 0){
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
-      } else {
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
-      }
-    }
-    console.log("json.item 2:");
-    console.log(JSON.stringify(json.item));
+    // json.item = [];
+    // json.item = new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(map_callback, {json_item: json.item});
+    //
+    // console.log("json.item 022:");
+    // console.log(JSON.stringify(json.item));
+    //
+    //
+    // json.item = [];
+    // for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+    //   let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+    //   let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
+    //   //console.log('node')
+    //   //console.log(node)
+    //   if (node.children_ids && node.children_ids.length === 0){
+    //     json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
+    //   } else {
+    //     json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
+    //   }
+    // }
+    // console.log("json.item 2:");
+    // console.log(JSON.stringify(json.item));
     json.item.sort(function sortByAlpha(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
     });
