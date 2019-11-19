@@ -1563,16 +1563,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
     let ds_list = get_ds_list(output);
-    // let lines = output.split(/\n/);
-    // let ds_list = "";
-    // let ds_list_line = lines.filter(l => l.startsWith('DS_LIST')).join("");
-    // try {
-    //   ds_list = ds_list_line.split('=')[1];
-    // }
-    // catch(err) {
-    //   console.log("Err in DS_LIST", err);
-    // }
-
     file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
@@ -1977,27 +1967,42 @@ router.post('/check_units', function(req, res) {
 //
 //
 
-function json_item_collect(node, json_item, checked) {
-  let temp_ob = {
-    id: node.node_id,
-    text: node.taxon,
-    tooltip: node.rank,
-  };
+function json_item_collect(options_obj, json_item) {
+  let temp_ob = options_obj;
 
-  if (node.children_ids.length === 0){
-    temp_ob.child = 0;
-  } else {
-    temp_ob.child = 1;
-    temp_ob.item = [];
-  }
-
-  if (typeof checked !== "undefined") {
-    temp_ob.checked = true;
-  }
+  // if (node.children_ids.length === 0){
+  //   temp_ob.child = 0;
+  // } else {
+  //   temp_ob.child = 1;
+  //   temp_ob.item = [];
+  // }
 
   json_item.push(temp_ob);
 
 }
+
+
+// function json_item_collect(node, json_item, checked) {
+//   let temp_ob = {
+//     id: node.node_id,
+//     text: node.taxon,
+//     tooltip: node.rank,
+//   };
+//
+//   if (node.children_ids.length === 0){
+//     temp_ob.child = 0;
+//   } else {
+//     temp_ob.child = 1;
+//     temp_ob.item = [];
+//   }
+//
+//   if (typeof checked !== "undefined") {
+//     temp_ob.checked = true;
+//   }
+//
+//   json_item.push(temp_ob);
+//
+// }
 
 //
 // test: choose custom taxonomy, show tree
@@ -2023,8 +2028,21 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             }
     */
 
-    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(
-      function(node) { return json_item_collect(node, json.item, "checked"); }
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
+        let options_obj = {
+          id: node.node_id,
+          text: node.taxon,
+          checked: true,
+          child: 0,
+          tooltip: node.rank,
+        };
+        if (node.children_ids.length > 0) {
+          options_obj.child = 1;
+          options_obj.item = [];
+        }
+
+        json.item.push(options_obj);
+      }
     );
 
     json.item.sort(function(a, b) {
@@ -2033,9 +2051,25 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
   }
   else {
     const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
-    objects_w_this_parent_id.map(
-      function(node) { return json_item_collect(node, json.item); }
-    );
+    objects_w_this_parent_id.map(node => {
+      let options_obj = {
+        id: node.node_id,
+        text: node.taxon,
+        checked: false,
+        child: 0,
+        tooltip: node.rank,
+      };
+      if (node.children_ids.length > 0) {
+        options_obj.child = 1;
+        options_obj.item = [];
+      }
+
+      json.item.push(options_obj);
+    });
+
+    // .map(
+      // function(node) { return json_item_collect(node, json.item); }
+    // );
 
     json.item.sort(function sortByAlpha(a, b) {
       return helpers.compareStrings_alpha(a.text, b.text);
@@ -2074,7 +2108,6 @@ function get_itemtext(pid) {
 //  project_custom_dhtmlx
 //
 // test: show tree
-// TODO: JSHint: This function's cyclomatic complexity is too high. (10) (W074)
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
   console.time("TIME: project_dataset_tree_dhtmlx");
@@ -2094,13 +2127,28 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       itemtext = get_itemtext(pid);
 
       let pid_str = pid.toString();
+      // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      //   // TODO: Andy, how to test this?
+      //   // TODO ? use json_item_collect(node, json_item, checked)
+      //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
+      // }
+      // else {
+      //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
+      // }
+
+      let options_obj = {
+        id: 'p' + pid_str,
+        text: itemtext,
+        checked: false,
+        child: 1,
+        item: [],
+      };
       if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
-        // TODO: Andy, how to test this?
-        json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
+        options_obj.open = '1';
       }
-      else {
-        json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
-      }
+
+      json.item.push(options_obj);
+
       return json;
     });
     // console.log("AAA0 JSON.stringify(json, null, 4)");
@@ -2134,12 +2182,25 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
       let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
 
+      // // TODO ? use json_item_collect(node, json_item, checked)
+      // if (all_checked_dids.includes(parseInt(did))) {
+      //   json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
+      // }
+      // else {
+      //   json.item.push({id: did, text: itemtext, child: 0});
+      // }
+
+      // json.item = []; // TODO: DELETE!
+      let options_obj = {
+        id: did,
+        text: itemtext,
+        child: 0,
+      };
       if (all_checked_dids.includes(parseInt(did))) {
-        json.item.push({id: did, text: itemtext, child: 0, checked: '1'});
+        options_obj.checked = '1';
       }
-      else {
-        json.item.push({id: did, text: itemtext, child: 0});
-      }
+
+      json.item.push(options_obj);
     });
   }
   json.item.sort(function sortByAlpha(a, b) {
