@@ -464,10 +464,33 @@ class visualizationFilters {
 
 }
 
+class visualizationCommonVariables {
+  constructor(req) {
+    this.chosen_id_order = req.session.chosen_id_order;
+    this.pid = 0;
+    this.project_name = "";
+    this.dataset_name = "";
+    this.project_dataset_name = "";
+    this.current_project_dataset_obj = {};
+    this.get_project_daraset_names();
+  }
+
+  get_project_daraset_names() {
+    for (const did of this.chosen_id_order){
+      this.pid = PROJECT_ID_BY_DID[did];
+      this.project_name = PROJECT_INFORMATION_BY_PID[this.pid].project;
+      this.dataset_name = DATASET_NAME_BY_DID[did];
+      this.project_dataset_name = this.project_name + '--' + this.dataset_name;
+      this.current_project_dataset_obj[this.project_dataset_name] = did;
+    }
+  }
+}
+
 module.exports = {
   viewSelectionGetData,
   viewSelectionFactory,
   visualizationFiles,
-  visualizationFilters
+  visualizationFilters,
+  visualizationCommonVariables
 };
 
