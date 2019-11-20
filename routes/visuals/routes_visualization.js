@@ -239,6 +239,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
  * GET visualization page.
  */
 
+//TODO: test     for (const pj of obj) {
 function get_data_to_open(req) {
   let DATA_TO_OPEN = {};
   if (req.body.data_to_open) {
@@ -337,9 +338,9 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   let selected_dataset_order = {};
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
-  for (let n in req.session.chosen_id_order){
-    let did = req.session.chosen_id_order[n];
-    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
+  for (const did of req.session.chosen_id_order) {
+    const pid = PROJECT_ID_BY_DID[did];
+    const pjds = PROJECT_INFORMATION_BY_PID[pid].project + '--' + DATASET_NAME_BY_DID[did];
     selected_dataset_order.names.push(pjds);
     selected_dataset_order.ids.push(did);
   }
@@ -590,7 +591,8 @@ function format_sumator(allData) {
     // const fields2skip = ["depth", "name", "parent", "children"];
     const fields2skip = ["name"];
 
-    for (let child in parent) {
+    // for (let child in parent) {
+    for (const child of Object.keys(parent)) {
       if (fields_w_val.includes(child)) {
         array.push(`<${child}>`);
         printList(parent[child]);
