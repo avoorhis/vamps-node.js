@@ -1338,7 +1338,7 @@ function reverse_or_reset_datasets(req, ids) {
   html += "<thead></thead>";
   html += "  <tbody>";
   html += ids.reduce((html_txt, did, idx) => {
-    const pr_dat_name = pd_vars.get_current_pr_dataset_name_by_did(did);
+    const pr_dat_name = pd_vars.current_project_dataset_obj_by_did[did];
     // current_project_dataset_obj_by_name
     // let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
 

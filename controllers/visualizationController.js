@@ -468,22 +468,7 @@ class visualizationCommonVariables {
   constructor(req, chosen_id_order) {
     this.chosen_id_order = chosen_id_order || req.session.chosen_id_order;
     this.current_project_dataset_obj_by_name = this.get_current_project_dataset_obj_by_name();
-    // this.current_project_dataset_obj_by_did = this.get_current_project_dataset_obj_by_did();
-    console.time("TIME: objectFlip1");
-    let a1 = this.objectFlip1(this.current_project_dataset_obj_by_name);
-    console.timeEnd("TIME: objectFlip1");
-
-    console.time("TIME: objectFlip2");
-    let a2 = this.objectFlip2(this.current_project_dataset_obj_by_name);
-    console.timeEnd("TIME: objectFlip2");
-
-    console.log(a1 === a2);
-
-    console.time("TIME: swap");
-    let a3 = this.swap(this.current_project_dataset_obj_by_name);
-    console.timeEnd("TIME: swap");
-    console.log(a1 === a3);
-
+    this.current_project_dataset_obj_by_did = this.get_current_project_dataset_obj_by_did();
     this.project_dataset_names = Object.keys(this.current_project_dataset_obj_by_name);
     this.current_project_dataset_obj_w_keys = this.get_current_project_dataset_obj_w_keys();
   }
@@ -493,34 +478,12 @@ class visualizationCommonVariables {
   }
 
   get_current_project_dataset_obj_by_did() {
-    return this.current_project_dataset_obj_by_name;
-  }
-
-  objectFlip1(obj) {
-    const ret = {};
-    Object.keys(obj).forEach(key => {
-      ret[obj[key]] = key;
-    });
-    return ret;
-  }
-
-  objectFlip2(obj) {
-    return Object.keys(obj).reduce((ret, key) => {
-      ret[obj[key]] = key;
-      return ret;
-    }, {});
-  }
-
-  swap(json){
     let ret = {};
-    for(let key in json){
-      ret[json[key]] = key;
+    for (let key in this.current_project_dataset_obj_by_name){
+      ret[this.current_project_dataset_obj_by_name[key]] = key;
     }
     return ret;
   }
-
-
-
 
   get_current_pr_dataset_name_by_did(selected_did) {
     return PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
