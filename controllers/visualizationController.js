@@ -467,28 +467,23 @@ class visualizationFilters {
 class visualizationCommonVariables {
   constructor(req) {
     this.chosen_id_order = req.session.chosen_id_order;
-    this.pid = 0;
-    this.project_name = "";
-    this.dataset_name = "";
-    this.project_dataset_name = "";
-    this.current_project_dataset_obj = this.get_project_dataset_names();
+    this.current_project_dataset_obj = this.get_current_project_dataset_obj();
     this.project_dataset_names = Object.keys(this.current_project_dataset_obj);
     this.current_project_dataset_obj_w_keys = this.get_current_project_dataset_obj_w_keys();
   }
 
   get_current_dataset_name_by_did(selected_did) {
-    return this.get_dataset_obj_by_did([selected_did])[0]["name"];
+    return DATASET_NAME_BY_DID[selected_did];
   }
 
-
-  get_project_dataset_names() {
+  get_current_project_dataset_obj() {
     let current_project_dataset_obj = {};
     for (const did of this.chosen_id_order){
-      this.pid = PROJECT_ID_BY_DID[did];
-      this.project_name = PROJECT_INFORMATION_BY_PID[this.pid].project;
-      this.dataset_name = DATASET_NAME_BY_DID[did];
-      this.project_dataset_name = this.project_name + '--' + this.dataset_name;
-      current_project_dataset_obj[this.project_dataset_name] = did;
+      const pid = PROJECT_ID_BY_DID[did];
+      const project_name = PROJECT_INFORMATION_BY_PID[pid].project;
+      const dataset_name = DATASET_NAME_BY_DID[did];
+      const project_dataset_name = project_name + '--' + dataset_name;
+      current_project_dataset_obj[project_dataset_name] = did;
     }
     return current_project_dataset_obj;
   }
@@ -517,9 +512,10 @@ class visualizationCommonVariables {
       selected_did_arr = [selected_did_arr];
     }
     let result_arr_arr = selected_did_arr.map(did => {
-      return this.current_project_dataset_obj_w_keys.filter(key => parseInt(key.did) === parseInt(did));
+      let arr_of_obj = this.current_project_dataset_obj_w_keys.filter(key => parseInt(key.did) === parseInt(did));
+      return arr_of_obj[0];
     });
-    return result_arr_arr[0];
+    return result_arr_arr;
   }
 
   // get_chosen_datasets(selected_did_arr) {

@@ -827,27 +827,27 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //   pi.no_of_datasets=2;
 // }
 
-function get_chosen_datasets(selected_did_arr) {
-  if (!helpers.is_array(selected_did_arr)) {
-    selected_did_arr = [selected_did_arr];
-  }
-  return selected_did_arr.reduce((res_arr, did) => {
-    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    res_arr.push({did: did, name: selected_pjds});
-    return res_arr;
-  }, []);
-}
+// function get_chosen_datasets(selected_did_arr) {
+//   if (!helpers.is_array(selected_did_arr)) {
+//     selected_did_arr = [selected_did_arr];
+//   }
+//   return selected_did_arr.reduce((res_arr, did) => {
+//     let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+//     res_arr.push({did: did, name: selected_pjds});
+//     return res_arr;
+//   }, []);
+// }
 
 function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
-  console.time("TIME: GGG0 get_chosen_datasets");
-  pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
-  console.timeEnd("TIME: GGG0 get_chosen_datasets");
+  // console.time("TIME: GGG0 get_chosen_datasets");
+  // pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
+  // console.timeEnd("TIME: GGG0 get_chosen_datasets");
   // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
   // let pd_vars = new visualization_controller.visualizationCommonVariables(req);
-  console.time("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
-  let q = pd_vars.get_dataset_obj_by_did(selected_did_arr);
-  console.timeEnd("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
+  // console.time("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
+  pi.chosen_datasets = pd_vars.get_dataset_obj_by_did(selected_did_arr);
+  // console.timeEnd("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
   pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
@@ -870,7 +870,7 @@ function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did)
+  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
   new_matrix.did = selected_did;
   new_matrix.total = 0;
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
