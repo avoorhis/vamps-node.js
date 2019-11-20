@@ -838,10 +838,16 @@ function get_chosen_datasets(selected_did_arr) {
   }, []);
 }
 
-function make_pi(selected_did_arr, req, metric = undefined) {
+function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
+  console.time("TIME: GGG0 get_chosen_datasets");
   pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
+  console.timeEnd("TIME: GGG0 get_chosen_datasets");
   // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
+  // let pd_vars = new visualization_controller.visualizationCommonVariables(req);
+  console.time("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
+  let q = pd_vars.get_dataset_obj_by_did(selected_did_arr);
+  console.timeEnd("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
   pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
@@ -858,14 +864,13 @@ function make_pi(selected_did_arr, req, metric = undefined) {
   return pi;
 }
 
-function make_new_matrix(req, pi, selected_did, order) {
+function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_single");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-
-  new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did)
   new_matrix.did = selected_did;
   new_matrix.total = 0;
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
@@ -965,9 +970,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  let pd_vars = new visualization_controller.visualizationCommonVariables(req);
 
-  let pi = make_pi([selected_did], req);
-  let new_matrix = make_new_matrix(req, pi, selected_did, order);
+  let pi = make_pi([selected_did], req, pd_vars);
+  let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
 
   let new_order = get_new_order_by_button(order);
 
@@ -1007,14 +1013,15 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let myurl = url.parse(req.url, true);
   // console.log(myurl.query);
-  let did1 = myurl.query.did1;
-  let did2 = myurl.query.did2;
-  let dist = myurl.query.dist;
-  let metric = myurl.query.metric;
-  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
-  let value = myurl.query.val || 'z'; // a,z, min, max
-  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  let pi = make_pi([did1, did2], req, metric);
+  const did1 = myurl.query.did1;
+  const did2 = myurl.query.did2;
+  const dist = myurl.query.dist;
+  const metric = myurl.query.metric;
+  const orderby = myurl.query.orderby || 'alpha'; // alpha, count
+  const value = myurl.query.val || 'z'; // a,z, min, max
+  const order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  const pd_vars = new visualization_controller.visualizationCommonVariables(req);
+  let pi = make_pi([did1, did2], req, pd_vars, metric);
 
   let overwrite_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_double");
