@@ -512,24 +512,10 @@ class visualizationCommonVariables {
       selected_did_arr = [selected_did_arr];
     }
     let result_arr_arr = selected_did_arr.map(did => {
-
-      let arr_of_obj = this.current_project_dataset_obj_w_keys.find(key => parseInt(key.did) === parseInt(did));
-      return arr_of_obj;
+      return this.current_project_dataset_obj_w_keys.find(key => parseInt(key.did) === parseInt(did));
     });
     return result_arr_arr;
   }
-
-  // get_chosen_datasets(selected_did_arr) {
-  //   if (!helpers.is_array(selected_did_arr)) {
-  //     selected_did_arr = [selected_did_arr];
-  //   }
-  //   return selected_did_arr.reduce((res_arr, did) => {
-  //     let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-  //     res_arr.push({did: did, name: selected_pjds});
-  //     return res_arr;
-  //   }, []);
-  // }
-  //
 }
 
 module.exports = {

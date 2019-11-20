@@ -822,22 +822,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //
 // test: BAR-CHART -- SINGLE - (click on a bar)
 
-// function get_selected_pjds() {
-//   pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
-//   pi.no_of_datasets=2;
-// }
-
-// function get_chosen_datasets(selected_did_arr) {
-//   if (!helpers.is_array(selected_did_arr)) {
-//     selected_did_arr = [selected_did_arr];
-//   }
-//   return selected_did_arr.reduce((res_arr, did) => {
-//     let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-//     res_arr.push({did: did, name: selected_pjds});
-//     return res_arr;
-//   }, []);
-// }
-
 function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
   pi.chosen_datasets = pd_vars.get_dataset_obj_by_did(selected_did_arr);
