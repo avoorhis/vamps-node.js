@@ -841,7 +841,6 @@ function get_chosen_datasets(selected_did_arr) {
 function make_pi(selected_did_arr, req, metric = undefined) {
   let pi = {};
   pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
-  // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
   // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
   pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = file_path_obj.get_user_timestamp(req);
@@ -1456,14 +1455,6 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   const current_pr_dat_obj =  new visualization_controller.visualizationCommonVariables(req);
 
   let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj;
-  // for (let i in req.session.chosen_id_order){
-  // for (const did of req.session.chosen_id_order){
-  //   // let did = req.session.chosen_id_order[i];
-  //   const pid = PROJECT_ID_BY_DID[did];
-  //   const project_name = PROJECT_INFORMATION_BY_PID[pid].project;
-  //   const pjds = project_name + '--' + DATASET_NAME_BY_DID[did];
-  //   pjds_lookup[pjds] = did;
-  // }
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],

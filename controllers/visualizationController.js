@@ -471,19 +471,53 @@ class visualizationCommonVariables {
     this.project_name = "";
     this.dataset_name = "";
     this.project_dataset_name = "";
-    this.current_project_dataset_obj = {};
-    this.get_project_daraset_names();
+    this.current_project_dataset_obj = this.get_project_dataset_names();
+    this.project_dataset_names = Object.keys(this.current_project_dataset_obj);
+    this.current_project_dataset_obj_w_keys = this.get_current_project_dataset_obj_w_keys();
   }
 
-  get_project_daraset_names() {
+  get_project_dataset_names() {
+    let current_project_dataset_obj = {};
     for (const did of this.chosen_id_order){
       this.pid = PROJECT_ID_BY_DID[did];
       this.project_name = PROJECT_INFORMATION_BY_PID[this.pid].project;
       this.dataset_name = DATASET_NAME_BY_DID[did];
       this.project_dataset_name = this.project_name + '--' + this.dataset_name;
-      this.current_project_dataset_obj[this.project_dataset_name] = did;
+      current_project_dataset_obj[this.project_dataset_name] = did;
     }
+    return current_project_dataset_obj;
   }
+
+  get_current_project_dataset_obj_w_keys() {
+    if (!helpers.is_array(this.project_dataset_names)) {
+      this.project_dataset_names = [this.project_dataset_names];
+    }
+    return this.project_dataset_names.reduce((res_arr, name) => {
+    // FROM:   "DCO_SAR2_Bv4v5--C1_SR_Bac": 474458,
+    // TO: {
+      //     "did": 474458,
+      //     "d_name": "DCO_SAR2_Bv4v5--C1_SR_Bac"
+      //   },
+
+      const inner_obj = {};
+      inner_obj.did = this.current_project_dataset_obj[name];
+      inner_obj.p_d_name = name;
+      res_arr.push(inner_obj);
+      return res_arr;
+    }, []);
+  }
+
+  // get_chosen_datasets(selected_did_arr) {
+  //   if (!helpers.is_array(selected_did_arr)) {
+  //     selected_did_arr = [selected_did_arr];
+  //   }
+  //   return selected_did_arr.reduce((res_arr, did) => {
+  //     let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+  //     res_arr.push({did: did, name: selected_pjds});
+  //     return res_arr;
+  //   }, []);
+  // }
+  //
 }
 
 module.exports = {
