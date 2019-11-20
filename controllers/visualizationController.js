@@ -512,8 +512,9 @@ class visualizationCommonVariables {
       selected_did_arr = [selected_did_arr];
     }
     let result_arr_arr = selected_did_arr.map(did => {
-      let arr_of_obj = this.current_project_dataset_obj_w_keys.filter(key => parseInt(key.did) === parseInt(did));
-      return arr_of_obj[0];
+
+      let arr_of_obj = this.current_project_dataset_obj_w_keys.find(key => parseInt(key.did) === parseInt(did));
+      return arr_of_obj;
     });
     return result_arr_arr;
   }

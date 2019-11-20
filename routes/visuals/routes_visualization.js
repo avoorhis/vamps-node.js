@@ -840,14 +840,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
 function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
-  // console.time("TIME: GGG0 get_chosen_datasets");
-  // pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
-  // console.timeEnd("TIME: GGG0 get_chosen_datasets");
-  // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
-  // let pd_vars = new visualization_controller.visualizationCommonVariables(req);
-  // console.time("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
   pi.chosen_datasets = pd_vars.get_dataset_obj_by_did(selected_did_arr);
-  // console.timeEnd("TIME: GGG1 pd_vars.get_dataset_obj_by_did");
   pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
