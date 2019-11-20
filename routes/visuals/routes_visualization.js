@@ -1329,15 +1329,20 @@ function reorder_did_html(did, name, idx) {
   return html;
 }
 
-function reverse_or_reset_datasets(ids) {
+function reverse_or_reset_datasets(req, ids) {
+  const pd_vars = new visualization_controller.visualizationCommonVariables(req, ids);
+
   let html = '';
 
   html += "<table id='drag_table' class='table table-condensed' >";
   html += "<thead></thead>";
   html += "  <tbody>";
   html += ids.reduce((html_txt, did, idx) => {
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    return html_txt += reorder_did_html(did, name, idx);
+    const pr_dat_name = pd_vars.get_current_pr_dataset_name_by_did(did);
+    // current_project_dataset_obj_by_name
+    // let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
+
+    return html_txt += reorder_did_html(did, pr_dat_name, idx);
   }, "");
   html += "</tbody>";
   html += "</table>";
@@ -1351,7 +1356,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reset_ds_order');
 
   let html = '';
-  html += reverse_or_reset_datasets(req.session.chosen_id_order);
+  html += reverse_or_reset_datasets(req, req.session.chosen_id_order);
 
   res.send(html);
 });
@@ -1392,7 +1397,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   }, []);
 
   let html = '';
-  html += reverse_or_reset_datasets(dids_sorted_by_dname);
+  html += reverse_or_reset_datasets(req, dids_sorted_by_dname);
 
   res.send(html);
 });
@@ -1408,7 +1413,7 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   ids.reverse();
 
   let html = '';
-  html += reverse_or_reset_datasets(ids);
+  html += reverse_or_reset_datasets(req, ids);
   res.send(html);
 });
 
@@ -1438,7 +1443,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
   const current_pr_dat_obj =  new visualization_controller.visualizationCommonVariables(req);
 
-  let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj;
+  let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj_by_name;
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
