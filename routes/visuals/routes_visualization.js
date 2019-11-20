@@ -29,8 +29,7 @@ function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 // get dataset_ids the add names for biom file output:
 // chosen_id_order was set in unit_select and added to session variable
   visual_post_items.chosen_datasets = [];
-  for (let n in dataset_ids) {
-    let did = dataset_ids[n];
+  for (const did of dataset_ids) {
     let dname = DATASET_NAME_BY_DID[did];
     let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
     visual_post_items.chosen_datasets.push({did: did, name: pname + '--' + dname});
@@ -199,14 +198,13 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     // Gather just the tax data of selected datasets
     let chosen_dataset_order = [];
 
-    for (let i in req.session.chosen_id_order){
-      let did = req.session.chosen_id_order[i];
+    for (const did of req.session.chosen_id_order) {
       let dname = DATASET_NAME_BY_DID[did];
       let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
 
       chosen_dataset_order.push( { did:did, name:pname + '--' + dname } );  // send this to client
       // !!!use default taxonomy here (may choose other on this page)
-      file_path_obj.test_if_json_file_exists(req, i, dataset_ids, did);
+      file_path_obj.test_if_json_file_exists(req, dataset_ids, did);
     }
 
     // benchmarking
