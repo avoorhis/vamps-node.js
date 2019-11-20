@@ -329,8 +329,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
 
-  let needed_constants = C;
-  render_visuals_index(res, req, needed_constants);
+  render_visuals_index(res, req, C);
 });
 
 //
@@ -444,7 +443,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
           newick = {"ERROR": err};
         }
         res.send(newick);
-        return;
+        // return;
       }
     }
     else{
@@ -692,6 +691,7 @@ function get_fill(req) {
   return fill;
 }
 
+// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
 function get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name) {
   let phy, md1, md2, ordtype, maxdist;
   const dist_metric = req.body.metric;
@@ -792,7 +792,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
 
-    let html = '';
     if (code === 0){   // SUCCESS
 
       read_file_when_ready(svgfile_path);
@@ -1300,9 +1299,9 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
 
       } else {
         for (let f in files){
-          let pts = files[f].split('-');
-          if (parseInt(acceptable_prefixes.indexOf(pts[0])) !== -1 ){
-            //file_info.files.push(files[f]);
+          let name_parts = files[f].split('-');
+          let prefix_name = name_parts[0];
+          if (acceptable_prefixes.includes(prefix_name)){
             let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
             file_info[stat.mtime.getTime()] = {
               'filename': files[f],
