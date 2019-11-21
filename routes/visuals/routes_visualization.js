@@ -336,7 +336,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-  selected_dataset_order = {};
+  let selected_dataset_order = {};
   selected_dataset_order.names = req.session.project_dataset_vars.project_dataset_names;
   selected_dataset_order.ids = req.session.chosen_id_order;
 
@@ -1376,7 +1376,8 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   let name_ids = req.session.chosen_id_order.reduce((arr_of_obj, did) => {
     let temp_obj = {
       did: did,
-      d_name: PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did]
+      d_name: req.session.project_dataset_vars.current_project_dataset_obj_by_did[did]
+        // PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did]
     };
     arr_of_obj.push(temp_obj);
     return arr_of_obj;
