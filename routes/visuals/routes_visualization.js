@@ -427,7 +427,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
         // file_path_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
-        const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
+        const startsWith_newick = lines.find((line) => line.startsWith("NEWICK"));
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
@@ -602,7 +602,7 @@ function format_sumator(allData) {
   }
 
   function printArray(myArray){
-    for(let i = 0; i < myArray.length; i++){
+    for (let i = 0; i < myArray.length; i++){
       //console.log(myArray[i]);
       array.push("<val>" + myArray[i] + "</val>");
     }
@@ -1363,7 +1363,6 @@ function compare_by_key_name_asc(key_name) {
     }
     return 0;
   };
-
 }
 
 
@@ -1377,7 +1376,6 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
     let temp_obj = {
       did: did,
       d_name: req.session.project_dataset_vars.current_project_dataset_obj_by_did[did]
-        // PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did]
     };
     arr_of_obj.push(temp_obj);
     return arr_of_obj;
@@ -1413,7 +1411,7 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
 function get_ds_list(output) {
   let lines = output.split(/\n/);
   let ds_list = "";
-  let ds_list_line = lines.filter(l => l.startsWith('DS_LIST')).join("");
+  let ds_list_line = lines.find(l => l.startsWith('DS_LIST'));
   try {
     ds_list = ds_list_line.split('=')[1];
   }
@@ -2010,7 +2008,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   else { //parseInt(id) !== 0
     //console.log(JSON.stringify(ALL_DATASETS))
     id = id.substring(1);  // id = pxx
-    let this_project = ALL_DATASETS.projects.filter(prj => prj.pid === parseInt(id))[0];
+    let this_project = ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
 
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
