@@ -1118,8 +1118,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
   let selected_did = myurl.query.did;
-  let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-
+  let pjds = req.session.project_dataset_vars.current_project_dataset_obj_by_did[selected_did];
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
 
