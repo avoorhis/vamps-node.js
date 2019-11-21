@@ -198,7 +198,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     console.log('chosen_dataset_order-->');
     file_path_obj.print_log_if_not_vamps(req, chosen_dataset_order);
     console.log('<--chosen_dataset_order');
-    
+
     res.render('visuals/unit_selection', {
       title: 'VAMPS: Units Selection',
       referer: 'visuals_index',
