@@ -39,10 +39,12 @@ function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
 
 function start_visual_post_items(req) {
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
-  let dataset_ids = visualization_obj.dataset_ids;
+  // let dataset_ids = visualization_obj.dataset_ids;
   let visual_post_items = visualization_obj.visual_post_items;
 
-  visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
+  // get dataset_ids the add names for biom file output:
+  // chosen_id_order was set in unit_select and added to session variable
+  visual_post_items.chosen_datasets = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
