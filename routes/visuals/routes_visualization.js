@@ -189,7 +189,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     return;
   }
   else {
-    req.session.chosen_id_order   = dataset_ids;
+    req.session.chosen_id_order = dataset_ids;
+    req.session.project_dataset_vars = new visualization_controller.visualizationCommonVariables(req);
 
     // Thes get only the names of the available metadata:
     let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
@@ -336,6 +337,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   let selected_dataset_order = {};
+  console.time("TIME: selected_dataset_order1");
   selected_dataset_order.names = [];
   selected_dataset_order.ids = [];
   for (const did of req.session.chosen_id_order) {
@@ -344,6 +346,14 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     selected_dataset_order.names.push(pjds);
     selected_dataset_order.ids.push(did);
   }
+  console.timeEnd("TIME: selected_dataset_order1");
+  console.time("TIME: selected_dataset_order 2");
+  selected_dataset_order = {};
+  // let pd_vars = new visualization_controller.visualizationCommonVariables(req);
+
+  selected_dataset_order.names = req.session.project_dataset_vars.project_dataset_names;
+  selected_dataset_order.ids = req.session.chosen_id_order;
+  console.timeEnd("TIME: selected_dataset_order 2");
 
   // console.log(req.session);
   const user_timestamp = file_path_obj.get_user_timestamp(req);
@@ -947,7 +957,8 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  let pd_vars = new visualization_controller.visualizationCommonVariables(req);
+  let pd_vars = req.session.project_dataset_vars;
+    // new visualization_controller.visualizationCommonVariables(req);
 
   let pi = make_pi([selected_did], req, pd_vars);
   let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
@@ -997,7 +1008,8 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   const orderby = myurl.query.orderby || 'alpha'; // alpha, count
   const value = myurl.query.val || 'z'; // a,z, min, max
   const order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  const pd_vars = new visualization_controller.visualizationCommonVariables(req);
+  const pd_vars = req.session.project_dataset_vars;
+    // new visualization_controller.visualizationCommonVariables(req);
   let pi = make_pi([did1, did2], req, pd_vars, metric);
 
   let overwrite_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
@@ -1438,7 +1450,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
-  const current_pr_dat_obj =  new visualization_controller.visualizationCommonVariables(req);
+  const current_pr_dat_obj = req.session.project_dataset_vars;
+    // new visualization_controller.visualizationCommonVariables(req);
 
   let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj_by_name;
   let options = {
