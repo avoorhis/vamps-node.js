@@ -186,11 +186,27 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
     let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
-    let chosen_dataset_order = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
-    chosen_dataset_order.map(ob => {
+    console.time("TIME: chosen_dataset_order 1");
+    // Gather just the tax data of selected datasets
+    let chosen_dataset_order = [];
+
+    for (const did of req.session.chosen_id_order) {
+      let dname = DATASET_NAME_BY_DID[did];
+      let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+
+      chosen_dataset_order.push( { did:did, name:pname + '--' + dname } );  // send this to client
+      // !!!use default taxonomy here (may choose other on this page)
+      file_path_obj.test_if_json_file_exists(req, dataset_ids, did);
+    }
+    console.timeEnd("TIME: chosen_dataset_order 1");
+    console.log("CCC1:", chosen_dataset_order);
+    console.time("TIME: chosen_dataset_order 2");
+    let chosen_dataset_order1 = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
+    chosen_dataset_order1.map(ob => {
       file_path_obj.test_if_json_file_exists(req, dataset_ids, ob.did);
     });
-
+    console.timeEnd("TIME: chosen_dataset_order 2");
+    console.log("CCC2:", chosen_dataset_order1);
     // benchmarking
     helpers.start = process.hrtime();
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
