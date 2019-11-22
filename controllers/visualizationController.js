@@ -213,8 +213,12 @@ class visualizationFiles {
     try {
       require(path_to_file);
     }
-    catch (err) {
+    catch (err) { // TODO use common vals class
       console.log(err);
+      // let pid = PROJECT_ID_BY_DID[did];
+      // let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      // let dname = DATASET_NAME_BY_DID[did];
+      // error_msg = 'No Taxonomy found for this dataset (' + pname + '--' + dname + ' (did: ' + did + ')) and possibly others. Try selecting other units.';
       let p_d_name = req.session.project_dataset_vars.current_project_dataset_obj_by_did[did];
       error_msg = 'No Taxonomy found for this dataset (' + p_d_name + ' (did: ' + did + ')) and possibly others. Try selecting other units.';
     }
