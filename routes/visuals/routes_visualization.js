@@ -713,7 +713,7 @@ function get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name)
       //   args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
       // different order for this script!
       options.args = [tmp_file_path, user_timestamp, dist_metric, md1, md2, svgfile_name];
-        // options.args.concat([dist_metric, md1, md2]);
+      // options.args.concat([dist_metric, md1, md2]);
       break;
   }
   // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
@@ -1960,7 +1960,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 
       let pid_str = pid.toString();
       // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
-        // TODO: Andy, how to test this?
+      // TODO: Andy, how to test this?
       //   // TODO ? use json_item_collect(node, json_item, checked)
       //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
       // }

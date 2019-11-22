@@ -138,7 +138,7 @@ class viewSelectionFactory {
     this.get_data = new module.exports.viewSelectionGetData(req);
     this.select_get_data_strategy();
   }
-    // module.exports.viewSelectionGetData
+  // module.exports.viewSelectionGetData
   select_get_data_strategy() {
     let req_body = this.req.body;
 
@@ -299,7 +299,7 @@ class visualizationFiles {
     const file_name = file_name_obj[ending];
     const file_tmp_path = path.join(tmp_file_path, file_name);
     return file_tmp_path;
-}
+  }
 
   get_file_names_switch(req, file_type) {
     switch (file_type) {
@@ -489,7 +489,7 @@ class visualizationCommonVariables {
 
   get_current_pr_dataset_name_by_did(selected_did) {
     return PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-}
+  }
 
   get_current_project_dataset_obj_by_name() {
     let current_project_dataset_obj = {};
@@ -508,8 +508,8 @@ class visualizationCommonVariables {
       this.project_dataset_names = [this.project_dataset_names];
     }
     return this.project_dataset_names.reduce((res_arr, name) => {
-    // FROM:   "DCO_SAR2_Bv4v5--C1_SR_Bac": 474458,
-    // TO: {
+      // FROM:   "DCO_SAR2_Bv4v5--C1_SR_Bac": 474458,
+      // TO: {
       //     "did": 474458,
       //     "d_name": "DCO_SAR2_Bv4v5--C1_SR_Bac"
       //   },
@@ -540,4 +540,3 @@ module.exports = {
   visualizationFilters,
   visualizationCommonVariables
 };
-
