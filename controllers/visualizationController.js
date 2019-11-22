@@ -209,11 +209,10 @@ class visualizationFiles {
     let files_prefix = this.get_json_files_prefix(req);
     let path_to_file = path.join(files_prefix, did + '.json');
     let error_msg = "";
-    console.log("path_to_file", path_to_file);
     try {
       require(path_to_file);
     }
-    catch (err) { // TODO use common vals class
+    catch (err) {
       console.log(err);
       // let pid = PROJECT_ID_BY_DID[did];
       // let pname = PROJECT_INFORMATION_BY_PID[pid].project;
