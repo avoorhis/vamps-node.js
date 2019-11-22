@@ -1446,7 +1446,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list, pjds_lookup);
         let ascii_file = file_path_obj.get_tree_file_name(req, metric);
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
-        read_file_when_ready(ascii_file_path);
+        read_file_when_ready(ascii_file_path)
+          // .then(r => console.log("RRR: ", r));
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
             return console.log(err);
