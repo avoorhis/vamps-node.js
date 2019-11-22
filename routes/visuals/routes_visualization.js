@@ -25,18 +25,6 @@ const spawn = require('child_process').spawn;
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
 
-function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
-// get dataset_ids the add names for biom file output:
-// chosen_id_order was set in unit_select and added to session variable
-  visual_post_items.chosen_datasets = [];
-  for (const did of dataset_ids) {
-    let dname = DATASET_NAME_BY_DID[did];
-    let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-    visual_post_items.chosen_datasets.push({did: did, name: pname + '--' + dname});
-  }
-  return visual_post_items;
-}
-
 function start_visual_post_items(req) {
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
   // let dataset_ids = visualization_obj.dataset_ids;
@@ -198,17 +186,10 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
     let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
-    // Gather just the tax data of selected datasets
-    let chosen_dataset_order = [];
-
-    for (const did of req.session.chosen_id_order) {
-      let dname = DATASET_NAME_BY_DID[did];
-      let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-
-      chosen_dataset_order.push( { did:did, name:pname + '--' + dname } );  // send this to client
-      // !!!use default taxonomy here (may choose other on this page)
-      file_path_obj.test_if_json_file_exists(req, dataset_ids, did);
-    }
+    let chosen_dataset_order = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
+    chosen_dataset_order.map(ob => {
+      file_path_obj.test_if_json_file_exists(req, dataset_ids, ob.did);
+    });
 
     // benchmarking
     helpers.start = process.hrtime();
@@ -1332,6 +1313,7 @@ function reverse_or_reset_datasets(req, ids) {
   html += "  <tbody>";
   html += ids.reduce((html_txt, did, idx) => {
     const pr_dat_name = pd_vars.current_project_dataset_obj_by_did[did];
+    // TODO: html_txt vs. html???
     return html_txt += reorder_did_html(did, pr_dat_name, idx);
   }, "");
   html += "</tbody>";
@@ -1855,7 +1837,7 @@ router.post('/check_units', function(req, res) {
       jsonfile = require(path_to_file);
     }
     catch(e){
-      file_err='FAIL';
+      file_err = 'FAIL';
       break;
     }
   }
