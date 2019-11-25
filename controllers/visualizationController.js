@@ -480,11 +480,17 @@ class visualizationFilters {
 
   filter_by_substring(filter_obj, prj_obj) {
     let NewPROJECT_TREE_OBJ1 = [];
-    NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.name.toUpperCase().includes(filter_obj.substring));
-    let prj_project = prj_obj.filter(prj => prj.project);
-    if (prj_project.length > 0) {
-      let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.project.toUpperCase().includes(filter_obj.substring));
-      NewPROJECT_TREE_OBJ1 = NewPROJECT_TREE_OBJ1.concat(add_to_NewPROJECT_TREE_OBJ1);
+    let filter_empty = this.filter_empty_filter(filter_obj.substring);
+    if (filter_empty) {
+      NewPROJECT_TREE_OBJ1 = prj_obj;
+    }
+    else {
+      NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.name.toUpperCase().includes(filter_obj.substring));
+      let prj_project = prj_obj.filter(prj => prj.project);
+      if (prj_project.length > 0) {
+        let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.project.toUpperCase().includes(filter_obj.substring));
+        NewPROJECT_TREE_OBJ1 = NewPROJECT_TREE_OBJ1.concat(add_to_NewPROJECT_TREE_OBJ1);
+      }
     }
     return NewPROJECT_TREE_OBJ1;
   }
@@ -492,10 +498,29 @@ class visualizationFilters {
   filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1){
     //console.log('Filtering for ENV')
     console.time("TIME: filter_by_env filter");
-    let NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
-      const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
-      return filter_obj.env.includes(current_pr_env_package_id);
-    });
+    let filter_empty = this.filter_empty_filter(filter_obj.env);
+    let NewPROJECT_TREE_OBJ2 = [];
+    if (filter_empty) {
+      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
+    }
+    else {
+      // NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
+      //   const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
+      //   return filter_obj.env.includes(current_pr_env_package_id);
+      // });
+      NewPROJECT_TREE_OBJ1.forEach(prj => {
+        const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
+        if (filter_obj.env.includes(current_pr_env_package_id)) {
+          NewPROJECT_TREE_OBJ2.push(prj);
+        }
+      });
+    }
+
+    //    NewPROJECT_TREE_OBJ1.forEach(function (prj) {
+    //       if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
+    //         NewPROJECT_TREE_OBJ2.push(prj);
+    //       }
+    //     });
 
     console.timeEnd("TIME: filter_by_env filter");
     return NewPROJECT_TREE_OBJ2;
@@ -514,29 +539,10 @@ class visualizationFilters {
     //console.log(prj_obj, filter_obj)
     console.time("TIME: filter_projects");
     // SUBSTRING
-    let NewPROJECT_TREE_OBJ1 = [];
-    let filter_empty = this.filter_empty_filter(filter_obj.substring);
-    if (filter_empty) {
-      NewPROJECT_TREE_OBJ1 = prj_obj;
-    }
-    else {
-      NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
-    }
+    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+
     // ENV
-    let NewPROJECT_TREE_OBJ2 = [];
-    filter_empty = this.filter_empty_filter(filter_obj.env);
-    if (filter_empty) {
-      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
-    } else {
-      //    if (filter_obj.env.length === 0 || filter_obj.env[0] === '.....') {  // should ALWAYS BE A LIST
-      //console.log('Filtering for ENV')
-      // NewPROJECT_TREE_OBJ1.forEach(function (prj) {
-      //   if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
-      //     NewPROJECT_TREE_OBJ2.push(prj);
-      //   }
-      // });
-      NewPROJECT_TREE_OBJ2 = this.filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1);
-    }
+    let NewPROJECT_TREE_OBJ2 =  this.filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1);
 
     // TARGET
     let pparts = [];
