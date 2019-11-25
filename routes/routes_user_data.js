@@ -83,6 +83,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
 //
 //  EXPORT CONFIRM
 //
+//TODO: function is overly complex (cyclomatic complexity = 15)
 router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     console.log('req.body: export_confirm-->>');
     console.log(req.body);
@@ -315,6 +316,8 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
 //             sample_type_options: CONSTS.SAMPLE_TYPE
 //           });
 });
+
+//TODO: function is overly complex (cyclomatic complexity = 14)
 router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
     console.log('in retrieve_metadata')
     console.log(req.body)
@@ -500,6 +503,8 @@ router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
   
   
 });
+
+//TODO: function is overly complex (cyclomatic complexity = 17)
 function save_av_metadata(type, mdname, data){
     console.log('type '+type+' item: '+mdname)
     var md = {}    
@@ -916,6 +921,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
 //
 //
 //
+//TODO: function is overly complex (cyclomatic complexity = 33)
 function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
     // validate data:
     // 'dataset' in first column --
@@ -1353,7 +1359,8 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
         });
 
         // File is done being read
-        
+
+        //TODO: function is overly complex (cyclomatic complexity = 14)
         rs.on('close', () => {
             line_split_chunks = chunkstr.split('\n')
 // MATRIX             
@@ -1912,6 +1919,7 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, re
 //
 //  DELETE PROJECT:PROJECT:KIND
 //
+//TODO: function is overly complex (cyclomatic complexity = 12)
 router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, res) {
 
   var delete_kind = req.params.kind;
@@ -2748,7 +2756,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
 //
 //   POST -- EDIT_PROJECT:  for accepting changes and re-showing the page
 //
-
+//TODO: function is overly complex (cyclomatic complexity = 20)
 router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
   console.log('in edit project POST, req.body:');
   console.log(req.body);
@@ -3938,6 +3946,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
   });
 });
 
+//TODO: function is overly complex (cyclomatic complexity = 13)
 router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
 
   console.log('upload_data_tax_by_seq');
@@ -4361,6 +4370,7 @@ router.get('/required_metadata_options', function(req, res) {
 //
 // DOWNLOAD METADATA
 //
+//TODO: function is overly complex (cyclomatic complexity = 26)
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
   var db = req.db;
   console.log('metadata download POST req.body-->>');
@@ -4900,6 +4910,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
 //
 // COPY FILES from tmp directory to user directory
 //
+//TODO: function is overly complex (cyclomatic complexity = 15)
 router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     console.log('copy_file_for_download req.body-->>');
 	// these files being copied are already created when the visualization page is reached
