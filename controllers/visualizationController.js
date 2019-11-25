@@ -468,6 +468,47 @@ class visualizationFilters {
     return projects;
   }
 
+  filter_by_substring(filter_obj, prj_obj) {
+    let NewPROJECT_TREE_OBJ1 = [];
+    let ucname = "";
+    const empty_vals = ['', '.....'];
+    if (empty_vals.includes(filter_obj.substring)) {
+    NewPROJECT_TREE_OBJ1 = prj_obj;
+    }
+    else {
+    //console.log('Filtering for SUBSTRING')
+    console.time("TIME: NewPROJECT_TREE_OBJ1 1");
+
+    NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.name.toUpperCase().includes(filter_obj.substring));
+    // try {
+  //   let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.project.toUpperCase().includes(filter_obj.substring));
+  //   NewPROJECT_TREE_OBJ1.concat(add_to_NewPROJECT_TREE_OBJ1);
+  // }
+  // catch (e) {
+  //   console.log("IF prj.project");
+  //   console.log(e);
+  // }
+    console.timeEnd("TIME: NewPROJECT_TREE_OBJ1 1");
+
+    NewPROJECT_TREE_OBJ1 = [];
+    console.time("TIME: NewPROJECT_TREE_OBJ1 2");
+
+    prj_obj.map(prj => {
+      if (prj.hasOwnProperty('name')) {
+        ucname = prj.name.toUpperCase();
+      } else {
+        ucname = prj.project.toUpperCase();
+      }
+
+      if (ucname.indexOf(filter_obj.substring) !== -1) {
+        NewPROJECT_TREE_OBJ1.push(prj);
+      }
+    });
+    console.timeEnd("TIME: NewPROJECT_TREE_OBJ1 2");
+  }
+    return NewPROJECT_TREE_OBJ1;
+}
+
 // TODO: "This function's cyclomatic complexity is too high. (16)"
   filter_projects (req, prj_obj, filter_obj) {
     // 1 substring      name search
@@ -481,24 +522,44 @@ class visualizationFilters {
     //console.log(prj_obj, filter_obj)
     console.time("TIME: filter_projects");
     // SUBSTRING
-    let NewPROJECT_TREE_OBJ1 = [];
-    let ucname = "";
-    const empty_vals = ['', '.....'];
-    if (empty_vals.includes(filter_obj.substring)) {
-      NewPROJECT_TREE_OBJ1 = prj_obj;
-    } else {
-      //console.log('Filtering for SUBSTRING')
-      prj_obj.forEach(function (prj) {
-        if (prj.hasOwnProperty('name')) {
-          ucname = prj.name.toUpperCase();
-        } else {
-          ucname = prj.project.toUpperCase();
-        }
-        if (ucname.indexOf(filter_obj.substring) !== -1) {
-          NewPROJECT_TREE_OBJ1.push(prj);
-        }
-      });
-    }
+    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+    // let NewPROJECT_TREE_OBJ1 = [];
+    // let ucname = "";
+    // const empty_vals = ['', '.....'];
+    // if (empty_vals.includes(filter_obj.substring)) {
+    //   NewPROJECT_TREE_OBJ1 = prj_obj;
+    // } else {
+    //   //console.log('Filtering for SUBSTRING')
+    //   console.time("TIME: NewPROJECT_TREE_OBJ1 1");
+    //
+    //   NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.name.toUpperCase().includes(filter_obj.substring));
+    //   // try {
+    //   //   let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.project.toUpperCase().includes(filter_obj.substring));
+    //   //   NewPROJECT_TREE_OBJ1.concat(add_to_NewPROJECT_TREE_OBJ1);
+    //   // }
+    //   // catch (e) {
+    //   //   console.log("IF prj.project");
+    //   //   console.log(e);
+    //   // }
+    //   console.timeEnd("TIME: NewPROJECT_TREE_OBJ1 1");
+    //
+    //   NewPROJECT_TREE_OBJ1 = [];
+    //   console.time("TIME: NewPROJECT_TREE_OBJ1 2");
+    //
+    //   prj_obj.forEach(function (prj) {
+    //     if (prj.hasOwnProperty('name')) {
+    //       ucname = prj.name.toUpperCase();
+    //     } else {
+    //       ucname = prj.project.toUpperCase();
+    //     }
+    //
+    //     if (ucname.indexOf(filter_obj.substring) !== -1) {
+    //       NewPROJECT_TREE_OBJ1.push(prj);
+    //     }
+    //   });
+    //   console.timeEnd("TIME: NewPROJECT_TREE_OBJ1 2");
+
+    // }
 
     // ENV
     let NewPROJECT_TREE_OBJ2 = [];
