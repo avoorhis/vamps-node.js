@@ -52,7 +52,14 @@
                  <input type="checkbox" name='fasta' value="1"> Sequences File (Standard Format FASTA)
                 </td>
                 <td></td>
-                <td>Uniqued sequences with raw frequency count in defline: ">readID|dataset|frequency"</td>
+                <td>Uniqued sequences with raw frequency count in defline: ">readID|dataset|frequency:234"</td>
+              </tr>
+              <tr>
+                <td>
+                 <input type="checkbox" name='fastaTAX' value="1"> Sequences File (Standard Format FASTA with Silva/GAST taxonomy and gast_distance) 
+                </td>
+                <td></td>
+                <td>Uniqued sequences: ">readID|dataset|distance|taxonomy|frequency:234"</td>
               </tr>
               <tr>
                 <td>
@@ -68,6 +75,9 @@
                 <td></td>
                 <td>Non-Uniqued sequences: ">dataset_(index) readID" (Useful for re-upload to VAMPS)</td>
               </tr>
+              
+              
+              
               <tr>
                 <td>
                  <input type="checkbox" name='biom' value="1"> Biom-Format File (JSON)<sup>**</sup>
