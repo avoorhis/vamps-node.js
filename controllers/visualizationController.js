@@ -515,11 +515,12 @@ class visualizationFilters {
   }
 
   filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
-
+    console.time("TIME: filter_by_target");
     let pparts = [];
     let last_el = [];
     let NewPROJECT_TREE_OBJ3 = [];
-    if (filter_obj.target === '' || filter_obj.target === '.....') {
+    let filter_empty = this.filter_empty_filter(filter_obj.target);
+    if (filter_empty) {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
     }
     else {
@@ -539,6 +540,7 @@ class visualizationFilters {
       });
 
     }
+    console.timeEnd("TIME: filter_by_target");
     return NewPROJECT_TREE_OBJ3;
   }
 
