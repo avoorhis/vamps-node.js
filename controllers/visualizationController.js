@@ -468,9 +468,9 @@ class visualizationFilters {
     return projects;
   }
 
-  filter_empty_filter(filter_obj) {
+  filter_empty_filter(current_filter) {
     const empty_vals = ['', '.....'];
-    if (empty_vals.includes(filter_obj.substring)) {
+    if (current_filter.length === 0 || empty_vals.includes(current_filter)) {
       return true;
     }
     else {
@@ -493,6 +493,7 @@ class visualizationFilters {
     //console.log('Filtering for ENV')
     console.time("TIME: filter_by_env old");
     let NewPROJECT_TREE_OBJ2 = [];
+
     NewPROJECT_TREE_OBJ1.forEach(function (prj) {
       if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
         NewPROJECT_TREE_OBJ2.push(prj);
@@ -514,9 +515,9 @@ class visualizationFilters {
     //console.log('IN FilterProjects')
     //console.log(prj_obj, filter_obj)
     console.time("TIME: filter_projects");
-    let filter_empty = this.filter_empty_filter(filter_obj);
     // SUBSTRING
     let NewPROJECT_TREE_OBJ1 = [];
+    let filter_empty = this.filter_empty_filter(filter_obj.substring);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ1 = prj_obj;
     }
@@ -525,9 +526,11 @@ class visualizationFilters {
     }
     // ENV
     let NewPROJECT_TREE_OBJ2 = [];
+    filter_empty = this.filter_empty_filter(filter_obj.env);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
     } else {
+      //    if (filter_obj.env.length === 0 || filter_obj.env[0] === '.....') {  // should ALWAYS BE A LIST
       //console.log('Filtering for ENV')
       // NewPROJECT_TREE_OBJ1.forEach(function (prj) {
       //   if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
