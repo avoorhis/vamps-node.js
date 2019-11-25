@@ -468,20 +468,29 @@ class visualizationFilters {
     return projects;
   }
 
-  filter_by_substring(filter_obj, prj_obj) {
-    let NewPROJECT_TREE_OBJ1 = [];
+  filter_empty_filter(filter_obj) {
     const empty_vals = ['', '.....'];
     if (empty_vals.includes(filter_obj.substring)) {
-    NewPROJECT_TREE_OBJ1 = prj_obj;
+      return true;
     }
     else {
+      return false;
+    }
+  }
+  filter_by_substring(filter_obj, prj_obj) {
+    let NewPROJECT_TREE_OBJ1 = [];
+    // const empty_vals = ['', '.....'];
+    // if (empty_vals.includes(filter_obj.substring)) {
+    // NewPROJECT_TREE_OBJ1 = prj_obj;
+    // }
+    // else {
       NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.name.toUpperCase().includes(filter_obj.substring));
       let prj_project = prj_obj.filter(prj => prj.project);
       if (prj_project.length > 0) {
         let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => prj.project.toUpperCase().includes(filter_obj.substring));
         NewPROJECT_TREE_OBJ1 = NewPROJECT_TREE_OBJ1.concat(add_to_NewPROJECT_TREE_OBJ1);
       }
-    }
+    // }
     return NewPROJECT_TREE_OBJ1;
 }
 
@@ -497,9 +506,15 @@ class visualizationFilters {
     //console.log('IN FilterProjects')
     //console.log(prj_obj, filter_obj)
     console.time("TIME: filter_projects");
+    let filter_empty = this.filter_empty_filter(filter_obj);
     // SUBSTRING
-    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
-
+    let NewPROJECT_TREE_OBJ1 = [];
+    if (filter_empty) {
+      NewPROJECT_TREE_OBJ1 = prj_obj;
+    }
+    else {
+      NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+    }
     // ENV
     let NewPROJECT_TREE_OBJ2 = [];
     if (filter_obj.env.length === 0 || filter_obj.env[0] === '.....') {  // should ALWAYS BE A LIST
