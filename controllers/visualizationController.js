@@ -515,7 +515,6 @@ class visualizationFilters {
   }
 
   filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
-    console.time("TIME: filter_by_target");
     let pparts = [];
     let last_el = [];
     let NewPROJECT_TREE_OBJ3 = [];
@@ -532,15 +531,13 @@ class visualizationFilters {
           pparts = prj.project.split('_');
         }
         last_el = pparts[pparts.length - 1];
-        if (filter_obj.target === 'ITS' && last_el.substring(0, 3) === 'ITS') {
+        if (filter_obj.target === 'ITS' && last_el.startsWith('ITS')) {
           NewPROJECT_TREE_OBJ3.push(prj);
         } else if (last_el === filter_obj.target) {
           NewPROJECT_TREE_OBJ3.push(prj);
         }
       });
-
     }
-    console.timeEnd("TIME: filter_by_target");
     return NewPROJECT_TREE_OBJ3;
   }
 
@@ -564,30 +561,7 @@ class visualizationFilters {
 
     // TARGET
     let NewPROJECT_TREE_OBJ3 = this.filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2);
-
-    // let pparts = [];
-    // let last_el = [];
-    // let NewPROJECT_TREE_OBJ3 = [];
-    // if (filter_obj.target === '' || filter_obj.target === '.....') {
-    //   NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
-    // }
-    // else {
-    //   //console.log('Filtering for TARGET')
-    //   NewPROJECT_TREE_OBJ2.forEach(function (prj) {
-    //     if (prj.hasOwnProperty('name')) {
-    //       pparts = prj.name.split('_');
-    //     } else {
-    //       pparts = prj.project.split('_');
-    //     }
-    //     last_el = pparts[pparts.length - 1];
-    //     if (filter_obj.target === 'ITS' && last_el.substring(0, 3) === 'ITS') {
-    //       NewPROJECT_TREE_OBJ3.push(prj);
-    //     } else if (last_el === filter_obj.target) {
-    //       NewPROJECT_TREE_OBJ3.push(prj);
-    //     }
-    //   });
-    //
-    // }
+    
     // PORTAL
     let NewPROJECT_TREE_OBJ4 = [];
     // let portal = [];
