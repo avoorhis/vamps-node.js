@@ -492,16 +492,7 @@ class visualizationFilters {
   filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1){
     //console.log('Filtering for ENV')
     console.time("TIME: filter_by_env filter");
-    let NewPROJECT_TREE_OBJ2 = [];
-    NewPROJECT_TREE_OBJ1.map(prj => {
-      if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
-        NewPROJECT_TREE_OBJ2.push(prj);
-      }
-    });
-
-    NewPROJECT_TREE_OBJ2 = [];
-
-    NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
+    let NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
       const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
       return filter_obj.env.includes(current_pr_env_package_id);
     });
