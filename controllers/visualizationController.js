@@ -514,25 +514,8 @@ class visualizationFilters {
     return NewPROJECT_TREE_OBJ2;
   }
 
-// TODO: "This function's cyclomatic complexity is too high. (16)"
-  filter_projects (req, prj_obj, filter_obj) {
-    // 1 substring      name search
-    // 2 env            search PROJECT_INFORMATION_BY_PID
-    // 3 target         name search
-    // 4 portal         helpers.get_portal_projects()
-    // 5 public_private search PROJECT_INFORMATION_BY_PID
-    // 6 metadata       helpers.get_PTREE_metadata
-    //console.log(PROJECT_INFORMATION_BY_PID)
-    //console.log('IN FilterProjects')
-    //console.log(prj_obj, filter_obj)
-    console.time("TIME: filter_projects");
-    // SUBSTRING
-    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+  filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
 
-    // ENV
-    let NewPROJECT_TREE_OBJ2 =  this.filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1);
-
-    // TARGET
     let pparts = [];
     let last_el = [];
     let NewPROJECT_TREE_OBJ3 = [];
@@ -556,6 +539,53 @@ class visualizationFilters {
       });
 
     }
+    return NewPROJECT_TREE_OBJ3;
+  }
+
+// TODO: "This function's cyclomatic complexity is too high. (16)"
+  filter_projects (req, prj_obj, filter_obj) {
+    // 1 substring      name search
+    // 2 env            search PROJECT_INFORMATION_BY_PID
+    // 3 target         name search
+    // 4 portal         helpers.get_portal_projects()
+    // 5 public_private search PROJECT_INFORMATION_BY_PID
+    // 6 metadata       helpers.get_PTREE_metadata
+    //console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log('IN FilterProjects')
+    //console.log(prj_obj, filter_obj)
+    console.time("TIME: filter_projects");
+    // SUBSTRING
+    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+
+    // ENV
+    let NewPROJECT_TREE_OBJ2 = this.filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1);
+
+    // TARGET
+    let NewPROJECT_TREE_OBJ3 = this.filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2);
+
+    // let pparts = [];
+    // let last_el = [];
+    // let NewPROJECT_TREE_OBJ3 = [];
+    // if (filter_obj.target === '' || filter_obj.target === '.....') {
+    //   NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
+    // }
+    // else {
+    //   //console.log('Filtering for TARGET')
+    //   NewPROJECT_TREE_OBJ2.forEach(function (prj) {
+    //     if (prj.hasOwnProperty('name')) {
+    //       pparts = prj.name.split('_');
+    //     } else {
+    //       pparts = prj.project.split('_');
+    //     }
+    //     last_el = pparts[pparts.length - 1];
+    //     if (filter_obj.target === 'ITS' && last_el.substring(0, 3) === 'ITS') {
+    //       NewPROJECT_TREE_OBJ3.push(prj);
+    //     } else if (last_el === filter_obj.target) {
+    //       NewPROJECT_TREE_OBJ3.push(prj);
+    //     }
+    //   });
+    //
+    // }
     // PORTAL
     let NewPROJECT_TREE_OBJ4 = [];
     // let portal = [];
@@ -574,7 +604,7 @@ class visualizationFilters {
         } else {
           pname = prj.project;
         }
-        pparts = pname.split('_');
+        let pparts = pname.split('_');
         let prefix = pparts[0];
         let suffix = pparts[pparts.length - 1];
         if (portal.prefixes.indexOf(prefix) !== -1 || portal.projects.indexOf(pname) !== -1 || portal.suffixes.indexOf(suffix) !== -1) {
@@ -586,7 +616,7 @@ class visualizationFilters {
     }
 
     // public/private
-    let NewPROJECT_TREE_OBJ5 = []
+    let NewPROJECT_TREE_OBJ5 = [];
     if (filter_obj.public === '-1') {
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
     } else {
