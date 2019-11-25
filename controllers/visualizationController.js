@@ -447,9 +447,172 @@ class visualizationFilters {
     return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
   }
 
+  get_PTREE_metadata (OBJ, q) {
+    console.time("get_PTREE_metadata");
+    let projects = [];
+    let phash    = {};
+    OBJ.forEach(function (prj) {
+      let dids = DATASET_IDS_BY_PID[prj.pid];
+      for (let n in dids) {
+
+        if (dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)) {
+          phash[prj.pid] = 1;
+        }
+      }
+    });
+
+    for (let pid in phash) {
+      projects.push(PROJECT_INFORMATION_BY_PID[pid]);
+    }
+    console.timeEnd("get_PTREE_metadata");
+    return projects;
+  }
+
+// TODO: "This function's cyclomatic complexity is too high. (16)"
+  filter_projects (req, prj_obj, filter_obj) {
+    // 1 substring      name search
+    // 2 env            search PROJECT_INFORMATION_BY_PID
+    // 3 target         name search
+    // 4 portal         helpers.get_portal_projects()
+    // 5 public_private search PROJECT_INFORMATION_BY_PID
+    // 6 metadata       helpers.get_PTREE_metadata
+    //console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log('IN FilterProjects')
+    //console.log(prj_obj, filter_obj)
+    console.time("TIME: filter_projects");
+    // SUBSTRING
+    let NewPROJECT_TREE_OBJ1 = [];
+    let ucname = "";
+    const empty_vals = ['', '.....'];
+    if (empty_vals.includes(filter_obj.substring)) {
+      NewPROJECT_TREE_OBJ1 = prj_obj;
+    } else {
+      //console.log('Filtering for SUBSTRING')
+      prj_obj.forEach(function (prj) {
+        if (prj.hasOwnProperty('name')) {
+          ucname = prj.name.toUpperCase();
+        } else {
+          ucname = prj.project.toUpperCase();
+        }
+        if (ucname.indexOf(filter_obj.substring) !== -1) {
+          NewPROJECT_TREE_OBJ1.push(prj);
+        }
+      });
+    }
+
+    // ENV
+    let NewPROJECT_TREE_OBJ2 = [];
+    if (filter_obj.env.length === 0 || filter_obj.env[0] === '.....') {  // should ALWAYS BE A LIST
+      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
+    } else {
+      //console.log('Filtering for ENV')
+      NewPROJECT_TREE_OBJ1.forEach(function (prj) {
+        if (filter_obj.env.indexOf(parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id)) !== -1) {
+          NewPROJECT_TREE_OBJ2.push(prj);
+        }
+      });
+
+    }
+
+    // TARGET
+    let pparts = [];
+    let last_el = [];
+    let NewPROJECT_TREE_OBJ3 = [];
+    if (filter_obj.target === '' || filter_obj.target === '.....') {
+      NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
+    }
+    else {
+      //console.log('Filtering for TARGET')
+      NewPROJECT_TREE_OBJ2.forEach(function (prj) {
+        if (prj.hasOwnProperty('name')) {
+          pparts = prj.name.split('_');
+        } else {
+          pparts = prj.project.split('_');
+        }
+        last_el = pparts[pparts.length - 1];
+        if (filter_obj.target === 'ITS' && last_el.substring(0, 3) === 'ITS') {
+          NewPROJECT_TREE_OBJ3.push(prj);
+        } else if (last_el === filter_obj.target) {
+          NewPROJECT_TREE_OBJ3.push(prj);
+        }
+      });
+
+    }
+    // PORTAL
+    let NewPROJECT_TREE_OBJ4 = [];
+    // let portal = [];
+    // let pname = "";
+    // let prefix = "";
+    // let suffix = "";
+    if (filter_obj.portal === '' || filter_obj.portal === '.....') {
+      NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3;
+    } else {
+      //console.log('Filtering for PORTAL')
+      const portal = C.PORTALS[filter_obj.portal];
+      NewPROJECT_TREE_OBJ3.forEach(function (prj) {
+        let pname = "";
+        if (prj.hasOwnProperty('name')) {
+          pname = prj.name;
+        } else {
+          pname = prj.project;
+        }
+        pparts = pname.split('_');
+        let prefix = pparts[0];
+        let suffix = pparts[pparts.length - 1];
+        if (portal.prefixes.indexOf(prefix) !== -1 || portal.projects.indexOf(pname) !== -1 || portal.suffixes.indexOf(suffix) !== -1) {
+          NewPROJECT_TREE_OBJ4.push(prj);
+        }
+
+      });
+
+    }
+
+    // public/private
+    let NewPROJECT_TREE_OBJ5 = []
+    if (filter_obj.public === '-1') {
+      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
+    } else {
+      //console.log('Filtering for PRIVACY')
+      NewPROJECT_TREE_OBJ4.forEach(function (prj) {
+        if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
+          NewPROJECT_TREE_OBJ5.push(prj);
+        }
+      });
+    }
+
+    // METADATA1
+    let NewPROJECT_TREE_OBJ6 = [];
+    if (filter_obj.metadata1 === '' || filter_obj.metadata1 === '.....') {
+      NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5;
+    } else {
+      NewPROJECT_TREE_OBJ6 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata1);
+    }
+    // METADATA2
+    let NewPROJECT_TREE_OBJ7 = [];
+    if (filter_obj.metadata2 === '' || filter_obj.metadata2 === '.....') {
+      NewPROJECT_TREE_OBJ7 = NewPROJECT_TREE_OBJ6;
+    } else {
+      NewPROJECT_TREE_OBJ7 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ6, filter_obj.metadata2);
+    }
+    // METADATA1
+    let NewPROJECT_TREE_OBJ8 = [];
+    if (filter_obj.metadata3 === '' || filter_obj.metadata3 === '.....') {
+      NewPROJECT_TREE_OBJ8 = NewPROJECT_TREE_OBJ7;
+    } else {
+      NewPROJECT_TREE_OBJ8 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ7, filter_obj.metadata3);
+    }
+
+    let new_obj = NewPROJECT_TREE_OBJ8;
+    //console.log('new_obj')
+    //console.log(new_obj)
+    console.timeEnd("TIME: filter_projects");
+    return new_obj;
+
+  }
+
   get_global_filter_values(req) {
     const projects_to_filter = this.get_projects_to_filter(req);
-    const newproject_tree_obj = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+    const newproject_tree_obj = this.filter_projects(req, projects_to_filter, PROJECT_FILTER);
     const project_tree_pids = this.filter_project_tree_for_permissions(req, newproject_tree_obj);
     this.update_project_filter_length(project_tree_pids);
 
