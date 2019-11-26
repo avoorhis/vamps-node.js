@@ -92,9 +92,10 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     var needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export')
     
     var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
-    if (req.body.fasta === undefined
+    if (   req.body.fasta === undefined
         && req.body.fastaMED === undefined
         && req.body.fastaVAMPS === undefined
+        && req.body.fastaTAX === undefined
         && req.body.taxbyseq === undefined
         && req.body.taxbyref === undefined
         && req.body.taxbytax === undefined
@@ -135,6 +136,9 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
       }
       if (key === 'fastaVAMPS') {
         requested_files.push('-fasta_fileVAMPS');
+      }
+      if (key === 'fastaTAX') {
+        requested_files.push('-fasta_fileTAX');
       }
       if (key === 'matrix') {
         requested_files.push('-matrix_file');

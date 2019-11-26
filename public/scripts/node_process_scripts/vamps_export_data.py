@@ -55,7 +55,7 @@ class GZipWriter(object):
         self.proc.stdin.write(data.encode('utf-8'))
 
 def get_fasta_sql(args,dids):
-    sql = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
+    sql = "SELECT UNCOMPRESS(sequence_comp) as sequence, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"
     sql += " JOIN sequence using (sequence_id)\n"
     sql += " JOIN dataset using (dataset_id)\n"
     sql += " JOIN project using (project_id)\n"
@@ -92,15 +92,15 @@ def get_matrix_biom_taxbytax_sql(args, dids):
     return sql
 
 def get_taxbyseq_sql(args,dids):
-    sql = "SELECT project, dataset, seq_count, gast_distance, UNCOMPRESS(sequence_comp) as sequence, concat_ws(';', \n"
+    sql = "SELECT project, dataset, seq_count, gast_distance, S.sequence_id, UNCOMPRESS(sequence_comp) as sequence, concat_ws(';', \n"
     sql += " IF(LENGTH(`domain`),`domain`,NULL),\n"
-    sql += " IF(LENGTH(`phylum`),`phylum`,NULL),\n"
-    sql += " IF(LENGTH(`klass`),`klass`,NULL),\n"
-    sql += " IF(LENGTH(`order`),`order`,NULL),\n"
-    sql += " IF(LENGTH(`family`),`family`,NULL),\n"
-    sql += " IF(LENGTH(`genus`),`genus`,NULL),\n"
-    sql += " IF(LENGTH(`species`),`species`,NULL),\n"
-    sql += " IF(LENGTH(`strain`),`strain`,NULL)\n"
+    sql += " IF(LENGTH(`phylum`)  and `phylum`  not like '%\_NA',`phylum`, NULL),\n"
+    sql += " IF(LENGTH(`klass`)   and `klass`   not like '%\_NA',`klass`,  NULL),\n"
+    sql += " IF(LENGTH(`order`)   and `order`   not like '%\_NA',`order`,  NULL),\n"
+    sql += " IF(LENGTH(`family`)  and `family`  not like '%\_NA',`family`, NULL),\n"
+    sql += " IF(LENGTH(`genus`)   and `genus`   not like '%\_NA',`genus`,  NULL),\n"
+    sql += " IF(LENGTH(`species`) and `species` not like '%\_NA',`species`,NULL),\n"
+    sql += " IF(LENGTH(`strain`)  and `strain`  not like '%\_NA',`strain`, NULL)\n"
     sql += " ) as taxonomy\n"
     sql += " from sequence_pdr_info as A\n"
     sql += " JOIN dataset as D on (A.dataset_id=D.dataset_id)\n"
@@ -109,12 +109,12 @@ def get_taxbyseq_sql(args,dids):
     sql += " JOIN sequence as S on(S.sequence_id=B.sequence_id)\n"
     sql += " JOIN silva_taxonomy_info_per_seq as C on(B.silva_taxonomy_info_per_seq_id=C.silva_taxonomy_info_per_seq_id)\n"
     sql += " JOIN silva_taxonomy as T on (C.silva_taxonomy_id=T.silva_taxonomy_id)\n"
-    sql += " JOIN `domain` using (domain_id)\n"
-    sql += " JOIN `phylum` using (phylum_id)\n"
-    sql += " JOIN `klass` using (klass_id)\n"
-    sql += " JOIN `order` using (order_id)\n"
-    sql += " JOIN `family` using (family_id)\n"
-    sql += " JOIN `genus` using (genus_id)\n"
+    sql += " JOIN `domain`  using (domain_id)\n"
+    sql += " JOIN `phylum`  using (phylum_id)\n"
+    sql += " JOIN `klass`   using (klass_id)\n"
+    sql += " JOIN `order`   using (order_id)\n"
+    sql += " JOIN `family`  using (family_id)\n"
+    sql += " JOIN `genus`   using (genus_id)\n"
     sql += " JOIN `species` using (species_id)\n"
     sql += " JOIN `strain`  using (strain_id)\n"
     sql += " WHERE D.dataset_id in ('"+dids+"') \n"
@@ -189,11 +189,16 @@ def run_fasta(args, fmt):
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.MED.fasta')
         elif fmt == 'VAMPS':
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.VAMPS.fasta')
+        elif fmt == 'TAX':  # tax included in seqID
+            out_file = os.path.join(args.base,'fasta-'+args.runcode+'.TAXA.fasta')
         else:
             out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
-    sql = get_fasta_sql(args,dids)
+    if fmt == 'TAX':
+        sql = get_taxbyseq_sql(args, dids)
+    else:
+        sql = get_fasta_sql(args, dids)
 
     print (sql)
     cursor.execute(sql)
@@ -201,14 +206,9 @@ def run_fasta(args, fmt):
     rows = cursor.fetchall()
     file_txt = ''
     for row in rows:
-        seq = row['seq']
+        seq = row['sequence']
         seq_count = row['seq_count']
-       #  if args.function == 'otus':
-#             # for otus id = ICM_LCY_Bv6--LCY_0007_2003_05_04--249319_1171  pjds _ seqid _ num
-#             for n in range(1,seq_count+1):
-#                 id = row['project']+'--'+row['dataset']+'--'+str(row['sequence_id'])+'_'+str(n)+'_'+str(seq_count)
-#                 file_txt += '>'+str(id)+'\n'+str(seq)+'\n'
-#         else:
+
         if fmt == 'MED':
             #  >ds_seqid  (not uniqued)
             for i in range(int(seq_count)):
@@ -219,11 +219,15 @@ def run_fasta(args, fmt):
             for i in range(int(seq_count)):
                 my_id = (row['project']+'--'+row['dataset'])+'_'+str(i+1)+' '+ str(row['sequence_id'])
                 file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
+        elif fmt == 'TAX':
+            # unique
+            # seqID example:  >seqid_fromdb|prj--dset|dist|Bacteria;blah;blah|frequency:56
+            #taxonomy   = row['taxonomy']
+            my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(row['gast_distance'])+'|'+row['taxonomy']+'|frequency:'+str(seq_count)
+            file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
         else:
             my_id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|frequency:'+str(seq_count)
             file_txt += '>'+str(my_id)+'\n'+seq.decode('UTF-8')+'\n'
-
-
     file_txt += "\n"
 
     write_file_txt(args, out_file, file_txt)
@@ -918,7 +922,9 @@ if __name__ == '__main__':
     parser.add_argument("-fasta_fileMED", "--fasta_fileMED",        required=False,  action="store_true",   dest = "fastaMED", default=False,
                                                     help="For Linda AZ")
     parser.add_argument("-fasta_fileVAMPS", "--fasta_fileVAMPS",        required=False,  action="store_true",   dest = "fastaVAMPS", default=False,
-                                                    help="For Re-Upload to VAMPS")                                                
+                                                    help="For Re-Upload to VAMPS") 
+    parser.add_argument("-fasta_fileTAX", "--fasta_fileTAX",        required=False,  action="store_true",   dest = "fastaTAX", default=False,
+                                                    help="For Re-Upload to VAMPS")                                               
     parser.add_argument("-metadata_file1", "--metadata_file1",   required=False,  action="store_true",   dest = "metadata1", default=False,
                                                     help="Datasets as rows/Metadata as columns")
     parser.add_argument("-metadata_file2", "--metadata_file2",   required=False,  action="store_true",   dest = "metadata2", default=False,
@@ -1017,6 +1023,8 @@ if __name__ == '__main__':
             run_fasta(args,'MED')
         if args.fastaVAMPS:
             run_fasta(args,'VAMPS')
+        if args.fastaTAX:
+            run_fasta(args,'TAX')
         if args.taxbytax:
             run_taxbytax(args)
         if args.taxbyref:
