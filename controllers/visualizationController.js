@@ -552,6 +552,28 @@ class visualizationFilters {
     return NewPROJECT_TREE_OBJ4;
   }
 
+  filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4) {
+    let NewPROJECT_TREE_OBJ5 = [];
+    if (filter_obj.public === '-1') {
+      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
+    } else {
+      //console.log('Filtering for PRIVACY')
+      console.time("filter_by_public_private forEach");
+      NewPROJECT_TREE_OBJ4.forEach(function (prj) {
+        if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
+          NewPROJECT_TREE_OBJ5.push(prj);
+        }
+      });
+      console.timeEnd("filter_by_public_private forEach");
+
+      NewPROJECT_TREE_OBJ5 = [];
+      console.time("filter_by_public_private filter");
+      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4.filter(prj => PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
+      console.timeEnd("filter_by_public_private filter");
+    }
+    return NewPROJECT_TREE_OBJ5;
+  }
+
 // TODO: "This function's cyclomatic complexity is too high. (16)"
   filter_projects (req, prj_obj, filter_obj) {
     // 1 substring      name search
@@ -575,46 +597,19 @@ class visualizationFilters {
 
     // PORTAL
     let NewPROJECT_TREE_OBJ4 = this.filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3);
-    // let NewPROJECT_TREE_OBJ4 = [];
-    // // let portal = [];
-    // // let pname = "";
-    // // let prefix = "";
-    // // let suffix = "";
-    // if (filter_obj.portal === '' || filter_obj.portal === '.....') {
-    //   NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3;
-    // } else {
-    //   //console.log('Filtering for PORTAL')
-    //   const portal = C.PORTALS[filter_obj.portal];
-    //   NewPROJECT_TREE_OBJ3.forEach(function (prj) {
-    //     let pname = "";
-    //     if (prj.hasOwnProperty('name')) {
-    //       pname = prj.name;
-    //     } else {
-    //       pname = prj.project;
-    //     }
-    //     let pparts = pname.split('_');
-    //     let prefix = pparts[0];
-    //     let suffix = pparts[pparts.length - 1];
-    //     if (portal.prefixes.indexOf(prefix) !== -1 || portal.projects.indexOf(pname) !== -1 || portal.suffixes.indexOf(suffix) !== -1) {
-    //       NewPROJECT_TREE_OBJ4.push(prj);
-    //     }
-    //
-    //   });
-    //
-    // }
 
     // public/private
-    let NewPROJECT_TREE_OBJ5 = [];
-    if (filter_obj.public === '-1') {
-      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
-    } else {
-      //console.log('Filtering for PRIVACY')
-      NewPROJECT_TREE_OBJ4.forEach(function (prj) {
-        if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
-          NewPROJECT_TREE_OBJ5.push(prj);
-        }
-      });
-    }
+    let NewPROJECT_TREE_OBJ5 = this.filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4);
+    // if (filter_obj.public === '-1') {
+    //   NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
+    // } else {
+    //   //console.log('Filtering for PRIVACY')
+    //   NewPROJECT_TREE_OBJ4.forEach(function (prj) {
+    //     if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
+    //       NewPROJECT_TREE_OBJ5.push(prj);
+    //     }
+    //   });
+    // }
 
     // METADATA1
     let NewPROJECT_TREE_OBJ6 = [];
