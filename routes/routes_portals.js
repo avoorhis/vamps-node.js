@@ -76,7 +76,7 @@ router.get('/projects/:portal',  function(req, res) {
 //
 router.post('/dco_project_list',  function(req, res) {
     
-    console.log('dco_project_list')
+    console.log('in dco_project_list')
     console.log(req.body)
     var list_type = req.body.value;
     var sort_col = req.body.sortby;
@@ -85,11 +85,18 @@ router.post('/dco_project_list',  function(req, res) {
     var project_list = helpers.get_portal_projects(req, 'CODL')
     //console.log(DatasetsWithLatLong)
     
+    let publish_data = {}
+    try{
+        info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['dco']);
+        publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+    }catch(e) {
+        publish_data = {};
+    }
+    
+    
     // start with all DCO projects COMPLETE
     // then, if find empty did, convert to PARTIAL
     // Count datasets with
-    
-    
     pids_with_latlon = {}
     for(did in DatasetsWithLatLong){
         if(DatasetsWithLatLong[did].latitude != '' || DatasetsWithLatLong[did].longitude != ''){
@@ -141,6 +148,7 @@ router.post('/dco_project_list',  function(req, res) {
     }
     projects.forEach(function (prj) {
         prj.latlon_status = new_dco_list_latlon[prj.pid]
+        //prj.accession = publish_data.sra_accessions
     
     })
     //console.log(new_dco_list_latlon)
@@ -156,6 +164,12 @@ router.post('/dco_project_list',  function(req, res) {
                 return helpers.compareStrings_alpha(a.project, b.project);
             }else{
                 return helpers.compareStrings_alpha(b.project, a.project);
+            }
+        }else if(sort_col == 'accession'){
+            if(direction == 'fwd'){  
+                return helpers.compareStrings_alpha(a.accession, b.accession);
+            }else{
+                return helpers.compareStrings_alpha(b.accession, a.accession);
             }
         }else if(sort_col == 'title'){
             if(direction == 'fwd'){  
@@ -207,6 +221,7 @@ router.post('/dco_project_list',  function(req, res) {
     html += "<th onclick=\"sort_table('email','"+list_type+"','"+direction+"')\">Email</th>"
     html += "<th onclick=\"sort_table('inst','"+list_type+"','"+direction+"')\">Institute</th>"
     html += "<th onclick=\"sort_table('status','"+list_type+"','"+direction+"')\">Status</th>"
+    html += "<th onclick=\"sort_table('accession','"+list_type+"','"+direction+"')\">Accession</th>"
     html += "<th onclick=\"sort_table('md','"+list_type+"','"+direction+"')\">Lat/Lon Metadata Status</th></tr>"
     html += "</thead>"
     html += "<tbody>"
@@ -224,6 +239,7 @@ router.post('/dco_project_list',  function(req, res) {
         }else{
             html += "<td>private</td>"
         }
+        html += "<td>"+prj.accession+"</td>"
         html += "<td>"+prj.latlon_status+"</td>"
         
         
@@ -243,7 +259,7 @@ router.get('/abstracts/CMP', function(req, res) {
     console.log('in abstracts/CMP')
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json')
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['cmp'])
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     var project_list = helpers.get_portal_projects(req, portal)
@@ -317,7 +333,7 @@ router.get('/:portal', function(req, res) {
     var pagetitle, maintitle, subtitle;
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'CMP_INFO.json')
+        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['cmp'])
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     
