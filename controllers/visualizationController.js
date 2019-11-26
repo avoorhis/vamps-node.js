@@ -503,12 +503,10 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
     }
     else {
-      NewPROJECT_TREE_OBJ1.forEach(prj => {
+      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
         const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
-        if (filter_obj.env.includes(current_pr_env_package_id)) {
-          NewPROJECT_TREE_OBJ2.push(prj);
-        }
-      });
+        return filter_obj.env.includes(current_pr_env_package_id);
+        });
     }
     // console.timeEnd("TIME: filter_by_env filter");
     return NewPROJECT_TREE_OBJ2;
@@ -521,12 +519,6 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
     }
     else {
-      // NewPROJECT_TREE_OBJ3 = prj_obj.filter(prj => {
-      //   let ucname = "";
-      //   ucname = prj.name || prj.project;
-      //   return ucname.toUpperCase().includes(filter_obj.substring)
-      // });
-      //console.log('Filtering for TARGET')
       let pr_name = "";
       let pparts = [];
       let last_el = [];
@@ -535,21 +527,6 @@ class visualizationFilters {
         pparts = pr_name.split('_');
         last_el = pparts[pparts.length - 1];
         return ((filter_obj.target === 'ITS' && last_el.startsWith('ITS')) || (last_el === filter_obj.target));
-      });
-
-      NewPROJECT_TREE_OBJ3 = [];
-      NewPROJECT_TREE_OBJ2.forEach(function (prj) {
-        if (prj.hasOwnProperty('name')) {
-          pparts = prj.name.split('_');
-        } else {
-          pparts = prj.project.split('_');
-        }
-        last_el = pparts[pparts.length - 1];
-        if (filter_obj.target === 'ITS' && last_el.startsWith('ITS')) {
-          NewPROJECT_TREE_OBJ3.push(prj);
-        } else if (last_el === filter_obj.target) {
-          NewPROJECT_TREE_OBJ3.push(prj);
-        }
       });
     }
     return NewPROJECT_TREE_OBJ3;
