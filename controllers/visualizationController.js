@@ -589,16 +589,6 @@ class visualizationFilters {
 
     // public/private
     let NewPROJECT_TREE_OBJ5 = this.filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4);
-    // if (filter_obj.public === '-1') {
-    //   NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
-    // } else {
-    //   //console.log('Filtering for PRIVACY')
-    //   NewPROJECT_TREE_OBJ4.forEach(function (prj) {
-    //     if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
-    //       NewPROJECT_TREE_OBJ5.push(prj);
-    //     }
-    //   });
-    // }
 
     // METADATA1
     let NewPROJECT_TREE_OBJ6 = [];
