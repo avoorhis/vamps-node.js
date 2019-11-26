@@ -1152,20 +1152,39 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
 }
 
 function filter_data_by_last_taxon(search_tax, clean_data) {
-  const search_tax_arr = search_tax.split(";");
-  const last_element_number = search_tax_arr.length - 1;
+  //console.log('search_tax')
+  //console.log(search_tax)
+  const search_tax_arr = search_tax.split(";").filter(function(value,index,arr){
+    if(value.indexOf('_NA') == -1){
+        return value 
+    }
+  });
+  //console.log('search_tax_arr')
+  //console.log(search_tax_arr)
+  const last_element_number = search_tax_arr.length - 1; // need to trim _NAs
   const last_taxon = search_tax_arr[last_element_number];
   const curr_rank = C.RANKS[last_element_number];
   const rank_name_id = curr_rank + "_id";
   const db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+  
   let filtered_data = clean_data;
-
+  //console.log('FILTERdb_id')
+ //console.log(curr_rank)
+ //console.log(db_id)
+ //for(x in clean_data){
+    //let tax_id = clean_data[x][rank_name_id]
+    //console.log('ID '+tax_id+'_'+curr_rank)
+    //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[tax_id+'_'+curr_rank])   //["3_domain"]
+ //}
   try {
     filtered_data = clean_data.filter(i => (parseInt(i[rank_name_id]) === parseInt(db_id)));
   }
   catch (e) {
     console.log("No clean_data in filter_data_by_last_taxon");
   }
+  //if(filtered_data == clean_data){
+  //   console.log('filtered data unchanged')
+  //}
   return filtered_data;
 }
 
@@ -1252,6 +1271,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
           console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+          console.log('filtered_data')
+          console.log(filtered_data)
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
           console.timeEnd("TIME: loop through clean_data");
 
