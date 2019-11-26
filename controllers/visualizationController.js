@@ -558,18 +558,7 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
     } else {
       //console.log('Filtering for PRIVACY')
-      console.time("filter_by_public_private forEach");
-      NewPROJECT_TREE_OBJ4.forEach(function (prj) {
-        if (PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public)) {
-          NewPROJECT_TREE_OBJ5.push(prj);
-        }
-      });
-      console.timeEnd("filter_by_public_private forEach");
-
-      NewPROJECT_TREE_OBJ5 = [];
-      console.time("filter_by_public_private filter");
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4.filter(prj => PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
-      console.timeEnd("filter_by_public_private filter");
     }
     return NewPROJECT_TREE_OBJ5;
   }
