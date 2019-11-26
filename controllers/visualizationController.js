@@ -488,33 +488,10 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ1 = prj_obj;
     }
     else {
-    //   prj_obj.map(prj => {
-    //     let ucname = "";
-    //     ucname = prj.name || prj.project;
-    //     // if (prj.hasOwnProperty('name')) {
-    //     //   ucname = prj.name.toUpperCase();
-    //     // } else {
-    //     //   ucname = prj.project.toUpperCase();
-    //     // }
-    //     if (ucname.toUpperCase().includes(filter_obj.substring)) {
-    //       NewPROJECT_TREE_OBJ1.push(prj);
-    //     }
-    //     return NewPROJECT_TREE_OBJ1;
-    //   });
-    //
-    // }
-
       NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => {
         let ucname = "";
         ucname = prj.name || prj.project;
         return ucname.toUpperCase().includes(filter_obj.substring)});
-      // let prj_project = prj_obj.filter(prj => prj.project);
-      // if (prj_project.length > 0) {
-      //   let add_to_NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => {
-      //     let ucname = "";
-      //     ucname = prj.name || prj.project;
-      //     ucname.toUpperCase().includes(filter_obj.substring)});
-      // }
     }
     console.timeEnd("TIME: filter_by_substring");
 
