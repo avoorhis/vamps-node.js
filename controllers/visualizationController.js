@@ -533,7 +533,6 @@ class visualizationFilters {
   }
 
   filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3) {
-    console.time("TIME: filter_by_portal includes");
     let NewPROJECT_TREE_OBJ4 = [];
     let filter_empty = this.filter_empty_filter(filter_obj.portal);
     if (filter_empty) {
@@ -542,36 +541,14 @@ class visualizationFilters {
     else {
       //console.log('Filtering for PORTAL')
       const portal = C.PORTALS[filter_obj.portal];
-      NewPROJECT_TREE_OBJ3.forEach(function (prj) {
-        let pname = "";
-        if (prj.hasOwnProperty('name')) {
-          pname = prj.name;
-        } else {
-          pname = prj.project;
-        }
-        let pparts = pname.split('_');
-        let prefix = pparts[0];
-        let suffix = pparts[pparts.length - 1];
-        if (portal.prefixes.includes(prefix) || portal.projects.includes(pname) || portal.suffixes.includes(suffix)) {
-          NewPROJECT_TREE_OBJ4.push(prj);
-        }
-      });
-      console.log("NewPROJECT_TREE_OBJ4 1");
-      console.log(JSON.stringify(NewPROJECT_TREE_OBJ4));
-      NewPROJECT_TREE_OBJ4 = [];
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3.filter(prj => {
-        let pr_name = "";
-        pr_name = prj.name || prj.project;
+        let pr_name = prj.name || prj.project;
         let pparts = pr_name.split('_');
         let prefix = pparts[0];
         let suffix = pparts[pparts.length - 1];
         return (portal.prefixes.includes(prefix) || portal.projects.includes(pr_name) || portal.suffixes.includes(suffix));
       });
     }
-    console.timeEnd("TIME: filter_by_portal includes");
-    console.log("NewPROJECT_TREE_OBJ4 2");
-    console.log(JSON.stringify(NewPROJECT_TREE_OBJ4));
-
     return NewPROJECT_TREE_OBJ4;
   }
 
