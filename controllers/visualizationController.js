@@ -480,8 +480,6 @@ class visualizationFilters {
   }
 
   filter_by_substring(filter_obj, prj_obj) {
-    console.time("TIME: filter_by_substring");
-
     let NewPROJECT_TREE_OBJ1 = [];
     let filter_empty = this.filter_empty_filter(filter_obj.substring);
     if (filter_empty) {
@@ -491,10 +489,9 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => {
         let ucname = "";
         ucname = prj.name || prj.project;
-        return ucname.toUpperCase().includes(filter_obj.substring)});
+        return ucname.toUpperCase().includes(filter_obj.substring);
+      });
     }
-    console.timeEnd("TIME: filter_by_substring");
-
     return NewPROJECT_TREE_OBJ1;
   }
 
@@ -518,15 +515,29 @@ class visualizationFilters {
   }
 
   filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
-    let pparts = [];
-    let last_el = [];
     let NewPROJECT_TREE_OBJ3 = [];
     let filter_empty = this.filter_empty_filter(filter_obj.target);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
     }
     else {
+      // NewPROJECT_TREE_OBJ3 = prj_obj.filter(prj => {
+      //   let ucname = "";
+      //   ucname = prj.name || prj.project;
+      //   return ucname.toUpperCase().includes(filter_obj.substring)
+      // });
       //console.log('Filtering for TARGET')
+      let pr_name = "";
+      let pparts = [];
+      let last_el = [];
+      NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2.filter(prj => {
+        pr_name = prj.name || prj.project;
+        pparts = pr_name.split('_');
+        last_el = pparts[pparts.length - 1];
+        return ((filter_obj.target === 'ITS' && last_el.startsWith('ITS')) || (last_el === filter_obj.target));
+      });
+
+      NewPROJECT_TREE_OBJ3 = [];
       NewPROJECT_TREE_OBJ2.forEach(function (prj) {
         if (prj.hasOwnProperty('name')) {
           pparts = prj.name.split('_');
