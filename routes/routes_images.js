@@ -1152,7 +1152,8 @@ create_hm_table: function(req, dm, metadata){
     //console.log(metadata)
     var id_order = req.session.chosen_id_order
     
-    
+    console.log('dm')
+    console.log(dm)
     var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
                         'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
                         'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}

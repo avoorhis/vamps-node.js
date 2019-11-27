@@ -812,7 +812,8 @@ function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   if (metric) {
     pi.selected_distance = metric;
   }
-
+  // Added here 20191127 AAV so that bar_single and bar_double would reflect min/max changes
+  pi.update_data = 1
   return pi;
 }
 
@@ -924,9 +925,14 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
   let pd_vars = new visualization_controller.visualizationCommonVariables(req);
 
-  let pi = make_pi([selected_did], req, pd_vars);
-  let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
+// <<<<<<< HEAD
+//   let pi = make_pi([selected_did], req, pd_vars);
+//   let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
+// =======
+  let pi = make_pi([selected_did], req);
+// >>>>>>> master
 
+  let new_matrix = make_new_matrix(req, pi, selected_did, order);
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
