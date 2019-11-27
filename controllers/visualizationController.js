@@ -548,6 +548,23 @@ class visualizationFilters {
     return NewPROJECT_TREE_OBJ5;
   }
 
+  filter_by_metadata(filter_obj_metadata, current_NewPROJECT_TREE_OBJ) {
+    let res_NewPROJECT_TREE_OBJ = [];
+    let filter_empty = this.filter_is_empty(filter_obj_metadata);
+    if (filter_empty || current_NewPROJECT_TREE_OBJ.length === 0) {
+      res_NewPROJECT_TREE_OBJ = current_NewPROJECT_TREE_OBJ;
+    }
+    else {
+      res_NewPROJECT_TREE_OBJ = current_NewPROJECT_TREE_OBJ.filter(prj => {
+        let dids = DATASET_IDS_BY_PID[prj.pid];
+        return dids.some(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(filter_obj_metadata)));
+      });
+    }
+    return res_NewPROJECT_TREE_OBJ;
+  }
+
+
+
 // TODO: "This function's cyclomatic complexity is too high. (16)"
   filter_projects (req, prj_obj, filter_obj) {
     // 1 substring      name search
@@ -576,12 +593,13 @@ class visualizationFilters {
     let NewPROJECT_TREE_OBJ5 = this.filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4);
 
     // METADATA1
-    let NewPROJECT_TREE_OBJ6 = [];
-    if (filter_obj.metadata1 === '' || filter_obj.metadata1 === '.....' || NewPROJECT_TREE_OBJ5.length === 0) {
-      NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5;
-    } else {
-      NewPROJECT_TREE_OBJ6 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata1);
-    }
+    let NewPROJECT_TREE_OBJ6 = this.filter_by_metadata(filter_obj.metadata1, NewPROJECT_TREE_OBJ5);
+    // let NewPROJECT_TREE_OBJ6 = [];
+    // if (filter_obj.metadata1 === '' || filter_obj.metadata1 === '.....' || NewPROJECT_TREE_OBJ5.length === 0) {
+    //   NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5;
+    // } else {
+    //   NewPROJECT_TREE_OBJ6 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata1);
+    // }
     // METADATA2
     let NewPROJECT_TREE_OBJ7 = [];
     if (filter_obj.metadata2 === '' || filter_obj.metadata2 === '.....' || NewPROJECT_TREE_OBJ6.length === 0) {
