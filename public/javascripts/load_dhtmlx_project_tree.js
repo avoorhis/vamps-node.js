@@ -450,6 +450,8 @@ function filter_by_metadata(num) {
   }
   xmlhttp.send();
 }
+
+//TODO: function 'update_gui_elements' is overly complex (cyclomatic complexity = 12)
 function update_gui_elements(result){
   //alert(JSON.stringify(result))
   //alert(JSON.stringify(env_sources_local))

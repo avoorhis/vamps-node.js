@@ -151,8 +151,7 @@ class BiomMatrix {
 
   get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
-    console.log("GGG1 this.visual_post_items");
-    //console.log(this.visual_post_items);
+    // console.log(this.visual_post_items);
     // console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 

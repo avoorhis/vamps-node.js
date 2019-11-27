@@ -25,37 +25,18 @@ const spawn = require('child_process').spawn;
 
 const file_path_obj =  new visualization_controller.visualizationFiles();
 
-function print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
-  if (req.CONFIG.site === 'vamps') {
-    console.log(msg_prod);
-  } else {
-    console.log(msg);
-  }
-}
-
-function add_datasets_to_visual_post_items(visual_post_items, dataset_ids) {
-// get dataset_ids the add names for biom file output:
-// chosen_id_order was set in unit_select and added to session variable
-  visual_post_items.chosen_datasets = [];
-  for (let n in dataset_ids) {
-    let did = dataset_ids[n];
-    let dname = DATASET_NAME_BY_DID[did];
-    let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-    visual_post_items.chosen_datasets.push({did: did, name: pname + '--' + dname});
-  }
-  return visual_post_items;
-}
-
 function start_visual_post_items(req) {
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
-  let dataset_ids = visualization_obj.dataset_ids;
+  // let dataset_ids = visualization_obj.dataset_ids;
   let visual_post_items = visualization_obj.visual_post_items;
 
-  visual_post_items = add_datasets_to_visual_post_items(visual_post_items, dataset_ids);
+  // get dataset_ids the add names for biom file output:
+  // chosen_id_order was set in unit_select and added to session variable
+  visual_post_items.chosen_datasets = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  print_log_if_not_vamps(req, msg);
+  file_path_obj.print_log_if_not_vamps(req, msg);
   console.log('<<VS--visual_post_items');
 
   return visual_post_items;
@@ -96,7 +77,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   */
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
@@ -177,7 +158,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  print_log_if_not_vamps(req, JSON.stringify(req.body));
+  file_path_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -190,7 +171,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
+  file_path_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
@@ -198,36 +179,26 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     return;
   }
   else {
-    req.session.chosen_id_order   = dataset_ids;
+    req.session.chosen_id_order = dataset_ids;
+    req.session.project_dataset_vars = new visualization_controller.visualizationCommonVariables(req);
 
     // Thes get only the names of the available metadata:
     let custom_metadata_headers   = COMMON.get_metadata_selection(dataset_ids, 'custom');
     let required_metadata_headers = COMMON.get_metadata_selection(dataset_ids, 'required');
 
-    // Gather just the tax data of selected datasets
-    let chosen_dataset_order = [];
-
-    for (let i in req.session.chosen_id_order){
-      let did = req.session.chosen_id_order[i];
-      let dname = DATASET_NAME_BY_DID[did];
-      let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-
-      chosen_dataset_order.push( { did:did, name:pname + '--' + dname } );  // send this to client
-      // !!!use default taxonomy here (may choose other on this page)
-      file_path_obj.test_if_json_file_exists(req, i, dataset_ids, did);
-    }
+    let chosen_dataset_order = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
+    chosen_dataset_order.map(ob => {
+      file_path_obj.test_if_json_file_exists(req, dataset_ids, ob.did);
+    });
 
     // benchmarking
     helpers.start = process.hrtime();
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
     console.log('chosen_dataset_order-->');
-    print_log_if_not_vamps(req, chosen_dataset_order);
+    file_path_obj.print_log_if_not_vamps(req, chosen_dataset_order);
     console.log('<--chosen_dataset_order');
 
-    // else {
-    //   console.log("unit_choice is defined: " + unit_choice);
-    // }
     res.render('visuals/unit_selection', {
       title: 'VAMPS: Units Selection',
       referer: 'visuals_index',
@@ -249,6 +220,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
  * GET visualization page.
  */
 
+//TODO: test     for (const pj of obj) {
 function get_data_to_open(req) {
   let DATA_TO_OPEN = {};
   if (req.body.data_to_open) {
@@ -337,8 +309,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
 
-  let needed_constants = C;
-  render_visuals_index(res, req, needed_constants);
+  render_visuals_index(res, req, C);
 });
 
 //
@@ -346,14 +317,8 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 // test: reorder_datasets
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   let selected_dataset_order = {};
-  selected_dataset_order.names = [];
-  selected_dataset_order.ids = [];
-  for (let n in req.session.chosen_id_order){
-    let did = req.session.chosen_id_order[n];
-    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-    selected_dataset_order.names.push(pjds);
-    selected_dataset_order.ids.push(did);
-  }
+  selected_dataset_order.names = req.session.project_dataset_vars.project_dataset_names;
+  selected_dataset_order.ids = req.session.chosen_id_order;
 
   // console.log(req.session);
   const user_timestamp = file_path_obj.get_user_timestamp(req);
@@ -402,7 +367,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 ///// It passes the newick string back to view_selection.js
 ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
@@ -439,20 +404,20 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     let lines = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        // print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // file_path_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
-        const startsWith_newick = lines.filter((line) => line.startsWith("NEWICK")).join("");
+        const startsWith_newick = lines.find((line) => line.startsWith("NEWICK"));
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
-          // print_log_if_not_vamps(req, 'NWK->' + newick);
+          // file_path_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err) {
           newick = {"ERROR": err};
         }
         res.send(newick);
-        return;
+        // return;
       }
     }
     else{
@@ -464,64 +429,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 //
 // P C O A
 //
-//test: "PCoA 2D Analyses (R/pdf)"
-// router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
-//   console.log('in PCoA');
-//   //console.log(metadata);
-//   let ts = req.body.ts;
-//   // let rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
-//   let metric = req.body.metric;
-//   // let image_type = req.body.image_type;
-//   //let image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
-//   let image_file = ts+'_pcoa.pdf';
-//   let biom_file_name = ts+'_count_matrix.biom';
-//   let biom_file = path.join(req.CONFIG.PROCESS_DIR,'tmp', biom_file_name);
 
-//   let tmp_path = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-//
-//   let md1 = req.body.md1 || "Project";
-//   let md2 = req.body.md2 || "Description";
-//
-//     // let options = {
-//     //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//     //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
-//     // };
-//     let options2 = {
-//       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//       args :       [ tmp_path, ts, metric, md1, md2, image_file],
-//     };
-//     console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
-//
-//     let pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-//         env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-//         detached: true,
-//         stdio: [ 'ignore', null, log ]
-//         //stdio: 'pipe' // stdin, stdout, stderr
-//     });
-//
-//     pcoa_process.on('close', function pcoaProcessOnClose(code) {
-//         //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-//         //distance_matrix = JSON.parse(output);
-//         //let last_line = ary[ary.length - 1];
-//       let html = "";
-//       if (code === 0){   // SUCCESS
-//
-//         //html = "<img src='/"+image_file+"'>";
-//         //let image = path.join('/tmp/',image_file);
-//         html = "<div id='pdf'>";
-//         html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
-//         html += " <p>ERROR in loading pdf file</p>";
-//         html += "</object></div>";
-//         //console.log(html);
-//
-//       }
-//       else {
-//         console.log('ERROR');
-//         html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
-//       }
-//       res.send(html);
-//       });
-// });
 //test: "PCoA 2D Analyses (R/pdf)"
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
@@ -529,20 +437,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
   const user_timestamp = file_path_obj.get_user_timestamp(req);
-  const metric = req.body.metric;
   let image_file = file_path_obj.get_file_names(req)['pcoa.pdf'];
-    // user_timestamp + '_pcoa.pdf';
-  const md1 = req.body.md1 || "Project";
-  const md2 = req.body.md2 || "Description";
-  const tmp_path = file_path_obj.get_tmp_file_path(req);
-  let options2 = {
-    script: '/pcoa2.R',
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
-  };
-  console.log(options2.scriptPath + options2.script + ' ' + options2.args.join(' '));
+  let options = get_plot_specific_options("pcoa2", req, user_timestamp, image_file);
+  console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
 
-  let pcoa_process = spawn( options2.scriptPath + options2.script, options2.args, {
+  let pcoa_process = spawn( options.scriptPath + options.script, options.args, {
     env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
@@ -557,18 +456,18 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       html += "<embed src='/static_base/tmp/" + image_file + "' type='application/pdf' width='1000' height='600' />";
       html += "</div>";
       console.log(html);
-      var data = {}
-        data.html = html
-        data.filename = image_file   // returns data and local file_name to be written to
-        res.json(data)
-        return
-      
+      let data = {};
+      data.html = html;
+      data.filename = image_file;   // returns data and local file_name to be written to
+      res.json(data);
     }
     else {
       console.log('ERROR');
-      html = 'PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>PCoA Script Failure -- Try a deeper rank, or more metadata or datasets</dev>";
+      console.log(data.html);
+      res.json(data);
     }
-    //res.send(html);
   });
 });
 //
@@ -632,7 +531,9 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     }
     else{
       console.log('ERROR in PCOA 3D: ', stderr1);
-      res.send('Python Script Error: ' + stderr1);
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+      res.json(data);
     }
   });
   /////////////////////////////////////////////////
@@ -665,7 +566,8 @@ function format_sumator(allData) {
     // const fields2skip = ["depth", "name", "parent", "children"];
     const fields2skip = ["name"];
 
-    for (let child in parent) {
+    // for (let child in parent) {
+    for (const child of Object.keys(parent)) {
       if (fields_w_val.includes(child)) {
         array.push(`<${child}>`);
         printList(parent[child]);
@@ -680,7 +582,7 @@ function format_sumator(allData) {
   }
 
   function printArray(myArray){
-    for(let i = 0; i < myArray.length; i++){
+    for (let i = 0; i < myArray.length; i++){
       //console.log(myArray[i]);
       array.push("<val>" + myArray[i] + "</val>");
     }
@@ -764,43 +666,54 @@ function get_fill(req) {
   return fill;
 }
 
-function get_plot_specific_options(plot_type, req, options, svgfile_name) {
-  let phy, md1, md2, ordtype, maxdist, script;
-  let dist_metric = req.body.metric;
-  let fill = get_fill(req);
+// TODO: JSHint: This function's cyclomatic complexity is too high. (12) (W074)
+function get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name) {
+  let phy, md1, md2, ordtype, maxdist;
+  const dist_metric = req.body.metric;
+  const fill = get_fill(req);
+  md1 = req.body.md1 || "Project";
+  md2 = req.body.md2 || "Description";
+  const tmp_file_path = file_path_obj.get_tmp_file_path(req);
+
+  let options = {
+    scriptPath: file_path_obj.get_viz_scripts_path(req),
+    args:       [ tmp_file_path, user_timestamp, svgfile_name, ],
+  };
 
   switch(plot_type) {
     case 'bar':
       options.script = 'phyloseq_bar.R';
       phy = req.body.phy;
-      options.args = options.args.concat([svgfile_name, phy, fill]);
+      options.args = options.args.concat([phy, fill]);
       break;
     case 'heatmap':
       options.script = 'phyloseq_heatmap.R';
-      //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
-      options.args = options.args.concat([svgfile_name, dist_metric, phy, md1, ordtype, fill]);
+      options.args = options.args.concat([dist_metric, phy, md1, ordtype, fill]);
       break;
     case 'network':
       options.script = 'phyloseq_network.R';
-      md1 = req.body.md1 || "Project";
-      md2 = req.body.md2 || "Description";
       maxdist = req.body.maxdist || "0.3";
-      options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, maxdist]);
+      options.args = options.args.concat([dist_metric, md1, md2, maxdist]);
       break;
     case 'ord':
       options.script = 'phyloseq_ord.R';
-      md1 = req.body.md1 || "Project";
-      md2 = req.body.md2 || "Description";
       ordtype = req.body.ordtype || "PCoA";
-      options.args = options.args.concat([svgfile_name, dist_metric, md1, md2, ordtype]);
+      options.args = options.args.concat([dist_metric, md1, md2, ordtype]);
       break;
     case 'tree':
       options.script = 'phyloseq_tree.R';
       md1 = req.body.md1 || "Description";
-      options.args = options.args.concat([svgfile_name, dist_metric, md1]);
+      options.args = options.args.concat([dist_metric, md1]);
+      break;
+    case 'pcoa2':
+      options.script = 'pcoa2.R';
+      //   args :       [ tmp_path, user_timestamp, metric, md1, md2, image_file],
+      // different order for this script!
+      options.args = [tmp_file_path, user_timestamp, dist_metric, md1, md2, svgfile_name];
+      // options.args.concat([dist_metric, md1, md2]);
       break;
   }
   // if (plot_type === 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
@@ -827,15 +740,10 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const svgfile_path = path.join(tmp_file_path, svgfile_name);
 
-  let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args:       [ tmp_file_path, user_timestamp ],
-  };
-
   let plot_type = req.body.plot_type;
   console.time("TIME: plot_type = " + plot_type);
 
-  options = get_plot_specific_options(plot_type, req, options, svgfile_name);
+  let options = get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name);
 
   console.log(path.join(options.scriptPath, options.script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, options.script), options.args, {
@@ -859,7 +767,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   phyloseq_process.on('close', function phyloseqProcessOnClose(code) {
     console.log('phyloseq_process process exited with code ' + code);
 
-    let html = '';
     if (code === 0){   // SUCCESS
 
       read_file_when_ready(svgfile_path);
@@ -867,13 +774,14 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 
         if(err){ res.send('ERROR reading file')}
         show_data(res, contents, svgfile_name);
-
       });
     }
     else {
       console.log('ERROR-2');
-      html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
-      show_data(res, html, svgfile_name);
+      const data = {};
+      data.html = "<dev class = 'base_color_red'>Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's</dev>";
+      console.log(data.html);
+      res.json(data);
     }
   });
   console.timeEnd("TIME: plot_type = " + plot_type);
@@ -889,27 +797,9 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //
 // test: BAR-CHART -- SINGLE - (click on a bar)
 
-// function get_selected_pjds() {
-//   pi.chosen_datasets = [{did:did1, name:ds1}, {did:did2, name:ds2}];
-//   pi.no_of_datasets=2;
-// }
-
-function get_chosen_datasets(selected_did_arr) {
-  if (!helpers.is_array(selected_did_arr)) {
-    selected_did_arr = [selected_did_arr];
-  }
-  return selected_did_arr.reduce((res_arr, did) => {
-    let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    res_arr.push({did: did, name: selected_pjds});
-    return res_arr;
-  }, []);
-}
-
-function make_pi(selected_did_arr, req, metric = undefined) {
+function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
-  pi.chosen_datasets = get_chosen_datasets(selected_did_arr);
-  // let selected_pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-  // pi.chosen_datasets = [{did: selected_did, name: selected_pjds}];
+  pi.chosen_datasets = pd_vars.get_dataset_obj_by_did(selected_did_arr);
   pi.no_of_datasets = pi.chosen_datasets.length;
   pi.ts = file_path_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
@@ -923,18 +813,17 @@ function make_pi(selected_did_arr, req, metric = undefined) {
     pi.selected_distance = metric;
   }
   // Added here 20191127 AAV so that bar_single and bar_double would reflect min/max changes
-  pi.update_data = 1
+  pi.update_data = 1;
   return pi;
 }
 
-function make_new_matrix(req, pi, selected_did, order) {
+function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_single");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-
-  new_matrix.dataset = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
   new_matrix.did = selected_did;
   new_matrix.total = 0;
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
@@ -945,6 +834,9 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
   console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
+    // TODO: test
+    //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+    //       res.json(data);
     console.log('Query error: ' + err);
     console.log(err.stack);
     res.send(err);
@@ -978,7 +870,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
     });
 
     let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
-    console.log("EEE5 seq file_path:", file_path);
+
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
   console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
@@ -1031,10 +923,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  let pd_vars = new visualization_controller.visualizationCommonVariables(req);
 
-  let pi = make_pi([selected_did], req);
-
-  let new_matrix = make_new_matrix(req, pi, selected_did, order);
+  let pi = make_pi([selected_did], req, pd_vars);
+  let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
   let new_order = get_new_order_by_button(order);
 
   if (pi.unit_choice !== 'OTUs') {
@@ -1073,14 +965,15 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 
   let myurl = url.parse(req.url, true);
   // console.log(myurl.query);
-  let did1 = myurl.query.did1;
-  let did2 = myurl.query.did2;
-  let dist = myurl.query.dist;
-  let metric = myurl.query.metric;
-  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
-  let value = myurl.query.val || 'z'; // a,z, min, max
-  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  let pi = make_pi([did1, did2], req, metric);
+  const did1 = myurl.query.did1;
+  const did2 = myurl.query.did2;
+  const dist = myurl.query.dist;
+  const metric = myurl.query.metric;
+  const orderby = myurl.query.orderby || 'alpha'; // alpha, count
+  const value = myurl.query.val || 'z'; // a,z, min, max
+  const order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  const pd_vars = new visualization_controller.visualizationCommonVariables(req);
+  let pi = make_pi([did1, did2], req, pd_vars, metric);
 
   let overwrite_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
   console.time("TIME: biom_matrix_new_from_bar_double");
@@ -1117,7 +1010,6 @@ function err_read_file(err, req, res, seqs_filename) {
 
 function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename) {
   let clean_data = "";
-  console.log("EEE1 seqs_filename", seqs_filename);
   try {
     clean_data = JSON.parse(data);
   } catch (e) {
@@ -1139,8 +1031,6 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
 
 function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '')
 {
-  console.log("EEE2 seqs_filename", seqs_filename);
-
   res.render('visuals/user_viz_data/sequences', {
     title: 'Sequences',
     ds: pjds,
@@ -1243,17 +1133,13 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   const seqs_filename = myurl.query.filename;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const seqs_filename_path = path.join(tmp_file_path, seqs_filename);
-  console.log("EEE1 seqs_filename_path", seqs_filename_path);
 
   //
   // http://localhost:3000/visuals/bar_single?did=474467&ts=anna10_1573500571628&order=alphaDown// anna10_474467_1573500576052_sequences.json
   let selected_did = myurl.query.did;
-  let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
-
+  let pjds = req.session.project_dataset_vars.current_project_dataset_obj_by_did[selected_did];
   if (seqs_filename){
     //console.log('found filename', seqs_filename)
-
-    console.log("EEE2 seqs_filename_path", seqs_filename_path);
 
     fs.access(seqs_filename_path, error => {
       if (error) {
@@ -1266,12 +1152,12 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
             err_read_file(err, req, res, seqs_filename);
           }
           //console.log('parsing data')
-          console.log("EEE3 seqs_filename", seqs_filename);
 
           let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
           console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+          //TODO: Andy, do we still need it? It's huge!
           console.log('filtered_data')
           console.log(filtered_data)
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
@@ -1282,25 +1168,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         }.bind());
       }
     });
-
-    // fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
-    //   console.time("TIME: readFile");
-    //   if (err) {
-    //     err_read_file(err, req, res, seqs_filename);
-    //   }
-    //   //console.log('parsing data')
-    //   console.log("EEE3 seqs_filename", seqs_filename);
-    //
-    //   let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
-    //
-    //   console.time("TIME: loop through clean_data");
-    //   let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-    //   let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-    //   console.timeEnd("TIME: loop through clean_data");
-    //
-    //   render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-    //   console.timeEnd("TIME: readFile");
-    // }.bind());
   }
   else {
     // TODO: Andy, how to test this?
@@ -1323,9 +1190,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *       on that page.  AAV
 */
 //test: simple_taxonomy
-router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
-  console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'");
-  res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
+router.get('/partials/tax_' + C.default_taxonomy.name + '_simple', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_' + C.default_taxonomy.name + '_simple'");
+  res.render('visuals/partials/tax_' + C.default_taxonomy.name + '_simple', {
     doms : C.UNITSELECT.silva119_simple.domains
   });
 });
@@ -1372,7 +1239,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  print_log_if_not_vamps(req, req.body);
+  file_path_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -1409,12 +1276,11 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
         let msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
 
-
       } else {
         for (let f in files){
-          let pts = files[f].split('-');
-          if (parseInt(acceptable_prefixes.indexOf(pts[0])) !== -1 ){
-            //file_info.files.push(files[f]);
+          let name_parts = files[f].split('-');
+          let prefix_name = name_parts[0];
+          if (acceptable_prefixes.includes(prefix_name)){
             let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
             file_info[stat.mtime.getTime()] = {
               'filename': files[f],
@@ -1459,15 +1325,18 @@ function reorder_did_html(did, name, idx) {
   return html;
 }
 
-function reverse_or_reset_datasets(ids) {
+function reverse_or_reset_datasets(req, ids) {
+  const pd_vars = new visualization_controller.visualizationCommonVariables(req, ids);
+
   let html = '';
 
   html += "<table id='drag_table' class='table table-condensed' >";
   html += "<thead></thead>";
   html += "  <tbody>";
   html += ids.reduce((html_txt, did, idx) => {
-    let name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did];
-    return html_txt += reorder_did_html(did, name, idx);
+    const pr_dat_name = pd_vars.current_project_dataset_obj_by_did[did];
+    // TODO: html_txt vs. html???
+    return html_txt += reorder_did_html(did, pr_dat_name, idx);
   }, "");
   html += "</tbody>";
   html += "</table>";
@@ -1481,7 +1350,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in reset_ds_order');
 
   let html = '';
-  html += reverse_or_reset_datasets(req.session.chosen_id_order);
+  html += reverse_or_reset_datasets(req, req.session.chosen_id_order);
 
   res.send(html);
 });
@@ -1496,7 +1365,6 @@ function compare_by_key_name_asc(key_name) {
     }
     return 0;
   };
-
 }
 
 
@@ -1509,7 +1377,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   let name_ids = req.session.chosen_id_order.reduce((arr_of_obj, did) => {
     let temp_obj = {
       did: did,
-      d_name: PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project + '--' + DATASET_NAME_BY_DID[did]
+      d_name: req.session.project_dataset_vars.current_project_dataset_obj_by_did[did]
     };
     arr_of_obj.push(temp_obj);
     return arr_of_obj;
@@ -1522,7 +1390,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
   }, []);
 
   let html = '';
-  html += reverse_or_reset_datasets(dids_sorted_by_dname);
+  html += reverse_or_reset_datasets(req, dids_sorted_by_dname);
 
   res.send(html);
 });
@@ -1538,9 +1406,22 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
   ids.reverse();
 
   let html = '';
-  html += reverse_or_reset_datasets(ids);
+  html += reverse_or_reset_datasets(req, ids);
   res.send(html);
 });
+
+function get_ds_list(output) {
+  let lines = output.split(/\n/);
+  let ds_list = "";
+  let ds_list_line = lines.find(l => l.startsWith('DS_LIST'));
+  try {
+    ds_list = ds_list_line.split('=')[1];
+  }
+  catch (err) {
+    console.log("Err in DS_LIST", err);
+  }
+  return ds_list;
+}
 //
 //  C L U S T E R  D A T A S E T  O R D E R
 // test: from re-order datasets, "--Select distance metric to cluster by:". Should not be "undefined"
@@ -1553,12 +1434,9 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
-  let pjds_lookup = {};
-  for (let i in req.session.chosen_id_order){
-    let did = req.session.chosen_id_order[i];
-    let pjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did];
-    pjds_lookup[pjds] = did;
-  }
+  const current_pr_dat_obj = req.session.project_dataset_vars;
+
+  let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj_by_name;
   let options = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
@@ -1579,14 +1457,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
-    let lines = output.split(/\n/);
-    let ds_list = "";
-    for (let i in lines){
-      if (lines[i].substring(0,7) === 'DS_LIST'){
-        let tmp = lines[i].split('=');
-        ds_list = tmp[1];
-      }
-    }
+    let ds_list = get_ds_list(output);
     file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
@@ -1597,7 +1468,8 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list, pjds_lookup);
         let ascii_file = file_path_obj.get_tree_file_name(req, metric);
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
-        read_file_when_ready(ascii_file_path);
+        read_file_when_ready(ascii_file_path)
+          // .then(r => console.log("RRR: ", r));
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
             return console.log(err);
@@ -1629,7 +1501,10 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         });
       }
       catch(err) {
+        // TODO: test
         res.send('Calculation Error: ' + err.toString());
+        //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+        //       res.json(data);
       }
     }
   });
@@ -1777,62 +1652,25 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     DATA_TO_OPEN = {};
   }
   //DATA_TO_OPEN = {}
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, SHOW_DATA.projects);
   PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
 });
 
-function test_project_visibility_permissions(req, node) {
-  let user_security_level_to_int = parseInt(req.user.security_level);
-  let is_admin_user = user_security_level_to_int <= 10;
-  let no_permissions = node.permissions.length === 0;
-  let owner_is_user = node.permissions.indexOf(req.user.user_id) !== -1;
-  let dco_project = (node.project).substring(0,3) === 'DCO';
-  let dco_editor_for_dco_project = (user_security_level_to_int === 45 && dco_project);
-
-  return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
-}
-
-//
-//
-//
-function filter_project_tree_for_permissions(req, obj){
-  console.log('Filtering tree projects for permissions');
-  let new_project_tree_pids = [];
-  for (let i in obj){
-    //node = PROJECT_INFORMATION_BY_PID[pid];
-    //console.log(obj[i])
-    let pid = obj[i].pid;
-    let node = PROJECT_INFORMATION_BY_PID[pid];
-    //console.log(node)
-    let is_visible = test_project_visibility_permissions(req, node);
-    if (is_visible) {
-      let not_metagenomic = parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
-      if (not_metagenomic){
-        new_project_tree_pids.push(pid);
-      }
-    }
-  }
-  //console.log(obj)
-  return new_project_tree_pids;
-}
 
 //
 //
 //
 
-//
-//
-//
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
   let portal = req.params.portal;
 
-  console.log('in load_portal: '+portal);
+  console.log('in load_portal: ' + portal);
   SHOW_DATA = ALL_DATASETS;
   PROJECT_TREE_OBJ = [];
 
   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   let PROJECT_FILTER = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
 });
@@ -1841,80 +1679,46 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
 //
+
+const filters_obj =  new visualization_controller.visualizationFilters();
+
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
 // test: search by substring
 router.get('/livesearch_projects/:substring', function(req, res) {
   console.log('viz:in livesearch_projects/:substring');
   let substring = req.params.substring.toUpperCase();
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
-  if (substring === '.....'){
-    substring = '';
+  let empty_string = filters_obj.check_if_empty_val(substring);
+  if (empty_string) {
+    substring = "";
   }
-
   PROJECT_FILTER.substring = substring;
 
-  let projects_to_filter = [];
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  let NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  print_log_if_not_vamps(req, 'PROJECT_FILTER');
-
+  // file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
   console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
 });
 
-function get_envid_lst(req) {
-  console.log("get_envid_lst");
-  console.time("TIME: get_envid_lst");
-  const env_id_name = req.params.envid;
-  const items = env_id_name.split('--');
-  let envid = items[0];
-  const env_name = items[1];
-  let envid_lst = [];
-
-  if (env_name === 'human associated') {  // get ids for 'human associated'
-    envid_lst = Object.keys(MD_ENV_PACKAGE).filter(key => MD_ENV_PACKAGE[key].startsWith('human'));
-  } else if (envid === '.....') {
-    envid_lst = [];
-  } else {
-    envid_lst = [parseInt(envid)];
-  }
-  console.timeEnd("TIME: get_envid_lst");
-  return envid_lst;
-}
 
 //
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
 // test click filter by ENV source on visuals_index
 router.get('/livesearch_env/:envid', function(req, res) {
+  PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
 
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  PROJECT_FILTER.env = get_envid_lst(req);
-
-  let projects_to_filter = [];
-  if (portal) {
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  }
-  else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
-
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  console.log("PROJECT_FILTER: ");
+  // file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -1925,24 +1729,17 @@ router.get('/livesearch_env/:envid', function(req, res) {
 // test click filter by domain/Target on visuals_index
 router.get('/livesearch_target/:gene_target', function(req, res) {
   let gene_target = req.params.gene_target;
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
-  if (gene_target === '.....') {
-    gene_target = '';
+  let empty_string = filters_obj.check_if_empty_val(gene_target);
+  if (empty_string) {
+    gene_target = "";
   }
-
   PROJECT_FILTER.target = gene_target;
-  //TODO: projects_to_filter is not used here
-  let projects_to_filter = [];
-  if (portal) {
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else{
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -1955,27 +1752,17 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 router.get('/livesearch_portal/:portal', function(req, res) {
   console.log('viz:in livesearch portal');
   let select_box_portal = req.params.portal;
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;  // we have this turned off: portal selection on portal page
-
-  if (select_box_portal === '.....') {
-    select_box_portal = '';
+  let empty_string = filters_obj.check_if_empty_val(select_box_portal);
+  if (empty_string) {
+    select_box_portal = "";
   }
-
   PROJECT_FILTER.portal = select_box_portal;
-  //TODO: projects_to_filter is not used here
-  let projects_to_filter = [];
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  //console.log(PROJECT_FILTER)
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, SHOW_DATA.projects, PROJECT_FILTER);
-  //console.log(NewPROJECT_TREE_OBJ)
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
-  //console.log(PROJECT_FILTER)
+
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+
   res.json(PROJECT_FILTER);
 
 });
@@ -1987,21 +1774,13 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 // test: click public/private on visuals_index
 router.get('/livesearch_status/:q', function(req, res) {
   console.log('viz:in livesearch status');
-  let q = req.params.q;
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
+  PROJECT_FILTER.public = req.params.q;
 
-  PROJECT_FILTER.public = q;
-  let projects_to_filter = "";
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -2016,28 +1795,20 @@ router.get('/livesearch_metadata/:num/:q', function(req, res) {
 
   let num = req.params.num;
   let q = req.params.q;
-  console.log('num '+num);
-  console.log('query '+q);
-  let myurl = url.parse(req.url, true);
-  let portal = myurl.query.portal;
-  if (q === '.....'){
-    q = '';
-  }
+  console.log('num ' + num);
+  console.log('query ' + q);
 
+  let empty_string = filters_obj.check_if_empty_val(q);
+  if (empty_string) {
+    q = "";
+  }
   PROJECT_FILTER['metadata' + num] = q;
-  //PROJECT_FILTER.metadata_num = num
 
-  //TODO: DRY with other places
-  let projects_to_filter = "";
-  if (portal){
-    projects_to_filter = helpers.get_portal_projects(req, portal);
-  } else {
-    projects_to_filter = SHOW_DATA.projects;
-  }
-  NewPROJECT_TREE_OBJ = helpers.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+  const global_filter_vals = filters_obj.get_global_filter_values(req);
+  PROJECT_FILTER = global_filter_vals.project_filter;
+  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, NewPROJECT_TREE_OBJ);
-  PROJECT_FILTER.pid_length = PROJECT_TREE_PIDS.length;
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -2060,6 +1831,9 @@ function get_files_prefix(req) {
   } else if (units === taxonomies['generic']) {
     files_prefix = files_prefix + "generic";
   } else {
+    // TODO: test
+    //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+    //       res.json(data);
     console.log('ERROR: Units not found: ' + req.body.units); // ERROR
   }
   return files_prefix;
@@ -2086,25 +1860,44 @@ router.post('/check_units', function(req, res) {
       jsonfile = require(path_to_file);
     }
     catch(e){
-      file_err='FAIL';
+      file_err = 'FAIL';
       break;
     }
   }
+  // TODO: test
   res.send(file_err);
+  //      let html = "<dev class = 'base_color_red'>Python Script ERROR in PCOA 3D </dev>";
+  //       res.json(data);
 });
 //
 //
+
+function get_options_by_node(node) {
+  let options_obj = {
+    id: node.node_id,
+    text: node.taxon,
+    child: 0,
+    tooltip: node.rank,
+  };
+  if (node.children_ids.length > 0) {
+    options_obj.child = 1;
+    options_obj.item = [];
+  }
+  return options_obj;
+}
+
 //
 // test: choose custom taxonomy, show tree
-// TODO: JSHint: This function's cyclomatic complexity is too high. (6) (W074)
 router.get('/tax_custom_dhtmlx', function(req, res) {
+  console.time("TIME: tax_custom_dhtmlx");
   //console.log('IN tax_custom_dhtmlx')
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
-  //console.log('id='+id)
+
   let json = {};
   json.id = id;
   json.item = [];
+
   if (parseInt(id) === 0){
     /*
         return json for collapsed tree: 'domain' only
@@ -2117,47 +1910,65 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
             }
     */
 
-
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-    for (let n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-      let node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-      if (node.children_ids.length === 0){
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:0});
-      } else {
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, checked:true, child:1, item:[]});
+    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
+        let options_obj = get_options_by_node(node);
+        options_obj.checked = true;
+        json.item.push(options_obj);
       }
-    }
-    json.item.sort(function(a, b) {
-      return helpers.compareStrings_alpha(a.text, b.text);
-    });
-  } else {
-    for (let n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-      let node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-      let node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
-      //console.log('node')
-      //console.log(node)
-      if (node.children_ids.length === 0){
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:0});
-      } else {
-        json.item.push({id:node.node_id, text:node.taxon, tooltip:node.rank, child:1, item:[]});
-      }
-    }
-    json.item.sort(function sortByAlpha(a, b) {
-      return helpers.compareStrings_alpha(a.text, b.text);
+    );
+  }
+  else {
+    const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
+    objects_w_this_parent_id.map(node => {
+      let options_obj = get_options_by_node(node);
+      options_obj.checked = false;
+      json.item.push(options_obj);
     });
   }
+  json.item.sort(function sortByAlpha(a, b) {
+    return helpers.compareStrings_alpha(a.text, b.text);
+  });
+
+  console.timeEnd("TIME: tax_custom_dhtmlx");
+
   res.json(json);
 });
 //
+
+function get_tt_pj_id(node) {
+  let tt_pj_id = 'project/' + node.project + '/' + node.title;
+  if (node.public) {
+    tt_pj_id += '/public';
+  } else {
+    tt_pj_id += '/private';
+  }
+  return tt_pj_id;
+}
+
+function get_itemtext(pid) {
+  let node = PROJECT_INFORMATION_BY_PID[pid];
+  //console.log('node',node)
+  let tt_pj_id = get_tt_pj_id(node);
+
+  let pid_str = pid.toString();
+  let itemtext = "<span id='" + tt_pj_id + "' class='tooltip_pjds_list'>" + node.project + "</span>";
+  itemtext += " <a href='/projects/" + pid_str + "'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
+  if (node.public) {
+    itemtext += "<small> <i>(public)</i></small>";
+  } else {
+    itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
+  }
+  return itemtext;
+}
 //  project_custom_dhtmlx
 //
 // test: show tree
-// TODO: JSHint: This function's cyclomatic complexity is too high. (10) (W074)
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
+  console.time("TIME: project_dataset_tree_dhtmlx");
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
-  console.log('id='+id);
+  console.log('id = ' + id);
   let json = {};
   json.id = id;
   json.item = [];
@@ -2167,77 +1978,79 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
   let itemtext;
   if (parseInt(id) === 0){
-    for (let i = 0; i < PROJECT_TREE_PIDS.length; i++ ){
+    PROJECT_TREE_PIDS.map(pid => {
+      itemtext = get_itemtext(pid);
 
-      let pid = PROJECT_TREE_PIDS[i];
-      let node = PROJECT_INFORMATION_BY_PID[pid];
-      //console.log('node',node)
-      let tt_pj_id = 'project/'+node.project+'/'+node.title;
-      if (node.public) {
-        tt_pj_id += '/public';
-      } else {
-        tt_pj_id += '/private';
-      }
       let pid_str = pid.toString();
-      itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
-      itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-      if (node.public) {
-        itemtext += "<small> <i>(public)</i></small>";
-      } else {
-        itemtext += "<a href='/users/" + node.oid + "'><small> <i>(PI: " + node.username +")</i></small></a>";
+      // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      // TODO: Andy, how to test this?
+      //   // TODO ? use json_item_collect(node, json_item, checked)
+      //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
+      // }
+      // else {
+      //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: []});
+      // }
+
+      let options_obj = {
+        id: 'p' + pid_str,
+        text: itemtext,
+        checked: false,
+        child: 1,
+        item: [],
+      };
+      if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+        // TODO: Andy, how to test this?
+        options_obj.open = '1';
       }
 
-      if (Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
-        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1', child:1, item:[]});
-      } else {
-        json.item.push({id:'p'+pid_str, text:itemtext, checked:false, child:1, item:[]});
-      }
+      json.item.push(options_obj);
 
-
-    }
-    //console.log(JSON.stringify(json, null, 4))
-
-  }
-  else {
-    //console.log(JSON.stringify(ALL_DATASETS))
-    let this_project = {};
-    id = id.substring(1);  // id = pxx
-    ALL_DATASETS.projects.forEach(function(prj) {
-      if (parseInt(prj.pid) === parseInt(id)){
-        this_project = prj;
-      }
+      // return json;
     });
+  }
+  else { //parseInt(id) !== 0
+    //console.log(JSON.stringify(ALL_DATASETS))
+    id = id.substring(1);  // id = pxx
+    let this_project = ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
+
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
-
+      // TODO: Andy, how to test this?
       console.log('dto');
-      print_log_if_not_vamps(req, 'DATA_TO_OPEN');
+      file_path_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+    file_path_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
-    for (let n in this_project.datasets){
-      let did   = this_project.datasets[n].did;
-      //console.log('didXX',did)
-      let dname = this_project.datasets[n].dname;
-      let ddesc = this_project.datasets[n].ddesc;
+    this_project.datasets.map(dat => {
+
+      let did   = dat.did;
+      //console.log('didXX', did)
+      let dname = dat.dname;
+      let ddesc = dat.ddesc;
       let tt_ds_id  = 'dataset/' + pname + '/' + dname + '/' + ddesc;
       itemtext = "<span id='" +  tt_ds_id  + "' class='tooltip_pjds_list'>" + dname + "</span>";
-      if (all_checked_dids.indexOf(parseInt(did)) === -1){
-        json.item.push({id:did, text:itemtext, child:0});
-      } else {
-        json.item.push({id:did, text:itemtext, checked:'1', child:0});
+
+      let options_obj = {
+        id: did,
+        text: itemtext,
+        child: 0,
+      };
+      if (all_checked_dids.includes(parseInt(did))) {
+        options_obj.checked = '1';
       }
-    }
+
+      json.item.push(options_obj);
+    });
   }
-  json.item.sort(function sortByAlpha(a, b){
+  json.item.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
-  //console.log(json.item)
+  console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
 //
@@ -2276,7 +2089,7 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+      file_path_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
 
       let cols =  biom_matrix.columns;
 
