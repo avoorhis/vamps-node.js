@@ -597,22 +597,10 @@ class visualizationFilters {
 
     // METADATA2
     let NewPROJECT_TREE_OBJ7 = this.filter_by_metadata(filter_obj.metadata2, NewPROJECT_TREE_OBJ6);
-    // if (filter_obj.metadata2 === '' || filter_obj.metadata2 === '.....' || NewPROJECT_TREE_OBJ6.length === 0) {
-    //   NewPROJECT_TREE_OBJ7 = NewPROJECT_TREE_OBJ6;
-    // } else {
-    //   NewPROJECT_TREE_OBJ7 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ6, filter_obj.metadata2);
-    // }
 
     // METADATA3
     let NewPROJECT_TREE_OBJ8 = this.filter_by_metadata(filter_obj.metadata3, NewPROJECT_TREE_OBJ7);
-
-    // let NewPROJECT_TREE_OBJ8 = [];
-    // if (filter_obj.metadata3 === '' || filter_obj.metadata3 === '.....' || NewPROJECT_TREE_OBJ7.length === 0) {
-    //   NewPROJECT_TREE_OBJ8 = NewPROJECT_TREE_OBJ7;
-    // } else {
-    //   NewPROJECT_TREE_OBJ8 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ7, filter_obj.metadata3);
-    // }
-
+    
     let new_obj = NewPROJECT_TREE_OBJ8;
     //console.log('new_obj')
     //console.log(new_obj)
