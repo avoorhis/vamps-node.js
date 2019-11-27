@@ -1157,6 +1157,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
           console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
+          //TODO: Andy, do we still need it? It's huge!
           console.log('filtered_data')
           console.log(filtered_data)
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
@@ -1189,9 +1190,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *       on that page.  AAV
 */
 //test: simple_taxonomy
-router.get('/partials/tax_'+C.default_taxonomy.name+'_simple', helpers.isLoggedIn,  function(req, res) {
-  console.log("in '/partials/tax_'+C.default_taxonomy.name+'_simple'");
-  res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_simple', {
+router.get('/partials/tax_' + C.default_taxonomy.name + '_simple', helpers.isLoggedIn,  function(req, res) {
+  console.log("in '/partials/tax_' + C.default_taxonomy.name + '_simple'");
+  res.render('visuals/partials/tax_' + C.default_taxonomy.name + '_simple', {
     doms : C.UNITSELECT.silva119_simple.domains
   });
 });
