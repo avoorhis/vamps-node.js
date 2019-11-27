@@ -302,8 +302,10 @@ function hide_seqs(ds, taxa, fname){
 }
 function show_single_sequence(divid, seq){
     console.log('showing')
-    document.getElementById(divid).innerHTML = "<div onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\">"  +seq+ '</div>'
-    document.getElementById('seq_header').innerHTML = 'Sequence (click sequence to hide)'
+    //document.getElementById(divid).innerHTML = "<div onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\" style=\"font-family: monospace;\">"  +seq+ '</div>'
+    document.getElementById(divid).innerHTML = "<input type='checkbox' onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\" > <span  style=\"font-family: monospace;\">"  +seq+ '</span>'
+    
+    document.getElementById('seq_header').innerHTML = 'Sequence (click box to hide)'
 }
 function hide_single_sequence(divid, seq){
     //console.log('hiding')

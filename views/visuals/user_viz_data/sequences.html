@@ -69,10 +69,10 @@
             <% divid = 'seq_div_'+r.toString() %>
             
             <td style='padding-right:3px;'>
-              <div class='hide_class_seq1' id='<%= divid %>' style='display:inline' >show seq <input type='checkbox' id='' name='show_seq' value='' onclick="show_single_sequence('<%= divid %>', '<%- seqrows[r].seq %>')" \> 
-            
+              <div class='hide_class_seq1' id='<%= divid %>' style='display:inline' >
+                show seq <input type='checkbox' id='' name='show_seq' value='' onclick="show_single_sequence('<%= divid %>', '<%- seqrows[r].seq %>')" \> 
               </div>
-              <div class='hide_class_seq2' style='display:none'>
+              <div class='hide_class_seq2' style='display:none;font-family: monospace;'>
                  <%- seqrows[r].prettyseq %>             
               </div>
             </td>
