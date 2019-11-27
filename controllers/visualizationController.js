@@ -448,35 +448,10 @@ class visualizationFilters {
   }
 
   get_PTREE_metadata (OBJ, q) {
-    console.time("get_PTREE_metadata old");
-    let projects = [];
-    let phash    = {};
-    //TODO: benchmark and refactor
-    OBJ.forEach(function (prj) {
+    return OBJ.filter(prj => {
       let dids = DATASET_IDS_BY_PID[prj.pid];
-      for (let n in dids) {
-
-        if (dids[n] in AllMetadata && AllMetadata[dids[n]].hasOwnProperty(q)) {
-          phash[prj.pid] = 1;
-        }
-      }
+      return dids.some(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(q)));
     });
-
-    for (let pid in phash) {
-      projects.push(PROJECT_INFORMATION_BY_PID[pid]);
-    }
-    console.timeEnd("get_PTREE_metadata old");
-
-    projects = [];
-    console.time("get_PTREE_metadata filter");
-    projects = OBJ.filter(prj => {
-      let dids = DATASET_IDS_BY_PID[prj.pid];
-      return dids.find(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(q)));
-    });
-
-    console.timeEnd("get_PTREE_metadata filter");
-
-    return projects;
   }
 
   filter_is_empty(current_filter) {
