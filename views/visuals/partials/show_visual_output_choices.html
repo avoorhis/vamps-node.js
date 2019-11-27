@@ -44,7 +44,7 @@ Screening/Options (<b><%= pi.unit_choice %></b>):<br>
         </td>
     </tr>
     <tr>
-        <td><b>Filter Matrix Rows by Frequency:</b> Will remove rows if min/max exceded for ALL the datasets.
+        <td><b>Filter Matrix Taxa by Frequency:</b> Will remove taxa if min/max exceded.
 		  <br>MIN: <select id='min_range' name='min_range' class='small_font'>
 		    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
 		    <%    if(pi.min_range.toString() === pct_range[n].toString()) { %>

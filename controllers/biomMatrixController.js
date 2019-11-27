@@ -158,6 +158,7 @@ class BiomMatrix {
     if (adjust.adjust_for_normalization) {
       custom_count_matrix = this.adjust_for_normalization(custom_count_matrix);
     }
+    
     if (adjust.adjust_for_percent_limit_change) {
       custom_count_matrix = this.adjust_for_percent_limit_change(custom_count_matrix);
     }
@@ -168,21 +169,39 @@ class BiomMatrix {
     return custom_count_matrix;
   }
 
-  get_crt_pct(custom_count_matrix, cell, idx2) {
+
+///////////////////////////////////
+
+  get_crt_pct(custom_count_matrix, cell, idx2) { // cell = count;; column == dataset
     let curr_col_total = custom_count_matrix.column_totals[idx2];
     let curr_cell_pct = cell * 100 / curr_col_total;
     return curr_cell_pct;
   }
 
+
   check_if_in_interval(custom_count_matrix, row, min, max){
-    return row.find((cell, idx2) => {
-      let curr_cell_pct = this.get_crt_pct(custom_count_matrix, cell, idx2);
-      return curr_cell_pct > min && curr_cell_pct < max;
-    });
+    let new_row = []  //1 ok
+    for(i in row){
+        let cell = row[i]
+        let curr_cell_pct = this.get_crt_pct(custom_count_matrix, cell, i);
+        if(curr_cell_pct > min && curr_cell_pct < max){
+            new_row.push(row[i])
+        }else{
+            new_row.push(0)
+        }
+    }
+    return new_row
+    
+//     return row.find((cell, idx2) => {  // cell = count
+//       let curr_cell_pct = this.get_crt_pct(custom_count_matrix, cell, idx2);
+//       return curr_cell_pct > min && curr_cell_pct < max;
+//     });
   }
+
 
   adjust_for_percent_limit_change(custom_count_matrix) {
     // console.time("TIME: adjust_for_percent_limit_change");
+    console.log('IN adjust_for_percent_limit_change')
     let min_percent = this.visual_post_items.min_range;
     let max_percent = this.visual_post_items.max_range;
     // let min = 0;
@@ -191,24 +210,26 @@ class BiomMatrix {
     let new_units = [];
     let cnt_matrix = custom_count_matrix.data;
 
-    cnt_matrix.map((row, idx1) => {
-      let got_one = this.check_if_in_interval(custom_count_matrix, row, min_percent, max_percent);
-
-      if (got_one){
-        new_counts.push(cnt_matrix[idx1]);
-        new_units.push(custom_count_matrix.rows[idx1]);
-      }
-      else {
-        console.log('rejecting ' + custom_count_matrix.rows[idx1].id);
-      }
+    cnt_matrix.map((row, idx1) => {  // row [23,45] = taxonomy ; col = dataset
+      //let got_one = this.check_if_in_interval(custom_count_matrix, row, min_percent, max_percent);
+      let new_row2 = this.check_if_in_interval(custom_count_matrix, row, min_percent, max_percent);
+        
+      //if (got_one){
+        new_counts.push(new_row2);
+        //new_units.push(custom_count_matrix.rows[idx1]);
+      //}
+      //else {
+       // console.log('rejecting ' + custom_count_matrix.rows[idx1].id);
+      //}
     });
     custom_count_matrix.data = new_counts;
-    custom_count_matrix.rows = new_units;
+    //custom_count_matrix.rows = new_units;
     // console.timeEnd("TIME: adjust_for_percent_limit_change");
 
     return custom_count_matrix;
   }
-
+  
+///////////////////////////////////////////////////////
   adjust_for_normalization(custom_count_matrix) {
     let norm = this.visual_post_items.normalization;
     if (norm === 'maximum'|| norm === 'max') {

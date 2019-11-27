@@ -121,10 +121,10 @@ function get_member_of_portal(req, info) {
 function get_publish_data(req, project_name) {
   let info_file_name = "";
   if (project_name.startsWith('DCO')) {
-    info_file_name = 'DCO_INFO.json';
+    info_file_name = req.CONFIG.INFO_FILES['dco'];   //    'DCO_INFO.json';
   }
   else if (project_name.startsWith('CMP')) {
-    info_file_name = 'CMP_INFO.json';
+    info_file_name = req.CONFIG.INFO_FILES['cmp'];   //'CMP_INFO.json';
   }
 
   let publish_data = {};
