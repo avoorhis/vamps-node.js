@@ -447,13 +447,6 @@ class visualizationFilters {
     return node.public || is_admin_user || no_permissions || owner_is_user || dco_editor_for_dco_project;
   }
 
-  get_PTREE_metadata (OBJ, q) {
-    return OBJ.filter(prj => {
-      let dids = DATASET_IDS_BY_PID[prj.pid];
-      return dids.some(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(q)));
-    });
-  }
-
   filter_is_empty(current_filter) {
     const empty_vals = ['', '.....'];
     if (current_filter.length === 0 || empty_vals.includes(current_filter)) {
@@ -563,16 +556,13 @@ class visualizationFilters {
     return res_NewPROJECT_TREE_OBJ;
   }
 
-
-
-// TODO: "This function's cyclomatic complexity is too high. (16)"
   filter_projects (req, prj_obj, filter_obj) {
     // 1 substring      name search
     // 2 env            search PROJECT_INFORMATION_BY_PID
     // 3 target         name search
     // 4 portal         helpers.get_portal_projects()
     // 5 public_private search PROJECT_INFORMATION_BY_PID
-    // 6 metadata       helpers.get_PTREE_metadata
+    // 6 metadata       search AllMetadata
     //console.log(PROJECT_INFORMATION_BY_PID)
     //console.log('IN FilterProjects')
     //console.log(prj_obj, filter_obj)
@@ -600,7 +590,7 @@ class visualizationFilters {
 
     // METADATA3
     let NewPROJECT_TREE_OBJ8 = this.filter_by_metadata(filter_obj.metadata3, NewPROJECT_TREE_OBJ7);
-    
+
     let new_obj = NewPROJECT_TREE_OBJ8;
     //console.log('new_obj')
     //console.log(new_obj)
