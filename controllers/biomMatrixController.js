@@ -23,6 +23,7 @@ class BiomMatrix {
     this.write_file = write_file;
     this.units             = this.visual_post_items.unit_choice;
     this.chosen_datasets   = this.visual_post_items.chosen_datasets; /* post_items.chosen_datasets["0"] = {
+    
   "did": 475152,
   "name": "SLM_NIR2_Bv4--Aligator_Pool01"
 }*/
@@ -151,7 +152,7 @@ class BiomMatrix {
   get_updated_biom_matrix() {
     console.log('in UPDATED biom_matrix');
     console.log("GGG1 this.visual_post_items");
-    console.log(this.visual_post_items);
+    //console.log(this.visual_post_items);
     // console.time("TIME: get_updated_biom_matrix");
     let custom_count_matrix = extend({}, this.biom_matrix);  // this clones count_matrix which keeps original intact.
 

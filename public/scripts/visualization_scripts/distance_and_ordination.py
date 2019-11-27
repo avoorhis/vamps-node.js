@@ -89,10 +89,11 @@ def go_distance(args):
     out_file_csv      = os.path.join(args.basedir,  args.prefix+'_distance.csv')
     print(dm1)
     
-    if not os.path.exists(out_file_selected):
-        out_fp2 = open(out_file_selected,'w')
-        out_fp2.write(json.dumps(dm2))
-        out_fp2.close()
+    # must over write each time
+    #if not os.path.exists(out_file_selected):
+    out_fp2 = open(out_file_selected,'w')
+    out_fp2.write(json.dumps(dm2))
+    out_fp2.close()
     try:
         os.chmod(out_file_selected, 0o664)
     except:

@@ -258,27 +258,11 @@ function download_data(type, download_type, ts) {
     };
     xmlhttp.send(args);   
 }
-//
-//
-//
-function hide_seqs(id, taxa, fname){
-  checked_seqs = document.getElementById('hide_seqs_cb').checked;
-  checked_taxa = document.getElementById('hide_tax_cb').checked;
 
-  seq_tds = document.getElementsByClassName('hide_class_seq');
-  for(i in seq_tds){
-    if(checked_seqs){
-        seq_tds[i].style.display = 'none'
-    }else{
-        seq_tds[i].style.display = 'inline';
-    }
-  }
-  
-}
 //
 //
 //
-function hide_tax(id, taxa, fname){
+function hide_tax(ds, taxa, fname){
   checked_seqs = document.getElementById('hide_seqs_cb').checked;
   checked_taxa = document.getElementById('hide_tax_cb').checked;
   tax_tds = document.getElementsByClassName('hide_class_tax');
@@ -295,8 +279,57 @@ function hide_tax(id, taxa, fname){
 //
 //
 //
+//
+//
+//
+function hide_seqs(ds, taxa, fname){
+  checked_seqs = document.getElementById('hide_seqs_cb').checked;
+  checked_taxa = document.getElementById('hide_tax_cb').checked;
+
+  seq_tds1 = document.getElementsByClassName('hide_class_seq1');
+  seq_tds2 = document.getElementsByClassName('hide_class_seq2');
+  
+  for(i in seq_tds1){
+    if(checked_seqs){
+        seq_tds1[i].style.display = 'none'
+        seq_tds2[i].style.display = 'inline'
+    }else{
+        seq_tds1[i].style.display = 'inline';
+        seq_tds2[i].style.display = 'none'
+    }
+  }
+  
+}
+function show_single_sequence(divid, seq){
+    console.log('showing')
+    document.getElementById(divid).innerHTML = "<div onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\">"  +seq+ '</div>'
+    document.getElementById('seq_header').innerHTML = 'Sequence (click sequence to hide)'
+}
+function hide_single_sequence(divid, seq){
+    //console.log('hiding')
+    //alert(divid)
+    document.getElementById(divid).innerHTML = "show seq <input type='checkbox' id='' name='show_seq' value='' onclick=\"show_single_sequence('"+divid+"', '"+seq+"')\" \>"
+    document.getElementById('seq_header').innerHTML = 'Sequence'
+}
+//
+//
+//
+//
+//
+//
 function ncbi_blast(seq){
 
   var ncbi_url = "https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY="
   window.open(ncbi_url+seq)
 }
+//
+//
+//
+
+
+
+
+
+
+
+
