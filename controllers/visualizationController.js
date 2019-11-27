@@ -448,7 +448,7 @@ class visualizationFilters {
   }
 
   get_PTREE_metadata (OBJ, q) {
-    console.time("get_PTREE_metadata");
+    console.time("get_PTREE_metadata old");
     let projects = [];
     let phash    = {};
     //TODO: benchmark and refactor
@@ -465,11 +465,11 @@ class visualizationFilters {
     for (let pid in phash) {
       projects.push(PROJECT_INFORMATION_BY_PID[pid]);
     }
-    console.timeEnd("get_PTREE_metadata");
+    console.timeEnd("get_PTREE_metadata old");
     return projects;
   }
 
-  filter_empty_filter(current_filter) {
+  filter_is_empty(current_filter) {
     const empty_vals = ['', '.....'];
     if (current_filter.length === 0 || empty_vals.includes(current_filter)) {
       return true;
@@ -481,7 +481,7 @@ class visualizationFilters {
 
   filter_by_substring(filter_obj, prj_obj) {
     let NewPROJECT_TREE_OBJ1 = [];
-    let filter_empty = this.filter_empty_filter(filter_obj.substring);
+    let filter_empty = this.filter_is_empty(filter_obj.substring);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ1 = prj_obj;
     }
@@ -497,7 +497,7 @@ class visualizationFilters {
 
   filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1){
     //console.log('Filtering for ENV')
-    let filter_empty = this.filter_empty_filter(filter_obj.env);
+    let filter_empty = this.filter_is_empty(filter_obj.env);
     let NewPROJECT_TREE_OBJ2 = [];
     if (filter_empty) {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
@@ -514,7 +514,7 @@ class visualizationFilters {
 
   filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
     let NewPROJECT_TREE_OBJ3 = [];
-    let filter_empty = this.filter_empty_filter(filter_obj.target);
+    let filter_empty = this.filter_is_empty(filter_obj.target);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
     }
@@ -534,7 +534,7 @@ class visualizationFilters {
 
   filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3) {
     let NewPROJECT_TREE_OBJ4 = [];
-    let filter_empty = this.filter_empty_filter(filter_obj.portal);
+    let filter_empty = this.filter_is_empty(filter_obj.portal);
     if (filter_empty) {
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3;
     }
@@ -592,21 +592,21 @@ class visualizationFilters {
 
     // METADATA1
     let NewPROJECT_TREE_OBJ6 = [];
-    if (filter_obj.metadata1 === '' || filter_obj.metadata1 === '.....') {
+    if (filter_obj.metadata1 === '' || filter_obj.metadata1 === '.....' || NewPROJECT_TREE_OBJ5.length === 0) {
       NewPROJECT_TREE_OBJ6 = NewPROJECT_TREE_OBJ5;
     } else {
       NewPROJECT_TREE_OBJ6 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ5, filter_obj.metadata1);
     }
     // METADATA2
     let NewPROJECT_TREE_OBJ7 = [];
-    if (filter_obj.metadata2 === '' || filter_obj.metadata2 === '.....') {
+    if (filter_obj.metadata2 === '' || filter_obj.metadata2 === '.....' || NewPROJECT_TREE_OBJ6.length === 0) {
       NewPROJECT_TREE_OBJ7 = NewPROJECT_TREE_OBJ6;
     } else {
       NewPROJECT_TREE_OBJ7 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ6, filter_obj.metadata2);
     }
     // METADATA1
     let NewPROJECT_TREE_OBJ8 = [];
-    if (filter_obj.metadata3 === '' || filter_obj.metadata3 === '.....') {
+    if (filter_obj.metadata3 === '' || filter_obj.metadata3 === '.....' || NewPROJECT_TREE_OBJ7.length === 0) {
       NewPROJECT_TREE_OBJ8 = NewPROJECT_TREE_OBJ7;
     } else {
       NewPROJECT_TREE_OBJ8 = this.get_PTREE_metadata(NewPROJECT_TREE_OBJ7, filter_obj.metadata3);
