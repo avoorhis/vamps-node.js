@@ -466,6 +466,16 @@ class visualizationFilters {
       projects.push(PROJECT_INFORMATION_BY_PID[pid]);
     }
     console.timeEnd("get_PTREE_metadata old");
+
+    projects = [];
+    console.time("get_PTREE_metadata filter");
+    projects = OBJ.filter(prj => {
+      let dids = DATASET_IDS_BY_PID[prj.pid];
+      return dids.find(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(q)));
+    });
+
+    console.timeEnd("get_PTREE_metadata filter");
+
     return projects;
   }
 
@@ -482,7 +492,7 @@ class visualizationFilters {
   filter_by_substring(filter_obj, prj_obj) {
     let NewPROJECT_TREE_OBJ1 = [];
     let filter_empty = this.filter_is_empty(filter_obj.substring);
-    if (filter_empty) {
+    if (filter_empty || prj_obj.length === 0) {
       NewPROJECT_TREE_OBJ1 = prj_obj;
     }
     else {
@@ -499,7 +509,7 @@ class visualizationFilters {
     //console.log('Filtering for ENV')
     let filter_empty = this.filter_is_empty(filter_obj.env);
     let NewPROJECT_TREE_OBJ2 = [];
-    if (filter_empty) {
+    if (filter_empty || NewPROJECT_TREE_OBJ1.length === 0) {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
     }
     else {
@@ -515,7 +525,7 @@ class visualizationFilters {
   filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
     let NewPROJECT_TREE_OBJ3 = [];
     let filter_empty = this.filter_is_empty(filter_obj.target);
-    if (filter_empty) {
+    if (filter_empty || NewPROJECT_TREE_OBJ2.length === 0) {
       NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
     }
     else {
@@ -535,7 +545,7 @@ class visualizationFilters {
   filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3) {
     let NewPROJECT_TREE_OBJ4 = [];
     let filter_empty = this.filter_is_empty(filter_obj.portal);
-    if (filter_empty) {
+    if (filter_empty || NewPROJECT_TREE_OBJ3.length === 0) {
       NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3;
     }
     else {
@@ -554,7 +564,7 @@ class visualizationFilters {
 
   filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4) {
     let NewPROJECT_TREE_OBJ5 = [];
-    if (filter_obj.public === '-1') {
+    if (filter_obj.public === '-1' || NewPROJECT_TREE_OBJ4.length === 0) {
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
     } else {
       //console.log('Filtering for PRIVACY')
