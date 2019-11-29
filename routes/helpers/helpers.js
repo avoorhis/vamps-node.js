@@ -683,48 +683,80 @@ module.exports.compareStrings_int   = function (a, b) {
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 };
 
-//TODO: test; duplicated in common_selection.js
-module.exports.sort_json_matrix     = function (mtx, fxn_obj) {
+//TODO: test - single_bar
+// TODO: duplicated in common_selection.js
+module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   // fxn must be one of min,max, alphaUp, alphaDown
   // else original mtx returned
   // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
   // Does not (yet) sort datasets
   let obj = [];
   mtx.data.map((curr, i) => { return obj.push({tax: mtx.rows[i], cnt: mtx.data[i]}); });
-  
+
   let reorder = false;
-  if (fxn_obj.orderby == 'alpha') {
-    if (fxn_obj.value == 'a') {
+  if (fxn_obj.orderby === 'alpha') {
+    if (fxn_obj.value === 'a') {
       obj.sort(function sortByAlpha(a, b) {
         return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
       });
-      reorder = true;
-    } else {
+    }
+    else {
       obj.sort(function sortByAlpha(a, b) {
         return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
       });
-      reorder = true;
     }
-  } else if (fxn_obj.orderby == 'count') {
-    if (fxn_obj.value == 'max') {
+    reorder = true;
+  }
+  else if (fxn_obj.orderby === 'count') {
+    if (fxn_obj.value === 'max') {
       obj.sort(function sortByCount(a, b) {
         return b.cnt[0] - a.cnt[0];
       });
-      reorder = true;
-    } else {
+    }
+    else {
       obj.sort(function sortByCount(a, b) {
         return a.cnt[0] - b.cnt[0];
       });
-      reorder = true;
     }
-  } else {
-
+    reorder = true;
   }
+
+  // TODO: switch is faster, but returns bigger array, both comparison methods return bigger array then before, why?
+  // switch(fxn_obj.orderby) {
+  //   case 'alpha':
+  //     switch(fxn_obj.value) {
+  //       case 'a':
+  //         obj.sort(function sortByAlpha(a, b) {
+  //           return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
+  //         });
+  //         break;
+  //       default:
+  //         obj.sort(function sortByAlpha(a, b) {
+  //           return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
+  //         });
+  //         break;
+  //     }
+  //     reorder = true;
+  //     break;
+  //   case 'count':
+  //     switch(fxn_obj) {
+  //       case 'max':
+  //         obj.sort(function sortByCount(a, b) {
+  //           return b.cnt[0] - a.cnt[0];
+  //         });
+  //       default:
+  //         obj.sort(function sortByCount(a, b) {
+  //           return a.cnt[0] - b.cnt[0];
+  //         });
+  //     }
+  //     reorder = true;
+  //     break;
+  // }
 
   if (reorder) {
     mtx.rows = [];
     mtx.data = [];
-    for (var i1 in obj) {
+    for (let i1 in obj) {
       //console.log(i,obj[i])
       mtx.rows.push(obj[i1].tax);
       mtx.data.push(obj[i1].cnt);
