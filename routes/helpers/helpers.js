@@ -690,16 +690,9 @@ module.exports.sort_json_matrix     = function (mtx, fxn_obj) {
   // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
   // Does not (yet) sort datasets
   let obj = [];
-  for (var i in mtx.data) {
-    obj.push({tax: mtx.rows[i], cnt: mtx.data[i]});
-  }
-
-  obj = [];
   mtx.data.map((curr, i) => { return obj.push({tax: mtx.rows[i], cnt: mtx.data[i]}); });
-
-  obj = [];
-  mtx.data.reduce((obg, i) => { return obj.push({tax: mtx.rows[i], cnt: mtx.data[i]}); }, []);
-  var reorder = false;
+  
+  let reorder = false;
   if (fxn_obj.orderby == 'alpha') {
     if (fxn_obj.value == 'a') {
       obj.sort(function sortByAlpha(a, b) {
