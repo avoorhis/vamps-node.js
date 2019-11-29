@@ -13,7 +13,6 @@ var path        = require('path');
 var mysql       = require('mysql2');
 var spawn       = require('child_process').spawn;
 
-// module.exports = {
 // route middleware to make sure a user is logged in
 module.exports.isLoggedIn = function (req, res, next) {
   // if user is authenticated in the session, carry on
@@ -252,11 +251,12 @@ module.exports.getRandomInt  = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-module.exports.isInt        = function (value) {
-  return !isNaN(value) && (function (x) {
-    return (x | 0) === x;
-  })(parseFloat(value));
-};
+// use native Number.isInteger instead
+// module.exports.isInt        = function (value) {
+//   return !isNaN(value) && (function (x) {
+//     return (x || 0) === x;
+//   })(parseFloat(value));
+// };
 
 module.exports.IsJsonString = function (str) {
   try {
@@ -682,15 +682,23 @@ module.exports.compareStrings_int   = function (a, b) {
   b = parseInt(b);
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 };
+
+//TODO: test; duplicated in common_selection.js
 module.exports.sort_json_matrix     = function (mtx, fxn_obj) {
   // fxn must be one of min,max, alphaUp, alphaDown
   // else original mtx returned
   // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
   // Does not (yet) sort datasets
-  obj = [];
+  let obj = [];
   for (var i in mtx.data) {
     obj.push({tax: mtx.rows[i], cnt: mtx.data[i]});
   }
+
+  obj = [];
+  mtx.data.map((curr, i) => { return obj.push({tax: mtx.rows[i], cnt: mtx.data[i]}); });
+
+  obj = [];
+  mtx.data.reduce((obg, i) => { return obj.push({tax: mtx.rows[i], cnt: mtx.data[i]}); }, []);
   var reorder = false;
   if (fxn_obj.orderby == 'alpha') {
     if (fxn_obj.value == 'a') {
@@ -1324,7 +1332,7 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
    submit_job
    */
   //### Create Cluster Script
-
+  // TODO: DRY with l 1380
   script_text = "#!/bin/bash\n\n";
   script_text += "# CODE:\t" + cmd_name + "\n\n";
   script_text += "# source environment:\n";
@@ -1655,9 +1663,11 @@ module.exports.run_external_command             = function (script_path) {
   });
 
 
-}
+};
+
+//TODO: JSHint: This function's cyclomatic complexity is too high. (19)(W074)
 module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
-  // TODO
+  // TODO: test; simplify; DRY
   var idname, value;
   if (mdname === 'env_package') {
     idname = 'env_package_id';
