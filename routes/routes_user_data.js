@@ -1469,85 +1469,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
                 
 //=================================
                 
-//                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_matrix_loader.py')
-//                 var load_params = ['-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]
-//                 console.log(load_cmd + ' ' + load_params.join(' '))
-//                 var matrix_proc = spawn(load_cmd, load_params, {
-//                     env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                     detached: true, stdio: 'pipe'
-//                 });
-//                 var output    = '';
-//                 var last_line = ''
-//                 matrix_proc.stderr.on('data', function (data) {
-//                   console.log('error '+data.toString()) 
-//                   last_line = data.toString()  
-//                 });
-//                 matrix_proc.stdout.on('data', function (data) { 
-//                   //console.log('stdout:')  
-//                   line = data.toString()
-//                   //console.log(line)   
-//                   output += line
-//               
-//                 });
-//                 matrix_proc.on('close', function (code) {
-// 				    console.log('close: load_cmd proc exited with code ' + code);
-// 				    
-// 				    
-// 				    if(code === 0){
-// 				        lines = output.split('\n')
-// 				        for(n in lines){
-// 				            //console.log(lines[n]) 
-// 				            if(lines[n].substring(0,8) == 'done pid'){
-//                                 parts = lines[n].split(' ')
-//                                 //console.log(parts)
-//                                 pid = parts[2]
-//                             }
-// 				        }       
-// 				        var create_json_files_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'/vamps_script_create_json_dataset_files.py')
-// 				        var create_json_files_params = ['-site', req.CONFIG.site,'-project_dir',info.project_dir,'-p',info.project_name, '--jsonfile_dir', req.CONFIG.JSON_FILES_BASE,'-units','matrix']
-//                         console.log(create_json_files_cmd + ' ' + create_json_files_params.join(' '))
-//                         var json_files_proc = spawn(create_json_files_cmd, create_json_files_params, {
-//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//                             detached: true, stdio: 'pipe'
-//                         });
-//                         json_files_proc.stderr.on('data', function (data) {
-//                           console.log(data.toString())   
-//                         });
-//                         json_files_proc.stdout.on('data', function (data) { 
-//                           //console.log('stdout:')  
-//                           line = data.toString()
-//                           //console.log(line)   
-//                           output += line
-//                         });
-//                         json_files_proc.on('close', function (code) {
-// 				            console.log('close: json_files_proc proc exited with code ' + code);
-// 				        })
-// 				        
-// 				        fs.writeFile(new_info_filename_path, ini.stringify(info, { section: 'MAIN' }), {mode:0o664}, function writeConfigFile(err) {                                  
-//                         if(err){return console.log(err);} // => null
-//                             fs.chmodSync(new_info_filename_path, 0o664);
-//                             fs.chmodSync(new_file_path, 0o664);
-//                             req.flash('success', "Success - Project `"+info.project_name+"` loaded to `Your Projects`");
-// 
-//                             //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-//                             res.render('user_data/import_choices/matrix', {
-//                               title: 'VAMPS:Import Choices',
-//                               def_name:'',
-//                               user: req.user, hostname: req.CONFIG.hostname
-//                             });
-//                             return
-//                         }); 
-//                         
-//                     }else{
-//                         console.log('FAIL re-open import choices page')
-//                         req.flash('fail',' Fail: '+last_line)
-//                         res.redirect('/')
-//                         
-//                         return
-//                     }
-// 					
-// 				})
-            
+
 // BIOM            
             }else if(file_type == 'biom'){
                 console.log('Biom file detected')
@@ -1562,7 +1484,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
                     // now this is common M9Akey217.141086_98 last digits are 'count'
                     // need to be removed
                     items = first_item.split('_')
-                    if(helpers.isInt(items[items.length - 1])){
+                    if (Number.isInteger(items[items.length - 1])){
                         dataset = first_item.split('_')[0]  // if trailing number: remove it
                     }else{
                         dataset = first_item
@@ -1619,7 +1541,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
 				console.log('UNIQUE_SEQ_COUNT:'+counts['UNIQUE_SEQ_COUNT'].toString())
 				console.log('TOTAL_SEQ_COUNT:'+counts['TOTAL_SEQ_COUNT'].toString())
 				
-				if(helpers.isInt(counts['TOTAL_SEQ_COUNT']) && helpers.isInt(counts['UNIQUE_SEQ_COUNT'])){  // should unique count
+				if(Number.isInteger(counts['TOTAL_SEQ_COUNT']) && Number.isInteger(counts['UNIQUE_SEQ_COUNT'])){  // should unique count
 					//info.unique_seq_count = output
 					console.log('seq_counts SUCCESS: got counts from demultiplex.py')
 					info.unique_seq_count = counts['UNIQUE_SEQ_COUNT']
@@ -2244,7 +2166,7 @@ function checkPid(check_pid_options, last_line)
   var pid = ll[1];
   console.log('checkPID NEW PID=: ' + pid);
   //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
-  if (helpers.isInt(pid))
+  if (Number.isInteger(pid))
   {
 
     connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
@@ -3954,7 +3876,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
 router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
 
   console.log('upload_data_tax_by_seq');
-  console.log("PLPLPLPL req.url = " + req.url);
+  // console.log("PLPLPLPL req.url = " + req.url);
   var project = req.body.project || '';
   var use_original_names = req.body.use_original_names || 'off';
   var username = req.user.username;
@@ -4130,7 +4052,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                    var pid = pid_list[i];
                    console.log('TaxbySeq NEW PID=: '+pid);
                    //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-                   if (helpers.isInt(pid)) {
+                   if (Number.isInteger(pid)) {
                      // TODO: Don't make functions within a loop.
                       connection.query(queries.get_select_datasets_queryPID(pid), function mysqlSelectDatasetsByPID(err, rows1, fields) {
                         if (err)  {
