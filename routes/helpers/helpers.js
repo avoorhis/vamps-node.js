@@ -683,8 +683,9 @@ module.exports.compareStrings_int   = function (a, b) {
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 };
 
-//TODO: test - single_bar
+// test - single_bar
 // TODO: duplicated in common_selection.js
+// JSHint: This function's cyclomatic complexity is too high. (6)(W074)
 module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   // fxn must be one of min,max, alphaUp, alphaDown
   // else original mtx returned
@@ -716,10 +717,12 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
           curr_obj.sort(function sortByCount(a, b) {
             return b.cnt[0] - a.cnt[0];
           });
+          break;
         default:
           curr_obj.sort(function sortByCount(a, b) {
             return a.cnt[0] - b.cnt[0];
           });
+          break;
       }
       reorder = true;
       break;
