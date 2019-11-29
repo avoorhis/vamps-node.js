@@ -57,37 +57,37 @@ class CreateDataObj {
     // console.timeEnd('TIME: prepare_empty_metadata_object');
   }
 
-  get_project_info(req, res, project_name_or_pid) {
-    let project_info;
-
-    // let user_id  = req.form.pi_id_name.split('#')[0];
-    // let user_obj = User.getUserInfoFromGlobal(user_id);
-
-    // TODO: use with new
-    // if (typeof project_name_or_pid === 'undefined') {
-    // const new_project = new Project(req, res, "", user_obj);
-    // let project_obj   = new_project.project_obj;
-    // }
-
-    if (helpers.isInt(project_name_or_pid)) {
-      project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-    }
-    else {
-      project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-    }
-
-    return {
-      project: project_info.project,
-      first_name: project_info.first,
-      institution: project_info.institution,
-      last_name: project_info.last,
-      pi_email: project_info.email,
-      pi_name: project_info.first + ' ' + project_info.last,
-      project_title: project_info.title,
-      public: project_info.public,
-      username: project_info.username
-    };
-  }
+  // get_project_info(req, res, project_name_or_pid) {
+  //   let project_info;
+  //
+  //   // let user_id  = req.form.pi_id_name.split('#')[0];
+  //   // let user_obj = User.getUserInfoFromGlobal(user_id);
+  //
+  //   // TODO: use with new
+  //   // if (typeof project_name_or_pid === 'undefined') {
+  //   // const new_project = new Project(req, res, "", user_obj);
+  //   // let project_obj   = new_project.project_obj;
+  //   // }
+  //
+  //   if (helpers.isInt(project_name_or_pid)) {
+  //     project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+  //   }
+  //   else {
+  //     project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+  //   }
+  //
+  //   return {
+  //     project: project_info.project,
+  //     first_name: project_info.first,
+  //     institution: project_info.institution,
+  //     last_name: project_info.last,
+  //     pi_email: project_info.email,
+  //     pi_name: project_info.first + ' ' + project_info.last,
+  //     project_title: project_info.title,
+  //     public: project_info.public,
+  //     username: project_info.username
+  //   };
+  // }
 
   add_project_abstract_info(project_obj, existing_all_metadata_pid, repeat_times) {
     let to_repeat = project_obj.abstract_data.pdfs;
