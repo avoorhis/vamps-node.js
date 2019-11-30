@@ -759,25 +759,6 @@ module.exports.get_portal_projects = function (req, portal) {
       projects.push(pinfo);
     }
   });
-  projects = [];
-  ALL_DATASETS.projects.map(prj => {
-    let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
-    let split = prj.name.split('_');
-
-    if (cnsts_basis.projects.includes(prj.name) || (cnsts_basis.prefixes.includes(split[0])) || (cnsts_basis.suffixes.includes(split[split.length - 1]))) {
-      projects.push(pinfo);
-    }
-  });
-
-  projects = [];
-  let res = Object.keys(PROJECT_INFORMATION_BY_PID).filter(pid => {
-    let prj_name = PROJECT_INFORMATION_BY_PID[pid].project;
-    let split = prj_name.split('_');
-    return (cnsts_basis.projects.includes(prj_name) || (cnsts_basis.prefixes.includes(split[0])) || (cnsts_basis.suffixes.includes(split[split.length - 1])));
-      }).reduce((projects, pid) => {
-        let pinfo = PROJECT_INFORMATION_BY_PID[pid];
-        return projects.concat(pinfo);
-      }, []);
 
   return projects;
 
