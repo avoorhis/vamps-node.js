@@ -739,29 +739,45 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   return mtx;
 };
 
-module.exports.get_portal_projects  = function (req, portal) {
-  projects        = [];
-  var cnsts_basis = C.PORTALS[portal];
-  //switch (portal) {
-  //console.log('ALL_DATASETS-PORTAL', ALL_DATASETS);
-  //console.log('JSON.stringify(cnsts_basis)');
-  //console.log(JSON.stringify(cnsts_basis));
-  ALL_DATASETS.projects.forEach(function (prj) {
-    var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
-    var split = prj.name.split('_');
+module.exports.get_portal_projects = function (req, portal) {
+  let projects = [];
+  let cnsts_basis = C.PORTALS[portal];
 
-    if (cnsts_basis.projects.indexOf(prj.name) != -1) {
+  ALL_DATASETS.projects.forEach(function (prj) {
+    let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+    let split = prj.name.split('_');
+
+    if (cnsts_basis.projects.includes(prj.name)) {
       projects.push(pinfo);
     }
-    if (cnsts_basis.prefixes.indexOf(split[0]) != -1) {
+    if (cnsts_basis.prefixes.includes(split[0])) {
       projects.push(pinfo);
     }
     //console.log('UniEuk-basis',basis);
-    if (cnsts_basis.suffixes.indexOf(split[split.length - 1]) != -1) {
+    if (cnsts_basis.suffixes.includes(split[split.length - 1])) {
       //console.log('UniEuk',JSON.stringify(pinfo));
       projects.push(pinfo);
     }
   });
+  projects = [];
+  ALL_DATASETS.projects.map(prj => {
+    let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+    let split = prj.name.split('_');
+
+    if (cnsts_basis.projects.includes(prj.name) || (cnsts_basis.prefixes.includes(split[0])) || (cnsts_basis.suffixes.includes(split[split.length - 1]))) {
+      projects.push(pinfo);
+    }
+  });
+
+  projects = [];
+  let res = Object.keys(PROJECT_INFORMATION_BY_PID).filter(pid => {
+    let prj_name = PROJECT_INFORMATION_BY_PID[pid].project;
+    let split = prj_name.split('_');
+    return (cnsts_basis.projects.includes(prj_name) || (cnsts_basis.prefixes.includes(split[0])) || (cnsts_basis.suffixes.includes(split[split.length - 1])));
+      }).reduce((projects, pid) => {
+        let pinfo = PROJECT_INFORMATION_BY_PID[pid];
+        return projects.concat(pinfo);
+      }, []);
 
   return projects;
 
