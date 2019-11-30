@@ -31,18 +31,6 @@ module.exports.isLoggedIn = function (req, res, next) {
   // return;
 };
 
-// module.exports.isLoggedInAPI = function(req, res) {
-//   if (req.isAuthenticated()) {
-//     console.log("Hurray! API User isLoggedInAPI.req.isAuthenticated:", req.user.username);
-//     return true;
-//   }else{
-//     console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
-//     return false;
-//   }
-//   
-// };
-// route middleware to make sure a user is an aministrator
-
 module.exports.isAdmin = function (req, res, next) {
   if (req.user.security_level === 1) {
     console.log("Hurray! USER is an Admin:", req.user.username);
@@ -247,16 +235,10 @@ module.exports.write_to_file = function (fileName, text) {
     }
   });
 };
+
 module.exports.getRandomInt  = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-
-// use native Number.isInteger instead
-// module.exports.isInt        = function (value) {
-//   return !isNaN(value) && (function (x) {
-//     return (x || 0) === x;
-//   })(parseFloat(value));
-// };
 
 module.exports.IsJsonString = function (str) {
   try {
@@ -461,7 +443,6 @@ module.exports.get_select_illumina_index_query      = function (rows) {
   }
 };
 
-///////////////////////
 module.exports.get_select_primer_suite_query = function (rows) {
   for (let i = 0; i < rows.length; i++) {
 
@@ -761,8 +742,8 @@ module.exports.get_portal_projects = function (req, portal) {
   });
 
   return projects;
-
 };
+
 module.exports.get_public_projects  = function (req) {
 
   projects = [];
@@ -1087,7 +1068,8 @@ module.exports.update_status = function (status_params) {
         console.log(util.inspect(rows, false, null));
       }
     });
-  } else if (status_params.type == 'update') {
+  }
+  else if (status_params.type == 'update') {
     statQuery2 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery2: ' + statQuery2);
     connection.query(statQuery2, function (err, rows) {
@@ -1098,7 +1080,8 @@ module.exports.update_status = function (status_params) {
         console.log(util.inspect(rows, false, null));
       }
     });
-  } else {  // Type::New
+  }
+  else {  // Type::New
     statQuery1 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1, function (err, rows) {
@@ -1272,7 +1255,6 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
   }
 
   return;
-
 };
 
 module.exports.get_local_script_text = function (cmd_list) {
@@ -1453,6 +1435,7 @@ module.exports.deleteFolderRecursive = function (path) {
     }
   }
 };
+
 //
 //
 //
@@ -1596,6 +1579,7 @@ module.exports.isValidMySQLDate = function (dateString) {
   // Check the range of the day
   return day > 0 && day <= monthLength[month - 1];
 };
+
 //
 //
 //
@@ -1620,6 +1604,7 @@ module.exports.convertJSDateToString = function (jddate) {
   }
 
 };
+
 //
 //
 //
@@ -1667,51 +1652,64 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
   if (mdname === 'env_package') {
     idname = 'env_package_id';
     value  = MD_ENV_PACKAGE[selection_obj[idname]];
-  } else if (mdname === 'env_biome') {
+  }
+  else if (mdname === 'env_biome') {
     idname = 'env_biome_id';
     value  = MD_ENV_ENVO[selection_obj[idname]];
-  } else if (mdname === 'env_feature') {
+  }
+  else if (mdname === 'env_feature') {
     idname = 'env_feature_id';
     value  = MD_ENV_ENVO[selection_obj[idname]];
-  } else if (mdname === 'env_material') {
+  }
+  else if (mdname === 'env_material') {
     idname = 'env_material_id';
     value  = MD_ENV_ENVO[selection_obj[idname]];
-  } else if (mdname === 'geo_loc_name') {
+  }
+  else if (mdname === 'geo_loc_name') {
     idname = 'geo_loc_name_id';
     if (MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])) {
       value = MD_ENV_CNTRY[selection_obj[idname]];
     } else {
       value = MD_ENV_LZC[selection_obj[idname]];
     }
-  } else if (mdname === 'sequencing_platform') {
+  }
+  else if (mdname === 'sequencing_platform') {
     idname = 'sequencing_platform_id';
     value  = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
-  } else if (mdname === 'dna_region') {
+  }
+  else if (mdname === 'dna_region') {
     idname = 'dna_region_id';
     value  = MD_DNA_REGION[selection_obj[idname]]
-  } else if (mdname === 'target_gene') {
+  }
+  else if (mdname === 'target_gene') {
     idname = 'target_gene_id';
     value  = MD_TARGET_GENE[selection_obj[idname]];
-  } else if (mdname === 'domain') {
+  }
+  else if (mdname === 'domain') {
     idname = 'domain_id';
     value  = MD_DOMAIN[selection_obj[idname]];
-  } else if (mdname === 'adapter_sequence') {
+  }
+  else if (mdname === 'adapter_sequence') {
     idname = 'adapter_sequence_id';
     value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]];
-  } else if (mdname === 'illumina_index') {
+  }
+  else if (mdname === 'illumina_index') {
     idname = 'illumina_index_id';
     value  = MD_ILLUMINA_INDEX[selection_obj[idname]];
-  } else if (mdname === 'run') {
+  }
+  else if (mdname === 'run') {
     idname = 'run_id';
     value  = MD_RUN[selection_obj[idname]];
-  } else if (mdname === 'primer_suite') {
+  }
+  else if (mdname === 'primer_suite') {
     idname = 'primer_suite_id';
     if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')) {
       value = MD_PRIMER_SUITE[selection_obj[idname]].name;
     } else {
       value = 'unknown';
     }
-  } else if (mdname === 'primers') {
+  }
+  else if (mdname === 'primers') {
     idname = 'primer_ids';
     if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
       val = [];
@@ -1722,7 +1720,8 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
     } else {
       value = 'unknown';
     }
-  } else {
+  }
+  else {
     idname = mdname;
     value  = selection_obj[mdname];
   }
@@ -1736,70 +1735,85 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
   if (name_id === 'env_package_id') {
     real_name = 'env_package';
     value     = MD_ENV_PACKAGE[id];
-  } else if (name_id === 'target_gene_id') {
-    real_name = 'target_gene';
-    value     = MD_TARGET_GENE[id];
-  } else if (name_id === 'domain_id') {
-    real_name = 'domain';
-    value     = MD_DOMAIN[id];
-  } else if (name_id === 'geo_loc_name_id') {
-    real_name = 'geo_loc_name';
-    if (MD_ENV_CNTRY.hasOwnProperty(id)) {
-      value = MD_ENV_CNTRY[id];
-    } else {
-      value = MD_ENV_LZC[id];
-    }
-  } else if (name_id === 'sequencing_platform_id') {
-    real_name = 'sequencing_platform';
-    value     = MD_SEQUENCING_PLATFORM[id];
-  } else if (name_id === 'dna_region_id') {
-    real_name = 'dna_region';
-    value     = MD_DNA_REGION[id];
-  } else if (name_id === 'env_material_id') {
-    real_name = 'env_material';
-    value     = MD_ENV_ENVO[id];
-  } else if (name_id === 'env_biome_id') {
-    real_name = 'env_biome';
-    value     = MD_ENV_ENVO[id];
-  } else if (name_id === 'env_feature_id') {
-    real_name = 'env_feature';
-    value     = MD_ENV_ENVO[id];
-  } else if (name_id === 'adapter_sequence_id') {
-    real_name = 'adapter_sequence';
-    value     = MD_ADAPTER_SEQUENCE[id];
-  } else if (name_id === 'illumina_index_id') {
-    real_name = 'illumina_index';
-    value     = MD_ILLUMINA_INDEX[id];
-  } else if (name_id === 'run_id') {
-    real_name = 'run';
-    value     = MD_RUN[id];
-  } else if (name_id === 'primer_suite_id') {
-    real_name = 'primer_suite';
-    //value = MD_PRIMER_SUITE[id]
-    if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
-      value = MD_PRIMER_SUITE[id].name;
-    } else {
-      value = 'unknown';
-    }
-  } else if (name_id === 'primer_ids') {
-    real_name = 'primers';
-    if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      val = [];
-      for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
-      }
-      value = val.join(' ');
-    } else {
-      value = 'unknown';
-    }
-  } else {
-    real_name = name_id;
-    value     = id;
   }
+  else if (name_id === 'target_gene_id') {
+      real_name = 'target_gene';
+      value     = MD_TARGET_GENE[id];
+    }
+  else if (name_id === 'domain_id') {
+      real_name = 'domain';
+      value     = MD_DOMAIN[id];
+    }
+  else if (name_id === 'geo_loc_name_id') {
+      real_name = 'geo_loc_name';
+      if (MD_ENV_CNTRY.hasOwnProperty(id)) {
+        value = MD_ENV_CNTRY[id];
+      } else {
+        value = MD_ENV_LZC[id];
+      }
+    }
+  else if (name_id === 'sequencing_platform_id') {
+      real_name = 'sequencing_platform';
+      value     = MD_SEQUENCING_PLATFORM[id];
+    }
+  else if (name_id === 'dna_region_id') {
+      real_name = 'dna_region';
+      value     = MD_DNA_REGION[id];
+    }
+  else if (name_id === 'env_material_id') {
+      real_name = 'env_material';
+      value     = MD_ENV_ENVO[id];
+    }
+  else if (name_id === 'env_biome_id') {
+      real_name = 'env_biome';
+      value     = MD_ENV_ENVO[id];
+    }
+  else if (name_id === 'env_feature_id') {
+      real_name = 'env_feature';
+      value     = MD_ENV_ENVO[id];
+    }
+  else if (name_id === 'adapter_sequence_id') {
+      real_name = 'adapter_sequence';
+      value     = MD_ADAPTER_SEQUENCE[id];
+    }
+  else if (name_id === 'illumina_index_id') {
+      real_name = 'illumina_index';
+      value     = MD_ILLUMINA_INDEX[id];
+    }
+  else if (name_id === 'run_id') {
+      real_name = 'run';
+      value     = MD_RUN[id];
+    }
+  else if (name_id === 'primer_suite_id') {
+      real_name = 'primer_suite';
+      //value = MD_PRIMER_SUITE[id]
+      if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
+        value = MD_PRIMER_SUITE[id].name;
+      } else {
+        value = 'unknown';
+      }
+    }
+  else if (name_id === 'primer_ids') {
+      real_name = 'primers';
+      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
+        val = [];
+        for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+          val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
+        }
+        value = val.join(' ');
+      } else {
+        value = 'unknown';
+      }
+    }
+  else {
+      real_name = name_id;
+      value     = id;
+    }
   // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
   return {"name": real_name, "value": value};
 
 };
+
 //
 //
 //
@@ -1949,7 +1963,6 @@ function check_regexp(reg_exp, value, err_msg) {
 // metadata form validation
 // TODO: move to controller
 
-
 function checkArray(my_arr) {
   if (my_arr.length === 0) {
     return false;
@@ -1968,7 +1981,6 @@ function region_valid(value, region_low, region_high) {
     throw new Error("'" + value + "' is not valid, %s should be between " + region_low + " and " + region_high);
   }
 }
-
 
 exports.numbers_n_period = function (value) {
   // var regex = /^[0-9.]+$/;
@@ -2097,7 +2109,6 @@ exports.recommended_conduct = function (value) {
   }
 };
 
-
 exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   let res_arr = [];
   for (let n in slice_keys) {
@@ -2212,7 +2223,6 @@ function collect_errors(req) {
 }
 
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
-
 function transpose_arr_of_obj(a) {
   // console.time('TIME: transpose_arr_of_obj');
 
@@ -2246,6 +2256,7 @@ function transpose_arr_of_obj(a) {
 function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
 //
 //
 //
@@ -2316,22 +2327,3 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
         });
     });
 };
-
-// module.exports.validate_name = function (name) {
-//     console.log('helpers.validate_name: '+name)
-//     pattern=/([^a-zA-Z0-9\.]+)/gi
-//     
-//     var new_pname = name.replace(pattern, '_')
-//     //console.log('xx: '+new_name)
-//     if(new_pname.length > 30){
-//         //console.log('too long')
-//         return false;
-//     }
-//     if(new_pname.length < 3){
-//         //console.log('too short')
-//         return false;
-//     }
-//     return new_pname;
-// }
-
-
