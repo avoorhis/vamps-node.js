@@ -18,8 +18,8 @@
 <% } %>
 <!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->
 
-<!-- if user == owner or if admin or DCO-Editor  -->
-<% if(user.user_id == data.oid  || user.security_level <= 10 || user.security_level == 45 ){ %>
+<!-- if user == owner or if admin or DCO-Editor (NOT MBL Power User)  -->
+<% if(user.user_id == data.oid  || user.security_level == 1 || user.security_level == 45 ){ %>
 <%  edit_metadata = true %>
 <% } %>
 <!-- if user has access AND project is DCO-project  -->
