@@ -865,6 +865,13 @@ function make_all_datasets(datasetsByProject, pids, titles){
   // console.timeEnd("TIME: make_all_datasets reduce");
 }
 
+function sort_AllMetadataNames() {
+  AllMetadataNames.sort(function (a, b) {
+    return module.exports.compareStrings_alpha(a, b);
+  });
+}
+
+
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function (rows) {
   let pids              = {};
@@ -982,8 +989,14 @@ module.exports.run_select_datasets_query = function (rows) {
   AllMetadataNames.sort(function (a, b) {
     return module.exports.compareStrings_alpha(a, b);
   });
-  //console.log(AllMetadataNames)
-  connection.query(queries.get_project_permissions(), function (err, rows, fields) {
+  console.log("AllMetadataNames 0");
+  console.log(JSON.stringify(AllMetadataNames));
+
+  sort_AllMetadataNames();
+
+  console.log("AllMetadataNames1");
+  console.log(JSON.stringify(AllMetadataNames));
+  connection.query(queries.get_project_permissions(), function (err, rows) {
     //console.log(qSequenceCounts)
     if (err) {
       console.log('Query error: ' + err);
