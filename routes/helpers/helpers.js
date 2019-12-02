@@ -845,18 +845,38 @@ module.exports.update_project_information_global_object = function (pid, form, u
   console.log(PROJECT_INFORMATION_BY_PID[pid]);
 };
 
+function make_all_datasets(datasetsByProject, pids, titles){
+  // console.time("TIME: make_all_datasets reduce");
+  ALL_DATASETS.projects = Object.keys(datasetsByProject).reduce((prjs, p) => {
+    let tmp      = {};
+    tmp.name     = p;
+    tmp.pid      = pids[p];
+    tmp.title    = titles[p];
+    tmp.datasets = datasetsByProject[p].reduce((datasets, d_obj) => {
+      let temp_datasets_obj = {
+        did: d_obj.did,
+        dname: d_obj.dname,
+        ddesc: d_obj.ddesc
+      };
+      return datasets.concat(temp_datasets_obj);
+    }, []);
+    return prjs.concat(tmp);
+  }, []);
+  // console.timeEnd("TIME: make_all_datasets reduce");
+}
+
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function (rows) {
-  var pids              = {};
-  var titles            = {};
-  var datasetsByProject = {};
-  for (var i = 0; i < rows.length; i++) {
-    var project = rows[i].project;
+  let pids              = {};
+  let titles            = {};
+  let datasetsByProject = {};
+  for (let i = 0; i < rows.length; i++) {
+    let project = rows[i].project;
     if (project === undefined) {
       continue;
     }
-    var pid = rows[i].pid;
-    var did = rows[i].did;
+    let pid = rows[i].pid;
+    let did = rows[i].did;
     if (!DATASET_IDS_BY_PID.hasOwnProperty(pid)) {
       DATASET_IDS_BY_PID[pid] = [];
     }
@@ -864,8 +884,8 @@ module.exports.run_select_datasets_query = function (rows) {
       //console.log('DATASET NULL');
     } else {
 
-      var dataset              = rows[i].dataset;
-      var dataset_description  = rows[i].dataset_description;
+      let dataset              = rows[i].dataset;
+      let dataset_description  = rows[i].dataset_description;
       PROJECT_ID_BY_DID[did]   = pid;
       DATASET_NAME_BY_DID[did] = dataset;
       if (datasetsByProject.hasOwnProperty(project)) {
@@ -879,18 +899,17 @@ module.exports.run_select_datasets_query = function (rows) {
 
     }
 
+    let envpkgid = '1';
     if (AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')) {
-      var envpkgid = AllMetadata[did].env_package_id;
-    } else {
-      var envpkgid = '1';
+      envpkgid = AllMetadata[did].env_package_id;
     }
 
-    var ca = module.exports.convertJSDateToString(rows[i].created_at)
-    var ua = module.exports.convertJSDateToString(rows[i].updated_at)
+    let ca = module.exports.convertJSDateToString(rows[i].created_at);
+    let ua = module.exports.convertJSDateToString(rows[i].updated_at);
 
     if (!PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
-      var public                      = rows[i].public;
-      var owner_id                    = rows[i].owner_user_id;
+      let public                      = rows[i].public;
+      let owner_id                    = rows[i].owner_user_id;
       PROJECT_INFORMATION_BY_PID[pid] = {
         "last": rows[i].last_name,
         "first": rows[i].first_name,
@@ -922,33 +941,16 @@ module.exports.run_select_datasets_query = function (rows) {
     }
 
   }
-
-  // todo: console.log(datasetsByProject.length); datasetsByProject - not an array
-  for (let p in datasetsByProject) {
-    let tmp      = {};
-    tmp.name     = p;
-    tmp.pid      = pids[p];
-    tmp.title    = titles[p];
-    tmp.datasets = [];
-    for (let d in datasetsByProject[p]) {
-      let ds     = datasetsByProject[p][d].dname;
-      let dp_did = datasetsByProject[p][d].did;
-      let ddesc  = datasetsByProject[p][d].ddesc;
-      let temp_datasets_obj = {did: dp_did, dname: ds, ddesc: ddesc};
-      tmp.datasets.push(temp_datasets_obj);
-    }
-    ALL_DATASETS.projects.push(tmp);
-  }
-  //console.log(JSON.stringify(ALL_DATASETS))
+  make_all_datasets(datasetsByProject, pids, titles);
   console.log('Getting md-names and those w/ lat/lon');
-  //var clean_metadata = {};
+  //let clean_metadata = {};
   //if(HDF5_MDATA === ''){
-  var clean_metadata = {};
+  let clean_metadata = {};
   // TODO: "Blocks are nested too deeply. (4)"
-  for (did in AllMetadata) {
+  for (let did in AllMetadata) {
     if (did in DATASET_NAME_BY_DID) {
       clean_metadata[did] = AllMetadata[did];
-      for (var mdname in AllMetadata[did]) {
+      for (let mdname in AllMetadata[did]) {
         //console.log(mdname)
         if (AllMetadataNames.indexOf(mdname) == -1) {
           AllMetadataNames.push(mdname);
@@ -963,7 +965,7 @@ module.exports.run_select_datasets_query = function (rows) {
           } else {
             DatasetsWithLatLong[did] = {};
 
-            var pname                          = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+            let pname                          = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
             DatasetsWithLatLong[did].proj_dset = pname + '--' + DATASET_NAME_BY_DID[did];
             DatasetsWithLatLong[did].pid       = PROJECT_ID_BY_DID[did];
             if (mdname == 'latitude') {
@@ -976,52 +978,6 @@ module.exports.run_select_datasets_query = function (rows) {
       }
     }
   }
-//   }else{
-//     for(did in DATASET_NAME_BY_DID){
-//       //console.log(did)
-//       //clean_metadata[did] = {}
-// 
-//       var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-//       mdgroup.refresh();
-//       // TODO: "This function's cyclomatic complexity is too high. (8)"
-//       // TODO: "Don't make functions within a loop."
-//       Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-//         if(mdname != 'id'){
-//           //console.log(mdname, group[mdname])
-//           //clean_metadata[did][mdname] = mdgroup[mdname]
-// 
-//           if(AllMetadataNames.indexOf(mdname) == -1){
-//             AllMetadataNames.push(mdname);
-//           }
-//           if(mdname == 'latitude' || mdname == 'longitude'){
-//             if(did in DatasetsWithLatLong){
-//               if(mdname == 'latitude'){
-//                 // TODO: "Blocks are nested too deeply. (4)"
-//                 DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
-//               }else{
-//                 DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
-//               }
-//             }else{
-//               DatasetsWithLatLong[did]={};
-// 
-//               var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-//               DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
-//               DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
-//               if(mdname == 'latitude'){
-//                 // TODO: Column: 47 "Blocks are nested too deeply. (4)"
-//                 DatasetsWithLatLong[did].latitude = +mdgroup[mdname];
-//               }else{
-//                 DatasetsWithLatLong[did].longitude = +mdgroup[mdname];
-//               }
-//             }
-//           }
-// 
-// 
-//         }
-//       });
-//     }
-//   }
-
 
   AllMetadataNames.sort(function (a, b) {
     return module.exports.compareStrings_alpha(a, b);
@@ -1448,7 +1404,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
     make_gast_script_txt += "PATH=$PATH:" + app_root + "/public/scripts/gast:" + req.CONFIG.GAST_SCRIPT_PATH + "\n"
     make_gast_script_txt += "touch " + data_dir + "/clust_gast_ill_" + project + ".sh.sge_script.sh.log\n"
   }
-  
+
   make_gast_script_txt += "ls " + data_dir + "/analysis/*/seqfile.unique" + opts.file_suffix + " > " + data_dir + "/filenames.list\n"
   make_gast_script_txt += "# chmod 666 " + data_dir + "/filenames.list\n"
   make_gast_script_txt += "cd " + data_dir + "\n";
