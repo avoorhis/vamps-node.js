@@ -320,7 +320,7 @@ module.exports.get_datasets = function(callback){
       console.log(err.stack);
       process.exit(1);
     } else {
-      helpers.get_select_custom_units_query(rows);
+      global_vars.get_select_custom_units_query(rows);
     }
     console.log(' INITIALIZING MD_CUSTOM_UNITS');
     // console.timeEnd("TIME: connection queries.get_select_custom_units_query");

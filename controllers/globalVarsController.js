@@ -232,6 +232,27 @@ class GlobalVars {
     // console.timeEnd("TIME: get_select_seq_counts_query");
 
   }
+
+  get_select_custom_units_query(rows) {
+    // console.time("TIME: get_select_custom_units_query");
+    for (let i = 0; i < rows.length; i++) {
+      let project_id  = rows[i]["project_id"];
+      let field_name  = rows[i]["field_name"];
+      let field_units = rows[i]["field_units"];
+
+      if (!MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
+        MD_CUSTOM_UNITS[project_id] = {};
+      }
+      MD_CUSTOM_UNITS[project_id][field_name] = field_units;
+
+      if (!MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
+        MD_CUSTOM_FIELDS_UNITS[field_name] = {};
+      }
+      MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
+    }
+    // console.timeEnd("TIME: get_select_custom_units_query");
+  }
+
 }
 
 module.exports = {

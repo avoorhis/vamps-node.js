@@ -304,25 +304,25 @@ module.exports.send_mail = function (mail_info) {
 //
 //
 
-module.exports.get_select_custom_units_query = function (rows) {
-  // console.time("TIME: get_select_custom_units_query");
-  for (var i = 0; i < rows.length; i++) {
-    var project_id  = rows[i]["project_id"];
-    var field_name  = rows[i]["field_name"];
-    var field_units = rows[i]["field_units"];
-
-    if (!MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
-      MD_CUSTOM_UNITS[project_id] = {};
-    }
-    MD_CUSTOM_UNITS[project_id][field_name] = field_units;
-
-    if (!MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
-      MD_CUSTOM_FIELDS_UNITS[field_name] = {};
-    }
-    MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
-  }
-  // console.timeEnd("TIME: get_select_custom_units_query");
-};
+// module.exports.get_select_custom_units_query = function (rows) {
+//   // console.time("TIME: get_select_custom_units_query");
+//   for (var i = 0; i < rows.length; i++) {
+//     var project_id  = rows[i]["project_id"];
+//     var field_name  = rows[i]["field_name"];
+//     var field_units = rows[i]["field_units"];
+//
+//     if (!MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
+//       MD_CUSTOM_UNITS[project_id] = {};
+//     }
+//     MD_CUSTOM_UNITS[project_id][field_name] = field_units;
+//
+//     if (!MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
+//       MD_CUSTOM_FIELDS_UNITS[field_name] = {};
+//     }
+//     MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
+//   }
+//   // console.timeEnd("TIME: get_select_custom_units_query");
+// };
 
 // function make_pid_by_did_dict(rows) {
 //   var p_d = [];
