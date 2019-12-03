@@ -846,7 +846,6 @@ module.exports.update_project_information_global_object = function (pid, form, u
 };
 
 function make_all_datasets(datasetsByProject, pids, titles){
-  // console.time("TIME: make_all_datasets reduce");
   ALL_DATASETS.projects = Object.keys(datasetsByProject).reduce((prjs, p) => {
     let tmp      = {};
     tmp.name     = p;
@@ -862,7 +861,6 @@ function make_all_datasets(datasetsByProject, pids, titles){
     }, []);
     return prjs.concat(tmp);
   }, []);
-  // console.timeEnd("TIME: make_all_datasets reduce");
 }
 
 function sort_AllMetadataNames() {
@@ -894,69 +892,24 @@ function get_DatasetsWithLatLong(mdname, did) {
   }
 }
 
+function make_AllMetadataNames(mdname) {
+  if (!AllMetadataNames.includes(mdname)) {
+    AllMetadataNames.push(mdname);
+  }
+}
+
 function get_AllMetadataNames_n_clean_metadata() {
   let clean_metadata = {};
-
-  console.time("TIME for");
   for (let did in AllMetadata) {
     if (did in DATASET_NAME_BY_DID) {
       clean_metadata[did] = AllMetadata[did];
       for (let mdname in AllMetadata[did]) {
-        //console.log(mdname)
-        if (!AllMetadataNames.includes(mdname)) {
-          AllMetadataNames.push(mdname);
-        }
-        if ((mdname === 'latitude' && !isNaN(AllMetadata[did].latitude)) || (mdname === 'longitude' && !isNaN(AllMetadata[did].longitude))) {
-          if (did in DatasetsWithLatLong) {
-            if (mdname === 'latitude') {
-              DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
-            } else {
-              DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;
-            }
-          }
-          else {
-            DatasetsWithLatLong[did] = {};
-
-            let pname                          = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-            DatasetsWithLatLong[did].proj_dset = pname + '--' + DATASET_NAME_BY_DID[did];
-            DatasetsWithLatLong[did].pid       = PROJECT_ID_BY_DID[did];
-            if (mdname === 'latitude') {
-              DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
-            } else {
-              DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;
-            }
-          }
-        }
-      }
-    }
-  }
-  console.timeEnd("TIME for");
-  // console.log("DatasetsWithLatLong 1");
-  // console.log(DatasetsWithLatLong);
-  AllMetadataNames = [];
-  clean_metadata = {};
-  DatasetsWithLatLong = {};
-  console.time("TIME for 2");
-  let a_m_keys = Object.keys(AllMetadata);
-  a_m_keys.forEach(did => {
-    if (did in DATASET_NAME_BY_DID) {
-      clean_metadata[did] = AllMetadata[did];
-      for (let mdname in AllMetadata[did]) {
-        //console.log(mdname)
-        if (!AllMetadataNames.includes(mdname)) {
-          AllMetadataNames.push(mdname);
-        }
+        make_AllMetadataNames(mdname);
         get_DatasetsWithLatLong(mdname, did);
       }
     }
-  })
-  console.timeEnd("TIME for 2");
-
-  // console.log("DatasetsWithLatLong 2");
-  // console.log(DatasetsWithLatLong);
+  }
 }
-
-
 
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function (rows) {
