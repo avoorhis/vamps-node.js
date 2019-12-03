@@ -927,6 +927,15 @@ function add_to_datasetsByProject(datasetsByProject, project, dataset_options) {
   return datasetsByProject;
 }
 
+function get_envpkgid(did) {
+  let envpkgid = '1';
+  if (AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')) {
+    envpkgid = AllMetadata[did].env_package_id;
+  }
+  return envpkgid;
+}
+
+
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function (rows) {
   let pids              = {};
@@ -959,10 +968,7 @@ module.exports.run_select_datasets_query = function (rows) {
       DATASET_IDS_BY_PID[pid].push(did);
     }
 
-    let envpkgid = '1';
-    if (AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')) {
-      envpkgid = AllMetadata[did].env_package_id;
-    }
+    let envpkgid = get_envpkgid(did);
 
     let ca = module.exports.convertJSDateToString(rows[i].created_at);
     let ua = module.exports.convertJSDateToString(rows[i].updated_at);
