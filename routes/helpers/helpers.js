@@ -917,6 +917,16 @@ function init_dataset_ids_by_pid(pid) {
   }
 }
 
+function add_to_datasetsByProject(datasetsByProject, project, dataset_options) {
+  if (datasetsByProject.hasOwnProperty(project)) {
+    datasetsByProject[project].push(dataset_options);
+  }
+  else {
+    datasetsByProject[project] = [dataset_options];
+  }
+  return datasetsByProject;
+}
+
 // TODO: Column: 52 "This function's cyclomatic complexity is too high. (20)"
 module.exports.run_select_datasets_query = function (rows) {
   let pids              = {};
@@ -938,11 +948,14 @@ module.exports.run_select_datasets_query = function (rows) {
       let dataset_description  = rows[i].dataset_description;
       PROJECT_ID_BY_DID[did]   = pid;
       DATASET_NAME_BY_DID[did] = dataset;
-      if (datasetsByProject.hasOwnProperty(project)) {
-        datasetsByProject[project].push({did: did, dname: dataset, ddesc: dataset_description});
-      } else {
-        datasetsByProject[project] = [{did: did, dname: dataset, ddesc: dataset_description}];
-      }
+      let dataset_options = {did: did, dname: dataset, ddesc: dataset_description};
+      datasetsByProject = add_to_datasetsByProject(datasetsByProject, project, dataset_options);
+      // if (datasetsByProject.hasOwnProperty(project)) {
+      //   datasetsByProject[project].push({did: did, dname: dataset, ddesc: dataset_description});
+      // }
+      // else {
+      //   datasetsByProject[project] = [{did: did, dname: dataset, ddesc: dataset_description}];
+      // }
       DATASET_IDS_BY_PID[pid].push(did);
     }
 
