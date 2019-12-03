@@ -928,9 +928,7 @@ module.exports.run_select_datasets_query = function (rows) {
       continue;
     }
     let pid = rows[i].pid;
-    // if (!DATASET_IDS_BY_PID.hasOwnProperty(pid)) {
-    //   DATASET_IDS_BY_PID[pid] = [];
-    // }
+
     init_dataset_ids_by_pid(pid);
 
     let did = rows[i].did;
