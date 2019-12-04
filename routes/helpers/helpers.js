@@ -1326,12 +1326,6 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
     case 'geo_loc_name':
       idname = 'geo_loc_name_id';
       value = get_geo_loc_name(selection_obj[idname]);
-      // if (MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])) {
-      //   value = MD_ENV_CNTRY[selection_obj[idname]];
-      // }
-      // else {
-      //   value = MD_ENV_LZC[selection_obj[idname]];
-      // }
       break;
     case 'sequencing_platform':
       idname = 'sequencing_platform_id';
@@ -1419,11 +1413,6 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
     case 'geo_loc_name_id':
       real_name = 'geo_loc_name';
       value = get_geo_loc_name(id);
-      // if (MD_ENV_CNTRY.hasOwnProperty(id)) {
-      //   value = MD_ENV_CNTRY[id];
-      // } else {
-      //   value = MD_ENV_LZC[id];
-      // }
       break;
     case 'sequencing_platform_id':
       real_name = 'sequencing_platform';
