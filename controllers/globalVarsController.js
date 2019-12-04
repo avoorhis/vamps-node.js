@@ -129,10 +129,8 @@ class GlobalVars {
     } else {
       PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
     }
-    PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
   }
 
-// TODO: JSHint: This function's cyclomatic complexity is too high. (8)(W074)
   run_select_datasets_query(rows) {
     let pids = {};
     let titles = {};
@@ -159,40 +157,9 @@ class GlobalVars {
         DATASET_IDS_BY_PID[pid].push(did);
       }
 
-      // let envpkgid = this.get_envpkgid(did);
-      //
-      // let ca = helpers.convertJSDateToString(current_row.created_at);
-      // let ua = helpers.convertJSDateToString(current_row.updated_at);
-
       if (!PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
-        // let owner_id = current_row.owner_user_id;
-        // PROJECT_INFORMATION_BY_PID[pid] = {
-        //   "last": current_row.last_name,
-        //   "first": current_row.first_name,
-        //   "username": current_row.username,
-        //   "oid": owner_id,
-        //   "email": current_row.email,
-        //   "env_package_id": envpkgid,  // FROM AllMetadata: mostly used here for the filter on dataset selection page
-        //   "institution": current_row.institution,
-        //   "project": project,
-        //   "pid": pid,
-        //   "title": current_row.title,
-        //   "description": current_row.project_description,
-        //   "public": current_row.public,
-        //   "metagenomic": current_row.metagenomic,
-        //   "matrix": current_row.matrix,
-        //   //"seqs_available" :   current_row.seqs_available,
-        //   "created_at": ca,
-        //   "updated_at": ua
-        // };
-        // let public_pr = current_row.public;
-        // if (public_pr || current_row.username === 'guest') {
-        //   PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
-        // } else {
-        //   PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
-        // }
-        // PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
         this.get_project_information_by_pid(current_row);
+        PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
 
         pids[project] = pid;
         titles[project] = current_row.title;
