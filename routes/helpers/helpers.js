@@ -1301,9 +1301,9 @@ function get_geo_loc_name(id) {
   }
 }
 
-//TODO: JSHint: This function's cyclomatic complexity is too high. (19)(W074)
+//TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
-  // TODO: test visuals/unit_selection from custom tax
+  // test visuals/unit_selection from custom tax
   let idname, value;
 
   switch (mdname) {
@@ -1362,17 +1362,6 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
     case 'primers':
       idname = 'primer_ids';
       value = get_current_primers(selection_obj['primer_suite_id']);
-      // value = "";
-      // if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      //   let val = [];
-      //   for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-      //     val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
-      //   }
-      //   value = val.join(' ');
-      // }
-      // else {
-      //   value = 'unknown';
-      // }
       break;
     default:
       idname = mdname;
@@ -1454,21 +1443,11 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
       break;
     case 'primer_suite_id':
       real_name = 'primer_suite';
-      if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
-        value = MD_PRIMER_SUITE[id].name;
-      } else {
-        value = 'unknown';
-      }
+      value = get_current_primer_suite(id);
       break;
     case 'primer_ids':
       real_name = 'primers';
       value = get_current_primers(selection_obj['primer_suite_id']);
-      // if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      //   value = get_current_primers(selection_obj);
-      // }
-      // else {
-      //   value = 'unknown';
-      // }
       break;
     default:
       real_name = name_id;
