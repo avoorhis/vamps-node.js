@@ -272,12 +272,23 @@ module.exports.fileExists = function (path) {
 };
 
 module.exports.reverseString = function (str) {
-  var out_str = '';
-  for (var i = str.length - 1; i >= 0; i--) {
-    out_str += str[i];
-  }
+  let out_str = '';
+  // for (let i = str.length - 1; i >= 0; i--) {
+  //   out_str += str[i];
+  // }
+  // out_str = '';
+  // for (let char of str) {
+  //   out_str = char + out_str;
+  // }
+
+  // out_str = '';
+  out_str = str.split("").reverse().join("");
+
+  // out_str = '';
+  // out_str = [...str].reverse().join('');
+
   return out_str;
-}
+};
 
 module.exports.send_mail = function (mail_info) {
   var to_addr   = mail_info.addr;
@@ -1760,24 +1771,14 @@ exports.slice_object_by_keys = function (object, slice_keys) {
   for (let i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
   }
+
   // console.timeEnd('TIME: convert to string');
-  let q = Object.keys(object) // 1) for each obj's key
+  return Object.keys(object) // 1) for each obj's key
     .filter(key => slice_keys.includes(key)) // 2) if it is in slice_keys
     .reduce((accum, key) => { // 3) add the key/value pair to a new obj
       accum[key] = object[key];
-      // console.log("AACC: accum", JSON.stringify(accum));
       return accum;
     }, {});
-  let q1 =  Object.keys(object) // 1) for each obj's key
-    .filter(function (key) { // 2) if it is in slice_keys
-      return slice_keys.indexOf(key) >= 0;
-    })
-    .reduce(function (accum, key) { // 3) add the key/value pair to a new obj
-      accum[key] = object[key];
-      // console.log("AACC: accum", JSON.stringify(accum));
-      return accum;
-    }, {});
-  return q1;
 };
 
 if (!Object.entries)
