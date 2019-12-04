@@ -452,7 +452,7 @@ module.exports.write_metadata_to_files = function (did) {
     if (err) throw err;
     //Do your processing, MD5, send a satellite to the moon, etc.
     //console.log('predata',data)
-    data.metadata = AllMetadata[did]
+    data.metadata = AllMetadata[did];
     //console.log('postdata',data)
     fs.writeFile(dataset_file, data, function (err) {
       if (err) throw err;
@@ -524,32 +524,28 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   let reorder = false;
   switch(fxn_obj.orderby) {
     case 'alpha':
-      switch(fxn_obj.value) {
-        case 'a':
-          curr_obj.sort(function sortByAlpha(a, b) {
-            return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
-          });
-          break;
-        default:
-          curr_obj.sort(function sortByAlpha(a, b) {
-            return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
-          });
-          break;
+      if (fxn_obj.value === 'a') {
+        curr_obj.sort(function sortByAlpha(a, b) {
+          return module.exports.compareStrings_alpha(b.tax.id, a.tax.id);
+        });
+      }
+      else {
+        curr_obj.sort(function sortByAlpha(a, b) {
+          return module.exports.compareStrings_alpha(a.tax.id, b.tax.id);
+        });
       }
       reorder = true;
       break;
     case 'count':
-      switch(fxn_obj) {
-        case 'max':
-          curr_obj.sort(function sortByCount(a, b) {
-            return b.cnt[0] - a.cnt[0];
-          });
-          break;
-        default:
-          curr_obj.sort(function sortByCount(a, b) {
-            return a.cnt[0] - b.cnt[0];
-          });
-          break;
+      if (fxn_obj === 'max') {
+        curr_obj.sort(function sortByCount(a, b) {
+          return b.cnt[0] - a.cnt[0];
+        });
+      }
+      else {
+        curr_obj.sort(function sortByCount(a, b) {
+          return a.cnt[0] - b.cnt[0];
+        });
       }
       reorder = true;
       break;
@@ -590,27 +586,14 @@ module.exports.get_portal_projects = function (req, portal) {
   return projects;
 };
 
-module.exports.get_public_projects  = function (req) {
-
-  projects = [];
-  //var basis = C.PORTALS[portal]
-  //switch (portal) {
-  //console.log('ALL_DATASETS--get_public_projects', ALL_DATASETS);
-  //console.log(JSON.stringify(basis))
-  ALL_DATASETS.projects.forEach(function (prj) {
-
-    var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
-    //var public = pinfo.public
-    //if(pinfo.public == 1){
-    projects.push(pinfo);
-    //}
-
-  });
-
-  //console.log('INFO', projects);
-  return projects;
-
-};
+// module.exports.get_public_projects  = function () {
+//   let projects = [];
+//   ALL_DATASETS.projects.forEach(function (prj) {
+//     let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+//     projects.push(pinfo);
+//   });
+//   return projects;
+// };
 
 module.exports.make_color_seq = function (seq) {
   // default color  = #333 - dark grey
@@ -705,7 +688,7 @@ module.exports.update_status = function (status_params) {
   console.log(util.inspect(status_params, false, null));
 
   if (status_params.type === 'delete') {
-    delete_status_params = [status_params.user_id, status_params.pid];
+    let delete_status_params = [status_params.user_id, status_params.pid];
     statQuery            = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
     connection.query(statQuery, delete_status_params, function (err, rows) {
@@ -768,10 +751,11 @@ function htmlEntities(str) {
 //
 //
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
+//TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
 module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-  var db  = req.db;
+  let db  = req.db;
   //file_name = 'fasta-'+ts+'_custom.fa.gz';
-  var log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
+  let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
 
   if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
     norm = 'normalized_to_maximum';
@@ -1389,6 +1373,7 @@ function get_current_primers(id) {
   return val.join(' ');
 }
 
+// TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
   let id = selection_obj[name_id];
   let real_name, value;
@@ -1577,6 +1562,7 @@ module.exports.ensure_dir_exists = function (dir) {
       console.log(err);
     } // => null
     else {
+      //Octal literals with prefix '0' are not allowed. Use '0o' prefix instead
       fs.chmod(dir, 0777, function (err) {
         if (err) {
           console.log(err);
