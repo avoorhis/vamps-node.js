@@ -1392,175 +1392,82 @@ function get_current_primers(selection_obj) {
 }
 
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
-  console.time("TIME: required_metadata_names_from_ids 1");
   let id = selection_obj[name_id];
   let real_name, value;
-  if (name_id === 'env_package_id') {
-    real_name = 'env_package';
-    value     = MD_ENV_PACKAGE[id];
-  }
-  else if (name_id === 'target_gene_id') {
+  switch(name_id) {
+    case 'env_package_id':
+      real_name = 'env_package';
+      value     = MD_ENV_PACKAGE[id];
+      break;
+    case 'target_gene_id':
       real_name = 'target_gene';
       value     = MD_TARGET_GENE[id];
-    }
-  else if (name_id === 'domain_id') {
+      break;
+    case 'domain_id':
       real_name = 'domain';
       value     = MD_DOMAIN[id];
-    }
-  else if (name_id === 'geo_loc_name_id') {
+      break;
+    case 'geo_loc_name_id':
       real_name = 'geo_loc_name';
       if (MD_ENV_CNTRY.hasOwnProperty(id)) {
         value = MD_ENV_CNTRY[id];
       } else {
         value = MD_ENV_LZC[id];
       }
-    }
-  else if (name_id === 'sequencing_platform_id') {
+      break;
+    case 'sequencing_platform_id':
       real_name = 'sequencing_platform';
       value     = MD_SEQUENCING_PLATFORM[id];
-    }
-  else if (name_id === 'dna_region_id') {
+      break;
+    case 'dna_region_id':
       real_name = 'dna_region';
       value     = MD_DNA_REGION[id];
-    }
-  else if (name_id === 'env_material_id') {
+      break;
+    case 'env_material_id':
       real_name = 'env_material';
       value     = MD_ENV_ENVO[id];
-    }
-  else if (name_id === 'env_biome_id') {
+      break;
+    case 'env_biome_id':
       real_name = 'env_biome';
       value     = MD_ENV_ENVO[id];
-    }
-  else if (name_id === 'env_feature_id') {
+      break;
+    case 'env_feature_id':
       real_name = 'env_feature';
       value     = MD_ENV_ENVO[id];
-    }
-  else if (name_id === 'adapter_sequence_id') {
+      break;
+    case 'adapter_sequence_id':
       real_name = 'adapter_sequence';
       value     = MD_ADAPTER_SEQUENCE[id];
-    }
-  else if (name_id === 'illumina_index_id') {
+      break;
+    case 'illumina_index_id':
       real_name = 'illumina_index';
       value     = MD_ILLUMINA_INDEX[id];
-    }
-  else if (name_id === 'run_id') {
+      break;
+    case 'run_id':
       real_name = 'run';
       value     = MD_RUN[id];
-    }
-  else if (name_id === 'primer_suite_id') {
+      break;
+    case 'primer_suite_id':
       real_name = 'primer_suite';
-      //value = MD_PRIMER_SUITE[id]
       if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
         value = MD_PRIMER_SUITE[id].name;
       } else {
         value = 'unknown';
       }
-    }
-  else if (name_id === 'primer_ids') {
+      break;
+    case 'primer_ids':
       real_name = 'primers';
       if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-        let val = [];
-        for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-          val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
-        }
-        value = val.join(' ');
-      } else {
+        value = get_current_primers(selection_obj);
+      }
+      else {
         value = 'unknown';
       }
-    }
-  else {
+      break;
+    default:
       real_name = name_id;
       value     = id;
-    }
-  console.timeEnd("TIME: required_metadata_names_from_ids 1");
-  // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
-
-  console.time("TIME: required_metadata_names_from_ids 2");
-  switch(name_id) {
-  case 'env_package_id':
-    real_name = 'env_package';
-    value     = MD_ENV_PACKAGE[id];
-    break;
-  case 'target_gene_id':
-    real_name = 'target_gene';
-    value     = MD_TARGET_GENE[id];
-    break;
-  case 'domain_id':
-    real_name = 'domain';
-    value     = MD_DOMAIN[id];
-    break;
-  case 'geo_loc_name_id':
-    real_name = 'geo_loc_name';
-    if (MD_ENV_CNTRY.hasOwnProperty(id)) {
-      value = MD_ENV_CNTRY[id];
-    } else {
-      value = MD_ENV_LZC[id];
-    }
-    break;
-  case 'sequencing_platform_id':
-    real_name = 'sequencing_platform';
-    value     = MD_SEQUENCING_PLATFORM[id];
-    break;
-  case 'dna_region_id':
-    real_name = 'dna_region';
-    value     = MD_DNA_REGION[id];
-    break;
-  case 'env_material_id':
-    real_name = 'env_material';
-    value     = MD_ENV_ENVO[id];
-    break;
-  case 'env_biome_id':
-    real_name = 'env_biome';
-    value     = MD_ENV_ENVO[id];
-    break;
-  case 'env_feature_id':
-    real_name = 'env_feature';
-    value     = MD_ENV_ENVO[id];
-    break;
-  case 'adapter_sequence_id':
-    real_name = 'adapter_sequence';
-    value     = MD_ADAPTER_SEQUENCE[id];
-    break;
-  case 'illumina_index_id':
-    real_name = 'illumina_index';
-    value     = MD_ILLUMINA_INDEX[id];
-    break;
-  case 'run_id':
-    real_name = 'run';
-    value     = MD_RUN[id];
-    break;
-  case 'primer_suite_id':
-    real_name = 'primer_suite';
-    if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
-      value = MD_PRIMER_SUITE[id].name;
-    } else {
-      value = 'unknown';
-    }
-    break;
-  case 'primer_ids':
-    real_name = 'primers';
-    if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      // let val = [];
-      // current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
-      // for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-      //   val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
-      // }
-      // current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
-      // for (let primer of current_primers) {
-      //   val.push(primer.sequence);
-      // }
-      // value = val.join(' ');
-      value = get_current_primers(selection_obj);
-    }
-    else {
-      value = 'unknown';
-    }
-    break;
-  default:
-    real_name = name_id;
-    value     = id;
   }
-  console.timeEnd("TIME: required_metadata_names_from_ids 2");
   return {"name": real_name, "value": value};
 };
 
