@@ -201,12 +201,12 @@ module.exports.elapsed_time = function (note) {
   console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note);
 };
 
-var ranks = C.RANKS;
 
 // todo: use in file instead of those in the class
 module.exports.check_if_rank = function (field_name) {
+  let ranks = C.RANKS;
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
-  return ranks.indexOf(field_name) > -1;
+  return ranks.includes(field_name);
 };
 
 module.exports.render_error_page = function (req, res, msg) {
@@ -1290,90 +1290,103 @@ module.exports.run_external_command             = function (script_path) {
       //failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
     }
   });
-
-
 };
+
+function get_geo_loc_name(id) {
+  if (MD_ENV_CNTRY.hasOwnProperty(id)) {
+    return MD_ENV_CNTRY[id];
+  }
+  else {
+    return MD_ENV_LZC[id];
+  }
+}
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (19)(W074)
 module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
-  // TODO: test; simplify; DRY
-  var idname, value;
-  if (mdname === 'env_package') {
-    idname = 'env_package_id';
-    value  = MD_ENV_PACKAGE[selection_obj[idname]];
-  }
-  else if (mdname === 'env_biome') {
-    idname = 'env_biome_id';
-    value  = MD_ENV_ENVO[selection_obj[idname]];
-  }
-  else if (mdname === 'env_feature') {
-    idname = 'env_feature_id';
-    value  = MD_ENV_ENVO[selection_obj[idname]];
-  }
-  else if (mdname === 'env_material') {
-    idname = 'env_material_id';
-    value  = MD_ENV_ENVO[selection_obj[idname]];
-  }
-  else if (mdname === 'geo_loc_name') {
-    idname = 'geo_loc_name_id';
-    if (MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])) {
-      value = MD_ENV_CNTRY[selection_obj[idname]];
-    } else {
-      value = MD_ENV_LZC[selection_obj[idname]];
-    }
-  }
-  else if (mdname === 'sequencing_platform') {
-    idname = 'sequencing_platform_id';
-    value  = MD_SEQUENCING_PLATFORM[selection_obj[idname]]
-  }
-  else if (mdname === 'dna_region') {
-    idname = 'dna_region_id';
-    value  = MD_DNA_REGION[selection_obj[idname]]
-  }
-  else if (mdname === 'target_gene') {
-    idname = 'target_gene_id';
-    value  = MD_TARGET_GENE[selection_obj[idname]];
-  }
-  else if (mdname === 'domain') {
-    idname = 'domain_id';
-    value  = MD_DOMAIN[selection_obj[idname]];
-  }
-  else if (mdname === 'adapter_sequence') {
-    idname = 'adapter_sequence_id';
-    value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]];
-  }
-  else if (mdname === 'illumina_index') {
-    idname = 'illumina_index_id';
-    value  = MD_ILLUMINA_INDEX[selection_obj[idname]];
-  }
-  else if (mdname === 'run') {
-    idname = 'run_id';
-    value  = MD_RUN[selection_obj[idname]];
-  }
-  else if (mdname === 'primer_suite') {
-    idname = 'primer_suite_id';
-    if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')) {
+  // TODO: test visuals/unit_selection from custom tax
+  let idname, value;
+
+  switch (mdname) {
+    case 'env_package':
+      idname = 'env_package_id';
+      value  = MD_ENV_PACKAGE[selection_obj[idname]];
+      break;
+    case 'env_biome':
+      idname = 'env_biome_id';
+      value  = MD_ENV_ENVO[selection_obj[idname]];
+      break;
+    case 'env_feature':
+      idname = 'env_feature_id';
+      value  = MD_ENV_ENVO[selection_obj[idname]];
+      break;
+    case 'env_material':
+      idname = 'env_material_id';
+      value  = MD_ENV_ENVO[selection_obj[idname]];
+      break;
+    case 'geo_loc_name':
+      idname = 'geo_loc_name_id';
+      value = get_geo_loc_name(selection_obj[idname]);
+      // if (MD_ENV_CNTRY.hasOwnProperty(selection_obj[idname])) {
+      //   value = MD_ENV_CNTRY[selection_obj[idname]];
+      // }
+      // else {
+      //   value = MD_ENV_LZC[selection_obj[idname]];
+      // }
+      break;
+    case 'sequencing_platform':
+      idname = 'sequencing_platform_id';
+      value  = MD_SEQUENCING_PLATFORM[selection_obj[idname]];
+      break;
+    case 'dna_region':
+      idname = 'dna_region_id';
+      value  = MD_DNA_REGION[selection_obj[idname]];
+      break;
+    case 'target_gene':
+      idname = 'target_gene_id';
+      value  = MD_TARGET_GENE[selection_obj[idname]];
+      break;
+    case 'domain':
+      idname = 'domain_id';
+      value  = MD_DOMAIN[selection_obj[idname]];
+      break;
+    case 'adapter_sequence':
+      idname = 'adapter_sequence_id';
+      value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]];
+      break;
+    case 'illumina_index':
+      idname = 'illumina_index_id';
+      value  = MD_ILLUMINA_INDEX[selection_obj[idname]];
+      break;
+    case 'run':
+      idname = 'run_id';
+      value  = MD_RUN[selection_obj[idname]];
+      break;
+    case 'primer_suite':
+      idname = 'primer_suite_id';
+      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')) {
       value = MD_PRIMER_SUITE[selection_obj[idname]].name;
-    } else {
-      value = 'unknown';
-    }
-  }
-  else if (mdname === 'primers') {
-    idname = 'primer_ids';
-    if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-      val = [];
-      for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-        val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
       }
-      value = val.join(' ');
-    } else {
-      value = 'unknown';
+      else {
+        value = 'unknown';
+      }
+      break;
+    case 'primers':
+      idname = 'primer_ids';
+      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
+        let val = [];
+        for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+          val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
+        }
+        value = val.join(' ');
+      }
+      else {
+        value = 'unknown';
+      }
+      break;
+    default:
+      idname = mdname;
+      value  = selection_obj[mdname];
     }
-  }
-  else {
-    idname = mdname;
-    value  = selection_obj[mdname];
-  }
   // eg: { name: 'primer_suite_id', value: 'Bacterial V6 Suite' } or { name: 'domain_id', value: 'Bacteria' }
   return {"name": idname, "value": value};
 };
@@ -1405,11 +1418,12 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
       break;
     case 'geo_loc_name_id':
       real_name = 'geo_loc_name';
-      if (MD_ENV_CNTRY.hasOwnProperty(id)) {
-        value = MD_ENV_CNTRY[id];
-      } else {
-        value = MD_ENV_LZC[id];
-      }
+      value = get_geo_loc_name(id);
+      // if (MD_ENV_CNTRY.hasOwnProperty(id)) {
+      //   value = MD_ENV_CNTRY[id];
+      // } else {
+      //   value = MD_ENV_LZC[id];
+      // }
       break;
     case 'sequencing_platform_id':
       real_name = 'sequencing_platform';
