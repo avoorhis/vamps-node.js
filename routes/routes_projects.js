@@ -77,19 +77,19 @@ function get_dsinfo(req) {
 function get_mdata(dsinfo){
   let mdata = {};
 
-  for (let n in dsinfo){
-    let did = dsinfo[n].did;
-    let metadata_name = dsinfo[n].dname;
+  for (let d_inf of dsinfo){
+    let did = d_inf.did;
+    let metadata_name = d_inf.dname;
     mdata[metadata_name] = {};
 
     for (let name in AllMetadata[did]){
       let data;
+      data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+      mdata[metadata_name][data.name] = data.value;
       if (name === 'primer_suite_id'){
         data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
         mdata[metadata_name][data.name] = data.value;
       }
-      data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
-      mdata[metadata_name][data.name] = data.value;
     }
   }
   return mdata;
