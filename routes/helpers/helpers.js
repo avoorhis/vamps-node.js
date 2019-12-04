@@ -1,17 +1,17 @@
-var C       = require(app_root + '/public/constants');
-var queries = require(app_root + '/routes/queries');
+let C       = require(app_root + '/public/constants');
+let queries = require(app_root + '/routes/queries');
 const config  = require(app_root + '/config/config');
 
-var express     = require('express');
-var router      = express.Router();
-var fs          = require('fs-extra');
-var nodemailer  = require('nodemailer');
-var transporter = nodemailer.createTransport({});
-var util        = require('util');
-var path        = require('path');
-//var crypto = require('crypto');
-var mysql       = require('mysql2');
-var spawn       = require('child_process').spawn;
+let express     = require('express');
+let router      = express.Router();
+let fs          = require('fs-extra');
+let nodemailer  = require('nodemailer');
+let transporter = nodemailer.createTransport({});
+let util        = require('util');
+let path        = require('path');
+//let crypto = require('crypto');
+// let mysql       = require('mysql2');
+let spawn       = require('child_process').spawn;
 
 // route middleware to make sure a user is logged in
 module.exports.isLoggedIn = function (req, res, next) {
@@ -1466,7 +1466,7 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
     metadata[dids[n]] = {};
     mdobj             = AllMetadata[dids[n].toString()];
     for (let key in mdobj) {
-      md                         = module.exports.required_metadata_names_from_ids(mdobj, key);
+      md = module.exports.required_metadata_names_from_ids(mdobj, key);
       metadata[dids[n]][md.name] = md.value;
     }
   }
