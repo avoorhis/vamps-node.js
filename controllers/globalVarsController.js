@@ -220,7 +220,7 @@ class GlobalVars {
   get_select_seq_counts_query(rows) {
     // console.time("TIME: get_select_seq_counts_query");
     // console.log(Object.values(PROJECT_ID_BY_DID));
-    connection.query('SELECT dataset_id, project_id from dataset', function (err, rows2) {
+    connection.query('SELECT dataset_id, project_id from dataset', (err, rows2) => {
 
       // console.time("TIME: make_pid_by_did_dict");
       //instead it's better to use PROJECT_ID_BY_DID after it's initialized
