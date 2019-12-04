@@ -272,22 +272,7 @@ module.exports.fileExists = function (path) {
 };
 
 module.exports.reverseString = function (str) {
-  let out_str = '';
-  // for (let i = str.length - 1; i >= 0; i--) {
-  //   out_str += str[i];
-  // }
-  // out_str = '';
-  // for (let char of str) {
-  //   out_str = char + out_str;
-  // }
-
-  // out_str = '';
-  out_str = str.split("").reverse().join("");
-
-  // out_str = '';
-  // out_str = [...str].reverse().join('');
-
-  return out_str;
+  return str.split("").reverse().join("");
 };
 
 module.exports.send_mail = function (mail_info) {
