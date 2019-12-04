@@ -26,6 +26,9 @@ var CONSTS  = require(app_root + '/public/constants');
 var COMMON  = require(app_root + '/routes/visuals/routes_common');
 var META    = require('./visuals/routes_visuals_metadata');
 
+const global_vars_controller = require(app_root + '/controllers/globalVarsController');
+const global_vars = new global_vars_controller.GlobalVars();
+
 var upload = multer({ dest: config.TMP, limits: { fileSize: '4gb' }  });
 GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
@@ -1851,11 +1854,11 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
   var delete_kind = req.params.kind;
   var project = req.params.project;
   var timestamp = +new Date();  // millisecs since the epoch!
-  console.log('in delete_project1: '+project+' - '+delete_kind);
+  console.log('in delete_project1: ' + project + ' - ' + delete_kind);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
     var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
-    helpers.update_global_variables(pid, 'del');
+    global_vars.update_global_variables(pid, 'del');
   } else {
     // project not in db?
     console.log('project was not found in PROJECT_INFORMATION_BY_PNAME');

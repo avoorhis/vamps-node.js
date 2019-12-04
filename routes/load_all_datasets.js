@@ -55,7 +55,8 @@ module.exports.get_datasets = function(callback){
 		    console.log('Query error: ' + err);
 		    console.log(err.stack);
 		    process.exit(1);
-      } else {
+      }
+      else {
 
         console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and global_vars.run_select_datasets_query):');
         //datasetsByProject.projects = []

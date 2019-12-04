@@ -300,82 +300,6 @@ module.exports.send_mail = function (mail_info) {
   //       });
 
 };
-//
-//
-//
-
-// module.exports.get_select_custom_units_query = function (rows) {
-//   // console.time("TIME: get_select_custom_units_query");
-//   for (var i = 0; i < rows.length; i++) {
-//     var project_id  = rows[i]["project_id"];
-//     var field_name  = rows[i]["field_name"];
-//     var field_units = rows[i]["field_units"];
-//
-//     if (!MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
-//       MD_CUSTOM_UNITS[project_id] = {};
-//     }
-//     MD_CUSTOM_UNITS[project_id][field_name] = field_units;
-//
-//     if (!MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
-//       MD_CUSTOM_FIELDS_UNITS[field_name] = {};
-//     }
-//     MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
-//   }
-//   // console.timeEnd("TIME: get_select_custom_units_query");
-// };
-
-// function make_pid_by_did_dict(rows) {
-//   var p_d = [];
-//   for (var r in rows) {
-//     var d_id  = rows[r]['dataset_id'];
-//     var p_id  = rows[r]['project_id'];
-//     p_d[d_id] = p_id;
-//   }
-//   return p_d;
-// }
-
-// //add the same check to PROJECT_ID_BY_DID creation elsewhere
-// module.exports.get_select_seq_counts_query = function (rows) {
-//   // console.time("TIME: get_select_seq_counts_query");
-//   // console.log(Object.values(PROJECT_ID_BY_DID));
-//   connection.query('SELECT dataset_id, project_id from dataset', function (err, rows2, fields) {
-//
-//     // console.time("TIME: make_pid_by_did_dict");
-//     //instead it's better to use PROJECT_ID_BY_DID after it's initialized
-//     var pid_by_did_dict = [];
-//     if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
-//       pid_by_did_dict = PROJECT_ID_BY_DID;
-//     }
-//     else {
-//       pid_by_did_dict = make_pid_by_did_dict(rows2);
-//     }
-//     // console.timeEnd("TIME: make_pid_by_did_dict");
-//
-//     for (let i = 0; i < rows.length; i++) {
-//       var did = rows[i].dataset_id;
-//       var pid = pid_by_did_dict[did];
-//       //console.log('rows[i].project_id in run_select_sequences_query');
-//       // var pid                 = rows[i].project_id;
-//       var count               = rows[i].seq_count;
-//       var cid                 = rows[i].classifier_id;
-//       ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-//       if (ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
-//         ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
-//       }
-//       if (pid in ALL_PCOUNTS_BY_PID) {
-//         ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
-//       } else {
-//         ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
-//       }
-//     }
-//     // console.log("ALL_PCOUNTS_BY_PID: ");
-//     // console.log(ALL_PCOUNTS_BY_PID);
-//     // make_counts_globals(rows, pid_by_did_dict);
-//
-//   });
-//   // console.timeEnd("TIME: get_select_seq_counts_query");
-//
-// };
 
 module.exports.run_ranks_query = function (rank, rows) {
   for (var i = 0; i < rows.length; i++) {
@@ -470,6 +394,7 @@ module.exports.get_select_run_query    = function (rows) {
     MD_RUN[rows[i].run_id] = rows[i].run;
   }
 };
+
 // TODO: "This function's cyclomatic complexity is too high. (6)"
 module.exports.run_permissions_query   = function (rows) {
   //console.log(PROJECT_INFORMATION_BY_PID)
@@ -494,54 +419,54 @@ module.exports.run_permissions_query   = function (rows) {
   }
   //console.log(PROJECT_INFORMATION_BY_PID)
 };
-// TODO: "This function's cyclomatic complexity is too high. (6)"
-module.exports.update_global_variables = function (pid, type) {
-  if (type == 'del') {
-    var dids  = DATASET_IDS_BY_PID[pid];
-    var pname = PROJECT_INFORMATION_BY_PID[pid].project;
-    console.log('RE-INTIALIZING ALL_DATASETS');
-    dataset_objs = [];
-    for (var i in ALL_DATASETS.projects) {
-      item = ALL_DATASETS.projects[i];
-      //console.log('item'+item);
-      // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
-      if (item.pid == pid) {
-        dataset_objs = item.datasets;
-        //console.log('SPLICING '+pid);
-        ALL_DATASETS.projects.splice(i, 1);
-        break;
-      }
-
-    }
-    console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
-    console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
-    console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
-    for (var d in dids) {
-
-      delete PROJECT_ID_BY_DID[dids[d]];
-      delete DATASET_NAME_BY_DID[dids[d]];
-      delete ALL_DCOUNTS_BY_DID[dids[d]];
-      delete DatasetsWithLatLong[dids[d]];
-    }
-    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
-    console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
-    console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
-    console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
-    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
-    console.log('RE-INTIALIZING DatasetsWithLatLong');
-
-    delete PROJECT_INFORMATION_BY_PID[pid];
-    delete DATASET_IDS_BY_PID[pid];
-    delete ALL_PCOUNTS_BY_PID[pid];
-    delete ALL_CLASSIFIERS_BY_PID[pid];
-    delete PROJECT_INFORMATION_BY_PNAME[pname];
-
-  } else if (type == 'add') {
-
-  } else {
-    // ERROR
-  }
-};
+// // TODO: "This function's cyclomatic complexity is too high. (6)"
+// module.exports.update_global_variables = function (pid, type) {
+//   if (type == 'del') {
+//     var dids  = DATASET_IDS_BY_PID[pid];
+//     var pname = PROJECT_INFORMATION_BY_PID[pid].project;
+//     console.log('RE-INTIALIZING ALL_DATASETS');
+//     dataset_objs = [];
+//     for (var i in ALL_DATASETS.projects) {
+//       item = ALL_DATASETS.projects[i];
+//       //console.log('item'+item);
+//       // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
+//       if (item.pid == pid) {
+//         dataset_objs = item.datasets;
+//         //console.log('SPLICING '+pid);
+//         ALL_DATASETS.projects.splice(i, 1);
+//         break;
+//       }
+//
+//     }
+//     console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
+//     console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
+//     console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
+//     for (var d in dids) {
+//
+//       delete PROJECT_ID_BY_DID[dids[d]];
+//       delete DATASET_NAME_BY_DID[dids[d]];
+//       delete ALL_DCOUNTS_BY_DID[dids[d]];
+//       delete DatasetsWithLatLong[dids[d]];
+//     }
+//     console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
+//     console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
+//     console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
+//     console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
+//     console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+//     console.log('RE-INTIALIZING DatasetsWithLatLong');
+//
+//     delete PROJECT_INFORMATION_BY_PID[pid];
+//     delete DATASET_IDS_BY_PID[pid];
+//     delete ALL_PCOUNTS_BY_PID[pid];
+//     delete ALL_CLASSIFIERS_BY_PID[pid];
+//     delete PROJECT_INFORMATION_BY_PNAME[pname];
+//
+//   } else if (type == 'add') {
+//
+//   } else {
+//     // ERROR
+//   }
+// };
 
 module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
   //console.log('query ok1 '+JSON.stringify(rows1));

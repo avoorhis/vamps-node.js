@@ -94,6 +94,43 @@ class GlobalVars {
     return envpkgid;
   }
 
+  get_project_information_by_pid(current_row) {
+    let pid = current_row.pid;
+    let project = current_row.project;
+    let did = current_row.did;
+
+    let envpkgid = this.get_envpkgid(did);
+
+    let ca = helpers.convertJSDateToString(current_row.created_at);
+    let ua = helpers.convertJSDateToString(current_row.updated_at);
+
+    let owner_id = current_row.owner_user_id;
+    PROJECT_INFORMATION_BY_PID[pid] = {
+      "last": current_row.last_name,
+      "first": current_row.first_name,
+      "username": current_row.username,
+      "oid": owner_id,
+      "email": current_row.email,
+      "env_package_id": envpkgid,  // FROM AllMetadata: mostly used here for the filter on dataset selection page
+      "institution": current_row.institution,
+      "project": project,
+      "pid": pid,
+      "title": current_row.title,
+      "description": current_row.project_description,
+      "public": current_row.public,
+      "metagenomic": current_row.metagenomic,
+      "matrix": current_row.matrix,
+      //"seqs_available" :   current_row.seqs_available,
+      "created_at": ca,
+      "updated_at": ua
+    };
+    if (current_row.public || current_row.username === 'guest') {
+      PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+    } else {
+      PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
+    }
+    PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+  }
 
 // TODO: JSHint: This function's cyclomatic complexity is too high. (8)(W074)
   run_select_datasets_query(rows) {
@@ -101,19 +138,20 @@ class GlobalVars {
     let titles = {};
     let datasetsByProject = {};
     for (let i = 0; i < rows.length; i++) {
-      let project = rows[i].project;
+      let current_row = rows[i];
+      let project = current_row.project;
       if (project === undefined) {
         continue;
       }
-      let pid = rows[i].pid;
+      let pid = current_row.pid;
 
       this.init_dataset_ids_by_pid(pid);
 
-      let did = rows[i].did;
+      let did = current_row.did;
       let no_did = [undefined, 'null', null];
       if (!no_did.includes(did)) {
-        let dataset = rows[i].dataset;
-        let dataset_description = rows[i].dataset_description;
+        let dataset = current_row.dataset;
+        let dataset_description = current_row.dataset_description;
         PROJECT_ID_BY_DID[did] = pid;
         DATASET_NAME_BY_DID[did] = dataset;
         let dataset_options = {did: did, dname: dataset, ddesc: dataset_description};
@@ -121,44 +159,44 @@ class GlobalVars {
         DATASET_IDS_BY_PID[pid].push(did);
       }
 
-      let envpkgid = this.get_envpkgid(did);
-
-      let ca = helpers.convertJSDateToString(rows[i].created_at);
-      let ua = helpers.convertJSDateToString(rows[i].updated_at);
+      // let envpkgid = this.get_envpkgid(did);
+      //
+      // let ca = helpers.convertJSDateToString(current_row.created_at);
+      // let ua = helpers.convertJSDateToString(current_row.updated_at);
 
       if (!PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
-        let owner_id = rows[i].owner_user_id;
-        PROJECT_INFORMATION_BY_PID[pid] = {
-          "last": rows[i].last_name,
-          "first": rows[i].first_name,
-          "username": rows[i].username,
-          "oid": owner_id,
-          "email": rows[i].email,
-          "env_package_id": envpkgid,  // FROM AllMetadata: mostly used here for the filter on dataset selection page
-          "institution": rows[i].institution,
-          "project": project,
-          "pid": pid,
-          "title": rows[i].title,
-          "description": rows[i].project_description,
-          "public": rows[i].public,
-          "metagenomic": rows[i].metagenomic,
-          "matrix": rows[i].matrix,
-          //"seqs_available" :   rows[i].seqs_available,
-          "created_at": ca,
-          "updated_at": ua
-        };
-        let public_pr = rows[i].public;
-        if (public_pr || rows[i].username === 'guest') {
-          PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
-        } else {
-          PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
-        }
-        PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+        // let owner_id = current_row.owner_user_id;
+        // PROJECT_INFORMATION_BY_PID[pid] = {
+        //   "last": current_row.last_name,
+        //   "first": current_row.first_name,
+        //   "username": current_row.username,
+        //   "oid": owner_id,
+        //   "email": current_row.email,
+        //   "env_package_id": envpkgid,  // FROM AllMetadata: mostly used here for the filter on dataset selection page
+        //   "institution": current_row.institution,
+        //   "project": project,
+        //   "pid": pid,
+        //   "title": current_row.title,
+        //   "description": current_row.project_description,
+        //   "public": current_row.public,
+        //   "metagenomic": current_row.metagenomic,
+        //   "matrix": current_row.matrix,
+        //   //"seqs_available" :   current_row.seqs_available,
+        //   "created_at": ca,
+        //   "updated_at": ua
+        // };
+        // let public_pr = current_row.public;
+        // if (public_pr || current_row.username === 'guest') {
+        //   PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+        // } else {
+        //   PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
+        // }
+        // PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+        this.get_project_information_by_pid(current_row);
 
         pids[project] = pid;
-        titles[project] = rows[i].title;
+        titles[project] = current_row.title;
       }
-
     }
     this.make_all_datasets(datasetsByProject, pids, titles);
     console.log('Getting md-names and those w/ lat/lon');
@@ -184,12 +222,10 @@ class GlobalVars {
     let p_d = [];
     for (let r in rows) {
       let d_id = rows[r]['dataset_id'];
-      let p_id = rows[r]['project_id'];
-      p_d[d_id] = p_id;
+      p_d[d_id] = rows[r]['project_id'];
     }
     return p_d;
   }
-
 
 //add the same check to PROJECT_ID_BY_DID creation elsewhere
   get_select_seq_counts_query(rows) {
@@ -203,7 +239,7 @@ class GlobalVars {
       if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
         pid_by_did_dict = PROJECT_ID_BY_DID;
       } else {
-        pid_by_did_dict = make_pid_by_did_dict(rows2);
+        pid_by_did_dict = this.make_pid_by_did_dict(rows2);
       }
       // console.timeEnd("TIME: make_pid_by_did_dict");
 
@@ -251,6 +287,55 @@ class GlobalVars {
       MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
     }
     // console.timeEnd("TIME: get_select_custom_units_query");
+  }
+
+  // TODO: "This function's cyclomatic complexity is too high. (6)"
+  // TODO: how to test?
+  update_global_variables(pid, type) {
+    if (type === 'del') {
+      let dids  = DATASET_IDS_BY_PID[pid];
+      let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      console.log('RE-INTIALIZING ALL_DATASETS');
+      let dataset_objs = [];
+      for (let i in ALL_DATASETS.projects) {
+        let item = ALL_DATASETS.projects[i];
+        //console.log('item'+item);
+        // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
+        if (item.pid === pid) {
+          dataset_objs = item.datasets;
+          //console.log('SPLICING '+pid);
+          ALL_DATASETS.projects.splice(i, 1);
+          break;
+        }
+      }
+      console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
+      console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
+      console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
+      for (let d in dids) {
+        delete PROJECT_ID_BY_DID[dids[d]];
+        delete DATASET_NAME_BY_DID[dids[d]];
+        delete ALL_DCOUNTS_BY_DID[dids[d]];
+        delete DatasetsWithLatLong[dids[d]];
+      }
+      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
+      console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
+      console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
+      console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
+      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+      console.log('RE-INTIALIZING DatasetsWithLatLong');
+
+      delete PROJECT_INFORMATION_BY_PID[pid];
+      delete DATASET_IDS_BY_PID[pid];
+      delete ALL_PCOUNTS_BY_PID[pid];
+      delete ALL_CLASSIFIERS_BY_PID[pid];
+      delete PROJECT_INFORMATION_BY_PNAME[pname];
+
+    } else if (type === 'add') {
+
+    }
+    else {
+      // ERROR
+    }
   }
 
 }
