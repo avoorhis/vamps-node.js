@@ -1614,14 +1614,14 @@ function check_regexp(reg_exp, value, err_msg) {
 }
 
 // metadata form validation
-// TODO: move to controller
+// TODO: move to a controller
 
 function checkArray(my_arr) {
   if (my_arr.length === 0) {
     return false;
   }
 
-  for (var i = 0; my_arr.length > i; i++) {
+  for (let i = 0; my_arr.length > i; i++) {
     if (my_arr[i] === '') {
       return false;
     }
@@ -1642,8 +1642,8 @@ exports.numbers_n_period = function (value) {
 };
 
 exports.numbers_n_period_n_minus = function (value) {
-  var reg_exp = /[^0-9.-]/;
-  var err_msg = ', please use only numbers, periods and minus.';
+  let reg_exp = /[^0-9.-]/;
+  let err_msg = ', please use only numbers, periods and minus.';
   check_regexp(reg_exp, value, err_msg);
 };
 
@@ -1717,17 +1717,12 @@ exports.depth = function (value, source) {
   }
 };
 
-exports.geo_loc_name_continental_filter = function (value) {
-  // console.time('geo_loc_name_continental_filter');
+exports.geo_loc_name_continental_filter = function(value) {
   for (const key in C.GAZ_SPELLING) {
-    if (C.GAZ_SPELLING.hasOwnProperty(key)) {
-      const curr = C.GAZ_SPELLING[key];
-      if (curr.indexOf(value.toLowerCase()) > -1) {
-        return key;
-      }
+    if (C.GAZ_SPELLING[key].includes(value.toLowerCase())) {
+      return key;
     }
   }
-  // console.timeEnd('geo_loc_name_continental_filter');
 };
 
 exports.recommended_temperature = function (value) {
@@ -1810,12 +1805,12 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 
   //make an array with proper length, even if the first one is empty
   // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
-  var length_array = data_arr[0];
+  let length_array = data_arr[0];
   if (data_arr[0].length < matrix_length) {
     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
   }
 
-  var newArray = length_array.map(function (col, i) {
+  let newArray = length_array.map(function (col, i) {
     return data_arr.map(function (row) {
       return row[i];
     });
@@ -1827,15 +1822,15 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
 exports.collect_errors = collect_errors;
 
 function collect_errors(req) {
-  var success_msgs    = req.flash("success") || [];
-  var flash_msgs_sess = req.session.flash || {};
-  var fail_msgs       = req.flash("fail") || [];
-  var myArray_fail    = fail_msgs;
+  let success_msgs    = req.flash("success") || [];
+  let flash_msgs_sess = req.session.flash || {};
+  let fail_msgs       = req.flash("fail") || [];
+  let myArray_fail    = fail_msgs;
 
   req.session.flash = [];
 
   if ((typeof req.form !== 'undefined') && (req.form.errors.length > 0)) {
-    var combine_err = [].concat(flash_msgs_sess.error);
+    let combine_err = [].concat(flash_msgs_sess.error);
     combine_err     = combine_err.concat(flash_msgs_sess.fail);
     combine_err     = combine_err.concat(fail_msgs);
     combine_err     = combine_err.concat(req.form.errors);
@@ -1853,6 +1848,7 @@ function collect_errors(req) {
 }
 
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
+// JSHint: This function's cyclomatic complexity is too high. (9)(W074)
 function transpose_arr_of_obj(a) {
   // console.time('TIME: transpose_arr_of_obj');
 
