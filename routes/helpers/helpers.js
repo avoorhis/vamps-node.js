@@ -1361,16 +1361,18 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
       break;
     case 'primers':
       idname = 'primer_ids';
-      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-        let val = [];
-        for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
-          val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
-        }
-        value = val.join(' ');
-      }
-      else {
-        value = 'unknown';
-      }
+      value = get_current_primers(selection_obj['primer_suite_id']);
+      // value = "";
+      // if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
+      //   let val = [];
+      //   for (let pr_idx in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+      //     val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[pr_idx].sequence);
+      //   }
+      //   value = val.join(' ');
+      // }
+      // else {
+      //   value = 'unknown';
+      // }
       break;
     default:
       idname = mdname;
@@ -1389,9 +1391,9 @@ function get_current_primer_suite(id) {
   }
 }
 
-function get_current_primers(selection_obj) {
+function get_current_primers(id) {
   let val = [];
-  let current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
+  let current_primers = MD_PRIMER_SUITE[id].primer;
   for (let primer of current_primers) {
     val.push(primer.sequence);
   }
@@ -1460,12 +1462,13 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
       break;
     case 'primer_ids':
       real_name = 'primers';
-      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-        value = get_current_primers(selection_obj);
-      }
-      else {
-        value = 'unknown';
-      }
+      value = get_current_primers(selection_obj['primer_suite_id']);
+      // if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
+      //   value = get_current_primers(selection_obj);
+      // }
+      // else {
+      //   value = 'unknown';
+      // }
       break;
     default:
       real_name = name_id;
