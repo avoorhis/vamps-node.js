@@ -5,6 +5,7 @@
 /*jshint multistr: true */
 
 const CONSTS = require(app_root + '/public/constants');
+const helpers = require(app_root + '/routes/helpers/helpers');
 
 // Private
 let taxon_name_id = 1;
@@ -66,14 +67,15 @@ function add_children_to_parent(dictMap_by_id, current_dict)
   return parent_node;
 }
 
-function check_if_rank(field_name)
-{
-  // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
-  return ranks.indexOf(field_name) > -1;
-}
+// function check_if_rank(field_name)
+// {
+//   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
+//   return ranks.indexOf(field_name) > -1;
+// }
 
 
-// todo: refactoring! Too long and nested
+// todo: refactor! Too long and nested
+// JSHint: This function's cyclomatic complexity is too high. (7)(W074)
 function make_taxa_tree_dict(taxonomy_obj)
 {
   let taxa_tree_dict = [];
@@ -94,7 +96,7 @@ function make_taxa_tree_dict(taxonomy_obj)
     for (let field_name in in_obj)
     {
        //console.log("field_name = " + JSON.stringify(field_name));
-      let is_rank = check_if_rank(field_name);
+      let is_rank = helpers.check_if_rank(field_name);
       if (is_rank)
       {
         let db_id_field_name = field_name + "_id";
