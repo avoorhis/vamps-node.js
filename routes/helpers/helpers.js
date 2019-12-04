@@ -395,31 +395,6 @@ module.exports.get_select_run_query    = function (rows) {
   }
 };
 
-// // TODO: "This function's cyclomatic complexity is too high. (6)"
-// module.exports.run_permissions_query   = function (rows) {
-//   //console.log(PROJECT_INFORMATION_BY_PID)
-//
-//   for (var i = 0; i < rows.length; i++) {
-//     var pid = rows[i].project_id;
-//     var uid = rows[i].user_id;
-//
-//     if (pid in PROJECT_INFORMATION_BY_PID) {
-//       var project                           = PROJECT_INFORMATION_BY_PID[pid].project;
-//       PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
-//       if (PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
-//         PROJECT_INFORMATION_BY_PID[pid].permissions = [];
-//       }
-//       else {
-//         // TODO: "Blocks are nested too deeply. (4)"
-//         if (PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1) {
-//           PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
-//         }
-//       }
-//     }
-//   }
-//   //console.log(PROJECT_INFORMATION_BY_PID)
-// };
-
 module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
   //console.log('query ok1 '+JSON.stringify(rows1));
   //console.log('query ok2 '+JSON.stringify(rows2));
@@ -1407,7 +1382,17 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
   return {"name": idname, "value": value};
 };
 
+function get_current_primers(selection_obj) {
+  let val = [];
+  let current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
+  for (let primer of current_primers) {
+    val.push(primer.sequence);
+  }
+  return val.join(' ');
+}
+
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
+  console.time("TIME: required_metadata_names_from_ids 1");
   let id = selection_obj[name_id];
   let real_name, value;
   if (name_id === 'env_package_id') {
@@ -1474,7 +1459,7 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
   else if (name_id === 'primer_ids') {
       real_name = 'primers';
       if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
-        val = [];
+        let val = [];
         for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
           val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
         }
@@ -1487,9 +1472,96 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
       real_name = name_id;
       value     = id;
     }
+  console.timeEnd("TIME: required_metadata_names_from_ids 1");
   // eg: { name: 'primer_suite', value: 'Bacterial V6 Suite' } or { name: 'domain', value: 'Bacteria' }
-  return {"name": real_name, "value": value};
 
+  console.time("TIME: required_metadata_names_from_ids 2");
+  switch(name_id) {
+  case 'env_package_id':
+    real_name = 'env_package';
+    value     = MD_ENV_PACKAGE[id];
+    break;
+  case 'target_gene_id':
+    real_name = 'target_gene';
+    value     = MD_TARGET_GENE[id];
+    break;
+  case 'domain_id':
+    real_name = 'domain';
+    value     = MD_DOMAIN[id];
+    break;
+  case 'geo_loc_name_id':
+    real_name = 'geo_loc_name';
+    if (MD_ENV_CNTRY.hasOwnProperty(id)) {
+      value = MD_ENV_CNTRY[id];
+    } else {
+      value = MD_ENV_LZC[id];
+    }
+    break;
+  case 'sequencing_platform_id':
+    real_name = 'sequencing_platform';
+    value     = MD_SEQUENCING_PLATFORM[id];
+    break;
+  case 'dna_region_id':
+    real_name = 'dna_region';
+    value     = MD_DNA_REGION[id];
+    break;
+  case 'env_material_id':
+    real_name = 'env_material';
+    value     = MD_ENV_ENVO[id];
+    break;
+  case 'env_biome_id':
+    real_name = 'env_biome';
+    value     = MD_ENV_ENVO[id];
+    break;
+  case 'env_feature_id':
+    real_name = 'env_feature';
+    value     = MD_ENV_ENVO[id];
+    break;
+  case 'adapter_sequence_id':
+    real_name = 'adapter_sequence';
+    value     = MD_ADAPTER_SEQUENCE[id];
+    break;
+  case 'illumina_index_id':
+    real_name = 'illumina_index';
+    value     = MD_ILLUMINA_INDEX[id];
+    break;
+  case 'run_id':
+    real_name = 'run';
+    value     = MD_RUN[id];
+    break;
+  case 'primer_suite_id':
+    real_name = 'primer_suite';
+    if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
+      value = MD_PRIMER_SUITE[id].name;
+    } else {
+      value = 'unknown';
+    }
+    break;
+  case 'primer_ids':
+    real_name = 'primers';
+    if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj['primer_suite_id'])) {
+      // let val = [];
+      // current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
+      // for (let n in MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer) {
+      //   val.push(MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer[n].sequence);
+      // }
+      // current_primers = MD_PRIMER_SUITE[selection_obj['primer_suite_id']].primer;
+      // for (let primer of current_primers) {
+      //   val.push(primer.sequence);
+      // }
+      // value = val.join(' ');
+      value = get_current_primers(selection_obj);
+    }
+    else {
+      value = 'unknown';
+    }
+    break;
+  default:
+    real_name = name_id;
+    value     = id;
+  }
+  console.timeEnd("TIME: required_metadata_names_from_ids 2");
+  return {"name": real_name, "value": value};
 };
 
 //
@@ -1663,8 +1735,8 @@ function region_valid(value, region_low, region_high) {
 exports.numbers_n_period = function (value) {
   // var regex = /^[0-9.]+$/;
   //[^0-9.] faster
-  var reg_exp = /[^0-9.]/;
-  var err_msg = ', please use only numbers and periods.';
+  let reg_exp = /[^0-9.]/;
+  let err_msg = ', please use only numbers and periods.';
   check_regexp(reg_exp, value, err_msg);
 };
 
@@ -1703,10 +1775,6 @@ exports.dropdown_items_validation = function (value) {
     throw new Error('%s is required. Please choose one value from the dropdown menu');
   }
 };
-
-function hasElement(array, value){// TODO: change to includes
-  return array.indexOf( value ) !== -1;
-}
 
 remove_dummy_entries = function(arr){
   let bad_values = ["Select..."];
