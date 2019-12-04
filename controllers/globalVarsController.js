@@ -131,6 +131,29 @@ class GlobalVars {
     }
   }
 
+  run_permissions_query(rows) {
+    //console.log(PROJECT_INFORMATION_BY_PID)
+
+    for (let i in rows) {
+      let current_row = rows[i];
+      let pid = current_row.project_id;
+      let uid = current_row.user_id;
+
+      if (pid in PROJECT_INFORMATION_BY_PID) {
+        let project                           = PROJECT_INFORMATION_BY_PID[pid].project;
+        PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+        if (PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
+          PROJECT_INFORMATION_BY_PID[pid].permissions = [];
+        }
+        else {
+          if (!PROJECT_INFORMATION_BY_PID[pid].permissions.includes(uid)) {
+            PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
+          }
+        }
+      }
+    }
+  }
+
   run_select_datasets_query(rows) {
     let pids = {};
     let titles = {};
@@ -177,13 +200,12 @@ class GlobalVars {
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.run_permissions_query(rows);
+        this.run_permissions_query(rows);
       }
 
       console.log(' UPDATING PERMISSIONS: "' + queries.get_project_permissions() + '"');
     });
   }
-
 
   make_pid_by_did_dict(rows) {
     let p_d = [];

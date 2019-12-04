@@ -9,7 +9,7 @@ var helpers = require('./helpers/helpers');
 module.exports = {
 
   get_project_permissions: function(){
-    var qSelectAccess = "SELECT user_id, project_id from access";
+    let qSelectAccess = "SELECT user_id, project_id from access";
     return qSelectAccess;
   },
   get_select_datasets_query: function(){

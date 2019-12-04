@@ -395,30 +395,30 @@ module.exports.get_select_run_query    = function (rows) {
   }
 };
 
-// TODO: "This function's cyclomatic complexity is too high. (6)"
-module.exports.run_permissions_query   = function (rows) {
-  //console.log(PROJECT_INFORMATION_BY_PID)
-
-  for (var i = 0; i < rows.length; i++) {
-    var pid = rows[i].project_id;
-    var uid = rows[i].user_id;
-
-    if (pid in PROJECT_INFORMATION_BY_PID) {
-      var project                           = PROJECT_INFORMATION_BY_PID[pid].project;
-      PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
-      if (PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
-        PROJECT_INFORMATION_BY_PID[pid].permissions = [];
-      }
-      else {
-        // TODO: "Blocks are nested too deeply. (4)"
-        if (PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1) {
-          PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
-        }
-      }
-    }
-  }
-  //console.log(PROJECT_INFORMATION_BY_PID)
-};
+// // TODO: "This function's cyclomatic complexity is too high. (6)"
+// module.exports.run_permissions_query   = function (rows) {
+//   //console.log(PROJECT_INFORMATION_BY_PID)
+//
+//   for (var i = 0; i < rows.length; i++) {
+//     var pid = rows[i].project_id;
+//     var uid = rows[i].user_id;
+//
+//     if (pid in PROJECT_INFORMATION_BY_PID) {
+//       var project                           = PROJECT_INFORMATION_BY_PID[pid].project;
+//       PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+//       if (PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
+//         PROJECT_INFORMATION_BY_PID[pid].permissions = [];
+//       }
+//       else {
+//         // TODO: "Blocks are nested too deeply. (4)"
+//         if (PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1) {
+//           PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
+//         }
+//       }
+//     }
+//   }
+//   //console.log(PROJECT_INFORMATION_BY_PID)
+// };
 
 module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
   //console.log('query ok1 '+JSON.stringify(rows1));
