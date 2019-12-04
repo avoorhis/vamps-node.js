@@ -1761,8 +1761,14 @@ exports.slice_object_by_keys = function (object, slice_keys) {
     slice_keys[i] = String(slice_keys[i]);
   }
   // console.timeEnd('TIME: convert to string');
-
-  return Object.keys(object) // 1) for each obj's key
+  let q = Object.keys(object) // 1) for each obj's key
+    .filter(key => slice_keys.includes(key)) // 2) if it is in slice_keys
+    .reduce((accum, key) => { // 3) add the key/value pair to a new obj
+      accum[key] = object[key];
+      // console.log("AACC: accum", JSON.stringify(accum));
+      return accum;
+    }, {});
+  let q1 =  Object.keys(object) // 1) for each obj's key
     .filter(function (key) { // 2) if it is in slice_keys
       return slice_keys.indexOf(key) >= 0;
     })
@@ -1771,6 +1777,7 @@ exports.slice_object_by_keys = function (object, slice_keys) {
       // console.log("AACC: accum", JSON.stringify(accum));
       return accum;
     }, {});
+  return q1;
 };
 
 if (!Object.entries)
