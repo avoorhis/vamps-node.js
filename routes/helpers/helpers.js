@@ -1357,12 +1357,7 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
       break;
     case 'primer_suite':
       idname = 'primer_suite_id';
-      if (MD_PRIMER_SUITE.hasOwnProperty(selection_obj[idname]) && MD_PRIMER_SUITE[selection_obj[idname]].hasOwnProperty('name')) {
-      value = MD_PRIMER_SUITE[selection_obj[idname]].name;
-      }
-      else {
-        value = 'unknown';
-      }
+      value = get_current_primer_suite(selection_obj[idname]);
       break;
     case 'primers':
       idname = 'primer_ids';
@@ -1384,6 +1379,15 @@ module.exports.required_metadata_ids_from_names = function (selection_obj, mdnam
   // eg: { name: 'primer_suite_id', value: 'Bacterial V6 Suite' } or { name: 'domain_id', value: 'Bacteria' }
   return {"name": idname, "value": value};
 };
+
+function get_current_primer_suite(id) {
+  if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
+    return MD_PRIMER_SUITE[id].name;
+  }
+  else {
+    return 'unknown';
+  }
+}
 
 function get_current_primers(selection_obj) {
   let val = [];
