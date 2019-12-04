@@ -85,19 +85,19 @@ module.exports.get_second = function (element) {
 module.exports.start = process.hrtime();
 
 function check_file_formats(filename) {
-  var file_formats    = C.download_file_formats;
-  var file_first_part = filename.split('-')[0];
-  return file_formats.indexOf(file_first_part) !== -1;
+  let file_formats    = C.download_file_formats;
+  let file_first_part = filename.split('-')[0];
+  return file_formats.includes(file_first_part);
 }
 
 function get_user_dirname(dirname) {
-  var dirname_arr = dirname.split('/');
+  let dirname_arr = dirname.split('/');
   return dirname_arr[dirname_arr.length - 1];
 }
 
 function get_sizer_and_filesize(size) {
-  var fileSize = (size).toFixed(1);
-  var sizer    = 'Bytes';
+  let fileSize = (size).toFixed(1);
+  let sizer    = 'Bytes';
   if (size > 1000) {
     fileSize = (size / 1000.0).toFixed(1);
     sizer    = 'KB';
@@ -166,16 +166,16 @@ module.exports.walk = function (dir, done) {
 };
 
 function walk_sync_recursive(dir) {
-  var results = [];
-  var list    = fs.readdirSync(dir);
+  let results = [];
+  let list    = fs.readdirSync(dir);
   list.forEach(function (file) {
     file     = path.resolve(dir, file);
-    var stat = fs.statSync(file);
+    let stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
       results = results.concat(walk_sync_recursive(file));
     }
     else {
-      var filename = path.basename(file);
+      let filename = path.basename(file);
 
       if (check_file_formats(filename)) {
         results.push({
@@ -1640,16 +1640,12 @@ function region_valid(value, region_low, region_high) {
 }
 
 exports.numbers_n_period = function (value) {
-  // var regex = /^[0-9.]+$/;
-  //[^0-9.] faster
   let reg_exp = /[^0-9.]/;
   let err_msg = ', please use only numbers and periods.';
   check_regexp(reg_exp, value, err_msg);
 };
 
 exports.numbers_n_period_n_minus = function (value) {
-  // var regex = /^[0-9.]+$/;
-  //[^0-9.] faster
   var reg_exp = /[^0-9.-]/;
   var err_msg = ', please use only numbers, periods and minus.';
   check_regexp(reg_exp, value, err_msg);
@@ -1737,18 +1733,6 @@ exports.geo_loc_name_continental_filter = function (value) {
   }
   // console.timeEnd('geo_loc_name_continental_filter');
 };
-
-// exports.geo_loc_name_marine_validation = function (value) {
-//   if (MD_ENV_LZC_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Longhurst Zone '" + value + "', please check the spelling");
-//   }
-// };
-//
-// exports.geo_loc_name_continental_validation = function (value) {
-//   if (MD_ENV_CNTRY_vals.indexOf(value) < 0 && (value !== '')) {
-//     throw new Error("There is no Country '" + value + "', please check the spelling");
-//   }
-// };
 
 exports.recommended_temperature = function (value) {
   if (value === '') {
