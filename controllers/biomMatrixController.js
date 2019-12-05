@@ -727,7 +727,7 @@ class TaxonomySimple extends Taxonomy {
   }
 
   check_organel_and_chloropl(tax_long_name_arr) {
-    let organelle_has_been_de_selected = this.post_items.domains.indexOf('Organelle') === -1;
+    let organelle_has_been_de_selected = !this.post_items.domains.includes('Organelle');
     if (organelle_has_been_de_selected) {
       let has_chloroplast = tax_long_name_arr.includes('Chloroplast');
       let has_bacteria = tax_long_name_arr[0] === 'Bacteria';
