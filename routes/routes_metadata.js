@@ -77,11 +77,13 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
   let mdvalues = {};
   for (let did in DATASET_NAME_BY_DID) {
     if (did in AllMetadata) {
-      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0, md_selected.length - 3)) !== -1) {
+      let shortened_metadata_name = md_selected.slice(0, md_selected.length - 3);
+      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
         let data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
         mdvalues[did]    = data.value;
         md_selected_show = data.name;
-      } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
+      }
+      else if (AllMetadata[did].hasOwnProperty(md_selected)) {
         mdvalues[did]    = AllMetadata[did][md_selected];
         md_selected_show = md_selected;
 
@@ -102,7 +104,8 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
 router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
   console.log('in metadata - geomap');
   let md_item = req.params.item;
-  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0, md_item.length - 3)) !== -1) {
+  let shortened_metadata_name = md_item.slice(0, md_item.length - 3);
+  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
     md_item_show = md_item.slice(0, md_item.length - 3);
   } else {
     md_item_show = md_item;
