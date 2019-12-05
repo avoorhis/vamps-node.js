@@ -95,7 +95,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
 
-  if (visual_post_items.metadata.indexOf('primer_suite') !== -1){
+  if (visual_post_items.metadata.includes('primer_suite')){
     visual_post_items.metadata.push('primers');
   }
   let metadata = META.write_mapping_file(visual_post_items);
@@ -1045,9 +1045,9 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
 function filter_data_by_last_taxon(search_tax, clean_data) {
   //console.log('search_tax')
   //console.log(search_tax)
-  const search_tax_arr = search_tax.split(";").filter(function(value,index,arr){
-    if(value.indexOf('_NA') == -1){
-        return value 
+  const search_tax_arr = search_tax.split(";").filter(function(value){
+    if (!value.includes('_NA')) {
+        return value;
     }
   });
   //console.log('search_tax_arr')
@@ -1157,9 +1157,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
           console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-          //TODO: Andy, do we still need it? It's huge!
-          console.log('filtered_data')
-          console.log(filtered_data)
+          // TODO: Andy, do we still need to print it out? It's huge!
+          // console.log('filtered_data')
+          // console.log(filtered_data)
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
           console.timeEnd("TIME: loop through clean_data");
 
