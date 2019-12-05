@@ -376,7 +376,7 @@ class CreateDataObj {
   }
 
   isUnique(all_clean_field_names_arr, column_name) {
-    return (all_clean_field_names_arr.indexOf(column_name) < 0);
+    return (!all_clean_field_names_arr.includes(column_name));
   }
 
   get_cell_val_by_row(row_idx, req) {
@@ -1077,17 +1077,13 @@ class FieldNames {
     // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM
     let structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
 
-    let diff_names = structured_field_names0.filter(function (x) {
-      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-    });
+    let diff_names = structured_field_names0.filter(x => !CONSTS.METADATA_NAMES_SUBSTRACT.includes(x));
 
     diff_names = diff_names.filter(function (item) {
       return /^((?!_id).)*$/.test(item);
     });
 
-    diff_names = diff_names.filter(function (x) {
-      return CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM.indexOf(x) < 0;
-    });
+    diff_names = diff_names.filter(x => !CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM.includes(x));
 
     let big_arr_diff_names = this.make_array4(diff_names);
 
