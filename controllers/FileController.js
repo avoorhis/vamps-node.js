@@ -24,17 +24,7 @@ class FileUtil {
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
   }
-
-  //fs.unlink(c.config.appPath + '/content/files/' + name, function(err, data){
-  //
-  //       if(err){
-  //         console.log(err);
-  //         callBack(data);
-  //       } else {
-  //         callBack(data);
-  //       }
-  //     });
-
+  
   react_to_delete(err, data) {
     if (err) {
       console.log(data.err_msg);
@@ -47,49 +37,28 @@ class FileUtil {
     }
   }
 
-
   file_delete() {
     let file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
 
     if (this.req.query.type === 'elements') {
-      let data = {err_msg: "err 8: ",
+      let data = {
+        err_msg: "err 8: ",
         redirect_url: "/visuals/saved_elements"
       };
-
-      fs.unlink(file, function deleteFile(err, data) {
-        if (err) {
-          console.log(data.err_msg);
-          console.log(err);
-          this.req.flash('fail', err);
-        }
-        else {
-          this.req.flash('success', 'Deleted: ' + this.filename);
-          this.res.redirect(data.redirect_url);
-        }
-      }.bind()); //
+      fs.unlink(file, function callback(err) {
+        this.react_to_delete(err, data);
+        }.apply(this, data)
+      );
     }
     else {
-      let data = {err_msg: "err 9: ",
+      let data = {
+        err_msg: "err 9: ",
         redirect_url: "/metadata/metadata_file_list"
       };
       fs.unlink(file, function callback(err) {
         this.react_to_delete(err, data);
-      }.apply(this, data)
-    );
-
-        //    callback.apply (callbackObj, [firstName, lastName]);
-      // fs.unlink(file, function deleteFile(err, data) {
-      //   if (err) {
-      //     this.req.flash('fail', err);
-      //     console.log(data.err_msg);
-      //     console.log(err);
-      //   }
-      //   else {
-      //     this.req.flash('success', 'Deleted: ' + this.filename);
-      //     this.res.redirect(data.redirect_url);
-      //     // this.res.redirect("/metadata/metadata_file_list");
-      //   }
-      // }.apply([this, data]));
+        }.apply(this, data)
+      );
     }
   }
 }
