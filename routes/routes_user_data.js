@@ -4111,10 +4111,10 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   console.log('in file_utils');
   const file_util_obj = new file_controller.FileUtil(req, res);
 
-  if (req.query.fxn == 'download') {
+  if (req.query.fxn === 'download') {
     file_util_obj.file_download();
   }
-  else if (req.query.fxn == 'delete') {
+  else if (req.query.fxn === 'delete') {
     file_util_obj.file_delete("/user_data/file_retrieval");
   }
 

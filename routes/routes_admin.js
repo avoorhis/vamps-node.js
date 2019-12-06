@@ -19,6 +19,7 @@ var storage  = multer.diskStorage({
 });
 var User     = require(app_root + '/models/user_model');
 var upload   = multer({storage: storage}).single('upload_metadata_file');
+const file_controller = require(app_root + '/controllers/fileController');
 
 router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
 
@@ -1448,57 +1449,67 @@ function get_name_ordered_projects_list() {
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
   console.log('in file_utils');
-  var user = req.query.user;
+  const file_util_obj = new file_controller.FileUtil(req, res);
 
-  // console.log("file from file_utils: ");
-  // console.log(file);
-  //// DOWNLOAD //////
-  if (req.query.fxn == 'download' && req.query.template == '1') {
-    var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
-    var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download') {
-    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-    ///// DELETE /////
-  } else if (req.query.fxn == 'delete') {
-    // console.log("UUU req.query");
-    // console.log(req.query);
-
-
-    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    if (req.query.type == 'elements') {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          console.log("err 8: ");
-          console.log(err);
-          req.flash('fail', err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/visuals/saved_elements");
-        }
-      }); //
-    } else {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          req.flash('fail', err);
-          console.log("err 9: ");
-          console.log(err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/admin/all_files_retrieval");
-        }
-      });
-    }
-
+  if (req.query.fxn === 'download') {
+    file_util_obj.file_download();
   }
+  else if (req.query.fxn === 'delete') {
+    file_util_obj.file_delete("/admin/all_files_retrieval");
+  }
+
+  //
+  // var user = req.query.user;
+  //
+  // // console.log("file from file_utils: ");
+  // // console.log(file);
+  // //// DOWNLOAD //////
+  // if (req.query.fxn == 'download' && req.query.template == '1') {
+  //   var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  // } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
+  //   var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  // } else if (req.query.fxn == 'download') {
+  //   var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  //
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  //   ///// DELETE /////
+  // } else if (req.query.fxn == 'delete') {
+  //   // console.log("UUU req.query");
+  //   // console.log(req.query);
+  //
+  //
+  //   var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  //
+  //   if (req.query.type == 'elements') {
+  //     fs.unlink(file, function deleteFile(err) {
+  //       if (err) {
+  //         console.log("err 8: ");
+  //         console.log(err);
+  //         req.flash('fail', err);
+  //       } else {
+  //         req.flash('success', 'Deleted: ' + req.query.filename);
+  //         res.redirect("/visuals/saved_elements");
+  //       }
+  //     }); //
+  //   } else {
+  //     fs.unlink(file, function deleteFile(err) {
+  //       if (err) {
+  //         req.flash('fail', err);
+  //         console.log("err 9: ");
+  //         console.log(err);
+  //       } else {
+  //         req.flash('success', 'Deleted: ' + req.query.filename);
+  //         res.redirect("/admin/all_files_retrieval");
+  //       }
+  //     });
+  //   }
+  //
+  // }
 
 });
 //
