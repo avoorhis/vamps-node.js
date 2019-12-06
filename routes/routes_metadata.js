@@ -778,59 +778,120 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
 // from a csv file to db
 
+function file_download(req, res) {
+  let file = '';
+  let user = req.query.user;
+  let filename = req.query.filename;
+
+  if (req.query.template === '1') {
+    file = path.join(req.CONFIG.PROCESS_DIR, filename);
+  }
+  else if (req.query.type === 'pcoa') {
+    file = path.join(req.CONFIG.TMP_FILES, filename);
+  }
+  else {
+    file = path.join(req.CONFIG.USER_FILES_BASE, user, filename);
+  }
+  res.setHeader('Content-Type', 'text');
+  res.download(file); // Set disposition and send it.
+}
+
+function file_delete(req, res) {
+  let user = req.query.user;
+  let file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+
+  if (req.query.type === 'elements') {
+    fs.unlink(file, function deleteFile(err) {
+      if (err) {
+        console.log("err 8: ");
+        console.log(err);
+        req.flash('fail', err);
+      }
+      else {
+        req.flash('success', 'Deleted: ' + req.query.filename);
+        res.redirect("/visuals/saved_elements");
+      }
+    }); //
+  }
+  else {
+    fs.unlink(file, function deleteFile(err) {
+      if (err) {
+        req.flash('fail', err);
+        console.log("err 9: ");
+        console.log(err);
+      } else {
+        req.flash('success', 'Deleted: ' + req.query.filename);
+        res.redirect("/metadata/metadata_file_list");
+      }
+    });
+  }
+}
+
 // TODO: mv to helpers and refactor (see also in admin & user_data)
 // JSHint: This function's cyclomatic complexity is too high. (6)(W074)
+// test: http://localhost:3000/metadata/file_utils
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+  // let file = '';
 
   // console.time('file_utils');
-  let user = req.query.user;
+  // let user = req.query.user;
 
   //// DOWNLOAD //////
-  let file = '';
   console.log("file from file_utils in routes_metadata: ");
   console.log(req.query.filename);
-  if (req.query.fxn === 'download' && req.query.template === '1') {
-    file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
-    file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn === 'download') {
-    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  if (req.query.fxn === 'download') {
+    file_download(req, res);
+  }
+  // if (req.query.fxn === 'download' && req.query.template === '1') {
+  //   file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  // }
+  // else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
+  //   file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  // }
+  // else if (req.query.fxn === 'download') {
+  //   file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  //
+  //   res.setHeader('Content-Type', 'text');
+  //   res.download(file); // Set disposition and send it.
+  //   ///// DELETE /////
+  // }
+  ///// DELETE /////
 
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-    ///// DELETE /////
-  } else if (req.query.fxn === 'delete') {
+  else if (req.query.fxn === 'delete') {
+    file_delete(req, res);
 
-    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    if (req.query.type === 'elements') {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          console.log("err 8: ");
-          console.log(err);
-          req.flash('fail', err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/visuals/saved_elements");
-        }
-      }); //
-    } else {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          req.flash('fail', err);
-          console.log("err 9: ");
-          console.log(err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/metadata/metadata_file_list");
-        }
-      });
-    }
-
+  //   let file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  //
+  //   if (req.query.type === 'elements') {
+  //     fs.unlink(file, function deleteFile(err) {
+  //       if (err) {
+  //         console.log("err 8: ");
+  //         console.log(err);
+  //         req.flash('fail', err);
+  //       }
+  //       else {
+  //         req.flash('success', 'Deleted: ' + req.query.filename);
+  //         res.redirect("/visuals/saved_elements");
+  //       }
+  //     }); //
+  //   }
+  //   else {
+  //     fs.unlink(file, function deleteFile(err) {
+  //       if (err) {
+  //         req.flash('fail', err);
+  //         console.log("err 9: ");
+  //         console.log(err);
+  //       } else {
+  //         req.flash('success', 'Deleted: ' + req.query.filename);
+  //         res.redirect("/metadata/metadata_file_list");
+  //       }
+  //     });
+  //   }
+  //
   }
   // console.timeEnd('file_utils');
 

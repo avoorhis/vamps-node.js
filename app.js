@@ -172,7 +172,7 @@ app.use(function(req, res, next){
 	 }else{
 	    req.db = connection;
 	    req.CONSTS = consts;
-        req.CONFIG = config;
+	    req.CONFIG = config;
 	    return next();
 	}
 });
