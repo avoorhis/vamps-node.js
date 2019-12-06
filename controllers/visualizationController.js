@@ -440,7 +440,7 @@ class visualizationFilters {
     let user_security_level_to_int = parseInt(req.user.security_level);
     let is_admin_user = user_security_level_to_int <= 10;
     let no_permissions = node.permissions.length === 0;
-    let owner_is_user = node.permissions.indexOf(req.user.user_id) !== -1;
+    let owner_is_user = node.permissions.includes(req.user.user_id);
     let dco_project = (node.project).substring(0,3) === 'DCO';
     let dco_editor_for_dco_project = (user_security_level_to_int === 45 && dco_project);
 
