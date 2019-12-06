@@ -24,7 +24,7 @@ class FileUtil {
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
   }
-  
+
   react_to_delete(err, data) {
     if (err) {
       console.log(data.err_msg);
@@ -37,7 +37,7 @@ class FileUtil {
     }
   }
 
-  file_delete() {
+  file_delete(redirect_url_after_delete = undefined) {
     let file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
 
     if (this.req.query.type === 'elements') {
@@ -53,7 +53,7 @@ class FileUtil {
     else {
       let data = {
         err_msg: "err 9: ",
-        redirect_url: "/metadata/metadata_file_list"
+        redirect_url: redirect_url_after_delete
       };
       fs.unlink(file, function callback(err) {
         this.react_to_delete(err, data);

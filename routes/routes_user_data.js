@@ -4115,7 +4115,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
     file_util_obj.file_download();
   }
   else if (req.query.fxn == 'delete') {
-    file_util_obj.file_delete();
+    file_util_obj.file_delete("/user_data/file_retrieval");
   }
 
 });
