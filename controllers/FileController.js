@@ -2,52 +2,94 @@ let fs   = require('fs-extra');
 let path = require('path');
 
 class FileUtil {
-  file_download(req, res) {
-    let file = '';
-    let user = req.query.user;
-    let filename = req.query.filename;
-
-    if (req.query.template === '1') {
-      file = path.join(req.CONFIG.PROCESS_DIR, filename);
-    }
-    else if (req.query.type === 'pcoa') {
-      file = path.join(req.CONFIG.TMP_FILES, filename);
-    }
-    else {
-      file = path.join(req.CONFIG.USER_FILES_BASE, user, filename);
-    }
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
+  constructor(req, res) {
+    this.req = req;
+    this.res = res;
+    this.user = this.req.query.user;
+    this.filename = this.req.query.filename;
   }
 
-  file_delete(req, res) {
-    let user = req.query.user;
-    let file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
+  file_download() {
+    let file = '';
 
-    if (req.query.type === 'elements') {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          console.log("err 8: ");
-          console.log(err);
-          req.flash('fail', err);
-        }
-        else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/visuals/saved_elements");
-        }
-      }); //
+    if (this.req.query.template === '1') {
+      file = path.join(this.req.CONFIG.PROCESS_DIR, this.filename);
+    }
+    else if (this.req.query.type === 'pcoa') {
+      file = path.join(this.req.CONFIG.TMP_FILES, this.filename);
     }
     else {
-      fs.unlink(file, function deleteFile(err) {
+      file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
+    }
+    this.res.setHeader('Content-Type', 'text');
+    this.res.download(file); // Set disposition and send it.
+  }
+
+  //fs.unlink(c.config.appPath + '/content/files/' + name, function(err, data){
+  //
+  //       if(err){
+  //         console.log(err);
+  //         callBack(data);
+  //       } else {
+  //         callBack(data);
+  //       }
+  //     });
+
+  react_to_delete(err, data) {
+    if (err) {
+      console.log(data.err_msg);
+      console.log(err);
+      this.req.flash('fail', err);
+    }
+    else {
+      this.req.flash('success', 'Deleted: ' + this.filename);
+      this.res.redirect(data.redirect_url);
+    }
+  }
+
+
+  file_delete() {
+    let file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
+
+    if (this.req.query.type === 'elements') {
+      let data = {err_msg: "err 8: ",
+        redirect_url: "/visuals/saved_elements"
+      };
+
+      fs.unlink(file, function deleteFile(err, data) {
         if (err) {
-          req.flash('fail', err);
-          console.log("err 9: ");
+          console.log(data.err_msg);
           console.log(err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/metadata/metadata_file_list");
+          this.req.flash('fail', err);
         }
-      });
+        else {
+          this.req.flash('success', 'Deleted: ' + this.filename);
+          this.res.redirect(data.redirect_url);
+        }
+      }.bind()); //
+    }
+    else {
+      let data = {err_msg: "err 9: ",
+        redirect_url: "/metadata/metadata_file_list"
+      };
+      fs.unlink(file, function callback(err) {
+        this.react_to_delete(err, data);
+      }.apply(this, data)
+    );
+
+        //    callback.apply (callbackObj, [firstName, lastName]);
+      // fs.unlink(file, function deleteFile(err, data) {
+      //   if (err) {
+      //     this.req.flash('fail', err);
+      //     console.log(data.err_msg);
+      //     console.log(err);
+      //   }
+      //   else {
+      //     this.req.flash('success', 'Deleted: ' + this.filename);
+      //     this.res.redirect(data.redirect_url);
+      //     // this.res.redirect("/metadata/metadata_file_list");
+      //   }
+      // }.apply([this, data]));
     }
   }
 }
