@@ -26,6 +26,7 @@ var CONSTS  = require(app_root + '/public/constants');
 var COMMON  = require(app_root + '/routes/visuals/routes_common');
 var META    = require('./visuals/routes_visuals_metadata');
 
+const file_controller = require(app_root + '/controllers/fileController');
 const global_vars_controller = require(app_root + '/controllers/globalVarsController');
 const global_vars = new global_vars_controller.GlobalVars();
 
@@ -4108,10 +4109,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 
   console.log('in file_utils');
-  const file_controller = require(app_root + '/controllers/fileController');
   const file_util_obj = new file_controller.FileUtil(req, res);
-
-  var user = req.query.user;
 
   if (req.query.fxn == 'download') {
     file_util_obj.file_download();
@@ -4119,51 +4117,6 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   else if (req.query.fxn == 'delete') {
     file_util_obj.file_delete();
   }
-  console.log("file from file_utils in route_user_data: ");
-  console.log(file);
-  //// DOWNLOAD //////
-  // if (req.query.fxn == 'download' && req.query.template == '1') {
-  //     var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-  //     res.setHeader('Content-Type', 'text');
-  //     res.download(file); // Set disposition and send it.
-  // } else if (req.query.fxn == 'download' &&  req.query.type=='pcoa') {
-  //     var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-  //     res.setHeader('Content-Type', 'text');
-  //     res.download(file); // Set disposition and send it.
-  // } else if (req.query.fxn == 'download') {
-  //       var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-  //
-  //     res.setHeader('Content-Type', 'text');
-  //     res.download(file); // Set disposition and send it.
-  // ///// DELETE /////
-  // } else if (req.query.fxn == 'delete') {
-  //     var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-  //
-  //   if (req.query.type == 'elements') {
-  //     fs.unlink(file, function deleteFile(err) {
-  //       if (err) {
-  //         console.log("err 8: ");
-  //         console.log(err);
-  //         req.flash('fail', err);
-  //       } else {
-  //         req.flash('success', 'Deleted: '+req.query.filename);
-  //         res.redirect("/visuals/saved_elements");
-  //       }
-  //     }); //
-  //   } else {
-  //     fs.unlink(file, function deleteFile(err) {
-  //       if (err) {
-  //         req.flash('fail', err);
-  //         console.log("err 9: ");
-  //         console.log(err);
-  //       } else {
-  //         req.flash('success', 'Deleted: '+req.query.filename);
-  //         res.redirect("/user_data/file_retrieval");
-  //       }
-  //     });
-  //   }
-
-  // }
 
 });
 
