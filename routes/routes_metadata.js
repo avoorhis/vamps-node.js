@@ -6,7 +6,7 @@ let form    = require("express-form");
 const constants_metadata = require(app_root + '/public/constants_metadata');
 const constants = require(app_root + '/public/constants');
 const CONSTS = Object.assign(constants, constants_metadata);
-let fs      = require("fs");
+// let fs      = require("fs");
 let path    = require("path");
 let config  = require(app_root + '/config/config');
 // let validator           = require('validator');
@@ -19,6 +19,7 @@ let metadata_controller  = require(app_root + '/controllers/metadataController')
 let csv_files_controller = require(app_root + '/controllers/csvFilesController');
 const multer             = require('multer');
 let upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
+const file_controller    = require(app_root + '/controllers/fileController');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -778,123 +779,18 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
 // from a csv file to db
 
-function file_download(req, res) {
-  let file = '';
-  let user = req.query.user;
-  let filename = req.query.filename;
-
-  if (req.query.template === '1') {
-    file = path.join(req.CONFIG.PROCESS_DIR, filename);
-  }
-  else if (req.query.type === 'pcoa') {
-    file = path.join(req.CONFIG.TMP_FILES, filename);
-  }
-  else {
-    file = path.join(req.CONFIG.USER_FILES_BASE, user, filename);
-  }
-  res.setHeader('Content-Type', 'text');
-  res.download(file); // Set disposition and send it.
-}
-
-function file_delete(req, res) {
-  let user = req.query.user;
-  let file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-  if (req.query.type === 'elements') {
-    fs.unlink(file, function deleteFile(err) {
-      if (err) {
-        console.log("err 8: ");
-        console.log(err);
-        req.flash('fail', err);
-      }
-      else {
-        req.flash('success', 'Deleted: ' + req.query.filename);
-        res.redirect("/visuals/saved_elements");
-      }
-    }); //
-  }
-  else {
-    fs.unlink(file, function deleteFile(err) {
-      if (err) {
-        req.flash('fail', err);
-        console.log("err 9: ");
-        console.log(err);
-      } else {
-        req.flash('success', 'Deleted: ' + req.query.filename);
-        res.redirect("/metadata/metadata_file_list");
-      }
-    });
-  }
-}
-
 // TODO: mv to helpers and refactor (see also in admin & user_data)
-// JSHint: This function's cyclomatic complexity is too high. (6)(W074)
-// test: http://localhost:3000/metadata/file_utils
+// test: more -> metadata -> Manage Saved Metadata
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
-  // let file = '';
-
-  // console.time('file_utils');
-  // let user = req.query.user;
-
-  //// DOWNLOAD //////
+  const file_util_obj = new file_controller.FileUtil(req, res);
   console.log("file from file_utils in routes_metadata: ");
   console.log(req.query.filename);
   if (req.query.fxn === 'download') {
-    file_download(req, res);
+    file_util_obj.file_download();
   }
-  // if (req.query.fxn === 'download' && req.query.template === '1') {
-  //   file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(file); // Set disposition and send it.
-  // }
-  // else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
-  //   file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(file); // Set disposition and send it.
-  // }
-  // else if (req.query.fxn === 'download') {
-  //   file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-  //
-  //   res.setHeader('Content-Type', 'text');
-  //   res.download(file); // Set disposition and send it.
-  //   ///// DELETE /////
-  // }
-  ///// DELETE /////
-
   else if (req.query.fxn === 'delete') {
-    file_delete(req, res);
-
-  //   let file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-  //
-  //   if (req.query.type === 'elements') {
-  //     fs.unlink(file, function deleteFile(err) {
-  //       if (err) {
-  //         console.log("err 8: ");
-  //         console.log(err);
-  //         req.flash('fail', err);
-  //       }
-  //       else {
-  //         req.flash('success', 'Deleted: ' + req.query.filename);
-  //         res.redirect("/visuals/saved_elements");
-  //       }
-  //     }); //
-  //   }
-  //   else {
-  //     fs.unlink(file, function deleteFile(err) {
-  //       if (err) {
-  //         req.flash('fail', err);
-  //         console.log("err 9: ");
-  //         console.log(err);
-  //       } else {
-  //         req.flash('success', 'Deleted: ' + req.query.filename);
-  //         res.redirect("/metadata/metadata_file_list");
-  //       }
-  //     });
-  //   }
-  //
+    file_util_obj.file_delete();
   }
-  // console.timeEnd('file_utils');
-
 });
 
 // save from form to db ??
