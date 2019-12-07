@@ -54,8 +54,8 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function (req,
 
   console.log('in permissions');
 
-  var user_order    = get_name_ordered_users_list()
-  var project_order = get_name_ordered_projects_list()
+  let user_order    = get_name_ordered_users_list();
+  let project_order = get_name_ordered_projects_list();
   //console.log(JSON.stringify(ALL_USERS_BY_UID))
   res.render('admin/permissions', {
     title: 'VAMPS Site Administration',
@@ -245,7 +245,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function (re
   }
   //console.log(PROJECT_INFORMATION_BY_PID);
   //console.log(ALL_USERS_BY_UID);
-  var project_list = get_name_ordered_projects_list()
+  let project_list = get_name_ordered_projects_list();
   res.render('admin/alter_project', {
     title: 'VAMPS Site Administration',
     user: req.user,
@@ -1435,10 +1435,9 @@ function get_name_ordered_users_list() {
 }
 
 function get_name_ordered_projects_list() {
-  project_order = [];
-  for (let pid in  PROJECT_INFORMATION_BY_PID) {
-    project_order.push(PROJECT_INFORMATION_BY_PID[pid]);
-  }
+  let project_order = [];
+  Object.keys(PROJECT_INFORMATION_BY_PID).forEach(pid => project_order.push(PROJECT_INFORMATION_BY_PID[pid]));
+
   project_order.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.project, b.project);
   });
