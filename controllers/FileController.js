@@ -1,6 +1,7 @@
 let fs   = require('fs-extra');
 let path = require('path');
 let spawn = require('child_process').spawn;
+let helpers = require(app_root + '/routes/helpers/helpers');
 
 class FileUtil {
   constructor(req, res) {
@@ -105,38 +106,27 @@ class FileUtil {
     return pids_str;
   }
 
-
-  //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
-  create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-    // let db  = req.db;
-    //file_name = 'fasta-'+ts+'_custom.fa.gz';
+  get_export_cmd_options(user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
     let req = this.req;
-    let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
-
-    let norm = this.get_norm(normalization);
-    
-    let site       = req.CONFIG.site;
-    let code       = 'NVexport';
-    //console.log('dids', dids);
-    let export_cmd = 'vamps_export_data.py';
+    let site = req.CONFIG.site;
     let dids_str = JSON.stringify(dids.join(','));
     let pids_str = this.get_pid_list(dids, file_tags);
+    let norm = this.get_norm(normalization);
 
     let export_cmd_options = {
-
-      scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
+    scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
       args: ['-s', site,
-        '-u', req.user.username,
-        '-r', ts,
-        '-base', user_dir,
-        '-dids', dids_str,
-        '-pids', pids_str,
-        '-norm', norm,
-        '-rank', rank,
-        '-db', NODE_DATABASE
-      ] // '-compress'
+      '-u', req.user.username,
+      '-r', ts,
+      '-base', user_dir,
+      '-dids', dids_str,
+      '-pids', pids_str,
+      '-norm', norm,
+      '-rank', rank,
+      '-db', NODE_DATABASE
+    ] // '-compress'
 
-    };
+  };
     for (let t in file_tags) {
       export_cmd_options.args.push(file_tags[t]);
     }
@@ -151,11 +141,55 @@ class FileUtil {
     if (include_nas === 'no') {
       export_cmd_options.args.push('-exclude_nas');
     }
+    return export_cmd_options;
+  }
+
+
+  //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
+  create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
+    // let db  = req.db;
+    //file_name = 'fasta-'+ts+'_custom.fa.gz';
+    let req = this.req;
+    let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
+    let code       = 'NVexport';
+    //console.log('dids', dids);
+    let export_cmd = 'vamps_export_data.py';
+
+    let export_cmd_options = this.get_export_cmd_options(user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress);
+    //   {
+    //
+    //   scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
+    //   args: ['-s', site,
+    //     '-u', req.user.username,
+    //     '-r', ts,
+    //     '-base', user_dir,
+    //     '-dids', dids_str,
+    //     '-pids', pids_str,
+    //     '-norm', norm,
+    //     '-rank', rank,
+    //     '-db', NODE_DATABASE
+    //   ] // '-compress'
+    //
+    // };
+    // for (let t in file_tags) {
+    //   export_cmd_options.args.push(file_tags[t]);
+    // }
+    // if (compress) {
+    //   export_cmd_options.args.push('-compress');
+    // }
+    // if (domains !== '') {
+    //   export_cmd_options.args.push('-domains');
+    //   export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
+    // }
+    // console.log('include NAs', include_nas);
+    // if (include_nas === 'no') {
+    //   export_cmd_options.args.push('-exclude_nas');
+    // }
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
     if (req.CONFIG.cluster_available === true) {
-      let qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
+      let qsub_script_text = helpers.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
       let qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
 
       let qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
@@ -178,15 +212,12 @@ class FileUtil {
                 stdio: ['pipe', 'pipe', 'pipe']
                 //stdio: [ 'ignore', null, log ]
               });  // stdin, stdout, stderr1
-
-
             }
           });
         }
       });
-
-
-    } else {
+    }
+    else {
       console.log('No Cluster Available according to req.CONFIG.cluster_available');
       let cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
       console.log('RUNNING:', cmd);
