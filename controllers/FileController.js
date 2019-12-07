@@ -10,16 +10,20 @@ class FileUtil {
     this.res = res;
     this.user = this.req.query.user;
     this.filename = this.req.query.filename;
+    this.file_paths = new module.exports.visualizationFiles();
+    this.tmp_path = this.file_paths.get_tmp_file_path(this.req);
+    this.user_file_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
+    this.process_dir = this.file_paths.get_process_dir(this.req);
   }
 
   file_download() {
     let file = '';
 
     if (this.req.query.template === '1') {
-      file = path.join(this.req.CONFIG.PROCESS_DIR, this.filename);
+      file = path.join(this.process_dir, this.filename);
     }
     else if (this.req.query.type === 'pcoa') {
-      file = path.join(this.req.CONFIG.TMP_FILES, this.filename);
+      file = path.join(this.tmp_path, this.filename);
     }
     else {
       file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
@@ -229,29 +233,23 @@ class FileUtil {
 }
 
 class visualizationFiles {
-  // constructor(req) {
-  // }
+  constructor() {
+    this.user_file_path = "";
+  }
 
   get_process_dir(req) {
     return req.CONFIG.PROCESS_DIR;
   }
 
-  get_user_file_path(req) {
-    const user_file_path = req.CONFIG.USER_FILES_BASE;
-    return path.join(user_file_path, req.body.user, req.body.filename);
+  get_user_file_path(req, user = req.body.user, filename = req.body.filename) {
+    this.user_file_path = req.CONFIG.USER_FILES_BASE;
+    return path.join(this.user_file_path, user, filename);
   }
 
   get_json_files_prefix(req) {
     return path.join(req.CONFIG.JSON_FILES_BASE,
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
   }
-
-  // get_biom_file_tmp_path(req) {
-  //   return this.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  //   // const biom_file_name = this.get_file_names(req)['count_matrix.biom'];
-  //   // const tmp_path = this.get_tmp_file_path(req);
-  //   // return path.join(tmp_path, biom_file_name);
-  // }
 
   get_tmp_file_path(req) {
     return req.CONFIG.TMP_FILES;
