@@ -1052,7 +1052,7 @@ module.exports.deleteFolderRecursive = function (path) {
       try {
         fs.unlinkSync(path);
       } catch (e) {
-        console.log("Could not delete1: " + path)
+        console.log("Could not delete1: " + path);
       }
     } else {
       fs.readdirSync(path).forEach(function (file, index) {

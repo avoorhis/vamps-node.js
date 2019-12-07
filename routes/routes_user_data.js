@@ -89,8 +89,6 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
 //TODO: function is overly complex (cyclomatic complexity = 15)
 // test: data selection -> download data
 router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
-  const file_util_obj = new file_controller.FileUtil(req, res);
-
   console.log('req.body: export_confirm-->>');
     console.log(req.body);
     //console.log(req.session);
@@ -176,6 +174,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
       if (req.body.tax_depth === 'class') {
         td = 'klass';
       }
+      const file_util_obj = new file_controller.FileUtil(req, res);
       file_util_obj.create_export_files(
             user_dir, 
             timestamp, 
@@ -4266,6 +4265,8 @@ router.get('/required_metadata_options', function(req, res) {
 //TODO: function is overly complex (cyclomatic complexity = 26)
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
   var db = req.db;
+  const file_util_obj = new file_controller.FileUtil(req, res);
+
   console.log('metadata download POST req.body-->>');
   // here from project info page
   console.log(req.body);
@@ -4783,14 +4784,16 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
 //
 //
 router.post('/download_file', helpers.isLoggedIn, function (req, res) {
-    console.log('in routes_user_data download_file');
-    // file_type - fasta, metadata, or matrix
-    console.log(req.body);
-    var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var file_tag = ['-'+req.body.file_type+'_file'];
-    console.log(req.session);
-    file_util_obj.create_export_files(
+  console.log('in routes_user_data download_file');
+  // file_type - fasta, metadata, or matrix
+  console.log(req.body);
+  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var timestamp = +new Date();  // millisecs since the epoch!
+  var file_tag = ['-'+req.body.file_type+'_file'];
+  console.log(req.session);
+  const file_util_obj = new file_controller.FileUtil(req, res);
+
+  file_util_obj.create_export_files(
         user_dir, 
         timestamp, 
         req.session.chosen_id_order, 
