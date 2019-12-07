@@ -176,7 +176,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
       if (req.body.tax_depth === 'class') {
         td = 'klass';
       }
-      file_util_obj.create_export_files(req,
+      file_util_obj.create_export_files(
             user_dir, 
             timestamp, 
             req.session.chosen_id_order, 

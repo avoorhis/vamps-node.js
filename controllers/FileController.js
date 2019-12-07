@@ -1,5 +1,6 @@
 let fs   = require('fs-extra');
 let path = require('path');
+let spawn = require('child_process').spawn;
 
 class FileUtil {
   constructor(req, res) {
@@ -76,19 +77,7 @@ class FileUtil {
     return norm;
   }
 
-  //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
-  create_export_files (req, user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-    // let db  = req.db;
-    //file_name = 'fasta-'+ts+'_custom.fa.gz';
-    let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
-
-    let norm = this.get_norm(normalization);
-    
-    let site       = req.CONFIG.site;
-    let code       = 'NVexport';
-    let pids_str;
-    //console.log('dids', dids);
-    let export_cmd = 'vamps_export_data.py';
+  get_pid_lookup(dids){
     let pid_lookup = [];
     Object.keys(PROJECT_ID_BY_DID).forEach(did => {
       let pid = PROJECT_ID_BY_DID[did];
@@ -96,9 +85,11 @@ class FileUtil {
         pid_lookup.push(pid);
       }
     });
+    return pid_lookup.join(',');
+  }
 
-    let dids_str = JSON.stringify(dids.join(','));
-
+  get_pid_list(dids, file_tags){
+    let pids_str = "";
     if (file_tags[0] === '--dco_metadata_file') {
       let pid_list = [];
       for (let pname in PROJECT_INFORMATION_BY_PNAME) {
@@ -107,9 +98,40 @@ class FileUtil {
         }
       }
       pids_str = JSON.stringify(pid_list.join(','));
-    } else {
-      pids_str = pid_lookup.join(',');
     }
+    else {
+      pids_str = this.get_pid_lookup(dids);
+    }
+    return pids_str;
+  }
+
+
+  //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
+  create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
+    // let db  = req.db;
+    //file_name = 'fasta-'+ts+'_custom.fa.gz';
+    let req = this.req;
+    let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
+
+    let norm = this.get_norm(normalization);
+    
+    let site       = req.CONFIG.site;
+    let code       = 'NVexport';
+    //console.log('dids', dids);
+    let export_cmd = 'vamps_export_data.py';
+    let dids_str = JSON.stringify(dids.join(','));
+    let pids_str = this.get_pid_list(dids, file_tags);
+    // if (file_tags[0] === '--dco_metadata_file') {
+    //   let pid_list = [];
+    //   for (let pname in PROJECT_INFORMATION_BY_PNAME) {
+    //     if (pname.substring(0, 3) === 'DCO') {
+    //       pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid);
+    //     }
+    //   }
+    //   pids_str = JSON.stringify(pid_list.join(','));
+    // } else {
+    //   pids_str = pid_lookup;
+    // }
     //console.log('pids', pids_str);
     //let file_tags = file_tags.join(' ')
 
@@ -134,22 +156,22 @@ class FileUtil {
     if (compress) {
       export_cmd_options.args.push('-compress');
     }
-    if (domains != '') {
+    if (domains !== '') {
       export_cmd_options.args.push('-domains');
       export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
     }
-    console.log('include NAs', include_nas)
-    if (include_nas == 'no') {
+    console.log('include NAs', include_nas);
+    if (include_nas === 'no') {
       export_cmd_options.args.push('-exclude_nas');
     }
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
     if (req.CONFIG.cluster_available === true) {
-      qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
-      qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
+      let qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
+      let qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
 
-      qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
+      let qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
 
       console.log('RUNNING(via qsub):', cmd_list[0]);
       console.log('qsub_file_path:', qsub_file_path);
@@ -187,11 +209,11 @@ class FileUtil {
         detached: true,
         stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
       });
-      stdout            = '';
+      let stdout = '';
       dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
         stdout += data;
       });
-      stderr = '';
+      let stderr = '';
       dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
         stderr += data;
       });
@@ -199,9 +221,7 @@ class FileUtil {
         console.log('dwnld_process process exited with code ' + code);
         //console.log('stdout', stdout);
         //console.log('stderr', stderr);
-        if (code === 0) {   // SUCCESS
-
-        } else {
+        if (code !== 0) {
           console.log('ERROR', stderr);
           //res.send('Frequency Heatmap R Script Error:'+stderr);
         }
@@ -209,7 +229,7 @@ class FileUtil {
     }
 
     return;
-  };
+  }
 
 }
 
