@@ -121,19 +121,6 @@ class FileUtil {
     let export_cmd = 'vamps_export_data.py';
     let dids_str = JSON.stringify(dids.join(','));
     let pids_str = this.get_pid_list(dids, file_tags);
-    // if (file_tags[0] === '--dco_metadata_file') {
-    //   let pid_list = [];
-    //   for (let pname in PROJECT_INFORMATION_BY_PNAME) {
-    //     if (pname.substring(0, 3) === 'DCO') {
-    //       pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid);
-    //     }
-    //   }
-    //   pids_str = JSON.stringify(pid_list.join(','));
-    // } else {
-    //   pids_str = pid_lookup;
-    // }
-    //console.log('pids', pids_str);
-    //let file_tags = file_tags.join(' ')
 
     let export_cmd_options = {
 
