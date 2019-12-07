@@ -4296,18 +4296,19 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
                 file_tag.push('--include_metagenomic')
             }
         }
-        if(orientation == 'cols'){
+        if (orientation == 'cols'){
             file_name = 'metadata-'+timestamp+'-2.tsv.gz';
             file_tag.push('--metadata_file2')
-        }else{
+        }
+        else{
             file_name = 'metadata-'+timestamp+'-1.tsv.gz';
             file_tag.push('--metadata_file1')
         }
-        console.log(file_tag)
+        console.log(file_tag);
         //file_name = 'metadata-'+timestamp+'_'+project+'.csv';
         out_file_path = path.join(user_dir, file_name);
-        header = "Project: "+project+"\n\t";
-         helpers.create_export_files(req, 
+        header = "Project: " + project + "\n\t";
+        file_util_obj.create_export_files(
             user_dir, 
             timestamp, 
             dids, 
@@ -4319,13 +4320,15 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
             true);
         res.send(file_name);
         return;
-  } else if (req.body.download_type == 'partial_project'){
+  }
+  else if (req.body.download_type == 'partial_project'){
         dids = req.session.chosen_id_order;
         if(orientation == 'cols'){
             //file_name = 'metadata-samples_in_cols'+timestamp+'.csv.gz';
             file_name = 'metadata-'+timestamp+'-2.tsv.gz';
             file_tag = ['--metadata_file2']
-        }else{
+        }
+        else {
             //file_name = 'metadata-samples_in_rows'+timestamp+'.csv.gz';
             file_name = 'metadata-'+timestamp+'-1.tsv.gz';
             file_tag = ['--metadata_file1']
@@ -4334,7 +4337,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         //out_file_path = path.join(user_dir, file_name);
         out_file_path = path.join('tmp', file_name);
         header = 'Project: various'+"\n\t";
-         helpers.create_export_files(req, 
+        file_util_obj.create_export_files(
             user_dir, 
             timestamp, 
             dids, 
@@ -4372,7 +4375,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
-        helpers.create_export_files(req, 
+        file_util_obj.create_export_files(
             req.CONFIG.PATH_TO_DCO_DOWNLOADS, 
             timestamp, 
             [''],  // empty did list for dco_bulk 
@@ -4787,7 +4790,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file'];
     console.log(req.session);
-      helpers.create_export_files(req, 
+    file_util_obj.create_export_files(
         user_dir, 
         timestamp, 
         req.session.chosen_id_order, 

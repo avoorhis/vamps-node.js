@@ -18,12 +18,13 @@ const META    = require('./routes_visuals_metadata');
 const IMAGES = require('../routes_images');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
 const visualization_controller = require(app_root + '/controllers/visualizationController');
+const file_controller = require(app_root + '/controllers/fileController');
 const spawn = require('child_process').spawn;
 // const app = express();
 // const js2xmlparser = require("js2xmlparser");
 // const xml_convert = require('xml-js');
 
-const file_path_obj =  new visualization_controller.visualizationFiles();
+const file_path_obj =  new file_controller.visualizationFiles();
 
 function start_visual_post_items(req) {
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);

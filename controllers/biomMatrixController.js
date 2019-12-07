@@ -12,8 +12,9 @@ const path   = require("path");
 const extend = require('util')._extend;
 
 let helpers = require(app_root + '/routes/helpers/helpers');
-const visualization_controller = require(app_root + '/controllers/visualizationController');
-const file_path_obj = new visualization_controller.visualizationFiles();
+// const visualization_controller = require(app_root + '/controllers/visualizationController');
+const file_controller = require(app_root + '/controllers/fileController');
+const file_path_obj = new file_controller.visualizationFiles();
 
 class BiomMatrix {
 

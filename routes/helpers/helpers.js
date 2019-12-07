@@ -752,150 +752,150 @@ function htmlEntities(str) {
 //
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
 //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
-module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-  let db  = req.db;
-  //file_name = 'fasta-'+ts+'_custom.fa.gz';
-  let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
-
-  if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
-    norm = 'normalized_to_maximum';
-  } else if (normalization == 'percent' || normalization == 'frequency' || normalization == 'normalized_by_percent') {
-    norm = 'normalized_by_percent';
-  } else {
-    norm = 'not_normalized';
-  }
-
-  var site       = req.CONFIG.site;
-  var code       = 'NVexport';
-  var pid_lookup = {};
-  var pids_str;
-  //console.log('dids', dids);
-  export_cmd     = 'vamps_export_data.py';
-  for (n = 0; n < dids.length; n++) {
-    //console.log('did', dids[n]);
-    pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
-  }
-  let pid_lookup1 = [];
-  Object.keys(PROJECT_ID_BY_DID).forEach(did => {
-    let pid = PROJECT_ID_BY_DID[did];
-    if (dids.includes(did) && !pid_lookup1.includes(pid)) {
-      pid_lookup1.push(pid);
-    }
-  });
-
-  var dids_str = JSON.stringify(dids.join(','));
-
-  if (file_tags[0] == '--dco_metadata_file') {
-    pid_list = []
-    for (pname in PROJECT_INFORMATION_BY_PNAME) {
-      if (pname.substring(0, 3) == 'DCO') {
-        pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid)
-      }
-    }
-    pids_str = JSON.stringify(pid_list.join(','));
-  } else {
-    pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
-  }
-  //console.log('pids', pids_str);
-  //var file_tags = file_tags.join(' ')
-
-  var export_cmd_options = {
-
-    scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
-    args: ['-s', site,
-      '-u', req.user.username,
-      '-r', ts,
-      '-base', user_dir,
-      '-dids', dids_str,
-      '-pids', pids_str,
-      '-norm', norm,
-      '-rank', rank,
-      '-db', NODE_DATABASE
-    ] // '-compress'
-
-  };
-  for (var t in file_tags) {
-    export_cmd_options.args.push(file_tags[t]);
-  }
-  if (compress) {
-    export_cmd_options.args.push('-compress');
-  }
-  if (domains != '') {
-    export_cmd_options.args.push('-domains');
-    export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
-  }
-  console.log('include NAs', include_nas)
-  if (include_nas == 'no') {
-    export_cmd_options.args.push('-exclude_nas');
-  }
-  var cmd_list = [];
-  cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
-
-  if (req.CONFIG.cluster_available === true) {
-    qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
-    qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
-
-    qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
-
-    console.log('RUNNING(via qsub):', cmd_list[0]);
-    console.log('qsub_file_path:', qsub_file_path);
-    fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
-      if (err) {
-        return console.log(err);
-      } else {
-        console.log("The file was saved!");
-        //console.log(qsub_script_text);
-        fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
-          if (err) {
-            return console.log(err);
-          } else {
-            var dwnld_process = spawn(qsub_file_path, {}, {
-              env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
-              detached: true,
-              stdio: ['pipe', 'pipe', 'pipe']
-              //stdio: [ 'ignore', null, log ]
-            });  // stdin, stdout, stderr1
-
-
-          }
-        });
-      }
-    });
-
-
-  } else {
-    console.log('No Cluster Available according to req.CONFIG.cluster_available');
-    var cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
-    console.log('RUNNING:', cmd);
-
-    var dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
-      env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
-      detached: true,
-      stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
-    });
-    stdout            = '';
-    dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
-      stdout += data;
-    });
-    stderr = '';
-    dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
-      stderr += data;
-    });
-    dwnld_process.on('close', function dwnldProcessOnClose(code) {
-      console.log('dwnld_process process exited with code ' + code);
-      //console.log('stdout', stdout);
-      //console.log('stderr', stderr);
-      if (code === 0) {   // SUCCESS
-
-      } else {
-        console.log('ERROR', stderr);
-        //res.send('Frequency Heatmap R Script Error:'+stderr);
-      }
-    });
-  }
-
-  return;
-};
+// module.exports.create_export_files = function (req, user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
+//   let db  = req.db;
+//   //file_name = 'fasta-'+ts+'_custom.fa.gz';
+//   let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
+//
+//   if (normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum') {
+//     norm = 'normalized_to_maximum';
+//   } else if (normalization == 'percent' || normalization == 'frequency' || normalization == 'normalized_by_percent') {
+//     norm = 'normalized_by_percent';
+//   } else {
+//     norm = 'not_normalized';
+//   }
+//
+//   var site       = req.CONFIG.site;
+//   var code       = 'NVexport';
+//   var pid_lookup = {};
+//   var pids_str;
+//   //console.log('dids', dids);
+//   export_cmd     = 'vamps_export_data.py';
+//   for (n = 0; n < dids.length; n++) {
+//     //console.log('did', dids[n]);
+//     pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
+//   }
+//   let pid_lookup1 = [];
+//   Object.keys(PROJECT_ID_BY_DID).forEach(did => {
+//     let pid = PROJECT_ID_BY_DID[did];
+//     if (dids.includes(did) && !pid_lookup1.includes(pid)) {
+//       pid_lookup1.push(pid);
+//     }
+//   });
+//
+//   var dids_str = JSON.stringify(dids.join(','));
+//
+//   if (file_tags[0] == '--dco_metadata_file') {
+//     pid_list = []
+//     for (pname in PROJECT_INFORMATION_BY_PNAME) {
+//       if (pname.substring(0, 3) == 'DCO') {
+//         pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid)
+//       }
+//     }
+//     pids_str = JSON.stringify(pid_list.join(','));
+//   } else {
+//     pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
+//   }
+//   //console.log('pids', pids_str);
+//   //var file_tags = file_tags.join(' ')
+//
+//   var export_cmd_options = {
+//
+//     scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
+//     args: ['-s', site,
+//       '-u', req.user.username,
+//       '-r', ts,
+//       '-base', user_dir,
+//       '-dids', dids_str,
+//       '-pids', pids_str,
+//       '-norm', norm,
+//       '-rank', rank,
+//       '-db', NODE_DATABASE
+//     ] // '-compress'
+//
+//   };
+//   for (var t in file_tags) {
+//     export_cmd_options.args.push(file_tags[t]);
+//   }
+//   if (compress) {
+//     export_cmd_options.args.push('-compress');
+//   }
+//   if (domains != '') {
+//     export_cmd_options.args.push('-domains');
+//     export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
+//   }
+//   console.log('include NAs', include_nas)
+//   if (include_nas == 'no') {
+//     export_cmd_options.args.push('-exclude_nas');
+//   }
+//   var cmd_list = [];
+//   cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
+//
+//   if (req.CONFIG.cluster_available === true) {
+//     qsub_script_text = module.exports.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
+//     qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
+//
+//     qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
+//
+//     console.log('RUNNING(via qsub):', cmd_list[0]);
+//     console.log('qsub_file_path:', qsub_file_path);
+//     fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
+//       if (err) {
+//         return console.log(err);
+//       } else {
+//         console.log("The file was saved!");
+//         //console.log(qsub_script_text);
+//         fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
+//           if (err) {
+//             return console.log(err);
+//           } else {
+//             var dwnld_process = spawn(qsub_file_path, {}, {
+//               env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+//               detached: true,
+//               stdio: ['pipe', 'pipe', 'pipe']
+//               //stdio: [ 'ignore', null, log ]
+//             });  // stdin, stdout, stderr1
+//
+//
+//           }
+//         });
+//       }
+//     });
+//
+//
+//   } else {
+//     console.log('No Cluster Available according to req.CONFIG.cluster_available');
+//     var cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
+//     console.log('RUNNING:', cmd);
+//
+//     var dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
+//       env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+//       detached: true,
+//       stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
+//     });
+//     stdout            = '';
+//     dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
+//       stdout += data;
+//     });
+//     stderr = '';
+//     dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
+//       stderr += data;
+//     });
+//     dwnld_process.on('close', function dwnldProcessOnClose(code) {
+//       console.log('dwnld_process process exited with code ' + code);
+//       //console.log('stdout', stdout);
+//       //console.log('stderr', stderr);
+//       if (code === 0) {   // SUCCESS
+//
+//       } else {
+//         console.log('ERROR', stderr);
+//         //res.send('Frequency Heatmap R Script Error:'+stderr);
+//       }
+//     });
+//   }
+//
+//   return;
+// };
 
 module.exports.get_local_script_text = function (cmd_list) {
   script_text = "#!/bin/sh\n\n";
@@ -1919,8 +1919,8 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
         const parsed_data = JSON.parse(data);
         let txt = '';
         let tmp_txt = [];
-        for(let n in parsed_data.columns){
-            ds = parsed_data.columns[n].id;
+        for (let n in parsed_data.columns){
+            let ds = parsed_data.columns[n].id;
             tmp_txt.push(ds);
         }
         txt += '\t' + tmp_txt.join('\t') + '\n';
