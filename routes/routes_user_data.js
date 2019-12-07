@@ -86,16 +86,17 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
 
 //
 //  EXPORT CONFIRM
-//
 //TODO: function is overly complex (cyclomatic complexity = 15)
+// test: data selection -> download data
 router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
-    console.log('req.body: export_confirm-->>');
+  const file_util_obj = new file_controller.FileUtil(req, res);
+
+  console.log('req.body: export_confirm-->>');
     console.log(req.body);
     //console.log(req.session);
     console.log('req.body: <<--export_confirm');
-    var needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export')
-    
-    var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
+    let needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export');
+    let id_name_order = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
     if (   req.body.fasta === undefined
         && req.body.fastaMED === undefined
         && req.body.fastaVAMPS === undefined
@@ -121,17 +122,17 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         return;
     }
     
-    var requested_files = [];
+    let requested_files = [];
 
-    if (req.body.fasta) {
-
-    }
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    // if (req.body.fasta) {
+    //
+    // }
+    let timestamp = +new Date();  // millisecs since the epoch!
+    let user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); // create dir if not exists
     helpers.mkdirSync(user_dir);
 
-    for (var key in req.body) {
+    for (let key in req.body) {
       if (key === 'fasta') {
         requested_files.push('-fasta_file');
       }
@@ -171,9 +172,11 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
     //console.log('id_name_order' )
     //console.log(id_name_order )
     if (requested_files.length >0) {
-      if (req.body.tax_depth=='class') {var td='klass';}
-      else {var td=req.body.tax_depth;}
-      helpers.create_export_files(req, 
+      let td = req.body.tax_depth;
+      if (req.body.tax_depth === 'class') {
+        td = 'klass';
+      }
+      file_util_obj.create_export_files(req,
             user_dir, 
             timestamp, 
             req.session.chosen_id_order, 
@@ -187,16 +190,15 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
 	
 	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here: File Retrieval</a>");
     res.render('user_data/export_selection', {
-          title: 'VAMPS: Export Choices',
-          referer: 'export_data',
-          chosen_id_name_hash 	: JSON.stringify(id_name_order),
-          constants				: JSON.stringify(needed_constants),
-          selected_rank			: req.body.tax_depth,
-          selected_domains		: JSON.stringify(req.body.domains),
-          user: req.user, hostname: req.CONFIG.hostname
+      title: 'VAMPS: Export Choices',
+      referer: 'export_data',
+      chosen_id_name_hash: JSON.stringify(id_name_order),
+      constants: JSON.stringify(needed_constants),
+      selected_rank: req.body.tax_depth,
+      selected_domains: JSON.stringify(req.body.domains),
+      user: req.user,
+      hostname: req.CONFIG.hostname
     });
-
-
 });
 //
 //

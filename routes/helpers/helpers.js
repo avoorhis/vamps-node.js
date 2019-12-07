@@ -775,6 +775,13 @@ module.exports.create_export_files = function (req, user_dir, ts, dids, file_tag
     //console.log('did', dids[n]);
     pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1;
   }
+  let pid_lookup1 = [];
+  Object.keys(PROJECT_ID_BY_DID).forEach(did => {
+    let pid = PROJECT_ID_BY_DID[did];
+    if (dids.includes(did) && !pid_lookup1.includes(pid)) {
+      pid_lookup1.push(pid);
+    }
+  });
 
   var dids_str = JSON.stringify(dids.join(','));
 
