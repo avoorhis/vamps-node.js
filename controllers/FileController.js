@@ -188,26 +188,6 @@ class FileUtil {
 
       console.log('RUNNING(via qsub):', cmd_list[0]);
       console.log('qsub_file_path:', qsub_file_path);
-      // fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
-      //   if (err) {
-      //     return console.log(err);
-      //   } else {
-      //     console.log("The file was saved!");
-      //     //console.log(qsub_script_text);
-      //     fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
-      //       if (err) {
-      //         return console.log(err);
-      //       } else {
-      //         let dwnld_process = spawn(qsub_file_path, {}, {
-      //           env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
-      //           detached: true,
-      //           stdio: ['pipe', 'pipe', 'pipe']
-      //           //stdio: [ 'ignore', null, log ]
-      //         });  // stdin, stdout, stderr1
-      //       }
-      //     });
-      //   }
-      // });
     }
     else {
       console.log('No Cluster Available according to req.CONFIG.cluster_available');
