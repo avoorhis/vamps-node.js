@@ -779,7 +779,6 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
 // from a csv file to db
 
-// TODO: mv to helpers and refactor (see also in admin & user_data)
 // test: more -> metadata -> Manage Saved Metadata
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   const file_util_obj = new file_controller.FileUtil(req, res);
