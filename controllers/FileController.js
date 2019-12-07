@@ -144,78 +144,70 @@ class FileUtil {
     return export_cmd_options;
   }
 
+  cluster_export(qsub_file_path, qsub_script_text){
+    let req = this.req;
+    fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
+      if (err) {
+        return console.log(err);
+      }
+      else {
+        console.log("The file was saved!");
+        //console.log(qsub_script_text);
+        fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
+          if (err) {
+            return console.log(err);
+          }
+          else {
+            let dwnld_process = spawn(qsub_file_path, {}, {
+              env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+              detached: true,
+              stdio: ['pipe', 'pipe', 'pipe']
+              //stdio: [ 'ignore', null, log ]
+            });  // stdin, stdout, stderr1
+          }
+        });
+      }
+    });
+  }
 
-  //TODO: JSHint: This function's cyclomatic complexity is too high. (16)(W074)
   create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-    // let db  = req.db;
-    //file_name = 'fasta-'+ts+'_custom.fa.gz';
     let req = this.req;
     let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
     let code       = 'NVexport';
-    //console.log('dids', dids);
     let export_cmd = 'vamps_export_data.py';
 
     let export_cmd_options = this.get_export_cmd_options(user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress);
-    //   {
-    //
-    //   scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
-    //   args: ['-s', site,
-    //     '-u', req.user.username,
-    //     '-r', ts,
-    //     '-base', user_dir,
-    //     '-dids', dids_str,
-    //     '-pids', pids_str,
-    //     '-norm', norm,
-    //     '-rank', rank,
-    //     '-db', NODE_DATABASE
-    //   ] // '-compress'
-    //
-    // };
-    // for (let t in file_tags) {
-    //   export_cmd_options.args.push(file_tags[t]);
-    // }
-    // if (compress) {
-    //   export_cmd_options.args.push('-compress');
-    // }
-    // if (domains !== '') {
-    //   export_cmd_options.args.push('-domains');
-    //   export_cmd_options.args.push(JSON.stringify(domains.join(', ')));
-    // }
-    // console.log('include NAs', include_nas);
-    // if (include_nas === 'no') {
-    //   export_cmd_options.args.push('-exclude_nas');
-    // }
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
     if (req.CONFIG.cluster_available === true) {
       let qsub_script_text = helpers.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
       let qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
-
       let qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
+      this.cluster_export(qsub_file_path, qsub_script_text);
 
       console.log('RUNNING(via qsub):', cmd_list[0]);
       console.log('qsub_file_path:', qsub_file_path);
-      fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
-        if (err) {
-          return console.log(err);
-        } else {
-          console.log("The file was saved!");
-          //console.log(qsub_script_text);
-          fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
-            if (err) {
-              return console.log(err);
-            } else {
-              let dwnld_process = spawn(qsub_file_path, {}, {
-                env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
-                detached: true,
-                stdio: ['pipe', 'pipe', 'pipe']
-                //stdio: [ 'ignore', null, log ]
-              });  // stdin, stdout, stderr1
-            }
-          });
-        }
-      });
+      // fs.writeFile(qsub_file_path, qsub_script_text, function writeFile(err) {
+      //   if (err) {
+      //     return console.log(err);
+      //   } else {
+      //     console.log("The file was saved!");
+      //     //console.log(qsub_script_text);
+      //     fs.chmod(qsub_file_path, '0775', function chmodFile(err) {
+      //       if (err) {
+      //         return console.log(err);
+      //       } else {
+      //         let dwnld_process = spawn(qsub_file_path, {}, {
+      //           env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      //           detached: true,
+      //           stdio: ['pipe', 'pipe', 'pipe']
+      //           //stdio: [ 'ignore', null, log ]
+      //         });  // stdin, stdout, stderr1
+      //       }
+      //     });
+      //   }
+      // });
     }
     else {
       console.log('No Cluster Available according to req.CONFIG.cluster_available');
