@@ -170,6 +170,36 @@ class FileUtil {
     });
   }
 
+  no_cluster_export(export_cmd, export_cmd_options) {
+    let req = this.req;
+    console.log('No Cluster Available according to req.CONFIG.cluster_available');
+    let cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
+    console.log('RUNNING:', cmd);
+
+    let dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
+      env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      detached: true,
+      stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
+    });
+    let stdout = '';
+    dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
+      stdout += data;
+    });
+    let stderr = '';
+    dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
+      stderr += data;
+    });
+    dwnld_process.on('close', function dwnldProcessOnClose(code) {
+      console.log('dwnld_process process exited with code ' + code);
+      //console.log('stdout', stdout);
+      //console.log('stderr', stderr);
+      if (code !== 0) {
+        console.log('ERROR', stderr);
+        //res.send('Frequency Heatmap R Script Error:'+stderr);
+      }
+    });
+  }
+
   create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
     let req = this.req;
     let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
@@ -190,37 +220,10 @@ class FileUtil {
       console.log('qsub_file_path:', qsub_file_path);
     }
     else {
-      console.log('No Cluster Available according to req.CONFIG.cluster_available');
-      let cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
-      console.log('RUNNING:', cmd);
-
-      let dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
-        env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
-        detached: true,
-        stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
-      });
-      let stdout = '';
-      dwnld_process.stdout.on('data', function dwnldProcessStdout(data) {
-        stdout += data;
-      });
-      let stderr = '';
-      dwnld_process.stderr.on('data', function dwnldProcessOnData(data) {
-        stderr += data;
-      });
-      dwnld_process.on('close', function dwnldProcessOnClose(code) {
-        console.log('dwnld_process process exited with code ' + code);
-        //console.log('stdout', stdout);
-        //console.log('stderr', stderr);
-        if (code !== 0) {
-          console.log('ERROR', stderr);
-          //res.send('Frequency Heatmap R Script Error:'+stderr);
-        }
-      });
+      this.no_cluster_export(export_cmd, export_cmd_options);
     }
-
     return;
   }
-
 }
 
 module.exports = {
