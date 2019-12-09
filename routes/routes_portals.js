@@ -93,7 +93,7 @@ router.post('/dco_project_list',  function(req, res) {
         publish_data = {};
     }
     
-    
+    //console.log(publish_data)
     // start with all DCO projects COMPLETE
     // then, if find empty did, convert to PARTIAL
     // Count datasets with
@@ -146,11 +146,24 @@ router.post('/dco_project_list',  function(req, res) {
         }
         
     }
+    
     projects.forEach(function (prj) {
         prj.latlon_status = new_dco_list_latlon[prj.pid]
+        proj_prefix = prj.project.substring(0,prj.project.lastIndexOf('_'))  // ie DCO_SPO_Ev9 ==> DCO_SPO
+        prj.accessions = []
+        if(proj_prefix in publish_data){
+            //if(publish_data[proj_prefix].hasOwnProperty('sra_accessions')){
+            for(n in publish_data[proj_prefix]['sra_accessions']){
+                if(publish_data[proj_prefix]['sra_accessions'][n].hasOwnProperty('bioproject')){
+                    prj.accessions.push(publish_data[proj_prefix]['sra_accessions'][n]['bioproject'])
+                }
+            }
+            //}
+        }
         //prj.accession = publish_data.sra_accessions
     
     })
+    //console.log(projects)
     //console.log(new_dco_list_latlon)
     // fwd rev
     // if(fwd == true){
@@ -165,12 +178,13 @@ router.post('/dco_project_list',  function(req, res) {
             }else{
                 return helpers.compareStrings_alpha(b.project, a.project);
             }
-        }else if(sort_col == 'accession'){
-            if(direction == 'fwd'){  
-                return helpers.compareStrings_alpha(a.accession, b.accession);
-            }else{
-                return helpers.compareStrings_alpha(b.accession, a.accession);
-            }
+       //  }
+//         else if(sort_col == 'accession'){
+//             if(direction == 'fwd'){  
+//                 return helpers.compareStrings_alpha(a.accession[0], b.accession[0]);
+//             }else{
+//                 return helpers.compareStrings_alpha(b.accession[0], a.accession[0]);
+//             }
         }else if(sort_col == 'title'){
             if(direction == 'fwd'){  
                 return helpers.compareStrings_alpha(a.title, b.title);
@@ -239,7 +253,11 @@ router.post('/dco_project_list',  function(req, res) {
         }else{
             html += "<td>private</td>"
         }
-        html += "<td>"+prj.accession+"</td>"
+        html += "<td>"
+        for(n in prj.accessions){
+            html += "<a href='https://www.ncbi.nlm.nih.gov/bioproject?term="+prj.accessions[n]+"' target='_blank'>"+prj.accessions[n]+"</a>,<br>"
+        }
+        html += "</td>"
         html += "<td>"+prj.latlon_status+"</td>"
         
         
