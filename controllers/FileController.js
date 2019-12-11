@@ -11,7 +11,6 @@ class FileUtil {
     this.user = this.req.query.user || this.req.user.username;
     this.filename = this.req.query.filename || "";
     this.file_paths = new module.exports.visualizationFiles();
-    // this.user_file_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
   }
 
   file_download() {
@@ -24,7 +23,7 @@ class FileUtil {
       file = path.join(this.file_paths.get_tmp_file_path(this.req), this.filename);
     }
     else {
-      file = this.get_user_file_path(this.req, this.user, this.filename);
+      file = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
     }
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
@@ -43,7 +42,7 @@ class FileUtil {
   }
 
   file_delete(redirect_url_after_delete = undefined) {
-    let file = this.get_user_file_path(this.req, this.user, this.filename);
+    let file = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
 
     if (this.req.query.type === 'elements') {
       let data = {

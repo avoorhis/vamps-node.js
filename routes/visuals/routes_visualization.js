@@ -341,11 +341,9 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // when 'toggle open button is activated'
   // let fxn = req.body.fxn;
   // console.log('XX'+JSON.stringify(req.body));
-  // let file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   let file_path = file_path_obj.get_user_file_path(req);
   console.log("file_path from view_saved_datasets");
   console.log(file_path);
-  // let dataset_ids = [];
 
   read_file_when_ready(file_path);
   fs.readFile(file_path, 'utf8', function readFile(err,data) {
