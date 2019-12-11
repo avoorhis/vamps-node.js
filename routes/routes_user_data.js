@@ -84,109 +84,140 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
   });
 });
 
+function get_requested_files(req_body) {
+  let requested_files = [];
+  for (let key in req_body) {
+
+    switch (key) {
+      case 'fasta':
+        requested_files.push('-fasta_file');
+        break;
+      case 'fastaMED':
+        requested_files.push('-fasta_fileMED');
+        break;
+      case 'fastaVAMPS':
+        requested_files.push('-fasta_fileVAMPS');
+        break;
+      case 'fastaTAX':
+        requested_files.push('-fasta_fileTAX');
+        break;
+      case 'matrix':
+        requested_files.push('-matrix_file');
+        break;
+      case 'taxbyseq':
+        requested_files.push('-taxbyseq_file');
+        break;
+      case 'taxbytax':
+        requested_files.push('-taxbytax_file');
+        break;
+      case 'metadata1':
+        requested_files.push('-metadata_file1');
+        break;
+      case 'metadata2':
+        requested_files.push('-metadata_file2');
+        break;
+      case 'biom':
+        requested_files.push('-biom_file');
+    }
+  }
+  return requested_files;
+}
+
+
+
 //
 //  EXPORT CONFIRM
 //TODO: function is overly complex (cyclomatic complexity = 15)
 // test: data selection -> download data
 router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
   console.log('req.body: export_confirm-->>');
-    console.log(req.body);
-    //console.log(req.session);
-    console.log('req.body: <<--export_confirm');
-    let needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export');
-    let id_name_order = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
-    if (   req.body.fasta === undefined
-        && req.body.fastaMED === undefined
-        && req.body.fastaVAMPS === undefined
-        && req.body.fastaTAX === undefined
-        && req.body.taxbyseq === undefined
-        && req.body.taxbyref === undefined
-        && req.body.taxbytax === undefined
-        && req.body.matrix === undefined
-        && req.body.metadata1 === undefined
-        && req.body.metadata2 === undefined
-        && req.body.biom === undefined ) {
-        req.flash('fail', 'Select one or more file formats');
-        
-        res.render('user_data/export_selection', {
-          title					: 'VAMPS: Export Choices',
-          referer				: 'export_data',
-          chosen_id_name_hash	: JSON.stringify(id_name_order),
-          constants				: JSON.stringify(needed_constants),
-          selected_rank			: req.body.tax_depth,
-          selected_domains		: JSON.stringify(req.body.domains),
-          user: req.user, hostname: req.CONFIG.hostname
-        });
-        return;
-    }
-    
-    let requested_files = [];
+  console.log(req.body);
+  //console.log(req.session);
+  console.log('req.body: <<--export_confirm');
+  let needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export');
+  let id_name_order = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
+  if (   req.body.fasta === undefined
+      && req.body.fastaMED === undefined
+      && req.body.fastaVAMPS === undefined
+      && req.body.fastaTAX === undefined
+      && req.body.taxbyseq === undefined
+      && req.body.taxbyref === undefined
+      && req.body.taxbytax === undefined
+      && req.body.matrix === undefined
+      && req.body.metadata1 === undefined
+      && req.body.metadata2 === undefined
+      && req.body.biom === undefined ) {
+      req.flash('fail', 'Select one or more file formats');
 
-    // if (req.body.fasta) {
-    //
-    // }
-    let timestamp = +new Date();  // millisecs since the epoch!
-    let user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); // create dir if not exists
-    helpers.mkdirSync(user_dir);
+      res.render('user_data/export_selection', {
+        title					: 'VAMPS: Export Choices',
+        referer				: 'export_data',
+        chosen_id_name_hash	: JSON.stringify(id_name_order),
+        constants				: JSON.stringify(needed_constants),
+        selected_rank			: req.body.tax_depth,
+        selected_domains		: JSON.stringify(req.body.domains),
+        user: req.user, hostname: req.CONFIG.hostname
+      });
+      return;
+  }
 
-    for (let key in req.body) {
-      if (key === 'fasta') {
-        requested_files.push('-fasta_file');
-      }
-      if (key === 'fastaMED') {
-        requested_files.push('-fasta_fileMED');
-      }
-      if (key === 'fastaVAMPS') {
-        requested_files.push('-fasta_fileVAMPS');
-      }
-      if (key === 'fastaTAX') {
-        requested_files.push('-fasta_fileTAX');
-      }
-      if (key === 'matrix') {
-        requested_files.push('-matrix_file');
-      }
-      //if (key === 'taxbyref') {
-      //  requested_files.push('-taxbyref_file');
-      //}
-      if (key === 'taxbyseq') {
-        requested_files.push('-taxbyseq_file');
-      }
-      if (key === 'taxbytax') {
-        requested_files.push('-taxbytax_file');
-      }
-      if (key === 'metadata1') {
-        requested_files.push('-metadata_file1');
-      }
-      if (key === 'metadata2') {
-        requested_files.push('-metadata_file2');
-      }
-      if (key === 'biom') {
-        requested_files.push('-biom_file');
-      }
+  let timestamp = +new Date();  // millisecs since the epoch!
+  let user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); // create dir if not exists
+  helpers.mkdirSync(user_dir);
 
-
-    }
+  let requested_files = get_requested_files(req.body);
+  //     switch (key) {
+  //       case 'fasta':
+  //         requested_files.push('-fasta_file');
+  //         break;
+	// 		  case 'fastaMED':
+  //         requested_files.push('-fasta_fileMED');
+  //         break;
+	// 		  case 'fastaVAMPS':
+  //         requested_files.push('-fasta_fileVAMPS');
+  //         break;
+	// 		  case 'fastaTAX':
+  //         requested_files.push('-fasta_fileTAX');
+  //         break;
+	// 		  case 'matrix':
+  //         requested_files.push('-matrix_file');
+  //         break;
+	// 		case 'taxbyseq':
+  //         requested_files.push('-taxbyseq_file');
+  //         break;
+  //       case 'taxbytax':
+  //         requested_files.push('-taxbytax_file');
+  //         break;
+  //       case 'metadata1':
+  //         requested_files.push('-metadata_file1');
+  //         break;
+  //       case 'metadata2':
+  //         requested_files.push('-metadata_file2');
+  //         break;
+  //       case 'biom':
+  //         requested_files.push('-biom_file');
+  //   }
     //console.log('id_name_order' )
     //console.log(id_name_order )
-    if (requested_files.length >0) {
+  if (requested_files.length >0) {
       let td = req.body.tax_depth;
       if (req.body.tax_depth === 'class') {
         td = 'klass';
       }
       const file_util_obj = new file_controller.FileUtil(req, res);
       file_util_obj.create_export_files(
-            user_dir, 
-            timestamp, 
-            req.session.chosen_id_order, 
-            requested_files, 
-            req.body.normalization, 
-            td, 
-            req.body.domains, 
+            user_dir,
+            timestamp,
+            req.session.chosen_id_order,
+            requested_files,
+            req.body.normalization,
+            td,
+            req.body.domains,
             'yes',   // include_nas
             true );
     }
-	
+
 	req.flash('success', "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here: File Retrieval</a>");
     res.render('user_data/export_selection', {
       title: 'VAMPS: Export Choices',
