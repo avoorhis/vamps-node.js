@@ -8,25 +8,23 @@ class FileUtil {
   constructor(req, res) {
     this.req = req;
     this.res = res;
-    this.user = this.req.query.user;
-    this.filename = this.req.query.filename;
+    this.user = this.req.query.user || this.req.user.username;
+    this.filename = this.req.query.filename || "";
     this.file_paths = new module.exports.visualizationFiles();
-    this.tmp_path = this.file_paths.get_tmp_file_path(this.req);
-    this.user_file_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
-    this.process_dir = this.file_paths.get_process_dir(this.req);
+    // this.user_file_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
   }
 
   file_download() {
     let file = '';
 
     if (this.req.query.template === '1') {
-      file = path.join(this.process_dir, this.filename);
+      file = path.join(this.file_paths.get_process_dir(this.req), this.filename);
     }
     else if (this.req.query.type === 'pcoa') {
-      file = path.join(this.tmp_path, this.filename);
+      file = path.join(this.file_paths.get_tmp_file_path(this.req), this.filename);
     }
     else {
-      file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
+      file = this.get_user_file_path(this.req, this.user, this.filename);
     }
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
@@ -45,7 +43,7 @@ class FileUtil {
   }
 
   file_delete(redirect_url_after_delete = undefined) {
-    let file = path.join(this.req.CONFIG.USER_FILES_BASE, this.user, this.filename);
+    let file = this.get_user_file_path(this.req, this.user, this.filename);
 
     if (this.req.query.type === 'elements') {
       let data = {
@@ -120,7 +118,7 @@ class FileUtil {
     let norm = this.get_norm(normalization);
 
     let export_cmd_options = {
-    scriptPath: path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
+    scriptPath: this.file_paths.get_path_to_node_scripts(req),
       args: ['-s', site,
       '-u', req.user.username,
       '-r', ts,
@@ -235,6 +233,10 @@ class FileUtil {
 class visualizationFiles {
   constructor() {
     this.user_file_path = "";
+  }
+
+  get_path_to_node_scripts(req) {
+    return req.CONFIG.PATH_TO_NODE_SCRIPTS;
   }
 
   get_process_dir(req) {
