@@ -204,8 +204,7 @@ class FileUtil {
   }
 
   create_export_files (user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
-    let req = this.req;
-    let log = path.join(req.CONFIG.TMP_FILES, 'export_log.txt');
+    let tmp_path = this.file_paths.get_tmp_file_path(this.req);
     let code       = 'NVexport';
     let export_cmd = 'vamps_export_data.py';
 
@@ -213,10 +212,11 @@ class FileUtil {
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
-    if (req.CONFIG.cluster_available === true) {
-      let qsub_script_text = helpers.get_qsub_script_text(req, log, req.CONFIG.TMP, code, cmd_list);
-      let qsub_file_name   = req.user.username + '_qsub_export_' + ts + '.sh';
-      let qsub_file_path   = path.join(req.CONFIG.TMP_FILES, qsub_file_name);
+    if (this.req.CONFIG.cluster_available === true) {
+      let log = path.join(tmp_path, 'export_log.txt');
+      let qsub_script_text = helpers.get_qsub_script_text(this.req, log, tmp_path, code, cmd_list);
+      let qsub_file_name   = this.req.user.username + '_qsub_export_' + ts + '.sh';
+      let qsub_file_path   = path.join(tmp_path, qsub_file_name);
       this.cluster_export(qsub_file_path, qsub_script_text);
 
       console.log('RUNNING(via qsub):', cmd_list[0]);
