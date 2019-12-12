@@ -24,7 +24,8 @@ const spawn = require('child_process').spawn;
 // const js2xmlparser = require("js2xmlparser");
 // const xml_convert = require('xml-js');
 
-const file_path_obj =  new file_controller.visualizationFiles();
+const viz_files_obj = new file_controller.visualizationFiles();
+const file_path_obj = new file_controller.FilePath();
 
 function start_visual_post_items(req) {
   const visualization_obj = new visualization_controller.viewSelectionFactory(req);
@@ -37,7 +38,7 @@ function start_visual_post_items(req) {
 
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
-  file_path_obj.print_log_if_not_vamps(req, msg);
+  viz_files_obj.print_log_if_not_vamps(req, msg);
   console.log('<<VS--visual_post_items');
 
   return visual_post_items;
@@ -78,7 +79,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   */
 
   console.log(req.user.username+' req.body: view_selection body-->>');
-  file_path_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
+  viz_files_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
 
   helpers.start = process.hrtime();
@@ -86,7 +87,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
 
   let visual_post_items = start_visual_post_items(req);
 
-  visual_post_items.ts = file_path_obj.get_user_timestamp(req);
+  visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
 
   console.log('entering MTX.get_biom_matrix');
   console.time("TIME: biom_matrix_new");
@@ -159,7 +160,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  file_path_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
+  viz_files_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -172,7 +173,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  file_path_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
+  viz_files_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
 
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
@@ -189,7 +190,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
     let chosen_dataset_order = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
     chosen_dataset_order.map(ob => {
-      file_path_obj.test_if_json_file_exists(req, dataset_ids, ob.did);
+      viz_files_obj.test_if_json_file_exists(req, dataset_ids, ob.did);
     });
 
     // benchmarking
@@ -197,7 +198,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
     console.log('chosen_dataset_order-->');
-    file_path_obj.print_log_if_not_vamps(req, chosen_dataset_order);
+    viz_files_obj.print_log_if_not_vamps(req, chosen_dataset_order);
     console.log('<--chosen_dataset_order');
 
     res.render('visuals/unit_selection', {
@@ -322,7 +323,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   selected_dataset_order.ids = req.session.chosen_id_order;
 
   // console.log(req.session);
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
+  const user_timestamp = viz_files_obj.get_user_timestamp(req);
   res.render('visuals/reorder_datasets', {
     title: 'VAMPS: Reorder Datasets',
     selected_datasets: JSON.stringify(selected_dataset_order),
@@ -366,7 +367,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 ///// It passes the newick string back to view_selection.js
 ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  file_path_obj.print_log_if_not_vamps(req, req.body);
+  viz_files_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body dnd');
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
@@ -378,7 +379,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
-  let user_timestamp = file_path_obj.get_user_timestamp(req);
+  let user_timestamp = viz_files_obj.get_user_timestamp(req);
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', user_timestamp ],
@@ -403,14 +404,14 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
     let lines = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        // file_path_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // viz_files_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
 
         lines = stdout.split('\n');
         const startsWith_newick = lines.find((line) => line.startsWith("NEWICK"));
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
-          // file_path_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
+          // viz_files_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
         }
         catch(err) {
           newick = {"ERROR": err};
@@ -435,8 +436,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
   console.log('in PCoA');
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
 
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
-  let image_file = file_path_obj.get_file_names(req)['pcoa.pdf'];
+  const user_timestamp = viz_files_obj.get_user_timestamp(req);
+  let image_file = viz_files_obj.get_file_names(req)['pcoa.pdf'];
   let options = get_plot_specific_options("pcoa2", req, user_timestamp, image_file);
   console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
 
@@ -488,7 +489,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
       '-metric', metric,
       '--function', 'pcoa_3d',
       '--basedir', file_path_obj.get_tmp_file_path(req),
-      '--prefix', file_path_obj.get_user_timestamp(req),
+      '--prefix', viz_files_obj.get_user_timestamp(req),
       '-m', mapping_file_path
     ],
   };
@@ -511,11 +512,11 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
     console.log('pcoa_process1 process exited with code ' + code);
     if (code === 0){ // SUCCESS
 
-      const pc_file_name = file_path_obj.get_file_names(req)['pc.txt'];
-      const biom_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
-      const mapping_file_name = file_path_obj.get_file_names(req)['metadata.txt'];
-      const dist_file_name = file_path_obj.get_file_names(req)['distance.csv'];
-      const dir_name = file_path_obj.get_file_names(req)['pcoa3d'];
+      const pc_file_name = viz_files_obj.get_file_names(req)['pc.txt'];
+      const biom_file_name = viz_files_obj.get_file_names(req)['count_matrix.biom'];
+      const mapping_file_name = viz_files_obj.get_file_names(req)['metadata.txt'];
+      const dist_file_name = viz_files_obj.get_file_names(req)['distance.csv'];
+      const dir_name = viz_files_obj.get_file_names(req)['pcoa3d'];
       const index_file_name = dir_name + '/index.html';
       let html = "** <a href='/static_base/tmp/" + index_file_name + "' target='_blank'>Open Emperor</a> **";
       html += "<br>Principal Components File: <a href='/static_base/tmp/" + pc_file_name + "' target='_blank'>" + pc_file_name + "</a>";
@@ -734,8 +735,8 @@ function show_data(res, contents, svgfile_name) {
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   console.log('in phyloseq post');
 
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
-  const svgfile_name = file_path_obj.phyloseq_svgfile_name(req, user_timestamp);
+  const user_timestamp = viz_files_obj.get_user_timestamp(req);
+  const svgfile_name = viz_files_obj.phyloseq_svgfile_name(req, user_timestamp);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   const svgfile_path = path.join(tmp_file_path, svgfile_name);
 
@@ -800,7 +801,7 @@ function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
   let pi = {};
   pi.chosen_datasets = pd_vars.get_dataset_obj_by_did(selected_did_arr);
   pi.no_of_datasets = pi.chosen_datasets.length;
-  pi.ts = file_path_obj.get_user_timestamp(req);
+  pi.ts = viz_files_obj.get_user_timestamp(req);
   pi.unit_choice = req.session.unit_choice;
   pi.min_range = req.session.min_range;
   pi.max_range = req.session.max_range;
@@ -931,7 +932,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   if (pi.unit_choice !== 'OTUs') {
     write_seq_file_async(req, res, selected_did);
     const bar_type = 'single';
-    const timestamp_only = file_path_obj.get_timestamp_only(req);
+    const timestamp_only = viz_files_obj.get_timestamp_only(req);
     LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
   }
 });
@@ -989,7 +990,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   write_seq_file_async(req, res, did1);
   write_seq_file_async(req, res, did2);
   let bar_type = "double";
-  const timestamp_only = file_path_obj.get_timestamp_only(req);
+  const timestamp_only = viz_files_obj.get_timestamp_only(req);
   LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist});
 });
 
@@ -1119,7 +1120,7 @@ function make_seq_list_by_filtered_data_loop(filtered_data) {
 }
 
 async function read_file_when_ready(filename_path) {
-  return await file_path_obj.checkExistsWithTimeout(filename_path, 1000);
+  return await viz_files_obj.checkExistsWithTimeout(filename_path, 1000);
 }
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
@@ -1238,7 +1239,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, re
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
-  file_path_obj.print_log_if_not_vamps(req, req.body);
+  viz_files_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
   let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -1427,7 +1428,7 @@ function get_ds_list(output) {
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   console.log('in cluster_ds_order');
   let html = '';
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
+  const user_timestamp = viz_files_obj.get_user_timestamp(req);
 
   let metric = req.body.metric;
   let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
@@ -1457,7 +1458,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
     let ds_list = get_ds_list(output);
-    file_path_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
+    viz_files_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
@@ -1465,9 +1466,9 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         let dataset_list = JSON.parse(ds_list);
 
         let potential_chosen_id_name_hash = COMMON.create_new_chosen_id_name_hash(dataset_list, pjds_lookup);
-        let ascii_file = file_path_obj.get_tree_file_name(req, metric);
+        let ascii_file = viz_files_obj.get_tree_file_name(req, metric);
         let ascii_file_path = path.join(tmp_file_path, ascii_file);
-        read_file_when_ready(ascii_file_path)
+        read_file_when_ready(ascii_file_path);
           // .then(r => console.log("RRR: ", r));
         fs.readFile(ascii_file_path, 'utf8', function readAsciiTreeFile(err, ascii_tree_data) {
           if (err) {
@@ -1526,7 +1527,7 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res)
   metadata.metric = req.session.selected_distance;  // revert back to selected
   let html = IMAGES.create_hm_table(req, distance_matrix, metadata );
 
-  const outfile_name = file_path_obj.get_file_names(req)['dheatmap-api.html'];
+  const outfile_name = viz_files_obj.get_file_names(req)['dheatmap-api.html'];
 
   let data = {};
   data.html = html;
@@ -1553,7 +1554,7 @@ function FinishSplitFile(req, res){
 
       let html = IMAGES.create_hm_table_from_csv(req, split_distance_csv_matrix, metadata );
 
-      let outfile_name = file_path_obj.get_file_names(req)['dheatmap-api.html'];
+      let outfile_name = viz_files_obj.get_file_names(req)['dheatmap-api.html'];
 
       let data = {};
       data.html = html;
@@ -1578,7 +1579,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   }
 
   const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  const user_timestamp = file_path_obj.get_user_timestamp(req);
+  const user_timestamp = viz_files_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {
     scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
@@ -1626,12 +1627,12 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
   res.setHeader('Content-Type', 'text/plain');
 
   if (file_type === 'matrix') {
-    let user_timestamp = file_path_obj.get_user_timestamp(req);
+    let user_timestamp = viz_files_obj.get_user_timestamp(req);
     let tmp_file_path = file_path_obj.get_tmp_file_path(req);
     helpers.create_matrix_from_biom(res, tmp_file_path, user_timestamp);
   }
   else {
-    const file_path = file_path_obj.get_file_names_switch(req, file_type);
+    const file_path = viz_files_obj.get_file_names_switch(req, file_type);
     res.download(file_path); // Set disposition and send it.
   }
 
@@ -1698,7 +1699,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
   NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
   PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  // file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
+  // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
   console.log(PROJECT_FILTER);
 
   res.json(PROJECT_FILTER);
@@ -1717,7 +1718,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
   NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
   PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  // file_path_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
+  // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
   console.log(PROJECT_FILTER);
   res.json(PROJECT_FILTER);
 
@@ -2016,13 +2017,13 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     if (Object.keys(DATA_TO_OPEN).length > 0){
       // TODO: Andy, how to test this?
       console.log('dto');
-      file_path_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
+      viz_files_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    file_path_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+    viz_files_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
     this_project.datasets.map(dat => {
@@ -2060,7 +2061,7 @@ router.get('/taxa_piechart', function(req, res) {
   const myurl = url.parse(req.url, true);
   const tax = myurl.query.tax;
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
-  const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+  const matrix_file_name = viz_files_obj.get_file_names(req)['count_matrix.biom'];
   const matrix_file_path = path.join(tmp_file_path, matrix_file_name);
 
   read_file_when_ready(matrix_file_path);
@@ -2088,11 +2089,11 @@ router.get('/taxa_piechart', function(req, res) {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      file_path_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+      viz_files_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
 
       let cols =  biom_matrix.columns;
 
-      const timestamp_only = file_path_obj.get_timestamp_only(req);
+      const timestamp_only = viz_files_obj.get_timestamp_only(req);
       res.render('visuals/user_viz_data/pie_single_tax', {
         title: 'Datasets PieChart',
         matrix: JSON.stringify(new_matrix),
