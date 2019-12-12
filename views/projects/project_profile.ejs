@@ -10,22 +10,28 @@
 <% if(project_parts.length >= 2 ){ %>
 <%    project_prefix = project_parts[0]+'_'+project_parts[1]; %>
 <% } %>
-<% var reveal_all = false %>
+<% var reveal_all = false %>  <!-- This is for private vs public projects -->
 <% var edit_metadata = false %>
+<% var DCO_project = false %>
+<% if((data.project).substring(0,3) == 'DCO'){ %>
+<%      DCO_project = true %>
+<% } %>
 <!-- Public OR User Permission OR Admin OR MBL Power User -->
-<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10 || (user.security_level == 45 && (data.project).substring(0,3) == 'DCO')  ){ %>
+<% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10 || (user.security_level == 45 && DCO_project)  ){ %>
 <%  reveal_all = true %>
 <% } %>
-<!-- DCO only - AND (owner or admin) can see/edit ALSO MBL power users (Mitch) and DCO_metadata_editors(45)-->
 
-<!-- if user == owner or if admin or DCO-Editor (NOT MBL Power User)  -->
-<% if(user.user_id == data.oid  || user.security_level == 1 || user.security_level == 45 ){ %>
-<%  edit_metadata = true %>
-<% } %>
-<!-- if user has access AND project is DCO-project  -->
-<% if(data.permissions.indexOf(user.user_id) != -1 && (data.project).substring(0,3) == 'DCO'){ %>
-<%  edit_metadata = true %>
-<% } %>
+<!-- if user == owner or if admin or DCO-Editor(only if dco project) (NOT MBL Power User)( How to allow Mitch? Made security_level ==1 for him)   -->
+<% 
+    if(user.user_id == data.oid                                               
+         || user.security_level == 1                                             
+         || (user.security_level == 45 && DCO_project)                                 
+         || ( (data.permissions.indexOf(user.user_id) != -1) && DCO_project) )   
+    {                                                                            
+      edit_metadata = true 
+    } 
+%>
+
 <% if (typeof(finfo) !== 'undefined') { %>
 <% var file_info = JSON.parse(finfo) %>
 <% } else { %>
@@ -207,7 +213,7 @@
                     <tr><td>SRA Accession(s)</td><td>
                         <% for(n in publish_data[key].sra_accessions){ %>                            
                             <% bp = publish_data[key].sra_accessions[n].bioproject %>
-                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
+                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>' target='_blank'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
                         <br>
                         <% } %>
                     </td></tr>
