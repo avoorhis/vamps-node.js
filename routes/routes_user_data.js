@@ -156,7 +156,8 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
         constants				: JSON.stringify(needed_constants),
         selected_rank			: req.body.tax_depth,
         selected_domains		: JSON.stringify(req.body.domains),
-        user: req.user, hostname: req.CONFIG.hostname
+        user: req.user,
+        hostname: req.CONFIG.hostname
       });
       return;
   }
@@ -167,40 +168,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
   helpers.mkdirSync(user_dir);
 
   let requested_files = get_requested_files(req.body);
-  //     switch (key) {
-  //       case 'fasta':
-  //         requested_files.push('-fasta_file');
-  //         break;
-	// 		  case 'fastaMED':
-  //         requested_files.push('-fasta_fileMED');
-  //         break;
-	// 		  case 'fastaVAMPS':
-  //         requested_files.push('-fasta_fileVAMPS');
-  //         break;
-	// 		  case 'fastaTAX':
-  //         requested_files.push('-fasta_fileTAX');
-  //         break;
-	// 		  case 'matrix':
-  //         requested_files.push('-matrix_file');
-  //         break;
-	// 		case 'taxbyseq':
-  //         requested_files.push('-taxbyseq_file');
-  //         break;
-  //       case 'taxbytax':
-  //         requested_files.push('-taxbytax_file');
-  //         break;
-  //       case 'metadata1':
-  //         requested_files.push('-metadata_file1');
-  //         break;
-  //       case 'metadata2':
-  //         requested_files.push('-metadata_file2');
-  //         break;
-  //       case 'biom':
-  //         requested_files.push('-biom_file');
-  //   }
-    //console.log('id_name_order' )
-    //console.log(id_name_order )
-  if (requested_files.length >0) {
+  if (requested_files.length > 0) {
       let td = req.body.tax_depth;
       if (req.body.tax_depth === 'class') {
         td = 'klass';
