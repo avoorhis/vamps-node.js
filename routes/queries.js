@@ -64,11 +64,11 @@ module.exports = {
     return qSelectUser;
   },
   get_all_user_groups: function(){
-    var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group"
+    var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group";
     return qSelectUserGroup;
   },
   get_projects_queryUID: function( uid ) {
-    var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'";
+    let q = "SELECT project, project_id from project where owner_user_id='" + uid + "'";
     q += " WHERE project.active = 1";
 
   return q;
