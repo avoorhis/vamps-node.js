@@ -37,26 +37,32 @@ var infile_fa = "infile.fna";
 //
 // YOUR DATA
 //
+// Should create empty directory for any user projects
+// that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
+// this will allow adding to or deleteing these empty projects.
+// console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
+function create_empty_project_directory(req) {
+  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows) {
+    for(let n in rows){
+      // let pid = rows[n].project_id;
+      let dir = file_controller.get_user_file_path(req, req.user.username, 'project-' + rows[n].project);
+      // path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + rows[n].project);
+      if(!helpers.fileExists(dir)){
+      // turned OFF
+      helpers.mkdirSync(dir);
+      }
+    }
+  });
+}
 router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
     console.log('in your data, req.user = ');
     console.log(req.user);
-    // Should create empty directory for any user projects
-    // that are in database BUT NOT in PROJECT_INFORMATION_BY_PID
-    // this will allow adding to or deleteing these empty projects.
-    //console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
-    connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
-        for(n in rows){
-            pid = rows[n].project_id
-            var dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+rows[n].project);
-            if(! helpers.fileExists(dir)){
-                 // turned OFF
-                 //helpers.mkdirSync(dir);
-            }
-        }
-    });
+    // create_empty_project_directory(req);
+
     res.render('user_data/your_data', {
-        title: 'VAMPS:Data Administration',
-        user: req.user, hostname: req.CONFIG.hostname,
+      title: 'VAMPS:Data Administration',
+      user: req.user,
+      hostname: req.CONFIG.hostname,
         
     });
 });
@@ -66,9 +72,9 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
 //
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(req, res) {
-  console.log('in file_retrieval')
+  console.log('in file_retrieval');
   // see constants.js for file types to display
-  var export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  let export_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
   helpers.walk(export_dir, function(err, files) {
     if (err) throw err;
     files.sort(function sortByTime(a, b) {
