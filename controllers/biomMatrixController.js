@@ -14,7 +14,9 @@ const extend = require('util')._extend;
 let helpers = require(app_root + '/routes/helpers/helpers');
 // const visualization_controller = require(app_root + '/controllers/visualizationController');
 const file_controller = require(app_root + '/controllers/fileController');
-const file_path_obj = new file_controller.visualizationFiles();
+const viz_files_obj = new file_controller.visualizationFiles();
+const file_path_obj = new file_controller.FilePath();
+
 
 class BiomMatrix {
 
@@ -66,7 +68,7 @@ class BiomMatrix {
     this.ordered_list_of_lists_of_tax_counts = [];
     let date = new Date();
 
-    let user_timestamp = file_path_obj.get_user_timestamp(req);
+    let user_timestamp = viz_files_obj.get_user_timestamp(req);
 
     this.biom_matrix = {
       id: user_timestamp || this.visual_post_items.ts,
@@ -878,13 +880,13 @@ class WriteMatrixFile {
 
   write_matrix_files(req) {
     // let common_file_name_part = this.tmp_path +'/'+ this.post_items.ts;
-    const tax_file_name = file_path_obj.get_file_names(req)['taxonomy.txt'];
+    const tax_file_name = viz_files_obj.get_file_names(req)['taxonomy.txt'];
     const tax_file_name_path = path.join(this.tmp_path, tax_file_name);
       // || common_file_name_part + '_taxonomy.txt';
     COMMON.output_tax_file(tax_file_name_path, this.biom_matrix, C.RANKS.indexOf(this.post_items.tax_depth));
 
     // let matrix_file_name = common_file_name_part + '_count_matrix.biom';
-    const matrix_file_name = file_path_obj.get_file_names(req)['count_matrix.biom'];
+    const matrix_file_name = viz_files_obj.get_file_names(req)['count_matrix.biom'];
     const matrix_file_path = path.join(this.tmp_path, matrix_file_name);
       // || common_file_name_part + '_count_matrix.biom';
     COMMON.write_file(matrix_file_path, JSON.stringify(this.biom_matrix,null,2) );
