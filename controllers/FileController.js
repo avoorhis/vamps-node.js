@@ -10,7 +10,8 @@ class FileUtil {
     this.res = res;
     this.user = this.req.query.user || this.req.user.username;
     this.filename = this.req.query.filename || "";
-    this.file_paths = new module.exports.visualizationFiles();
+    this.file_paths = new module.exports.FilePath();
+    this.viz_files = new module.exports.visualizationFiles();
   }
 
   file_download() {
@@ -229,7 +230,7 @@ class FileUtil {
   }
 }
 
-class visualizationFiles {
+class FilePath {
   constructor() {
     this.user_file_path = "";
   }
@@ -247,9 +248,8 @@ class visualizationFiles {
     return path.join(this.user_file_path, user, filename);
   }
 
-  get_json_files_prefix(req) {
-    return path.join(req.CONFIG.JSON_FILES_BASE,
-      NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
+  get_user_file_base_path(req) {
+    return req.CONFIG.USER_FILES_BASE;
   }
 
   get_tmp_file_path(req) {
@@ -262,6 +262,33 @@ class visualizationFiles {
 
   get_viz_scripts_path(req) {
     return req.CONFIG.PATH_TO_VIZ_SCRIPTS;
+  }
+
+  get_tmp_distmtx_file_path(req) {
+    const test_split_file_name = this.get_distmtx_file_name(req);
+    const tmp_path = this.get_tmp_file_path(req);
+    const test_distmtx_file_path = path.join(tmp_path, test_split_file_name);
+
+    return test_distmtx_file_path;
+  }
+
+  get_file_tmp_path_by_ending(req, ending) {
+    const tmp_file_path = this.get_tmp_file_path(req);
+    const file_name_obj = this.get_file_names(req);
+    const file_name = file_name_obj[ending];
+    const file_tmp_path = path.join(tmp_file_path, file_name);
+    return file_tmp_path;
+  }
+
+  get_json_files_prefix(req) {
+    return path.join(req.CONFIG.JSON_FILES_BASE,
+      NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
+  }
+}
+
+class visualizationFiles {
+  constructor() {
+    this.file_paths = new module.exports.FilePath();
   }
 
   print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
@@ -281,10 +308,6 @@ class visualizationFiles {
     }
     catch (err) {
       console.log(err);
-      // let pid = PROJECT_ID_BY_DID[did];
-      // let pname = PROJECT_INFORMATION_BY_PID[pid].project;
-      // let dname = DATASET_NAME_BY_DID[did];
-      // error_msg = 'No Taxonomy found for this dataset (' + pname + '--' + dname + ' (did: ' + did + ')) and possibly others. Try selecting other units.';
       let p_d_name = req.session.project_dataset_vars.current_project_dataset_obj_by_did[did];
       error_msg = 'No Taxonomy found for this dataset (' + p_d_name + ' (did: ' + did + ')) and possibly others. Try selecting other units.';
     }
@@ -323,7 +346,7 @@ class visualizationFiles {
     const user_name = user_timestamp_arr.slice(0, -1).join("_");
     // const filename = user_timestamp + '_' + selected_did + '_sequences.json';
     const filename = user_name + '_' + selected_did + '_' + timestamp_only + '_sequences.json';
-    const tmp_path = this.get_tmp_file_path(req);
+    const tmp_path = this.file_paths.get_tmp_file_path(req);
     return path.join(tmp_path, filename);
   }
 
@@ -352,30 +375,14 @@ class visualizationFiles {
     return distmtx_file_name;
   }
 
-  get_tmp_distmtx_file_path(req) {
-    const test_split_file_name = this.get_distmtx_file_name(req);
-    const tmp_path = this.get_tmp_file_path(req);
-    const test_distmtx_file_path = path.join(tmp_path, test_split_file_name);
-
-    return test_distmtx_file_path;
-  }
-
-  get_file_tmp_path_by_ending(req, ending) {
-    const tmp_file_path = this.get_tmp_file_path(req);
-    const file_name_obj = this.get_file_names(req);
-    const file_name = file_name_obj[ending];
-    const file_tmp_path = path.join(tmp_file_path, file_name);
-    return file_tmp_path;
-  }
-
   get_file_names_switch(req, file_type) {
     switch (file_type) {
       case 'biom':
-        return this.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+        return this.file_paths.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
       case 'tax':
-        return this.get_file_tmp_path_by_ending(req, 'taxonomy.txt');
+        return this.file_paths.get_file_tmp_path_by_ending(req, 'taxonomy.txt');
       case 'meta':
-        return this.get_file_tmp_path_by_ending(req, 'metadata.txt');
+        return this.file_paths.get_file_tmp_path_by_ending(req, 'metadata.txt');
       default:
         console.log('ERROR In download_file');
     }
@@ -412,7 +419,6 @@ class visualizationFiles {
     });
   }
 
-
   get_file_names(req, user_ts = "") {
     if (user_ts === "") {
       user_ts = this.get_user_timestamp(req);
@@ -440,5 +446,6 @@ class visualizationFiles {
 
 module.exports = {
   FileUtil: FileUtil,
+  FilePath: FilePath,
   visualizationFiles: visualizationFiles
 };
