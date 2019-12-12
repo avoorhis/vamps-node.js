@@ -300,7 +300,7 @@ class visualizationFiles {
   }
 
   test_if_json_file_exists(req, dataset_ids, did) {
-    let files_prefix = this.get_json_files_prefix(req);
+    let files_prefix = this.file_paths.get_json_files_prefix(req);
     let path_to_file = path.join(files_prefix, did + '.json');
     let error_msg = "";
     try {

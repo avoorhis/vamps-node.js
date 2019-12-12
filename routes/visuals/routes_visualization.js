@@ -869,7 +869,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
       return b.seq_count - a.seq_count;
     });
 
-    let file_path = file_path_obj.get_sequences_json_file_path(req, selected_did);
+    let file_path = viz_files_obj.get_sequences_json_file_path(req, selected_did);
 
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
