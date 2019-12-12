@@ -7,6 +7,8 @@
 </script>
 <div class='title'>Search Result</div>
 <div class='subtitle'>Metadata</div>
+
+<a href='metadata/byname'>Back to Search</a>
 <table border='1' class='table'><tr>
 <td>
 
@@ -16,12 +18,14 @@
 			   
 			   <div class="panel-heading">
               	 <h3 class="panel-title">Search 1 Values
-			      <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
+			      <% if(s.search1.datasets.length != 0){ %>
+			        <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
+			     <% } %>
 			     </h3>
           </div>
 			 
 			   <div class="panel-body">
-					<table class='table table-condensed'>
+					<table class=''>
 					<% for(i in s.search1) { %>
 						<tr>
 						<% if(i !== 'ds_plus' && i !== 'datasets') { %>
@@ -33,8 +37,7 @@
 			   </div>
 			</div>
 		</div>
-		
-<br>		
+				
 	<% if(s.search1.datasets.length == 0){ %>
 			<b>no data found</b>
 	<% }else{ %>		
@@ -52,18 +55,19 @@
 								<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
 								<input type='hidden' name='retain_data' value='1' >
 								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >	
+								
 							</form>		
 						</td>
 					</tr>
 				  </table>
 			  </div>
-		<h4><small>Datasets:</small></h4>
+		      <h4><small>Datasets:</small></h4>
 
-				<div class='search_ds_result_box'>
+				<div class='search_ds_result_box' style='height:100px;overflow:auto;'>
 				<% for(i in s.search1.ds_plus) { %>
 					<li>
 						<%= parseInt(i)+1 %>) <%= s.search1.ds_plus[i].pname %>--<%= s.search1.ds_plus[i].dname %>
-						<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(value: <%= s.search1.ds_plus[i].value %>)
+						&nbsp;&nbsp;(value: <%= s.search1.ds_plus[i].value %>)
 					</li>
 				<% } %>
 			
@@ -79,13 +83,13 @@
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
 	          	 <h3 class="panel-title">Search 2 Values
-				 <% if('search2' in s) { %>
+				 <% if(Object.keys(s.search2).length != 0) { %>
 				   <button id='dwnld_btn_id2' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
 	             <% } %>
 			 	</h3>
 			   </div>
 			   <div class="panel-body">
-					<% if('search2' in s) { %>
+					<% if(Object.keys(s.search2).length != 0) { %>
 						<table class='table table-condensed'>
 						<% for(i in s.search2) { %>
 							<tr>
@@ -101,8 +105,8 @@
 			   </div>
 			</div>
 		</div>
-		<br>		
-	<% if('search2' in s) { %>
+		
+	<% if(Object.keys(s.search2).length != 0) { %>
 		<% if(s.search2.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
@@ -127,11 +131,11 @@
 			  </div>
 
 			<h4><small>Datasets:</small></h4>
-				<div class='search_ds_result_box'>
+				<div class='search_ds_result_box'  style='height:100px;overflow:auto;'>
 				<% for(i in s.search2.ds_plus) { %>
 					<li>
 						<%= parseInt(i)+1 %>) <%= s.search2.ds_plus[i].pname %>--<%= s.search2.ds_plus[i].dname %>
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(val: <%= s.search2.ds_plus[i].value %>)
+					&nbsp;&nbsp;(value: <%= s.search2.ds_plus[i].value %>)
 					</li>
 				<% } %>
 
@@ -147,13 +151,13 @@
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
 	          	 <h3 class="panel-title">Search 3 Values
-				 <% if('search3' in s) { %>
+				 <% if(Object.keys(s.search3).length != 0) { %>
 					<button id='dwnld_btn_id3' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
 	           	 <% } %>
 				 </h3>
 			   </div>
 			   <div class="panel-body">
-					<% if('search3' in s) { %>
+					<% if(Object.keys(s.search3).length != 0) { %>
 						<table class='table table-condensed'>
 						<% for(i in s.search3) { %>
 							<tr>
@@ -169,8 +173,8 @@
 			   </div>
 			</div>
 		</div>
-<br>
-	<% if('search3' in s) { %>
+
+	<% if(Object.keys(s.search3).length != 0) { %>
 		<% if(s.search3.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
@@ -197,11 +201,11 @@
 
 
 			<h4><small>Datasets:</small></h4>
-				<div class='search_ds_result_box'>
+				<div class='search_ds_result_box'  style='height:100px;overflow:auto;'>
 				<% for(i in s.search3.ds_plus) { %>
 					<li>
 						<%= parseInt(i)+1 %>) <%= s.search3.ds_plus[i].pname %>--<%= s.search3.ds_plus[i].dname %>
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(val: <%= s.search3.ds_plus[i].value %>)
+					&nbsp;&nbsp;(value: <%= s.search3.ds_plus[i].value %>)
 					</li>
 				<% } %>			
 				</div>
@@ -234,7 +238,27 @@
 <tr>
 <td  colspan='3'>
 
-<table>
+<%
+    var altered_searches = {}
+    altered_searches.dataset_ids = f.datasets
+    altered_searches.search1 = s.search1
+    altered_searches.search2 = s.search2
+    altered_searches.search3 = s.search3
+    delete altered_searches.search1.datasets
+    delete altered_searches.search1.ds_plus
+    if(Object.keys(s.search2).length != 0){
+        delete altered_searches.search2.datasets
+        delete altered_searches.search2.ds_plus
+    }
+    if(Object.keys(s.search3).length != 0){
+        delete altered_searches.search3.datasets
+        delete altered_searches.search3.ds_plus
+    }
+%>
+<center>
+
+<% if(f.datasets.length != 0){ %>
+    <table>
 	<tr>
 		<td>
 			<form id='' name='' method='POST' action='/visuals/unit_selection'>
@@ -245,28 +269,33 @@
 		</td>
 		<td>
 			<form id='' name='' method='POST' action='/visuals/unit_selection'>
-				<button type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+				<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Visualizations</button>
 				<input type='hidden' name='retain_data' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
 			</form>		
 		</td>
 		<td>
 			<form id='' name='' method='POST' action='../user_data/export_selection'>
-				<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+				<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Exports</button>
 				<input type='hidden' name='retain_data' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
 			</form>		
 		</td>
+		<td>
+			<form id='' name='' method='POST' action='geo_by_meta_search'>
+				<button type='submit' class='btn btn-xs btn-primary' name='' >Show in Maps</button>
+				<input type='hidden' name='retain_data' value='1' >
+				<!-- <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	 -->
+				<input type='hidden' name='searches' value='<%= JSON.stringify(altered_searches) %>' >	
+				
+			</form>		
+		</td>
 		
 	</tr>
- </table>
+    </table>
+<% } %>
 
-
-		
-
-
-
- <center>
+ 
 	<% if(!('search2' in s) && !('search3' in s)) { %>
 		<br><strong><%= f.datasets.length %> dataset(s)</strong>
 	<% }else{ %>	
@@ -274,7 +303,7 @@
 
 	<% } %>
 	<% if(f.datasets.length == 0){ %>
-			<b>no data found</b>
+			<br><b>no data found</b>
 		<% }else{ %>
 			
 				<div class='search_ds_result_box'>
@@ -288,7 +317,7 @@
 				
 			
 		<% } %>
-	</center>
+</center>
 
 </td></tr></table>
 <% include ../add_ins/end.ejs %>
