@@ -458,6 +458,7 @@ if(hdf5_is_available){
     }
     console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
 }
+
 try{
     var sizeof = require('object-sizeof');
 }catch(e){

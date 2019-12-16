@@ -90,6 +90,53 @@ router.get('/geo', helpers.isLoggedIn, function(req, res) {
         token :   req.CONFIG.MAPBOX_TOKEN
     });
 });
+//
+//
+//
+router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
+    console.log('in geo_by_meta_values');
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+   
+    var searches = JSON.parse(req.body.searches)
+    var dataset_ids = searches.dataset_ids
+    var latlon_datasets = {}
+    latlon_datasets.points = {}
+    
+    for(n in dataset_ids){
+        var did = dataset_ids[n]
+        var project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
+        var pid     = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].pid
+        var ds      = DATASET_NAME_BY_DID[did]
+        var pjds = project +'--'+ds
+        if(did in DatasetsWithLatLong){
+            latlon_datasets.points[did] = {}
+            latlon_datasets.points[did].proj_dset = pjds
+            latlon_datasets.points[did].pid = pid
+            latlon_datasets.points[did].latitude = DatasetsWithLatLong[did].latitude
+            latlon_datasets.points[did].longitude = DatasetsWithLatLong[did].longitude 
+            latlon_datasets.points[did].tax = '' 
+        }
+    }
+    res.render('search/geo_map', { title: 'VAMPS:Search',
+                        user  :     req.user,hostname: req.CONFIG.hostname,
+                        data :   JSON.stringify(latlon_datasets),
+                        tax_name : 'noTax',
+                        rank: 'noRank',
+                        metadata:'',
+                        md_range: '',
+                        searches : JSON.stringify(searches),
+                        token :   req.CONFIG.MAPBOX_TOKEN,
+                        search_type : 'metadata',
+                        sub_title : 'Datasets by Metadata Value'
+                    })
+                    return
+});
+//
+//
+//
+
 router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     console.log('in geo_by_tax_search');
     console.log('req.body-->>');
@@ -151,8 +198,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
                 var null_counter = 0
                 for(i in rows){
                     
-                    if(rows[i].latitude == null || rows[i].longitude == null){
-                        
+                    if(rows[i].latitude == null || rows[i].longitude == null){                        
                         null_counter += 1
                     }else{
                       var pjds = rows[i].project+'--'+rows[i].dataset
@@ -192,12 +238,17 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
                 }else{
                     //`console.log(latlon_datasets)
                     
-                    res.render('search/geo_by_tax_map', { title: 'VAMPS:Search',
+                    res.render('search/geo_map', { title: 'VAMPS:Search',
                         user  :     req.user,hostname: req.CONFIG.hostname,
                         data :   JSON.stringify(latlon_datasets),
                         tax_name : tax,
                         rank: rank,
-                        token :   req.CONFIG.MAPBOX_TOKEN
+                        metadata:'noMD',
+                        md_range: 'noRange',
+                        searches : JSON.stringify({}),
+                        token :   req.CONFIG.MAPBOX_TOKEN,
+                        search_type : 'tax',
+                        sub_title : 'Datasets by Selected Taxon'
                     })
                     return
                 }
@@ -292,43 +343,53 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
 //
 
 //
-router.get('/geo_by_meta_values', helpers.isLoggedIn, function(req, res) {
-    // var phyla = []
-//     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
-//     var qSelect = "select phylum from phylum order by phylum"
+// router.get('/geo_by_meta_values', helpers.isLoggedIn, function(req, res) {
+//     // var phyla = []
+// //     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
+// //     var qSelect = "select phylum from phylum order by phylum"
+//        console.log('in search/geo_by_meta_values');
+//        var if_in = req.CONSTS.REQ_METADATA_FIELDS_wIDs
+//        var temp =[]
+//        for(i in AllMetadataNames){
+//         
+//         if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(AllMetadataNames[i].slice(0,-3)) == -1){
+//             temp.push(AllMetadataNames[i])            
+//         }else{
+//             temp.push(AllMetadataNames[i].slice(0,-3))
+//             console.log(AllMetadataNames[i].slice(0,-3))
+//         }
+//        }
+//        
+//         XX = get_metadata_values()
+//         res.render('search/geo_by_meta_values', { title: 'VAMPS:Search',
+//             user  :  req.user,hostname: req.CONFIG.hostname,
+//             metadata_items:       JSON.stringify(XX.metadata_fields),
+//             mkeys:                XX.metadata_fields_array,
+//             md    :  JSON.stringify(temp),
+//         });
 //     
-       var if_in = req.CONSTS.REQ_METADATA_FIELDS_wIDs
-       var temp =[]
-       for(i in AllMetadataNames){
-        
-        if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(AllMetadataNames[i].slice(0,-3)) == -1){
-            temp.push(AllMetadataNames[i])            
-        }else{
-            temp.push(AllMetadataNames[i].slice(0,-3))
-            console.log(AllMetadataNames[i].slice(0,-3))
-        }
-       }
-       
-        XX = get_metadata_values()
-        res.render('search/geo_by_meta_values', { title: 'VAMPS:Search',
-            user  :  req.user,hostname: req.CONFIG.hostname,
-            metadata_items:       JSON.stringify(XX.metadata_fields),
-            mkeys:                XX.metadata_fields_array,
-            md    :  JSON.stringify(temp),
-        });
-    
-});
+// });
 //
 //
 //
-router.post('/all_md_vals_by_name', helpers.isLoggedIn, function(req, res) {
-	console.log('in search/all_md_vals_by_name');
-    console.log('req.body-->>');
-    console.log(req.body);
-    console.log('<<--req.body');
-    
-    
-});
+// router.post('/all_md_vals_by_name', helpers.isLoggedIn, function(req, res) {
+// 	console.log('in search/all_md_vals_by_name');
+// 	// Find Geographic Range of Datasets by Metadata Values (not ready yet)
+//     console.log('req.body-->>');
+//     console.log(req.body);
+//     console.log(PROJECT_INFORMATION_BY_PID[44]);  // SPO
+//     console.log(MD_CUSTOM_UNITS[44]);
+//     console.log(AllMetadata[44]);
+//     console.log('<<--req.body');
+//     var search_name = req.body.name
+//     if(search_name == 'domain'){
+//         
+//     }
+//     
+//     
+// });
+
+
 router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('in accept_latlon_datasets');
   console.log('req.body-->>');
@@ -477,6 +538,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 //  METADATA SEARCH
 //
 router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
+  console.log('IN POST::metadata_search_result')
   console.log('req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -498,9 +560,11 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   }
   var join_type = req.body.join_type;
   //console.log(searches);
+  
 
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1);
+  
   ds1 = result.datasets;
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
@@ -515,6 +579,8 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 
     searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
 
+  }else{
+    searches.search2 = {}
   }
 
   if('search3' in searches){
@@ -525,22 +591,27 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     searches.search3.dataset_count = searches.search3.datasets.length;
 
     searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
+  }else{
+    searches.search3 = {}
   }
   //
   // Calculate (sum or intersect) final datasets
   //
+  console.log('join type='+join_type)
   var filtered = {};
-  if(join_type == 'combination'){
+  if(join_type == 'addition'){
     filtered.datasets = ds1.concat(ds2, ds3);
     filtered.datasets = filtered.datasets.filter(onlyUnique);
   }else{   // intersection
     filtered.datasets = ds1;
-    if('search2' in searches) {
+    //if('search2' in searches) {
+    if(Object.keys(searches.search2).length != 0){
       filtered.datasets = ds1.filter(function(n) {
           return ds2.indexOf(n) != -1;
       });
     }
-    if('search3' in searches) {
+    //if('search3' in searches) {
+    if(Object.keys(searches.search3).length != 0){
       filtered.datasets = filtered.datasets.filter(function(n) {
           return ds3.indexOf(n) != -1;
       });
@@ -549,13 +620,13 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   filtered.ds_plus = get_dataset_search_info(filtered.datasets, {});
   //
   //
-
-  if(filtered.datasets.length === 0){
-  	console.log('redirecting back -- no data found');
-	  req.flash('fail', 'No Data Found');
-	  res.redirect('search_index');
-    return;
-  }else{
+//   console.log(searches)
+//   if(filtered.datasets.length === 0){
+//   	console.log('redirecting back -- no data found');
+// 	  req.flash('fail', 'No Data Found');
+// 	  res.redirect('search_index');
+//     return;
+//   }else{
           res.render('search/search_result_metadata', {
                     title    : 'VAMPS: Search Datasets',
                     filtered : JSON.stringify(filtered),
@@ -563,7 +634,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
                     join_type: join_type,
                     user     : req.user,hostname: req.CONFIG.hostname,
           });  //
-   }
+//   }
 
 });
 //
@@ -1031,57 +1102,39 @@ router.get('/make_a_blast_db', helpers.isLoggedIn, function(req, res) {
   //
 function get_search_datasets(user, search){
     //var datasets_plus = [];
-    var datasets = [];
+    var datasets1 = [];
     //var tmp_metadata = {};
-    if(HDF5_MDATA == ''){
+   //console.log(AllMetadata)
 
-        for (var did in AllMetadata){
-          // search only if did allowed by permissions
-          var pid = PROJECT_ID_BY_DID[did];
+    for (var did in AllMetadata){
+      // search only if did allowed by permissions
+      var pid = PROJECT_ID_BY_DID[did];
 
-          try{
+      try{
 
-              if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
-                for (var mdname in AllMetadata[did]){
-                  if(mdname === search['metadata-item']){
-                    mdvalue = AllMetadata[did][mdname];
-                    datasets.append(get_search_datasets_did(datasets, search, did, mdname, mdvalue))
-                  }
-                }
+          if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
+            for (var mdname in AllMetadata[did]){
+              if(mdname === search['metadata-item']){
+                mdvalue = AllMetadata[did][mdname];
+                get_search_datasets_did(datasets1, search, did, mdname, mdvalue)
+                //console.log('res')
+                //console.log(res)
+                //datasets1.append(get_search_datasets_did(datasets1, search, did, mdname, mdvalue))
               }
             }
-            catch(e){
-                console.log('skipping pid,did',pid,did,e)
-            }
+          }
         }
-
-    }else{
-        for (var did in DATASET_NAME_BY_DID){
-          //console.log('did',did)
-          // search only if did allowed by permissions
-          var pid = PROJECT_ID_BY_DID[did];
-          try{
-              if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
-                var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-                mdgroup.refresh()
-                var mdname = search['metadata-item']
-                if(mdgroup.hasOwnProperty(mdname)){
-                      mdvalue = mdgroup[mdname];
-                      datasets.append(get_search_datasets_did(datasets, search, did, mdname, mdvalue))
-                }
-              }
-           }
-           catch(e){
-                console.log('skipping pid,did',pid,did,e)
-           }
+        catch(e){
+            console.log('skipping pid,did',pid,did,e)
         }
-
     }
 
+    
 
-    //console.log('ds',datasets)
 
-    return {datasets:datasets}//, mdv:tmp_metadata};
+    console.log('ds',datasets1)
+
+    return {datasets:datasets1}//, mdv:tmp_metadata};
 }
 function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
 

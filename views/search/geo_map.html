@@ -1,5 +1,5 @@
 <% include ../add_ins/begin.ejs %>
-<% //var data = JSON.parse(data) %>
+
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
@@ -10,7 +10,7 @@ var accessToken = '<%- token %>'
 </script>
 <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
 
-<p class='title'>Search</p>
+<p class='title'>Search <br><small><%- sub_title %></small></p>
 <% if (messages.success) { %>
 	<div class="alert_flash_message_success"><%= messages.success %></div>
 <% }else if(messages.fail){ %>
@@ -19,10 +19,43 @@ var accessToken = '<%- token %>'
 
 
 <a href='/search/search_index'>Back to Available Searches</a>
-
 <br>
-Selected Rank: <%= rank %>
-<br>Selected Taxa Name: <%= tax_name %>
+<% if(search_type == 'tax'){ %>        
+        Selected Rank: <%= rank %>
+        <br>Selected Taxa Name: <%= tax_name %>        
+<% }else{ %>
+<%      var s = JSON.parse(searches) %>
+        Search1: Metadata Item: "<%= s.search1['metadata-item'] %>" <%= s.search1['comparison'] %>: 
+<%      if('single-comparison-value' in s.search1) {  %>
+<%-         s.search1['single-comparison-value'] %>            
+<%      }else{ %>
+            Min: <%-  s.search1['min-comparison-value'] %> Max: <%- s.search1['max-comparison-value'] %>
+<%      } %>
+      
+<br>
+<%      if(Object.keys(s.search2).length == 0){ %>
+            Search2: None
+<%      }else{ %>
+            Search2: Metadata Item: "<%= s.search2['metadata-item'] %>" <%= s.search2['comparison'] %>: 
+<%      if('single-comparison-value' in s.search2) {  %>
+<%-         s.search2['single-comparison-value'] %>            
+<%      }else{ %>
+            Min: <%-  s.search2['min-comparison-value'] %> Max: <%- s.search2['max-comparison-value'] %>
+<%      } %>
+<%      } %>
+<br>
+<%      if(Object.keys(s.search3).length == 0){ %>
+            Search3: None
+<%      }else{ %>
+            Search3: Metadata Item: "<%= s.search3['metadata-item'] %>" <%= s.search3['comparison'] %>: 
+<%      if('single-comparison-value' in s.search3) {  %>
+<%-         s.search3['single-comparison-value'] %>
+<%      }else{ %>
+            Min: <%-  s.search3['min-comparison-value'] %> Max: <%- s.search3['max-comparison-value'] %>
+<%      } %>
+<%      } %>
+<% } %>
+
 <br><br>
 
 
