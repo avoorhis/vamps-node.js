@@ -252,32 +252,32 @@ class FilePath {
   }
 
   get_path_to_node_scripts(req) {
-    return req.CONFIG.PATH_TO_NODE_SCRIPTS;
+    return req.CONFIG.PATH_TO_NODE_SCRIPTS + "/";
   }
 
   get_process_dir(req) {
-    return req.CONFIG.PROCESS_DIR;
+    return req.CONFIG.PROCESS_DIR + "/";
   }
 
   get_user_file_path(req, user = req.body.user, filename = req.body.filename) {
-    this.user_file_path = req.CONFIG.USER_FILES_BASE;
+    this.user_file_path = req.CONFIG.USER_FILES_BASE + "/";
     return path.join(this.user_file_path, user, filename);
   }
 
   get_user_file_base_path(req) {
-    return req.CONFIG.USER_FILES_BASE;
+    return req.CONFIG.USER_FILES_BASE + "/";
   }
 
   get_tmp_file_path(req) {
-    return req.CONFIG.TMP_FILES;
+    return req.CONFIG.TMP_FILES + "/";
   }
 
   get_static_script_file_path(req) {
-    return req.CONFIG.PATH_TO_STATIC_BASE;
+    return req.CONFIG.PATH_TO_STATIC_BASE + "/";
   }
 
   get_viz_scripts_path(req) {
-    return req.CONFIG.PATH_TO_VIZ_SCRIPTS;
+    return req.CONFIG.PATH_TO_VIZ_SCRIPTS + "/";
   }
 
   get_tmp_distmtx_file_path(req) {
