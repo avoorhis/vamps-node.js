@@ -11,7 +11,6 @@ class FileUtil {
     this.user = this.req.query.user || this.req.user.username;
     this.filename = this.req.query.filename || "";
     this.file_paths = new module.exports.FilePath();
-    this.viz_files = new module.exports.visualizationFiles();
   }
 
   file_download() {
@@ -43,24 +42,32 @@ class FileUtil {
   }
 
   file_delete(redirect_url_after_delete = undefined) {
-    let file = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
+    let file_full_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
+    if (!this.file_exists(file_full_path)) {
+      let data = {
+        err_msg: "ERROR no such file ",
+        redirect_url: redirect_url_after_delete
+      };
+      console.log(data.err_msg, file_full_path);
+      this.req.flash('fail', data.err_msg);
+      this.res.redirect(data.redirect_url);
+    }
 
     if (this.req.query.type === 'elements') {
       let data = {
         err_msg: "err 8: ",
         redirect_url: "/visuals/saved_elements"
       };
-      fs.unlink(file, function callback(err) {
+      fs.unlink(file_full_path, function callback(err) {
         this.react_to_delete(err, data);
-        }.apply(this, data)
-      );
+      }.apply(this, data));
     }
     else {
       let data = {
         err_msg: "err 9: ",
         redirect_url: redirect_url_after_delete
       };
-      fs.unlink(file, function callback(err) {
+      fs.unlink(file_full_path, function callback(err) {
         this.react_to_delete(err, data);
         }.apply(this, data)
       );
@@ -228,6 +235,15 @@ class FileUtil {
     }
     return;
   }
+
+  file_exists(path) {
+    try {
+      return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
+    }
+    catch (err) {
+      return false;
+    }
+  };
 }
 
 class FilePath {
@@ -272,14 +288,6 @@ class FilePath {
     return test_distmtx_file_path;
   }
 
-  get_file_tmp_path_by_ending(req, ending) {
-    const tmp_file_path = this.get_tmp_file_path(req);
-    const file_name_obj = this.get_file_names(req);
-    const file_name = file_name_obj[ending];
-    const file_tmp_path = path.join(tmp_file_path, file_name);
-    return file_tmp_path;
-  }
-
   get_json_files_prefix(req) {
     return path.join(req.CONFIG.JSON_FILES_BASE,
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
@@ -289,6 +297,14 @@ class FilePath {
 class visualizationFiles {
   constructor() {
     this.file_paths = new module.exports.FilePath();
+  }
+
+  get_file_tmp_path_by_ending(req, ending) {
+    const tmp_file_path = this.file_paths.get_tmp_file_path(req);
+    const file_name_obj = this.get_file_names(req);
+    const file_name = file_name_obj[ending];
+    const file_tmp_path = path.join(tmp_file_path, file_name);
+    return file_tmp_path;
   }
 
   print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
@@ -378,11 +394,11 @@ class visualizationFiles {
   get_file_names_switch(req, file_type) {
     switch (file_type) {
       case 'biom':
-        return this.file_paths.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+        return this.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
       case 'tax':
-        return this.file_paths.get_file_tmp_path_by_ending(req, 'taxonomy.txt');
+        return this.get_file_tmp_path_by_ending(req, 'taxonomy.txt');
       case 'meta':
-        return this.file_paths.get_file_tmp_path_by_ending(req, 'metadata.txt');
+        return this.get_file_tmp_path_by_ending(req, 'metadata.txt');
       default:
         console.log('ERROR In download_file');
     }
