@@ -67,13 +67,6 @@ function add_children_to_parent(dictMap_by_id, current_dict)
   return parent_node;
 }
 
-// function check_if_rank(field_name)
-// {
-//   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
-//   return ranks.indexOf(field_name) > -1;
-// }
-
-
 // todo: refactor! Too long and nested
 // JSHint: This function's cyclomatic complexity is too high. (7)(W074)
 function make_taxa_tree_dict(taxonomy_obj)
