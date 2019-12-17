@@ -1,5 +1,5 @@
-#!/anaconda3/bin/python #local
 #!/usr/bin/env python
+#!/anaconda3/bin/python #local
 
 """
     distance_and_ordination.py
