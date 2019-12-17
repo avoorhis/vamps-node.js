@@ -595,6 +595,7 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
 module.exports.reverse                   = function (str) {
   return str.split("").reverse().join("");
 };
+
 module.exports.clean_string              = function (str) {
   // this replaces everything that is not letter,number or underscore (\w) with underscore
   return str.replace(/[^\w]/gi, '_');
@@ -2310,6 +2311,10 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
             res.download(out_file_path); // Set disposition and send it.
         });
     });
+};
+
+module.exports.clean_json = function (text) {
+  return text.replace(/\\r?\\n|\\r|\\n/g, " ");
 };
 
 // module.exports.validate_name = function (name) {

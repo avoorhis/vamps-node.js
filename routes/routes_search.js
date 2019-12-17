@@ -410,22 +410,21 @@ router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
 
-      console.log('in by '+req.params.type)
-      XX = get_metadata_values()
-      
-      
+      console.log('in by '+req.params.type);
+      XX = get_metadata_values();
+      let metadata_items = helpers.clean_json(JSON.stringify(XX.metadata_fields));
 
       //console.log(JSON.stringify(metadata_fields))
       res.render('search/metadata', { title: 'VAMPS:Search',
-        metadata_items:       JSON.stringify(XX.metadata_fields),
+        metadata_items:       metadata_items,
         metadata_search_type: req.params.type,
         mkeys:                XX.metadata_fields_array,
-        user:                 req.user,hostname: req.CONFIG.hostname,
+        user:                 req.user,
+        hostname: req.CONFIG.hostname,
       });
 })
 
 function get_metadata_values(){
-
      var MD_items = new Object()
      var tmp_metadata_fields = {};
      MD_items.metadata_fields_array = []
@@ -462,7 +461,7 @@ function get_metadata_values(){
         return a.toLowerCase().localeCompare(b.toLowerCase());
      });
       
-     return MD_items
+     return MD_items;
 }
 //
 //  TAXONOMY SEARCH
@@ -538,7 +537,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 //  METADATA SEARCH
 //
 router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
-  console.log('IN POST::metadata_search_result')
+  console.log('IN POST::metadata_search_result');
   console.log('req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -550,8 +549,8 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     for (var name in req.body){
       items = name.split('_');
       var search = items[0];
-      if(allowed.indexOf(search) != -1){
-        if( !(search  in searches)){
+      if (allowed.includes(search)){
+        if ( !(search in searches)){
           searches[search] = {};
         }
         searches[search][items[1]] = req.body[name];
@@ -560,7 +559,6 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   }
   var join_type = req.body.join_type;
   //console.log(searches);
-  
 
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1);
@@ -580,7 +578,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
 
   }else{
-    searches.search2 = {}
+    searches.search2 = {};
   }
 
   if('search3' in searches){
@@ -592,28 +590,28 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 
     searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
   }else{
-    searches.search3 = {}
+    searches.search3 = {};
   }
   //
   // Calculate (sum or intersect) final datasets
   //
-  console.log('join type='+join_type)
+  console.log('join type='+join_type);
   var filtered = {};
-  if(join_type == 'addition'){
+  if (join_type === 'addition'){
     filtered.datasets = ds1.concat(ds2, ds3);
     filtered.datasets = filtered.datasets.filter(onlyUnique);
   }else{   // intersection
     filtered.datasets = ds1;
     //if('search2' in searches) {
-    if(Object.keys(searches.search2).length != 0){
+    if(Object.keys(searches.search2).length !== 0){
       filtered.datasets = ds1.filter(function(n) {
-          return ds2.indexOf(n) != -1;
+          return ds2.includes(n);
       });
     }
     //if('search3' in searches) {
-    if(Object.keys(searches.search3).length != 0){
+    if(Object.keys(searches.search3).length !== 0){
       filtered.datasets = filtered.datasets.filter(function(n) {
-          return ds3.indexOf(n) != -1;
+          return ds3.includes(n);
       });
     }
   }
