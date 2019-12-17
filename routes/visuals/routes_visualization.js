@@ -376,7 +376,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
   //console.log('image_type '+image_type);
   // see: http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 
-  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  let biom_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   let user_timestamp = viz_files_obj.get_user_timestamp(req);
@@ -479,8 +479,8 @@ router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
   console.log('POST in pcoa3d');
 
   let metric = req.session.selected_distance;
-  const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
-  const mapping_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'metadata.txt');
+  const biom_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  const mapping_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'metadata.txt');
 
   let options1 = {
     scriptPath : file_path_obj.get_viz_scripts_path(req),
@@ -592,7 +592,7 @@ function format_sumator(allData) {
 
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   console.log('in dbrowser');
-  let matrix_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  let matrix_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   read_file_when_ready(matrix_file_path);
   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
@@ -1431,7 +1431,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
 
   let metric = req.body.metric;
-  let biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  let biom_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   let tmp_file_path = file_path_obj.get_tmp_file_path(req);
 
   const current_pr_dat_obj = req.session.project_dataset_vars;
@@ -1516,7 +1516,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
   console.log('in dheatmap_number_to_color');
 
-  const distmtx_file_tmp_path = file_path_obj.get_file_tmp_path_by_ending(req, 'distance.json');
+  const distmtx_file_tmp_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'distance.json');
 
   read_file_when_ready(distmtx_file_tmp_path);
   const distance_matrix = JSON.parse(fs.readFileSync(distmtx_file_tmp_path, 'utf8'));
@@ -1570,7 +1570,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
   console.log('in dheatmap_split_distance');
   console.log(req.body);
 
-  const test_distmtx_file = file_path_obj.get_file_tmp_path_by_ending(req, 'distance_mh_bc.tsv');
+  const test_distmtx_file = viz_files_obj.get_file_tmp_path_by_ending(req, 'distance_mh_bc.tsv');
 
   if (helpers.fileExists(test_distmtx_file)){
     console.log('Using Old Files');
@@ -1578,7 +1578,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
     return;
   }
 
-  const biom_file_path = file_path_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
+  const biom_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {
