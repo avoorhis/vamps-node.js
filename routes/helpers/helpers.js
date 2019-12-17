@@ -428,6 +428,7 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
 module.exports.reverse                   = function (str) {
   return str.split("").reverse().join("");
 };
+
 module.exports.clean_string              = function (str) {
   // this replaces everything that is not letter,number or underscore (\w) with underscore
   return str.replace(/[^\w]/gi, '_');
@@ -1785,3 +1786,8 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
         });
     });
 };
+
+module.exports.clean_escape = function (text) {
+  return text.replace(/\\r?\\n|\\r|\\n/g, " ");
+};
+
