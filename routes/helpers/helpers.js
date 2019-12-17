@@ -218,20 +218,10 @@ module.exports.render_error_page = function (req, res, msg) {
     });
 };
 
-module.exports.clear_file = function (fileName) {
-  fs.openSync(fileName, "w");
-};
-
-module.exports.append_to_file = function (fileName, text) {
-  fs.appendFileSync(fileName, text);
-};
-
 module.exports.write_to_file = function (fileName, text) {
   fs.writeFile(fileName, text, function (err) {
     if (err) {
       throw err;
-    } else {
-
     }
   });
 };
@@ -258,7 +248,7 @@ module.exports.mkdirSync = function (path) {
   try {
     fs.mkdirSync(path);
   } catch (e) {
-    if (e.code != 'EEXIST') throw e;
+    if (e.code !== 'EEXIST') {throw e}
   }
 };
 
@@ -276,10 +266,10 @@ module.exports.reverseString = function (str) {
 };
 
 module.exports.send_mail = function (mail_info) {
-  var to_addr   = mail_info.addr;
-  var from_addr = mail_info.from;
-  var subj      = mail_info.subj;
-  var msg       = mail_info.msg;
+  // let to_addr   = mail_info.addr;
+  // let from_addr = mail_info.from;
+  // let subj      = mail_info.subj;
+  // let msg       = mail_info.msg;
   transporter.sendMail(mail_info, function (error, info) {
     if (error) {
       console.log(error);
@@ -297,72 +287,75 @@ module.exports.send_mail = function (mail_info) {
 
 };
 
-module.exports.run_ranks_query = function (rank, rows) {
-  for (var i = 0; i < rows.length; i++) {
-    var id                      = rows[i][rank + '_id'];
-    var name                    = rows[i][rank];
-    RANK_ID_BY_NAME[rank][name] = id;
-  }
-};
-
-module.exports.get_select_env_term_query            = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
-    var ont = rows[i].ont;
-    if (ont == 'ENVO') {
+//TODO: to globalVarsController
+module.exports.get_select_env_term_query = function (rows) {
+  for (let i = 0; i < rows.length; i++) {
+    let ont = rows[i].ont;
+    if (ont === 'ENVO') {
       MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
-    } else if (ont == 'CTY') {
+    } else if (ont === 'CTY') {
       MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
-    } else if (ont == 'LZC') {
+    } else if (ont === 'LZC') {
       MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
     }
-
-
   }
 };
-module.exports.get_select_env_package_query         = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+module.exports.get_select_env_package_query = function (rows) {
+  for (let i = 0; i < rows.length; i++) {
     MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
   }
 };
-module.exports.get_select_domain_query              = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+
+//TODO: to globalVarsController
+module.exports.get_select_domain_query = function (rows) {
+  for (let i = 0; i < rows.length; i++) {
     MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
   }
 };
+
+//TODO: to globalVarsController
 module.exports.get_select_dna_region_query          = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
   }
 };
+
+//TODO: to globalVarsController
 module.exports.get_select_target_gene_query         = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
   }
 };
+
+//TODO: to globalVarsController
 module.exports.get_select_sequencing_platform_query = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
   }
 };
 
+//TODO: to globalVarsController
 module.exports.get_select_Illumina_3letter_adapter_query    = function (rows) {
   for (var i = 0; i < rows.length; i++) {
     MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
   }
 };
 
+//TODO: to globalVarsController
 module.exports.get_select_adapter_sequence_query    = function (rows) {
   for (var i = 0; i < rows.length; i++) {
     MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
   }
 };
 
+//TODO: to globalVarsController
 module.exports.get_select_illumina_index_query      = function (rows) {
   for (var i = 0; i < rows.length; i++) {
     MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
   }
 };
 
+//TODO: to globalVarsController
 module.exports.get_select_primer_suite_query = function (rows) {
   for (let i = 0; i < rows.length; i++) {
 
@@ -385,8 +378,9 @@ module.exports.get_select_primer_suite_query = function (rows) {
 
 ////////////////////
 
+//TODO: to globalVarsController
 module.exports.get_select_run_query    = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     MD_RUN[rows[i].run_id] = rows[i].run;
   }
 };
@@ -435,7 +429,7 @@ module.exports.clean_string              = function (str) {
 };
 
 module.exports.get_metadata_from_file = function () {
-  var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
+  let meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   try {
     AllMetadataFromFile = require(meta_file);
   }
@@ -447,7 +441,7 @@ module.exports.get_metadata_from_file = function () {
 };
 
 module.exports.write_metadata_to_files = function (did) {
-  var dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
+  let dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
 
   fs.readFile(dataset_file, 'utf8', function (err, data) {
     if (err) throw err;
@@ -490,12 +484,10 @@ module.exports.mysql_real_escape_string = function (str) {
   });
 };
 
-module.exports.checkUserName = function (username) {   // SAME FXN IN PASSPORT
-  reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-  a   = (reg.test(username));
-  //console.log(a)
-  return a;
-};
+// module.exports.checkUserName = function (username) {   // SAME FXN IN PASSPORT
+//   let reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
+//   return (reg.test(username));
+// };
 
 module.exports.compareStrings_alpha = function (a, b) {
   // Assuming you want case-insensitive comparison
