@@ -2313,7 +2313,7 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
     });
 };
 
-module.exports.clean_json = function (text) {
+module.exports.clean_escape = function (text) {
   return text.replace(/\\r?\\n|\\r|\\n/g, " ");
 };
 

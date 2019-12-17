@@ -411,8 +411,8 @@ router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
 
       console.log('in by '+req.params.type);
-      XX = get_metadata_values();
-      let metadata_items = helpers.clean_json(JSON.stringify(XX.metadata_fields));
+      let XX = get_metadata_values();
+      let metadata_items = helpers.clean_escape(JSON.stringify(XX.metadata_fields));
 
       //console.log(JSON.stringify(metadata_fields))
       res.render('search/metadata', { title: 'VAMPS:Search',
