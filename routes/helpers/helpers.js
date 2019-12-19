@@ -288,90 +288,90 @@ module.exports.send_mail = function (mail_info) {
 };
 
 //TODO: to globalVarsController
-module.exports.get_select_env_package_query = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
-  }
-};
+// module.exports.get_select_env_package_query = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
+//   }
+// };
 
-//TODO: to globalVarsController
-module.exports.get_select_domain_query = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_dna_region_query          = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_target_gene_query         = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_sequencing_platform_query = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_Illumina_3letter_adapter_query    = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
-    MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_adapter_sequence_query    = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
-    MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_illumina_index_query      = function (rows) {
-  for (var i = 0; i < rows.length; i++) {
-    MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
-  }
-};
-
-//TODO: to globalVarsController
-module.exports.get_select_primer_suite_query = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-
-    if (!MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
-      MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].id     = rows[i].primer_suite_id;
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
-    }
-    MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
-      "primer": rows[i].primer,
-      "primer_id": rows[i].primer_id,
-      "direction": rows[i].direction,
-      "sequence": rows[i].sequence
-    });
-  }
-};
-
-////////////////////
-
-//TODO: to globalVarsController
-module.exports.get_select_run_query    = function (rows) {
-  for (let i = 0; i < rows.length; i++) {
-    MD_RUN[rows[i].run_id] = rows[i].run;
-  }
-};
+// //TODO: to globalVarsController
+// module.exports.get_select_domain_query = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_dna_region_query          = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_target_gene_query         = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_sequencing_platform_query = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_Illumina_3letter_adapter_query    = function (rows) {
+//   for (var i = 0; i < rows.length; i++) {
+//     MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_adapter_sequence_query    = function (rows) {
+//   for (var i = 0; i < rows.length; i++) {
+//     MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_illumina_index_query      = function (rows) {
+//   for (var i = 0; i < rows.length; i++) {
+//     MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
+//   }
+// };
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_primer_suite_query = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//
+//     if (!MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id].id     = rows[i].primer_suite_id;
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
+//       MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
+//     }
+//     MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
+//       "primer": rows[i].primer,
+//       "primer_id": rows[i].primer_id,
+//       "direction": rows[i].direction,
+//       "sequence": rows[i].sequence
+//     });
+//   }
+// };
+//
+// ////////////////////
+//
+// //TODO: to globalVarsController
+// module.exports.get_select_run_query    = function (rows) {
+//   for (let i = 0; i < rows.length; i++) {
+//     MD_RUN[rows[i].run_id] = rows[i].run;
+//   }
+// };
 
 module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
   //console.log('query ok1 '+JSON.stringify(rows1));

@@ -182,7 +182,7 @@ module.exports.get_datasets = function(callback){
         console.log('INITIALIZING USER_GROUPS');
 
       }
-  )
+  );
 
 
   ///////////////////////////////////////////////////
@@ -191,8 +191,9 @@ module.exports.get_datasets = function(callback){
         console.log('Query error: ' + err);
         console.log(err.stack);
         process.exit(1);
-      } else {
-        helpers.get_select_env_package_query(rows);
+      }
+      else {
+        global_vars.get_select_env_package_query(rows);
       }
       console.log(' INITIALIZING MD_ENV_PACKAGE');
   });
@@ -202,7 +203,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_domain_query(rows);
+        global_vars.get_select_domain_query(rows);
       }
       console.log(' INITIALIZING MD_DOMAIN');
   });
@@ -212,7 +213,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_dna_region_query(rows);
+        global_vars.get_select_dna_region_query(rows);
       }
       console.log(' INITIALIZING MD_DNA_REGION');
   });
@@ -223,7 +224,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_target_gene_query(rows);
+        global_vars.get_select_target_gene_query(rows);
       }
       console.log(' INITIALIZING MD_TARGET_GENE');
   });
@@ -234,7 +235,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_sequencing_platform_query(rows);
+        global_vars.get_select_sequencing_platform_query(rows);
       }
       console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
   });
@@ -245,7 +246,7 @@ module.exports.get_datasets = function(callback){
       console.log(err.stack);
       process.exit(1);
     } else {
-      helpers.get_select_Illumina_3letter_adapter_query(rows);
+      global_vars.get_select_Illumina_3letter_adapter_query(rows);
     }
     console.log(' INITIALIZING MD_3LETTER_ADAPTER');
   });
@@ -256,7 +257,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_adapter_sequence_query(rows);
+        global_vars.get_select_adapter_sequence_query(rows);
       }
       console.log(' INITIALIZING MD_ADAPTER_SEQUENCE');
   });
@@ -266,7 +267,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_illumina_index_query(rows);
+        global_vars.get_select_illumina_index_query(rows);
       }
       console.log(' INITIALIZING MD_ILLUMINA_INDEX');
   });
@@ -277,7 +278,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_primer_suite_query(rows);
+        global_vars.get_select_primer_suite_query(rows);
       }
       console.log(' INITIALIZING MD_PRIMER_SUITE');
 
@@ -289,7 +290,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_run_query(rows);
+        global_vars.get_select_run_query(rows);
       }
       console.log(' INITIALIZING MD_RUN');
   });
