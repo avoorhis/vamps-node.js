@@ -252,7 +252,7 @@ function download_data(type, download_type, ts) {
       if (xmlhttp.readyState == 4 ) {
          var filename = xmlhttp.responseText; 
          html += "<div class=''>Your file is being compiled. "
-         html += " When ready your file can be downloaded from the file retrieval page under 'Your Data': "+filename+"</div>"
+         html += " When ready your file can be downloaded from the <a href='/user_data/file_retrieval'><b>File Retrieval Page</b></a> under 'Your Data': "+filename+"</div>"
          document.getElementById('download_confirm_id').innerHTML = html;
       }
     };

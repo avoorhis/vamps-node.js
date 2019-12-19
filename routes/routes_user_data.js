@@ -4281,6 +4281,15 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
     qSelect += " where dataset_id in ("+dids+")";
     console.log(dids);
 
+  } else if (req.body.download_type == 'search_seqs') {
+
+    //var pids = JSON.parse(req.body.datasets).ids;
+    var dids = req.body.dataset_ids;
+    file_name = 'fasta-'+timestamp+'_custom_search.fa.gz';
+    out_file_path = path.join(user_dir, file_name);
+    qSelect += " where dataset_id in ("+dids+")";
+    console.log(dids);
+
   } else if (req.body.download_type == 'custom_taxonomy') {
 
       req.flash('success', 'Fasta being created');
@@ -4308,22 +4317,30 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
   var rs = new Readable();
   var collection = db.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
     if (err) {
+        console.log('query ERROR')
         throw err;
     } else {
-      for (var i in rows) {
-        seq = rows[i].seq.toString();
-        //var buffer = new Buffer(rows[i].seq, 'base64');
-        //console.log(seq);
-        seq_id = rows[i].sequence_id.toString();
-        seq_count = rows[i].seq_count.toString();
-        //project = rows[i].project;
-        pjds = rows[i].project+'--'+rows[i].dataset;
-        entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
-        //console.log(entry);
-        rs.push(entry);
-      }
+      if(rows.length == 0){
+        console.log('ROW LENGTH == 0')
+        rs.push(null);
+        file_name='NOGO'
+      }else{
+          for (var i in rows) {
+            seq = rows[i].seq.toString();
+            //var buffer = new Buffer(rows[i].seq, 'base64');
+            //console.log(seq);
+            seq_id = rows[i].sequence_id.toString();
+            seq_count = rows[i].seq_count.toString();
+            //project = rows[i].project;
+            pjds = rows[i].project+'--'+rows[i].dataset;
+            entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
+            //console.log(entry);
+            rs.push(entry);
+          }
 
-      rs.push(null);
+          rs.push(null);
+      }
+      
     }
     rs
       .pipe(gzip)

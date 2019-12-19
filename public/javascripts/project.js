@@ -78,7 +78,7 @@ function download_data(type, pid, project, download_type, orientation) {
       if (xmlhttp.readyState == 4 ) {
          var filename = xmlhttp.responseText; 
          html += "<div class='pull-right'>Your file is being compiled.<br>The filename is: "+filename;
-         html += "<br>When ready your file can be downloaded from the <a href='/user_data/file_retrieval'>file retrieval page.</a></div>"
+         html += "<br>When ready your file can be downloaded from the <a href='/user_data/file_retrieval'><b>File Retrieval Page</b></a></div>"
          document.getElementById('download_confirm_id').innerHTML = html;
       }
     };

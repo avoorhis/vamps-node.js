@@ -25,11 +25,15 @@ var accessToken = '<%- token %>'
         <br>Selected Taxa Name: <%= tax_name %>        
 <% }else{ %>
 <%      var s = JSON.parse(searches) %>
-        Search1: Metadata Item: "<%= s.search1['metadata-item'] %>" <%= s.search1['comparison'] %>: 
-<%      if('single-comparison-value' in s.search1) {  %>
-<%-         s.search1['single-comparison-value'] %>            
+<%      if(Object.keys(s.search1).length == 0){ %>
+            Search1: None
 <%      }else{ %>
-            Min: <%-  s.search1['min-comparison-value'] %> Max: <%- s.search1['max-comparison-value'] %>
+            Search1: Metadata Item: "<%= s.search1['metadata-item'] %>" <%= s.search1['comparison'] %>: 
+<%          if('single-comparison-value' in s.search1) {  %>
+<%-             s.search1['single-comparison-value'] %>            
+<%          }else{ %>
+                Min: <%-  s.search1['min-comparison-value'] %> Max: <%- s.search1['max-comparison-value'] %>
+<%          } %>
 <%      } %>
       
 <br>
@@ -37,22 +41,22 @@ var accessToken = '<%- token %>'
             Search2: None
 <%      }else{ %>
             Search2: Metadata Item: "<%= s.search2['metadata-item'] %>" <%= s.search2['comparison'] %>: 
-<%      if('single-comparison-value' in s.search2) {  %>
-<%-         s.search2['single-comparison-value'] %>            
-<%      }else{ %>
-            Min: <%-  s.search2['min-comparison-value'] %> Max: <%- s.search2['max-comparison-value'] %>
-<%      } %>
+<%          if('single-comparison-value' in s.search2) {  %>
+<%-             s.search2['single-comparison-value'] %>            
+<%          }else{ %>
+             Min: <%-  s.search2['min-comparison-value'] %> Max: <%- s.search2['max-comparison-value'] %>
+<%          } %>
 <%      } %>
 <br>
 <%      if(Object.keys(s.search3).length == 0){ %>
             Search3: None
 <%      }else{ %>
             Search3: Metadata Item: "<%= s.search3['metadata-item'] %>" <%= s.search3['comparison'] %>: 
-<%      if('single-comparison-value' in s.search3) {  %>
-<%-         s.search3['single-comparison-value'] %>
-<%      }else{ %>
-            Min: <%-  s.search3['min-comparison-value'] %> Max: <%- s.search3['max-comparison-value'] %>
-<%      } %>
+<%          if('single-comparison-value' in s.search3) {  %>
+<%-             s.search3['single-comparison-value'] %>
+<%          }else{ %>
+                Min: <%-  s.search3['min-comparison-value'] %> Max: <%- s.search3['max-comparison-value'] %>
+<%          } %>
 <%      } %>
 <% } %>
 
