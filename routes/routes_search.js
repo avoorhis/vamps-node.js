@@ -119,8 +119,10 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
             latlon_datasets.points[did].tax = '' 
         }
     }
-    if(latlon_datasets.points.length == 0){
-        
+    
+    if(Object.keys(latlon_datasets.points).length == 0){
+        console.log('NO LAT LON DATA')
+        res.end('<p>No Lat/Lon Data Found (use the Back Button to return).</p>');
         return
     }
     res.render('search/geo_map', { title: 'VAMPS:Search',
