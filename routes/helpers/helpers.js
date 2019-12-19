@@ -122,39 +122,54 @@ function format_time(mtime) {
   // .toString();
 }
 
+function add_to_retrieve(results, stat, file, filename) {
+  let sizer_and_filesize = get_sizer_and_filesize(stat.size);
+  results.push({
+    'filename': filename,
+    // 'size': stat.size,
+    'fileSize': sizer_and_filesize[0],
+    'sizer': sizer_and_filesize[1],
+    'time': stat.mtime,
+    'mtime_format': format_time(stat.mtime),
+    'user_dirname': get_user_dirname(path.dirname(file))
+  });
+  return results;
+}
+
 function walk_recursively(dir, done) {
 // var file_formats = C.download_file_formats;
-  var results = [];
+  let results = [];
   fs.readdir(dir, function (err, list) {
-    if (err) return done(err);
-    var pending = list.length;
-    if (!pending) return done(null, results);
-    list.forEach(function (file) {
-      file = path.resolve(dir, file);
+    if (err) {return done(err)}
+    let pending = list.length;
+    if (!pending) {return done(null, results)}
+    list.forEach(file_from_list => {
+      let file = path.resolve(dir, file_from_list);
       fs.stat(file, function (err, stat) {
         if (stat && stat.isDirectory()) {
           walk_recursively(file, function (err, res) {
             results = results.concat(res);
-            if (!--pending) {
-              done(null, results);
-            }
+            if (!--pending) {done(null, results)}
           });
-        } else {
-          var filename = path.basename(file);
+        }
+        else {
+          let filename = path.basename(file);
+          let file_format_is_ok = check_file_formats(filename);
 
-          if (check_file_formats(filename)) {
-            var sizer_and_filesize = get_sizer_and_filesize(stat.size);
-            results.push({
-              'filename': filename,
-              // 'size': stat.size,
-              'fileSize': sizer_and_filesize[0],
-              'sizer': sizer_and_filesize[1],
-              'time': stat.mtime,
-              'mtime_format': format_time(stat.mtime),
-              'user_dirname': get_user_dirname(path.dirname(file))
-            });
+          if (file_format_is_ok) {
+            results = add_to_retrieve(results, stat, file, filename);
+            // let sizer_and_filesize = get_sizer_and_filesize(stat.size);
+            // results.push({
+            //   'filename': filename,
+            //   // 'size': stat.size,
+            //   'fileSize': sizer_and_filesize[0],
+            //   'sizer': sizer_and_filesize[1],
+            //   'time': stat.mtime,
+            //   'mtime_format': format_time(stat.mtime),
+            //   'user_dirname': get_user_dirname(path.dirname(file))
+            // });
           }
-          if (!--pending) done(null, results);
+          if (!--pending) {done(null, results)}
         }
       });
     });
@@ -287,92 +302,6 @@ module.exports.send_mail = function (mail_info) {
 
 };
 
-//TODO: to globalVarsController
-// module.exports.get_select_env_package_query = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
-//   }
-// };
-
-// //TODO: to globalVarsController
-// module.exports.get_select_domain_query = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_dna_region_query          = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_target_gene_query         = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_sequencing_platform_query = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_Illumina_3letter_adapter_query    = function (rows) {
-//   for (var i = 0; i < rows.length; i++) {
-//     MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_adapter_sequence_query    = function (rows) {
-//   for (var i = 0; i < rows.length; i++) {
-//     MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_illumina_index_query      = function (rows) {
-//   for (var i = 0; i < rows.length; i++) {
-//     MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
-//   }
-// };
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_primer_suite_query = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//
-//     if (!MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id].id     = rows[i].primer_suite_id;
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
-//       MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
-//     }
-//     MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
-//       "primer": rows[i].primer,
-//       "primer_id": rows[i].primer_id,
-//       "direction": rows[i].direction,
-//       "sequence": rows[i].sequence
-//     });
-//   }
-// };
-//
-// ////////////////////
-//
-// //TODO: to globalVarsController
-// module.exports.get_select_run_query    = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     MD_RUN[rows[i].run_id] = rows[i].run;
-//   }
-// };
-
 module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
   //console.log('query ok1 '+JSON.stringify(rows1));
   //console.log('query ok2 '+JSON.stringify(rows2));
@@ -446,7 +375,6 @@ module.exports.write_metadata_to_files = function (did) {
 
 };
 
-// TODO: "This function's cyclomatic complexity is too high. (11)"
 module.exports.mysql_real_escape_string = function (str) {
   return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
     switch (char) {
@@ -1123,7 +1051,6 @@ function get_geo_loc_name(id) {
   }
 }
 
-//TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
   // test visuals/unit_selection from custom tax
   let idname, value;
@@ -1211,7 +1138,6 @@ function get_current_primers(id) {
   return val.join(' ');
 }
 
-// TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
   let id = selection_obj[name_id];
   let real_name, value;
