@@ -329,22 +329,6 @@ class GlobalVars {
   }
 
   get_select_env_term_query(rows) {
-    console.time("TIME: get_select_env_term_query 1");
-    for (let i = 0; i < rows.length; i++) {
-      let ont = rows[i].ont;
-      if (ont === 'ENVO') {
-        MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
-      }
-      else if (ont === 'CTY') {
-        MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
-      }
-      else if (ont === 'LZC') {
-        MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
-      }
-    }
-    console.timeEnd("TIME: get_select_env_term_query 1");
-    //avg 0.3732ms
-    console.time("TIME: get_select_env_term_query 2");
     for (let i = 0; i < rows.length; i++) {
       let ont = rows[i].ont;
       switch (ont) {
@@ -359,36 +343,7 @@ class GlobalVars {
           break;
       }
     }
-    console.timeEnd("TIME: get_select_env_term_query 2");
-    //0.0932
-    console.time("TIME: get_select_env_term_query 3");
-
-    rows.forEach(r => {
-      let ont = r.ont;
-      switch (ont) {
-        case 'ENVO':
-          MD_ENV_ENVO[r.term_id] = r.term_name;
-          break;
-        case 'CTY':
-          MD_ENV_CNTRY[r.term_id] = r.term_name;
-          break;
-        case 'LZC':
-          MD_ENV_LZC[r.term_id] = r.term_name;
-          break;
-      }
-    });
-    console.timeEnd("TIME: get_select_env_term_query 3");
-    //0.1764
-    console.time("TIME: get_select_env_term_query 4");
-
-    rows.filter(r => r.ont === 'ENVO').forEach(ro => MD_ENV_ENVO[ro.term_id] = ro.term_name);
-    rows.filter(r => r.ont === 'CTY').forEach(ro => MD_ENV_CNTRY[ro.term_id] = ro.term_name);
-    rows.filter(r => r.ont === 'LZC').forEach(ro => MD_ENV_LZC[ro.term_id] = ro.term_name);
-    console.timeEnd("TIME: get_select_env_term_query 4");
-    // 0.2682
-
   }
-
 }
 
 module.exports = {

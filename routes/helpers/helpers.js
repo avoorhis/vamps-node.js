@@ -288,18 +288,6 @@ module.exports.send_mail = function (mail_info) {
 };
 
 //TODO: to globalVarsController
-// module.exports.get_select_env_term_query = function (rows) {
-//   for (let i = 0; i < rows.length; i++) {
-//     let ont = rows[i].ont;
-//     if (ont === 'ENVO') {
-//       MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
-//     } else if (ont === 'CTY') {
-//       MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
-//     } else if (ont === 'LZC') {
-//       MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
-//     }
-//   }
-// };
 module.exports.get_select_env_package_query = function (rows) {
   for (let i = 0; i < rows.length; i++) {
     MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
@@ -1083,7 +1071,7 @@ module.exports.convertJSDateToString = function (jddate) {
       return full_year.toString() + '-' + month.toString() + '-' + date.toString()
     }
   } catch (e) {
-    return ''
+    return '';
   }
 
 };
