@@ -320,38 +320,35 @@ var delete_previous_tmp_files = function (req, username) {
 
  fs.readdir(temp_dir_path1, function (err, files) {
 
-    for (var i = 0; i < files.length; i++) {
-      file_pts = files[i].split('_')[0].split('-');
+    for (let i = 0; i < files.length; i++) {
+      let file_pts = files[i].split('_')[0].split('-');
       //console.log('PP1',file_pts[0])
       if (file_pts[0] === username) {
-        var curPath = temp_dir_path1 + "/" + files[i];
+        let curPath = temp_dir_path1 + "/" + files[i];
         helpers.deleteFolderRecursive(curPath);
       }
     }
     fs.readdir(temp_dir_path2, function (err, files) {
-      for (var i = 0; i < files.length; i++) {
-        file_pts = files[i].split('_')[0].split('-');
+      for (let i = 0; i < files.length; i++) {
+        let file_pts = files[i].split('_')[0].split('-');
         //console.log('PP2',file_pts[0])
         if (file_pts[0] === username) {
-          var curPath = temp_dir_path2 + "/" + files[i];
+          let curPath = temp_dir_path2 + "/" + files[i];
           helpers.deleteFolderRecursive(curPath);
         }
       }
 
       fs.readdir(temp_dir_path3, function (err, files) {
-        for (var i = 0; i < files.length; i++) {
-          file_pts = files[i].split('_')[0].split('-');
+        for (let i = 0; i < files.length; i++) {
+          let file_pts = files[i].split('_')[0].split('-');
           //console.log('PP3',file_pts[0])
           if (file_pts[0] === username) {
-            var curPath = temp_dir_path3 + "/" + files[i];
+            let curPath = temp_dir_path3 + "/" + files[i];
             helpers.deleteFolderRecursive(curPath);
-
           }
         }
       });
-
     });
-
   });
 };
 
