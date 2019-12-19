@@ -119,13 +119,17 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
             latlon_datasets.points[did].tax = '' 
         }
     }
+    if(latlon_datasets.points.length == 0){
+        
+        return
+    }
     res.render('search/geo_map', { title: 'VAMPS:Search',
                         user  :     req.user,hostname: req.CONFIG.hostname,
                         data :   JSON.stringify(latlon_datasets),
                         tax_name : 'noTax',
-                        rank: 'noRank',
-                        metadata:'',
-                        md_range: '',
+                        rank : 'noRank',
+                        metadata : '',
+                        md_range : '',
                         searches : JSON.stringify(searches),
                         token :   req.CONFIG.MAPBOX_TOKEN,
                         search_type : 'metadata',
