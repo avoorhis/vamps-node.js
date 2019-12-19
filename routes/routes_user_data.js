@@ -78,7 +78,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
   let user_file_base_path = file_path_obj.get_user_file_base_path(req);
   let export_dir = path.join(user_file_base_path, req.user.username);
   helpers.walk(export_dir, function(err, files) {
-    if (err) throw err;
+    if (err) {throw err;}
     files.sort(function sortByTime(a, b) {
       //reverse sort: recent-->oldest
       return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
