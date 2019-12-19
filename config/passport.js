@@ -313,8 +313,10 @@ var delete_previous_tmp_files = function (req, username) {
   var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
   var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
   var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
-  
-  console.log(temp_dir_path3);
+
+  console.log("temp_dir_path1: ", temp_dir_path1);
+  console.log("temp_dir_path2: ", temp_dir_path2);
+  console.log("temp_dir_path3: ", temp_dir_path3);
 
  fs.readdir(temp_dir_path1, function (err, files) {
 

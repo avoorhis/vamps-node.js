@@ -5,6 +5,9 @@ var queries = require('./queries');
 var helpers = require('./helpers/helpers');
 var config  = require('../config/config');
 var async = require('async');
+const global_vars_controller = require(app_root + '/controllers/globalVarsController');
+const global_vars = new global_vars_controller.GlobalVars();
+
 //
 //
 //
@@ -52,11 +55,11 @@ module.exports.get_datasets = function(callback){
 		    console.log('Query error: ' + err);
 		    console.log(err.stack);
 		    process.exit(1);
-      } else {
-
-        console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and helpers.run_select_datasets_query):');
+      }
+      else {
+        console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and global_vars.run_select_datasets_query):');
         //datasetsByProject.projects = []
-        helpers.run_select_datasets_query(rows);
+        global_vars.run_select_datasets_query(rows);
 
       }
       console.log(' INITIALIZING ALL_DATASETS');
@@ -299,8 +302,9 @@ module.exports.get_datasets = function(callback){
         console.log('Query error: ' + err);
         console.log(err.stack);
         process.exit(1);
-      } else {
-        helpers.get_select_seq_counts_query(rows);
+      }
+      else {
+        global_vars.get_select_seq_counts_query(rows);
 
       }
 
@@ -316,7 +320,7 @@ module.exports.get_datasets = function(callback){
       console.log(err.stack);
       process.exit(1);
     } else {
-      helpers.get_select_custom_units_query(rows);
+      global_vars.get_select_custom_units_query(rows);
     }
     console.log(' INITIALIZING MD_CUSTOM_UNITS');
     // console.timeEnd("TIME: connection queries.get_select_custom_units_query");

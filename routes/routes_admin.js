@@ -19,6 +19,7 @@ var storage  = multer.diskStorage({
 });
 var User     = require(app_root + '/models/user_model');
 var upload   = multer({storage: storage}).single('upload_metadata_file');
+const file_controller = require(app_root + '/controllers/fileController');
 
 router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
 
@@ -53,8 +54,8 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function (req,
 
   console.log('in permissions');
 
-  var user_order    = get_name_ordered_users_list()
-  var project_order = get_name_ordered_projects_list()
+  let user_order    = get_name_ordered_users_list();
+  let project_order = get_name_ordered_projects_list();
   //console.log(JSON.stringify(ALL_USERS_BY_UID))
   res.render('admin/permissions', {
     title: 'VAMPS Site Administration',
@@ -244,7 +245,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function (re
   }
   //console.log(PROJECT_INFORMATION_BY_PID);
   //console.log(ALL_USERS_BY_UID);
-  var project_list = get_name_ordered_projects_list()
+  let project_list = get_name_ordered_projects_list();
   res.render('admin/alter_project', {
     title: 'VAMPS Site Administration',
     user: req.user,
@@ -1434,72 +1435,25 @@ function get_name_ordered_users_list() {
 }
 
 function get_name_ordered_projects_list() {
-  project_order = [];
-  for (pid in  PROJECT_INFORMATION_BY_PID) {
-    project_order.push(PROJECT_INFORMATION_BY_PID[pid])
-  }
+  let project_order = [];
+  Object.keys(PROJECT_INFORMATION_BY_PID).forEach(pid => project_order.push(PROJECT_INFORMATION_BY_PID[pid]));
+
   project_order.sort(function sortByAlpha(a, b) {
-    return helpers.compareStrings_alpha(a.project, b.project)
+    return helpers.compareStrings_alpha(a.project, b.project);
   });
-  return project_order
+  return project_order;
 }
 
-// TODO: mv to helpers and refactor (see also in metadata & user_data
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
-
   console.log('in file_utils');
-  var user = req.query.user;
+  const file_util_obj = new file_controller.FileUtil(req, res);
 
-  // console.log("file from file_utils: ");
-  // console.log(file);
-  //// DOWNLOAD //////
-  if (req.query.fxn == 'download' && req.query.template == '1') {
-    var file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download' && req.query.type == 'pcoa') {
-    var file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn == 'download') {
-    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-    ///// DELETE /////
-  } else if (req.query.fxn == 'delete') {
-    // console.log("UUU req.query");
-    // console.log(req.query);
-
-
-    var file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    if (req.query.type == 'elements') {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          console.log("err 8: ");
-          console.log(err);
-          req.flash('fail', err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/visuals/saved_elements");
-        }
-      }); //
-    } else {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          req.flash('fail', err);
-          console.log("err 9: ");
-          console.log(err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/admin/all_files_retrieval");
-        }
-      });
-    }
-
+  if (req.query.fxn === 'download') {
+    file_util_obj.file_download();
   }
-
+  else if (req.query.fxn === 'delete') {
+    file_util_obj.file_delete("/admin/all_files_retrieval");
+  }
 });
 //
 //
@@ -1613,7 +1567,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], functio
     var cmd = ''
     cmd += "export SGE_ROOT="+req.CONFIG.SGE_ROOT+'; '
     cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
-    if(! helpers.isInt(jid)){
+    if(!Number.isInteger(jid)){
         req.flash('fail', 'FAIL: Job ID is not Integer');
         res.redirect('/admin/kill_cluster_jobs');
         return

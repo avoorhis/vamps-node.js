@@ -9,7 +9,7 @@ var helpers = require('./helpers/helpers');
 module.exports = {
 
   get_project_permissions: function(){
-    var qSelectAccess = "SELECT user_id, project_id from access";
+    let qSelectAccess = "SELECT user_id, project_id from access";
     return qSelectAccess;
   },
   get_select_datasets_query: function(){
@@ -64,11 +64,11 @@ module.exports = {
     return qSelectUser;
   },
   get_all_user_groups: function(){
-    var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group"
+    var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group";
     return qSelectUserGroup;
   },
   get_projects_queryUID: function( uid ) {
-    var q = "SELECT project, project_id from project where owner_user_id='"+uid+"'";
+    let q = "SELECT project, project_id from project where owner_user_id='" + uid + "'";
     q += " WHERE project.active = 1";
 
   return q;

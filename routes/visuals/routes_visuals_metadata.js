@@ -7,8 +7,6 @@ var helpers = require('../helpers/helpers');
 
 
 module.exports = {
-
-
 		write_metadata_file: function(post_items) {
 			console.log('in metadata: write_metadata_file')
 			console.log(post_items)

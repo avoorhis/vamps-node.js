@@ -6,7 +6,7 @@ let form    = require("express-form");
 const constants_metadata = require(app_root + '/public/constants_metadata');
 const constants = require(app_root + '/public/constants');
 const CONSTS = Object.assign(constants, constants_metadata);
-let fs      = require("fs");
+// let fs      = require("fs");
 let path    = require("path");
 let config  = require(app_root + '/config/config');
 // let validator           = require('validator');
@@ -19,6 +19,7 @@ let metadata_controller  = require(app_root + '/controllers/metadataController')
 let csv_files_controller = require(app_root + '/controllers/csvFilesController');
 const multer             = require('multer');
 let upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
+const file_controller    = require(app_root + '/controllers/fileController');
 
 /* GET metadata page. */
 router.get('/metadata', function (req, res) {
@@ -77,11 +78,13 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
   let mdvalues = {};
   for (let did in DATASET_NAME_BY_DID) {
     if (did in AllMetadata) {
-      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_selected.slice(0, md_selected.length - 3)) !== -1) {
+      let shortened_metadata_name = md_selected.slice(0, md_selected.length - 3);
+      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
         let data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
         mdvalues[did]    = data.value;
         md_selected_show = data.name;
-      } else if (AllMetadata[did].hasOwnProperty(md_selected)) {
+      }
+      else if (AllMetadata[did].hasOwnProperty(md_selected)) {
         mdvalues[did]    = AllMetadata[did][md_selected];
         md_selected_show = md_selected;
 
@@ -102,7 +105,8 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
 router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
   console.log('in metadata - geomap');
   let md_item = req.params.item;
-  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(md_item.slice(0, md_item.length - 3)) !== -1) {
+  let shortened_metadata_name = md_item.slice(0, md_item.length - 3);
+  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
     md_item_show = md_item.slice(0, md_item.length - 3);
   } else {
     md_item_show = md_item;
@@ -775,61 +779,17 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 
 // from a csv file to db
 
-// TODO: mv to helpers and refactor (see also in admin & user_data
+// test: more -> metadata -> Manage Saved Metadata
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
-
-  // console.time('file_utils');
-  let user = req.query.user;
-
-  //// DOWNLOAD //////
-  let file = '';
+  const file_util_obj = new file_controller.FileUtil(req, res);
   console.log("file from file_utils in routes_metadata: ");
   console.log(req.query.filename);
-  if (req.query.fxn === 'download' && req.query.template === '1') {
-    file = path.join(req.CONFIG.PROCESS_DIR, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn === 'download' && req.query.type === 'pcoa') {
-    file = path.join(req.CONFIG.TMP_FILES, req.query.filename);
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-  } else if (req.query.fxn === 'download') {
-    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    res.setHeader('Content-Type', 'text');
-    res.download(file); // Set disposition and send it.
-    ///// DELETE /////
-  } else if (req.query.fxn === 'delete') {
-
-    file = path.join(req.CONFIG.USER_FILES_BASE, user, req.query.filename);
-
-    if (req.query.type === 'elements') {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          console.log("err 8: ");
-          console.log(err);
-          req.flash('fail', err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/visuals/saved_elements");
-        }
-      }); //
-    } else {
-      fs.unlink(file, function deleteFile(err) {
-        if (err) {
-          req.flash('fail', err);
-          console.log("err 9: ");
-          console.log(err);
-        } else {
-          req.flash('success', 'Deleted: ' + req.query.filename);
-          res.redirect("/metadata/metadata_file_list");
-        }
-      });
-    }
-
+  if (req.query.fxn === 'download') {
+    file_util_obj.file_download();
   }
-  // console.timeEnd('file_utils');
-
+  else if (req.query.fxn === 'delete') {
+    file_util_obj.file_delete("/metadata/metadata_file_list");
+  }
 });
 
 // save from form to db ??

@@ -57,37 +57,37 @@ class CreateDataObj {
     // console.timeEnd('TIME: prepare_empty_metadata_object');
   }
 
-  get_project_info(req, res, project_name_or_pid) {
-    let project_info;
-
-    // let user_id  = req.form.pi_id_name.split('#')[0];
-    // let user_obj = User.getUserInfoFromGlobal(user_id);
-
-    // TODO: use with new
-    // if (typeof project_name_or_pid === 'undefined') {
-    // const new_project = new Project(req, res, "", user_obj);
-    // let project_obj   = new_project.project_obj;
-    // }
-
-    if (helpers.isInt(project_name_or_pid)) {
-      project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
-    }
-    else {
-      project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
-    }
-
-    return {
-      project: project_info.project,
-      first_name: project_info.first,
-      institution: project_info.institution,
-      last_name: project_info.last,
-      pi_email: project_info.email,
-      pi_name: project_info.first + ' ' + project_info.last,
-      project_title: project_info.title,
-      public: project_info.public,
-      username: project_info.username
-    };
-  }
+  // get_project_info(req, res, project_name_or_pid) {
+  //   let project_info;
+  //
+  //   // let user_id  = req.form.pi_id_name.split('#')[0];
+  //   // let user_obj = User.getUserInfoFromGlobal(user_id);
+  //
+  //   // TODO: use with new
+  //   // if (typeof project_name_or_pid === 'undefined') {
+  //   // const new_project = new Project(req, res, "", user_obj);
+  //   // let project_obj   = new_project.project_obj;
+  //   // }
+  //
+  //   if (helpers.isInt(project_name_or_pid)) {
+  //     project_info = PROJECT_INFORMATION_BY_PID[project_name_or_pid];
+  //   }
+  //   else {
+  //     project_info = PROJECT_INFORMATION_BY_PNAME[project_name_or_pid];
+  //   }
+  //
+  //   return {
+  //     project: project_info.project,
+  //     first_name: project_info.first,
+  //     institution: project_info.institution,
+  //     last_name: project_info.last,
+  //     pi_email: project_info.email,
+  //     pi_name: project_info.first + ' ' + project_info.last,
+  //     project_title: project_info.title,
+  //     public: project_info.public,
+  //     username: project_info.username
+  //   };
+  // }
 
   add_project_abstract_info(project_obj, existing_all_metadata_pid, repeat_times) {
     let to_repeat = project_obj.abstract_data.pdfs;
@@ -376,7 +376,7 @@ class CreateDataObj {
   }
 
   isUnique(all_clean_field_names_arr, column_name) {
-    return (all_clean_field_names_arr.indexOf(column_name) < 0);
+    return (!all_clean_field_names_arr.includes(column_name));
   }
 
   get_cell_val_by_row(row_idx, req) {
@@ -1077,17 +1077,13 @@ class FieldNames {
     // why get_field_names_by_dataset_ids again? 1) substract METADATA_NAMES_SUBSTRACT, 2) substract '_id', 3) substract CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM
     let structured_field_names0 = this.get_field_names_by_dataset_ids(dataset_ids);
 
-    let diff_names = structured_field_names0.filter(function (x) {
-      return CONSTS.METADATA_NAMES_SUBSTRACT.indexOf(x) < 0;
-    });
+    let diff_names = structured_field_names0.filter(x => !CONSTS.METADATA_NAMES_SUBSTRACT.includes(x));
 
     diff_names = diff_names.filter(function (item) {
       return /^((?!_id).)*$/.test(item);
     });
 
-    diff_names = diff_names.filter(function (x) {
-      return CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM.indexOf(x) < 0;
-    });
+    diff_names = diff_names.filter(x => !CONSTS.CORRECT_ORDER_FOR_EXISTING_DATASETS_FORM.includes(x));
 
     let big_arr_diff_names = this.make_array4(diff_names);
 
