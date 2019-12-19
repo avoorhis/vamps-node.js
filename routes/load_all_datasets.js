@@ -147,7 +147,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        helpers.get_select_env_term_query(rows);
+        global_vars.get_select_env_term_query(rows);
       }
       console.log(' INITIALIZING MD_ENV_ENVO');
       console.log(' INITIALIZING MD_ENV_CNTRY');
