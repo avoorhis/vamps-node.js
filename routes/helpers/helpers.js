@@ -146,7 +146,8 @@ function walk_recursively(dir, done) {
     list.forEach(file_from_list => {
       let file = path.resolve(dir, file_from_list);
       fs.stat(file, function (err, stat) {
-        if (stat && stat.isDirectory()) {
+        let is_directory = (stat && stat.isDirectory());
+        if (is_directory) {
           walk_recursively(file, function (err, res) {
             results = results.concat(res);
             if (!--pending) {done(null, results)}
@@ -155,19 +156,8 @@ function walk_recursively(dir, done) {
         else {
           let filename = path.basename(file);
           let file_format_is_ok = check_file_formats(filename);
-
           if (file_format_is_ok) {
             results = add_to_retrieve(results, stat, file, filename);
-            // let sizer_and_filesize = get_sizer_and_filesize(stat.size);
-            // results.push({
-            //   'filename': filename,
-            //   // 'size': stat.size,
-            //   'fileSize': sizer_and_filesize[0],
-            //   'sizer': sizer_and_filesize[1],
-            //   'time': stat.mtime,
-            //   'mtime_format': format_time(stat.mtime),
-            //   'user_dirname': get_user_dirname(path.dirname(file))
-            // });
           }
           if (!--pending) {done(null, results)}
         }
