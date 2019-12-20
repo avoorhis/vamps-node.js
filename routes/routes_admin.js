@@ -1023,6 +1023,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
             html_json.data[ds]['cust_data'].push('');
           }
         }
+
         for (let i in html_json.sorted_req_header_names) {
           mdname = html_json.sorted_req_header_names[i];
           if (newmd[did].hasOwnProperty(mdname)) {
@@ -1031,8 +1032,6 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
             html_json.data[ds]['req_data'].push('');
           }
         }
-
-
       }
       // if (Object.keys(html_json.data).length === 0) {
       const html_json_data_is_empty = helpers.is_empty(html_json.data);
@@ -1049,7 +1048,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
         console.log('OK--VALIDATES');
       }
       html_json.filename = username + '_' + project_name + '--' + timestamp + '.json';
-      file_path          = path.join(req.CONFIG.TMP_FILES, html_json.filename);
+      let file_path = path.join(req.CONFIG.TMP_FILES, html_json.filename);
 
       mdata = convert_names_to_ids_for_storage(newmd);
 
