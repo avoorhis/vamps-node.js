@@ -1,7 +1,7 @@
 var express  = require('express');
 var router   = express.Router();
 var passport = require('passport');
-var helpers  = require('./helpers/helpers');
+let helpers  = require('./helpers/helpers');
 //var queries = require('./queries');
 var queries  = require('./queries_admin');
 var config   = require(app_root + '/config/config');
@@ -926,18 +926,13 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
   console.log('In POST admin upload_metadata');
   let username  = req.user.username;
   let timestamp = +new Date();
-  helpers.local_log(local_log, "upload_metadata " + req.body);
-  // if (req.CONFIG.site === 'vamps') {
-  //   console.log('VAMPS PRODUCTION -- no print to log');
-  // } else {
-  //   console.log(req.body);
-  // }
   upload(req, res, function (err) {
+    helpers.local_log(req, req.body);
     if (err) {
       console.log('Error uploading file: ' + err.toString());
       return res.end("Error uploading file.");
     }
-    req_metadata  = req.CONSTS.REQ_METADATA_FIELDS;
+    let req_metadata  = req.CONSTS.REQ_METADATA_FIELDS;
     let html_json = {};
     if (!req.hasOwnProperty('file')) {
       res.end("Error uploading file: project selected? file to upload selected?");
