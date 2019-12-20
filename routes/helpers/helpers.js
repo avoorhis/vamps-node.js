@@ -3,7 +3,7 @@ let queries = require(app_root + '/routes/queries');
 const config  = require(app_root + '/config/config');
 
 let express     = require('express');
-let router      = express.Router();
+// let router      = express.Router();
 let fs          = require('fs-extra');
 let nodemailer  = require('nodemailer');
 let transporter = nodemailer.createTransport({});
@@ -11,7 +11,7 @@ let util        = require('util');
 let path        = require('path');
 //let crypto = require('crypto');
 // let mysql       = require('mysql2');
-let spawn       = require('child_process').spawn;
+// let spawn       = require('child_process').spawn;
 
 // route middleware to make sure a user is logged in
 module.exports.isLoggedIn = function (req, res, next) {
@@ -530,57 +530,58 @@ module.exports.make_color_seq = function (seq) {
   return return_string;
 };    //end of function make_color_seq
 
-module.exports.update_project_information_global_object = function (pid, form, user_obj) {
-  console.log('Updating PROJECT_INFORMATION_BY_PID');
-  if (config.site == 'vamps') {
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(pid);
-    console.log(JSON.stringify(form));
-    console.log(JSON.stringify(user_obj));
-  }
-  if (PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true) {
-    console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?');
-    return;
-  }
-  console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
-  var ca                                              = module.exports.convertJSDateToString(rows[i].created_at)
-  var ua                                              = module.exports.convertJSDateToString(rows[i].updated_at)
-  PROJECT_INFORMATION_BY_PID[pid]                     = {};
-  PROJECT_INFORMATION_BY_PID[pid]                     = {
-    "last": user_obj.last_name,
-    "first": user_obj.first_name,
-    "username": user_obj.username,
-    "oid": user_obj.user_id,
-    "email": user_obj.email,
-    // "env_source_name" : rows[i].env_source_name,
-    "env_source_id": form.new_env_source_id,
-    "institution": user_obj.institution,
-    "project": form.new_project_name,
-    "pid": pid,
-    "title": form.new_project_title,
-    "description": form.new_project_description,
-    "public": form.new_privacy,
-    "permissions": [user_obj.user_id],
-    "metagenomic": rows[i].metagenomic,
-    //"seqs_available" :   rows[i].seqs_available,
-    "created_at": ca,
-    "updated_at": ua
-  };
-  PROJECT_INFORMATION_BY_PNAME[form.new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
-  console.log('PROJECT_INFORMATION_BY_PID[pid]');
-  console.log(PROJECT_INFORMATION_BY_PID[pid]);
-};
+// TODO: to globVar, not used
+// module.exports.update_project_information_global_object = function (pid, form, user_obj) {
+//   console.log('Updating PROJECT_INFORMATION_BY_PID');
+//   if (config.site == 'vamps') {
+//     console.log('VAMPS PRODUCTION -- no print to log');
+//   } else {
+//     console.log(pid);
+//     console.log(JSON.stringify(form));
+//     console.log(JSON.stringify(user_obj));
+//   }
+//   if (PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) == true) {
+//     console.log('pid already in PROJECT_INFORMATION_BY_PID -- how can that be?');
+//     return;
+//   }
+//   console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
+//   var ca                                              = module.exports.convertJSDateToString(rows[i].created_at)
+//   var ua                                              = module.exports.convertJSDateToString(rows[i].updated_at)
+//   PROJECT_INFORMATION_BY_PID[pid]                     = {};
+//   PROJECT_INFORMATION_BY_PID[pid]                     = {
+//     "last": user_obj.last_name,
+//     "first": user_obj.first_name,
+//     "username": user_obj.username,
+//     "oid": user_obj.user_id,
+//     "email": user_obj.email,
+//     // "env_source_name" : rows[i].env_source_name,
+//     "env_source_id": form.new_env_source_id,
+//     "institution": user_obj.institution,
+//     "project": form.new_project_name,
+//     "pid": pid,
+//     "title": form.new_project_title,
+//     "description": form.new_project_description,
+//     "public": form.new_privacy,
+//     "permissions": [user_obj.user_id],
+//     "metagenomic": rows[i].metagenomic,
+//     //"seqs_available" :   rows[i].seqs_available,
+//     "created_at": ca,
+//     "updated_at": ua
+//   };
+//   PROJECT_INFORMATION_BY_PNAME[form.new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
+//   console.log('PROJECT_INFORMATION_BY_PID[pid]');
+//   console.log(PROJECT_INFORMATION_BY_PID[pid]);
+// };
 
-function mysqlTimeStampToDate(timestamp) {
-  //function parses mysql datetime string and returns javascript Date object
-  //input has to be in this format: 2007-06-05 15:26:02
-  var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/;
-  console.log(timestamp)
-  var parts = timestamp.replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
-  console.log('2')
-  return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
-}
+// function mysqlTimeStampToDate(timestamp) {
+//   //function parses mysql datetime string and returns javascript Date object
+//   //input has to be in this format: 2007-06-05 15:26:02
+//   var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/;
+//   console.log(timestamp)
+//   var parts = timestamp.replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
+//   console.log('2')
+//   return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
+// }
 
 module.exports.update_status = function (status_params) {
   console.log('in update_status');
@@ -642,9 +643,9 @@ module.exports.fetchInfo = function (query, values, callback) {
 //
 //
 //
-function htmlEntities(str) {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+// function htmlEntities(str) {
+//   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// }
 
 module.exports.get_local_script_text = function (cmd_list) {
   script_text = "#!/bin/sh\n\n";
@@ -795,6 +796,7 @@ module.exports.local_log = function (req, msg) {
   }
 };
 
+// TODO: to fileController
 module.exports.deleteFolderRecursive = function (path) {
   if (fs.existsSync(path)) {
     if (fs.lstatSync(path).isFile()) {
@@ -1577,7 +1579,8 @@ function collect_errors(req) {
 }
 
 exports.transpose_arr_of_obj = transpose_arr_of_obj;
-// JSHint: This function's cyclomatic complexity is too high. (9)(W074)
+
+// TODO: JSHint: This function's cyclomatic complexity is too high. (9)(W074)
 function transpose_arr_of_obj(a) {
   // console.time('TIME: transpose_arr_of_obj');
 
@@ -1608,9 +1611,9 @@ function transpose_arr_of_obj(a) {
   return transposed_object;
 }
 
-function jsUcfirst(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+// function jsUcfirst(string) {
+//   return string.charAt(0).toUpperCase() + string.slice(1);
+// }
 
 //
 //
