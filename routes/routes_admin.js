@@ -920,95 +920,94 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
 });
 //
 //
-//
+// TEST: Admin / Validate & Upload Metadata / shoose file / Go
 router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
-  var parse = require('csv-parse');
+  let parse = require('csv-parse');
   console.log('In POST admin upload_metadata');
-  var username  = req.user.username;
-  var timestamp = +new Date();
-  if (req.CONFIG.site == 'vamps') {
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(req.body)
-  }
+  let username  = req.user.username;
+  let timestamp = +new Date();
+  helpers.local_log(local_log, "upload_metadata " + req.body);
+  // if (req.CONFIG.site === 'vamps') {
+  //   console.log('VAMPS PRODUCTION -- no print to log');
+  // } else {
+  //   console.log(req.body);
+  // }
   upload(req, res, function (err) {
     if (err) {
       console.log('Error uploading file: ' + err.toString());
       return res.end("Error uploading file.");
     }
-    req_metadata  = req.CONSTS.REQ_METADATA_FIELDS
-    var html_json = {};
+    req_metadata  = req.CONSTS.REQ_METADATA_FIELDS;
+    let html_json = {};
     if (!req.hasOwnProperty('file')) {
-      res.end("Error uploading file: project selected? file to upload selected?")
-      return
+      res.end("Error uploading file: project selected? file to upload selected?");
+      return;
     }
 
-    var selected_pid  = req.body.pid
-    var dataset_ids   = DATASET_IDS_BY_PID[selected_pid]
-    var project_name  = PROJECT_INFORMATION_BY_PID[selected_pid].project
-    var metadata_file = req.file.path
+    let selected_pid  = req.body.pid;
+    let dataset_ids   = DATASET_IDS_BY_PID[selected_pid];
+    let project_name  = PROJECT_INFORMATION_BY_PID[selected_pid].project;
+    let metadata_file = req.file.path;
 
-    var parser = parse({delimiter: '\t'}, function createParserPipe(err, mdata) {
+    // TODO: JSHint: This function's cyclomatic complexity is too high. (17)(W074)
+    let parser = parse({delimiter: '\t'}, function createParserPipe(err, mdata) {
       if (err) {
         console.log('parsing error');
         res.json(JSON.stringify({"error": true, "msg": ["Error parsing file: " + err.toString()]}));
-        return
+        return;
       }
-      html_json.validation              = {}
-      html_json.validation.error        = false
-      html_json.validation.empty_values = false
-      html_json.validation.msg          = []
+      html_json.validation              = {};
+      html_json.validation.error        = false;
+      html_json.validation.empty_values = false;
+      html_json.validation.msg          = [];
       //console.log("mdata: ");
       //console.log(mdata);
 
-
       //console.log('req_metadata')
       //console.log(req_metadata)
-      var dataset_field_names = ['sample_name', '#SampleID', 'dataset', 'Dataset']
-      var title_row           = mdata[0]
-      idx                     = dataset_field_names.indexOf(title_row[0])
-      if (idx != -1) {
-        //console.log('found dataset_field '+title_row[0])
-      } else {
+      let dataset_field_names = ['sample_name', '#SampleID', 'dataset', 'Dataset'];
+      let title_row           = mdata[0];
+      let idx                 = dataset_field_names.indexOf(title_row[0]);
+      if (idx === -1) {
         //console.log('we have no dataset_field')
-        html_json.validation.error = true
-        html_json.validation.msg.push("Did not find a dataset field in the csv file: (['sample_name','#SampleID','dataset','Dataset'])")
+        html_json.validation.error = true;
+        html_json.validation.msg.push("Did not find a dataset field in the csv file: (['sample_name','#SampleID','dataset','Dataset'])");
       }
 
-      html_json.data = {}
+      html_json.data = {};
 
-      newmd = {}
-      for (n = 1; n < mdata.length; n++) { // each row is a dataset -- start at 0 -skip title row
-        dset = mdata[n][0]
-        for (i in dataset_ids) {
+      newmd = {};
+      for (let n = 1; n < mdata.length; n++) { // each row is a dataset -- start at 0 -skip title row
+        dset = mdata[n][0];
+        for (let i in dataset_ids) {
           // only show datasets that are known:
-          did = dataset_ids[i]
-          if (dset == DATASET_NAME_BY_DID[did]) {
-            newmd[did] = {}
+          did = dataset_ids[i];
+          if (dset === DATASET_NAME_BY_DID[did]) {
+            newmd[did] = {};
             for (idx in title_row) {
-              var val                                  = mdata[n][idx]
-              newmd[did][title_row[idx].toLowerCase()] = val   //lowercase name for validation
+              let val = mdata[n][idx];
+              newmd[did][title_row[idx].toLowerCase()] = val;   //lowercase name for validation
             }
           }
         }
       }
       //console.log('newmd')
       //console.log(newmd)
-      html_json.validation = validate_metadata(req, newmd)
+      html_json.validation = validate_metadata(req, newmd);
 
-      html_json.sorted_req_header_names = req_metadata.sort()
-      headers_cust                      = {}
-      for (did in newmd) {
-        for (mdname in newmd[did]) {
-          if (req_metadata.indexOf(mdname) == -1) {
-            headers_cust[mdname] = 1  // lookup
+      html_json.sorted_req_header_names = req_metadata.sort();
+      headers_cust                      = {};
+      for (let did in newmd) {
+        for (let mdname in newmd[did]) {
+          if (req_metadata.includes(mdname)) {
+            headers_cust[mdname] = 1;  // lookup
           }
         }
       }
-      html_json.sorted_cust_header_names = Object.keys(headers_cust).sort()
+      html_json.sorted_cust_header_names = Object.keys(headers_cust).sort();
 
 
-      for (var did in newmd) {
+      for (let did in newmd) {
         // only show datasets that are known:
         ds = DATASET_NAME_BY_DID[did];
 
@@ -1016,7 +1015,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
         html_json.data[ds]['req_data']  = [];
         html_json.data[ds]['cust_data'] = [];
         // this should show all metadata not just the required stuff
-        for (i in html_json.sorted_cust_header_names) {
+        for (let i in html_json.sorted_cust_header_names) {
           mdname = html_json.sorted_cust_header_names[i];
           if (newmd[did].hasOwnProperty(mdname)) {
             html_json.data[ds]['cust_data'].push(newmd[did][mdname]);
@@ -1024,7 +1023,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
             html_json.data[ds]['cust_data'].push('');
           }
         }
-        for (i in html_json.sorted_req_header_names) {
+        for (let i in html_json.sorted_req_header_names) {
           mdname = html_json.sorted_req_header_names[i];
           if (newmd[did].hasOwnProperty(mdname)) {
             html_json.data[ds]['req_data'].push(newmd[did][mdname]);
@@ -1055,8 +1054,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function 
       mdata = convert_names_to_ids_for_storage(newmd);
 
       helpers.write_to_file(file_path, JSON.stringify(mdata));
-
-
+      
       res.json(JSON.stringify(html_json));
 
     });
