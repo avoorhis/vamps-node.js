@@ -289,6 +289,7 @@ function showTaxResult(str) {
 
   var find_datasets_btn = document.getElementById("find_datasets_btn") || null;
   var create_fasta_btn = document.getElementById("create_fasta_btn") || null;
+  var dnld_seqs_btn = document.getElementById("dnld_seqs_btn") || null;
   if (str.length <= 2) {
     document.getElementById("livesearch_taxonomy").innerHTML="";
     document.getElementById("livesearch_taxonomy").style.border="0px";
@@ -308,8 +309,8 @@ function showTaxResult(str) {
     if(find_datasets_btn != null){
       document.getElementById("find_datasets_btn").disabled=false;
     }
-    if(create_fasta_btn != null){
-      document.getElementById("create_fasta_btn").disabled=false;
+    if(dnld_seqs_btn != null){
+      document.getElementById("dnld_seqs_btn").disabled=false;
     }
     document.getElementById("livesearch_tax_dropdown").style.visibility='visible';
   }
@@ -397,7 +398,7 @@ function get_tax_str(taxon,rank){
   xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           document.getElementById("find_datasets_btn").disabled=false;
-          document.getElementById("create_fasta_btn").disabled=false;
+          
           var response = xmlhttp.responseText;
           var tmp = JSON.parse(response);
           document.getElementById("livesearch_result_div").value = tmp.full_string;
@@ -839,7 +840,7 @@ function get_md_values(name){
 
 		  var response = JSON.parse(xmlhttp.responseText);
 		  //console.log('done')
-		  console.log(response)
+		  //console.log(response)
 		  var html = "<select name='tax'>"
 		  for(i in response){
 		  	//console.log('AA '+response[i])
@@ -851,4 +852,192 @@ function get_md_values(name){
 		}
 	}
 	xmlhttp.send(args);
+}
+//
+//
+//
+function filter_datasets(join_type, searches){
+    //alert('in filter datasets')
+    
+    s = JSON.parse(searches)
+    //alert(s.search1.datasets)
+    var html = ''
+    var filtered = {};
+    var add_int_choice = true
+    if(s.search1.datasets.length == 0 && s.search2.datasets.length == 0 && s.search3.datasets.length == 0){        
+        html += 'No Data'
+        filtered.datasets = []
+        filtered.ds_plus = []
+        add_int_choice = false
+        
+        // no buttons/no int/add choice
+    }else if(s.search1.datasets.length > 0 && s.search2.datasets.length == 0 && s.search3.datasets.length == 0) {  //common
+        filtered.datasets = s.search1.datasets
+        filtered.ds_plus = s.search1.ds_plus
+        add_int_choice = false
+        
+    }else if(s.search1.datasets.length == 0 && s.search2.datasets.length > 0 && s.search3.datasets.length == 0) {  //common
+        filtered.datasets = s.search2.datasets 
+        filtered.ds_plus = s.search2.ds_plus
+        add_int_choice = false  
+           
+    }else if(s.search1.datasets.length == 0 && s.search2.datasets.length == 0 && s.search3.datasets.length > 0) {  //common need buttons but no int/add
+        filtered.datasets = s.search3.datasets 
+        filtered.ds_plus = s.search3.ds_plus
+        add_int_choice = false         
+    }else{
+        //alert(searches)
+        
+        if(join_type == 'add'){
+            filtered.datasets = s.search1.datasets.concat(s.search2.datasets, s.search3.datasets);
+            filtered.datasets = filtered.datasets.filter(onlyUnique);
+        }else{   // intersection
+            filtered.datasets = s.search1.datasets;
+            if(s.search2.datasets.length != 0){
+                filtered.datasets = s.search1.datasets.filter(function(n) {
+                    return s.search2.datasets.indexOf(n) != -1;
+                });
+            }
+            if(s.search3.datasets.length != 0){
+                filtered.datasets = filtered.datasets.filter(function(n) {
+                    return s.search3.datasets.indexOf(n) != -1;
+                });
+            }
+        }
+        if(filtered.datasets.length == 0){
+            // must have int/add choice button
+            html += get_int_add_choice(join_type, filtered.datasets.length, searches)
+            html += '<br>No Data'           
+            
+        }else{
+    
+            filtered.ds_plus = []
+            for(n in filtered.datasets){
+                if(s.search1.datasets.indexOf(filtered.datasets[n]) != -1){
+                    filtered.ds_plus.push(s.search1.ds_plus[ s.search1.datasets.indexOf(filtered.datasets[n])] )
+                }else if(s.search2.datasets.indexOf(filtered.datasets[n]) != -1){
+                    filtered.ds_plus.push(s.search2.ds_plus[s.search2.datasets.indexOf(filtered.datasets[n])])
+                }else if(s.search3.datasets.indexOf(filtered.datasets[n]) != -1){
+                    filtered.ds_plus.push(s.search3.ds_plus[s.search3.datasets.indexOf(filtered.datasets[n])])
+                }
+            }
+        }
+    }
+    if(filtered.datasets.length > 0){
+        //<br><strong>Combined by <%= join_type %> (<%= f.datasets.length %> datasets)</strong>
+        html += "<table><tr>"
+        html += get_buttons(filtered, s)
+        html += "</tr></table>"
+        if(add_int_choice == true){
+            html += get_int_add_choice(join_type, filtered.datasets.length, searches)
+        }
+        for(i in filtered.ds_plus){
+            html += "<li>"+(parseInt(i)+1)+") "+filtered.ds_plus[i].pname+"--"+filtered.ds_plus[i].dname+"</li>"
+            // <%= parseInt(i)+1 %>) <%= f.ds_plus[i].pname %>--<%= f.ds_plus[i].dname %>
+        }
+    } 
+    document.getElementById("search_ds_result_box").innerHTML = html
+
+}
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+//
+//
+//
+function get_buttons(filtered, s){
+    var code = ''
+    code += "<td>"
+    code += "<button type='submit' id='' class='btn btn-xs btn-success' onclick='download_data(\"fasta\",\"search_seqs\","+JSON.stringify(filtered.datasets)+")'>Download Sequences</button>"
+	// code += "	<form id='' name='' method='POST' action='../user_data/download_selected_seqs'>"
+// 	code += "		<button type='submit' class='btn btn-xs btn-success' name='' >Download Sequences</button>"
+// 	code += "		<input type='hidden' name='retain_data' value='1' >"
+// 	code += "		<input type='hidden' name='referer' value='search' >"
+// 	code += "		<input type='hidden' name='download_type' value='search_seqs' >"
+// 	code += "		<input type='hidden' name='dataset_ids' value='"+JSON.stringify(filtered.datasets)+"' >"	
+// 	code += "	</form>"
+	code += "</td>"
+	code += "<td>"
+	code += "	<form id='' name='' method='POST' action='/visuals/unit_selection'>"
+	code += "		<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Visualizations</button>"
+	code += "		<input type='hidden' name='retain_data' value='1' >"
+	code += "		<input type='hidden' name='dataset_ids' value='"+JSON.stringify(filtered.datasets)+"' >"
+	code += "	</form>"
+	code += "</td>"
+	code += "<td>"
+	code += "	<form id='' name='' method='POST' action='../user_data/export_selection'>"
+	code += "		<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Exports</button>"
+	code += "		<input type='hidden' name='retain_data' value='1' >"
+	code += "		<input type='hidden' name='dataset_ids' value='"+JSON.stringify(filtered.datasets)+"' >"	
+	code += "	</form>"	
+	code += "</td>"
+	code += "<td>"
+	
+	altered_searches = {}
+	altered_searches.search1 = {}
+	altered_searches.search2 = {}
+	altered_searches.search3 = {}
+	for(n in s){
+        if(s[n].datasets.length != 0){
+            altered_searches[n] = s[n]
+            delete altered_searches[n].datasets
+            delete altered_searches[n].ds_plus	
+        }
+	}
+	altered_searches.dataset_ids = filtered.datasets	
+	
+	code += "	<form id='' name='' method='POST' action='geo_by_meta_search'>"
+	code += "		<button type='submit' class='btn btn-xs btn-primary' name='' >Show in Maps</button>"
+	code += "		<input type='hidden' name='retain_data' value='1' >"
+	code += "		<input type='hidden' name='searches' value='"+JSON.stringify(altered_searches)+"' >"		
+	code += "	</form>"		
+	code += "</td>"
+	
+	return code
+}
+function get_int_add_choice(join_type, len, searches){
+    //console.log(searches)
+    //console.log(join_type)
+    var code = ''
+    //code += "<td>"
+	code += "	<div id='' class='' >Join searches by:"
+	if(join_type == 'int'){
+        code += "      <input type='radio' name='join_type' value='intersection' checked='checked' onclick='filter_datasets(\"int\","+JSON.stringify(searches)+")' /> <strong>Intersection</strong>"
+        code += "      &nbsp;&nbsp;or"
+        code += "      <input type='radio' name='join_type' value='addition' onclick='filter_datasets(\"add\","+JSON.stringify(searches)+")' /> <strong>Addition</strong> of returned sample sets."
+        code += "<br><strong>Combined by Intersection ("+len+" datasets)</strong>"
+    }else{
+        code += "      <input type='radio' name='join_type' value='intersection'  onclick='filter_datasets(\"int\","+JSON.stringify(searches)+")' /> <strong>Intersection</strong>"
+        code += "      &nbsp;&nbsp;or"
+        code += "      <input type='radio' name='join_type' value='addition' checked='checked' onclick='filter_datasets(\"add\","+JSON.stringify(searches)+")' /> <strong>Addition</strong> of returned sample sets."
+        code += "<br><strong>Combined by Addition ("+len+" datasets)</strong>"
+    }
+    code += "   </div>"
+	//code += "</td>"
+    
+    
+    return code
+}
+function download_data(type, download_type, datasets) {
+    var html = '';
+    var args =  "download_type="+download_type;
+    args += "&dataset_ids="+datasets
+    var xmlhttp = new XMLHttpRequest(); 
+    if(download_type == 'custom_taxonomy'){
+      taxon_string = document.getElementById('livesearch_result_div').value
+      args += "&tax_string="+taxon_string
+    }else{
+    }
+    target = '/user_data/download_selected_seqs'
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText; 
+         html += "<div class=''>Your file is being compiled. "
+         html += " When ready your file can be downloaded from the <a href='/user_data/file_retrieval'><b>File Retrieval Page</b></a> under 'Your Data': "+filename+"</div>"
+         document.getElementById('download_confirm_id').innerHTML = html;
+      }
+    };
+    xmlhttp.send(args);   
 }

@@ -19,6 +19,8 @@
 <div class='container'>
   <div class='row'>
     <div class="col-lg-12">
+    
+<div id='download_confirm_id'></div>    
 <div id='taxonomy_search_div' class='well'>
 
 		    
@@ -34,11 +36,18 @@
 							  	</form>
 					    </td>
 					    <td>
-					    		<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
+					    
+					    
+				<button type='submit' id='dnld_seqs_btn' disabled='disabled' class='btn btn-xs btn-success' onclick="download_data('fasta','custom_taxonomy','')">Download Sequences</button>	    		
+					    		<!-- 
+<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
 							  		<button id='create_fasta_btn'  class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Create Fasta File</button>
 							  		<input type='hidden' id='create_fasta_hidden_id' name='tax_string' value=''>
 							  		<input type='hidden' name='download_type' value='custom_taxonomy'>
 							  	</form>
+ -->
+							  	
+							  	
 					    </td>    
 							</tr>
 							<tr><td colspan='3'>

@@ -1,9 +1,9 @@
 <% include ../add_ins/begin.ejs %>
 
 <% s = JSON.parse(searches) %>
-<% f = JSON.parse(filtered) %>
+<% //f = JSON.parse(filtered) %>
 <script>
-  
+  var s_local  = '<%- searches %>'
 </script>
 <div class='title'>Search Result</div>
 <div class='subtitle'>Metadata</div>
@@ -17,11 +17,7 @@
 		   <div class="panel panel-default">
 			   
 			   <div class="panel-heading">
-              	 <h3 class="panel-title">Search 1 Values
-			      <% if(s.search1.datasets.length != 0){ %>
-			        <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
-			     <% } %>
-			     </h3>
+              	 <h3 class="panel-title">Search 1 Values</h3>
           </div>
 			 
 			   <div class="panel-body">
@@ -82,11 +78,7 @@
 		<div class="">
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
-	          	 <h3 class="panel-title">Search 2 Values
-				 <% if(Object.keys(s.search2).length != 0) { %>
-				   <button id='dwnld_btn_id2' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
-	             <% } %>
-			 	</h3>
+	           <h3 class="panel-title">Search 2 Values</h3>
 			   </div>
 			   <div class="panel-body">
 					<% if(Object.keys(s.search2).length != 0) { %>
@@ -150,11 +142,7 @@
 		<div class="">
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
-	          	 <h3 class="panel-title">Search 3 Values
-				 <% if(Object.keys(s.search3).length != 0) { %>
-					<button id='dwnld_btn_id3' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
-	           	 <% } %>
-				 </h3>
+	           <h3 class="panel-title">Search 3 Values</h3>
 			   </div>
 			   <div class="panel-body">
 					<% if(Object.keys(s.search3).length != 0) { %>
@@ -233,93 +221,27 @@
 
 </td>
 </tr>
+
 </table>
 <table class='table'>
 <tr>
 <td  colspan='3'>
+<div id='download_confirm_id'></div>
 
-<%
-    var altered_searches = {}
-    altered_searches.dataset_ids = f.datasets
-    altered_searches.search1 = s.search1
-    altered_searches.search2 = s.search2
-    altered_searches.search3 = s.search3
-    delete altered_searches.search1.datasets
-    delete altered_searches.search1.ds_plus
-    if(Object.keys(s.search2).length != 0){
-        delete altered_searches.search2.datasets
-        delete altered_searches.search2.ds_plus
-    }
-    if(Object.keys(s.search3).length != 0){
-        delete altered_searches.search3.datasets
-        delete altered_searches.search3.ds_plus
-    }
-%>
 <center>
 
-<% if(f.datasets.length != 0){ %>
-    <table>
-	<tr>
-		<td>
-			<form id='' name='' method='POST' action='/visuals/unit_selection'>
-				<button type='submit' class='btn btn-xs btn-success' name='' >Download Sequences</button>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
-			</form>		
-		</td>
-		<td>
-			<form id='' name='' method='POST' action='/visuals/unit_selection'>
-				<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Visualizations</button>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
-			</form>		
-		</td>
-		<td>
-			<form id='' name='' method='POST' action='../user_data/export_selection'>
-				<button type='submit' class='btn btn-xs btn-primary' name='' >Use in Exports</button>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
-			</form>		
-		</td>
-		<td>
-			<form id='' name='' method='POST' action='geo_by_meta_search'>
-				<button type='submit' class='btn btn-xs btn-primary' name='' >Show in Maps</button>
-				<input type='hidden' name='retain_data' value='1' >
-				<!-- <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	 -->
-				<input type='hidden' name='searches' value='<%= JSON.stringify(altered_searches) %>' >	
-				
-			</form>		
-		</td>
-		
-	</tr>
-    </table>
-<% } %>
+	<div id='search_ds_result_box' class='search_ds_result_box'></div>
 
- 
-	<% if(!('search2' in s) && !('search3' in s)) { %>
-		<br><strong><%= f.datasets.length %> dataset(s)</strong>
-	<% }else{ %>	
-		<br><strong>Combined by <%= join_type %> (<%= f.datasets.length %> datasets)</strong>
-
-	<% } %>
-	<% if(f.datasets.length == 0){ %>
-			<br><b>no data found</b>
-		<% }else{ %>
-			
-				<div class='search_ds_result_box'>
-				<% for(i in f.ds_plus) { %>
-					<li>
-						<%= parseInt(i)+1 %>) <%= f.ds_plus[i].pname %>--<%= f.ds_plus[i].dname %>
-					</li>
-				<% } %>
-			
-				</div>
-				
-			
-		<% } %>
 </center>
 
 </td></tr></table>
 <% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/search.js"></script>
+<script>
+        $(document).ready(function() {
+            filter_datasets('add', s_local)
+        });
+        
+</script>
  </body>
  </html>

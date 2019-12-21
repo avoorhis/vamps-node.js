@@ -119,19 +119,25 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
             latlon_datasets.points[did].tax = '' 
         }
     }
+    
+    if(Object.keys(latlon_datasets.points).length == 0){
+        console.log('NO LAT LON DATA')
+        res.end('<p>No Lat/Lon Data Found (use the Back Button to return).</p>');
+        return
+    }
     res.render('search/geo_map', { title: 'VAMPS:Search',
                         user  :     req.user,hostname: req.CONFIG.hostname,
                         data :   JSON.stringify(latlon_datasets),
                         tax_name : 'noTax',
-                        rank: 'noRank',
-                        metadata:'',
-                        md_range: '',
+                        rank : 'noRank',
+                        metadata : '',
+                        md_range : '',
                         searches : JSON.stringify(searches),
                         token :   req.CONFIG.MAPBOX_TOKEN,
                         search_type : 'metadata',
                         sub_title : 'Datasets by Metadata Value'
-                    })
-                    return
+    })
+    return
 });
 //
 //
@@ -557,8 +563,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
       }
     }
   }
-  var join_type = req.body.join_type;
-  //console.log(searches);
+
 
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1);
@@ -578,7 +583,11 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
     searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
 
   }else{
-    searches.search2 = {};
+
+    searches.search2 = {}
+    searches.search2.datasets = []
+    searches.search2.ds_plus = []
+
   }
 
   if('search3' in searches){
@@ -590,32 +599,17 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 
     searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
   }else{
-    searches.search3 = {};
+
+    searches.search3 = {}
+    searches.search3.datasets = []
+    searches.search3.ds_plus = []
+
   }
   //
   // Calculate (sum or intersect) final datasets
   //
-  console.log('join type='+join_type);
-  var filtered = {};
-  if (join_type === 'addition'){
-    filtered.datasets = ds1.concat(ds2, ds3);
-    filtered.datasets = filtered.datasets.filter(onlyUnique);
-  }else{   // intersection
-    filtered.datasets = ds1;
-    //if('search2' in searches) {
-    if(Object.keys(searches.search2).length !== 0){
-      filtered.datasets = ds1.filter(function(n) {
-          return ds2.includes(n);
-      });
-    }
-    //if('search3' in searches) {
-    if(Object.keys(searches.search3).length !== 0){
-      filtered.datasets = filtered.datasets.filter(function(n) {
-          return ds3.includes(n);
-      });
-    }
-  }
-  filtered.ds_plus = get_dataset_search_info(filtered.datasets, {});
+
+
   //
   //
 //   console.log(searches)
@@ -627,9 +621,9 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 //   }else{
           res.render('search/search_result_metadata', {
                     title    : 'VAMPS: Search Datasets',
-                    filtered : JSON.stringify(filtered),
+                    //filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
-                    join_type: join_type,
+                    //join_type: join_type,
                     user     : req.user,hostname: req.CONFIG.hostname,
           });  //
 //   }
