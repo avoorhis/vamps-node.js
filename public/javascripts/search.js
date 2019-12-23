@@ -37,10 +37,9 @@ if (search_metadata_activate_btn2 !== null) {
   search_metadata_activate_btn2.addEventListener('click', function () {
 
 	if(metadata_search_field2.disabled === true){
-
 	  metadata_search_field2.disabled = false;
     }else{
-      metadata_search_field2.disabled = true;
+      metadata_search_field2.disabled = true;      
     }
 
   });
@@ -102,7 +101,7 @@ if (metadata_search_field1 !== null) {
         metadata_search_range_div1.style.display    = "block";
         metadata_search_range_div1.style.background = "#C0C0C0";
         metadata_search_range_div1.style.padding    = "3px";
-        metadata_search_range_div1.style.width      = "95%";
+        //metadata_search_range_div1.style.width      = "95%";
         document.getElementById('search_metadata_btn').disabled    = false;
       }
   });
@@ -151,7 +150,7 @@ if (metadata_search_field2 !== null) {
         metadata_search_range_div2.style.display    = "block";
         metadata_search_range_div2.style.background = "#C0C0C0";
         metadata_search_range_div2.style.padding    = "3px";
-        metadata_search_range_div2.style.width      = "95%";
+        //metadata_search_range_div2.style.width      = "95%";
         document.getElementById('search_metadata_btn').disabled    = false;
       }
   });
@@ -198,7 +197,7 @@ if (metadata_search_field3 !== null) {
         metadata_search_range_div3.style.display    = "block";
         metadata_search_range_div3.style.background = "#C0C0C0";
         metadata_search_range_div3.style.padding    = "3px";
-        metadata_search_range_div3.style.width      = "95%";
+        //metadata_search_range_div3.style.width      = "95%";
         document.getElementById('search_metadata_btn').disabled    = false;
       }
   });

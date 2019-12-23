@@ -24,75 +24,74 @@
     <div class='container'>
     <div class='row'>
     <div class="col-lg-12">
-        <div id='metadata_search_div' class='well'>
+        <div id='metadata_search_div' class='well' style='width:100%'>
             <form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
                     
-                <br>
-                <strong>Metadata -- Search by Name</strong> (limited by permissions)
-                <br>
-                Select Field(s) to Search:<br>
-                <ol>	
             
-                    <li>
-                         <table><tr>
-                            <td>
-                            <select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
-                                <option value='NONE'>select</option>						
-                                <% for (i = 0; i < mkeys.length; i++) { %>	
-                                    <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-                                <% } %> 
-                            </select>
-                            </td>
-                            <!--
-                            <td>
-                            <input type='text'  onkeyup="showMetadataHint(this.value)">
-                            </td><td><span id="txtHint"></span>
-                            </td>
-                            -->
-                        </tr>
-                    </table>
+            <strong>Metadata -- Search by Name</strong> (limited by permissions)
+            <br>
+            Select Field(s) to Search:<br><br>
+            <table border='0' style='width:100%'>
                 
-                             
-                       <div id='metadata_search_range_div1' class='display_none'></div>
+                <tr>            
+                    <td style='padding:5px'>Primary:
+                        <select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
+                            <option value='NONE'>select</option>						
+                            <% for (i = 0; i < mkeys.length; i++) { %>	
+                                <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+                            <% } %> 
+                        </select>
+                    </td>
+                </tr>
+                <tr>        
+                    <td colspan='3' style='padding:5px'><div id='metadata_search_range_div1' class='display_none'></div></td>
+                </tr>
+                <tr style="border-bottom:1px solid black"><td colspan='100%'></td></tr>
+                <tr> 
+                    <td style='padding:5px'>Secondary: click to activate: <input id='search_metadata_activate_btn2' type='checkbox' value='activate' ></td>              
+                    <td style='padding:5px'>		
+                        
+                        <select id='field2_metadata_search' class="selectpicker" data-style="btn-primary" name='search2_metadata-item' disabled='disabled' >
+                            <option value='NONE' label=''></option>
+                            <% for (i = 0; i < mkeys.length; i++) { %>	
+                                <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+                            <% } %>
+                        </select>
+                    </td>
+                </tr> 
+                <tr>
+                    <td colspan='3' style='padding:5px'><div id='metadata_search_range_div2' class='display_none'></div></td>
+                </tr>
+                <tr style="border-bottom:1px solid black"><td colspan='100%'></td></tr>
+                <tr>    
+                    <td style='padding:5px'>Tertiary: click checkbox to activate: <input id='search_metadata_activate_btn3' type='checkbox' value='activate' ></td>
+                    <td></td>
+                    <td style='padding:5px'>	
+                        
+                        <select id='field3_metadata_search' class="selectpicker" data-style="btn-primary" name='search3_metadata-item' disabled='disabled' >
+                            <option value='NONE' label=''></option>
+                            <% for (i = 0; i < mkeys.length; i++) { %>	
+                                <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+                            <% } %>
+                        </select>
+                    </td>
+                </tr>
+                <tr>	
+                    <td colspan='3' style='padding:5px'><div id='metadata_search_range_div3' class='display_none'></div></td>
+                </tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr>
                     
-                    </li>
-                    
-                    <br>	
-                    <li>		
-                           click checkbox to activate: <input id='search_metadata_activate_btn2' type='checkbox' value='activate' >
-                            <select id='field2_metadata_search' class="selectpicker" data-style="btn-primary" name='search2_metadata-item' disabled='disabled' >
-                                <option value='NONE'>select</option>
-                                <% for (i = 0; i < mkeys.length; i++) { %>	
-                                    <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-                                <% } %>
-                            </select> 
-                            <div id='metadata_search_range_div2' class='display_none'></div>
-                    
-                    </li>	
-                    <br>
-                    <li>		
-                            click checkbox to activate: <input id='search_metadata_activate_btn3' type='checkbox' value='activate' >
-                            <select id='field3_metadata_search' class="selectpicker" data-style="btn-primary" name='search3_metadata-item' disabled='disabled' >
-                                <option value='NONE'>select</option>
-                                <% for (i = 0; i < mkeys.length; i++) { %>	
-                                    <option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-                                <% } %>
-                            </select>	
-                            <div id='metadata_search_range_div3' class='display_none'></div>
-                    
-                    </li>	
-                </ol>
-                            <br>
+                    <td>    
+                   
+                           
                         <!--	<input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' > -->
                             <button id='search_metadata_btn' class='btn btn-xs btn-primary' disabled='disabled' type='submit'>Search Datasets</button>
                             <input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
-                
-                        <!-- 
-<ul>					
-                            <li>TODO: Search all datasets or select subset of datasets then search in subset?
-                        </ul>
- -->
-            
+                    </td>
+                </tr>
+
+            </table>
             </form>
     
         </div>

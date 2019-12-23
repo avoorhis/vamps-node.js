@@ -920,7 +920,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
 });
 //
 //
-// TEST: Admin / Validate & Upload Metadata / shoose file / Go
+// TEST: Admin / Validate & Upload Metadata / choose file / Go
 router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
   let parse = require('csv-parse');
   console.log('In POST admin upload_metadata');
