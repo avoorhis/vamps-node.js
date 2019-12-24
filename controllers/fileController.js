@@ -14,8 +14,6 @@ class FileUtil {
   }
 
   file_download() {
-    console.time("TIME: file_download");
-
     let file = '';
 
     if (this.req.query.template === '1') {
@@ -29,8 +27,6 @@ class FileUtil {
     }
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
-    console.timeEnd("TIME: file_download");
-
   }
 
   react_to_delete(err, data) {
@@ -64,7 +60,6 @@ class FileUtil {
       this.no_file_to_delete(file_full_path, redirect_url_after_delete);
     }
 
-    console.time("TIME: if else");
     let data = {
       err_msg: "err 9: ",
       redirect_url: redirect_url_after_delete
@@ -75,17 +70,9 @@ class FileUtil {
         redirect_url: "/visuals/saved_elements"
       };
     }
-    // else {
-
-      // fs.unlink(file_full_path, function callback(err) {
-      //   this.react_to_delete(err, data);
-      //   }.apply(this, data)
-      // );
-    // }
     fs.unlink(file_full_path, function callback(err) {
       this.react_to_delete(err, data);
     }.apply(this, data));
-    console.timeEnd("TIME: if else");
   }
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
