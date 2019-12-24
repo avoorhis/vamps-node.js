@@ -14,6 +14,8 @@ class FileUtil {
   }
 
   file_download() {
+    console.time("TIME: file_download");
+
     let file = '';
 
     if (this.req.query.template === '1') {
@@ -27,9 +29,12 @@ class FileUtil {
     }
     this.res.setHeader('Content-Type', 'text');
     this.res.download(file); // Set disposition and send it.
+    console.timeEnd("TIME: file_download");
+
   }
 
   react_to_delete(err, data) {
+    console.time("TIME: react_to_delete");
     if (err) {
       console.log(data.err_msg);
       console.log(err);
@@ -39,20 +44,34 @@ class FileUtil {
       this.req.flash('success', 'Deleted: ' + this.filename);
       this.res.redirect(data.redirect_url);
     }
+    console.timeEnd("TIME: react_to_delete");
+
+  }
+
+  no_file_to_delete(file_full_path, redirect_url_after_delete) {
+    let data = {
+      err_msg: "ERROR no such file ",
+      redirect_url: redirect_url_after_delete
+    };
+    console.log(data.err_msg, file_full_path);
+    this.req.flash('fail', data.err_msg);
+    this.res.redirect(data.redirect_url);
   }
 
   file_delete(redirect_url_after_delete = undefined) {
+    console.time("TIME: get_user_file_path");
     let file_full_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
-    if (!this.file_exists(file_full_path)) {
-      let data = {
-        err_msg: "ERROR no such file ",
-        redirect_url: redirect_url_after_delete
-      };
-      console.log(data.err_msg, file_full_path);
-      this.req.flash('fail', data.err_msg);
-      this.res.redirect(data.redirect_url);
+    console.timeEnd("TIME: get_user_file_path");
+    console.time("TIME: if (!");
+    try {
+      fs.statSync(file_full_path).isFile();
     }
+    catch (e) {
+      this.no_file_to_delete(file_full_path, redirect_url_after_delete);
+    }
+    console.timeEnd("TIME: if (!");
 
+    console.time("TIME: if else");
     if (this.req.query.type === 'elements') {
       let data = {
         err_msg: "err 8: ",
@@ -72,6 +91,7 @@ class FileUtil {
         }.apply(this, data)
       );
     }
+    console.timeEnd("TIME: if else");
   }
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
@@ -243,7 +263,7 @@ class FileUtil {
     catch (err) {
       return false;
     }
-  };
+  }
 }
 
 class FilePath {
