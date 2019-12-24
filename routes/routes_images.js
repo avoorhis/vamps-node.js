@@ -615,11 +615,13 @@ barcharts: function(req, res){
       console.time("TIME: for (let p in matrix.columns)");
       let mtxdata = make_mtxdata(matrix);
       console.timeEnd("TIME: for (let p in matrix.columns)");
+      console.log(mtxdata);
 
       console.time("TIME: 2 for (let p in matrix.columns)");
       mtxdata = make_mtxdata2(matrix);
       console.timeEnd("TIME: 2 for (let p in matrix.columns)");
 
+      console.log(mtxdata);
       console.time("TIME: scaler");
       let scaler = d3.scaleOrdinal()
       .range( matrix.rows );
@@ -1684,15 +1686,14 @@ function make_mtxdata(matrix) {
 
 function make_mtxdata2(matrix) {
   let mtxdata = [];
-  for (let p in matrix.columns) {
+  matrix.columns.forEach((column, p_ind) => {
     let tmp = {};
-    tmp.pjds = matrix.columns[p].id;
-    tmp.did = matrix.columns[p].did;
-    matrix.rows.map((r, i) => tmp[r.id] = matrix.data[i][p]);
-    // for (let t in matrix.rows) {
-    //   tmp[matrix.rows[t].id] = matrix.data[t][p];
-    // }
+    tmp.pjds = column.id;
+    tmp.did = column.did;
+    matrix.rows.forEach((row, t_ind) => {
+      tmp[row.id] = matrix.data[t_ind][p_ind];
+    });
     mtxdata.push(tmp);
-  }
+  });
   return mtxdata
 }
