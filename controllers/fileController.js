@@ -34,7 +34,6 @@ class FileUtil {
   }
 
   react_to_delete(err, data) {
-    console.time("TIME: react_to_delete");
     if (err) {
       console.log(data.err_msg);
       console.log(err);
@@ -44,8 +43,6 @@ class FileUtil {
       this.req.flash('success', 'Deleted: ' + this.filename);
       this.res.redirect(data.redirect_url);
     }
-    console.timeEnd("TIME: react_to_delete");
-
   }
 
   no_file_to_delete(file_full_path, redirect_url_after_delete) {
@@ -59,38 +56,35 @@ class FileUtil {
   }
 
   file_delete(redirect_url_after_delete = undefined) {
-    console.time("TIME: get_user_file_path");
     let file_full_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
-    console.timeEnd("TIME: get_user_file_path");
-    console.time("TIME: if (!");
     try {
       fs.statSync(file_full_path).isFile();
     }
     catch (e) {
       this.no_file_to_delete(file_full_path, redirect_url_after_delete);
     }
-    console.timeEnd("TIME: if (!");
 
     console.time("TIME: if else");
+    let data = {
+      err_msg: "err 9: ",
+      redirect_url: redirect_url_after_delete
+    };
     if (this.req.query.type === 'elements') {
-      let data = {
+      data = {
         err_msg: "err 8: ",
         redirect_url: "/visuals/saved_elements"
       };
-      fs.unlink(file_full_path, function callback(err) {
-        this.react_to_delete(err, data);
-      }.apply(this, data));
     }
-    else {
-      let data = {
-        err_msg: "err 9: ",
-        redirect_url: redirect_url_after_delete
-      };
-      fs.unlink(file_full_path, function callback(err) {
-        this.react_to_delete(err, data);
-        }.apply(this, data)
-      );
-    }
+    // else {
+
+      // fs.unlink(file_full_path, function callback(err) {
+      //   this.react_to_delete(err, data);
+      //   }.apply(this, data)
+      // );
+    // }
+    fs.unlink(file_full_path, function callback(err) {
+      this.react_to_delete(err, data);
+    }.apply(this, data));
     console.timeEnd("TIME: if else");
   }
 
