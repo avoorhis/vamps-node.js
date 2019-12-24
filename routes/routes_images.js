@@ -586,30 +586,37 @@ barcharts: function(req, res){
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   var jsdom = require('jsdom');  // NEED version <10 for jsdom.env
   const { JSDOM } = jsdom;
-  
-  
-  var ts = req.session.ts
 
-  var imagetype = 'group'
+  var ts = req.session.ts;
 
-  matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+  var imagetype = 'group';
+
+  matrix_file_path = path.join(req.CONFIG.TMP_FILES, ts + '_count_matrix.biom');
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
+    console.time("TIME: readFile(matrix_file_path");
+
     if (err) {
         var msg = 'ERROR Message '+err;
         console.log(msg)
-    }else{
+    }
+    else{
 
      var biom_data = JSON.parse(data)
      matrix = biom_data
-     if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
+      console.time("TIME: otus");
+
+      if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
           
             console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
             matrix = thin_out_data_for_display(biom_data)
           
       }
+      console.timeEnd("TIME: otus");
 
       var ds_count = matrix.shape[1];
       var props = get_image_properties(imagetype, ds_count);
+      console.time("TIME: for (var p in matrix.columns)");
+
       mtxdata = [];
       for (var p in matrix.columns){
         tmp={};
@@ -620,9 +627,13 @@ barcharts: function(req, res){
         }
         mtxdata.push(tmp);
       }
+      console.timeEnd("TIME: for (var p in matrix.columns)");
+
       var scaler = d3.scaleOrdinal()
         .range( matrix.rows );
       scaler.domain(d3.keys(mtxdata[0]).filter(function(key) { return key !== "pjds" && key !== "did"; }));
+      console.time("TIME: mtxdata.forEach1");
+
       mtxdata.forEach(function(d) {
         var x0 = 0;
         d.unitObj = scaler.domain().map(function(name) {
@@ -631,6 +642,10 @@ barcharts: function(req, res){
         d.total = d.unitObj[d.unitObj.length - 1].x1;
         //console.log(d.total);
       });
+      console.timeEnd("TIME: mtxdata.forEach1");
+
+      console.time("TIME: mtxdata.forEach2");
+
       mtxdata.forEach(function(d) {
         // normalize to 100%
         tot = d.total;
@@ -641,8 +656,9 @@ barcharts: function(req, res){
             o.x1 = (o.x1*100)/tot;
         });
       });
+      console.timeEnd("TIME: mtxdata.forEach2");
 
-      
+      console.time("TIME: svgContainer");
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
       let svgContainer = body.append('div').attr('class', 'container')
@@ -656,10 +672,13 @@ barcharts: function(req, res){
       // axis legends -- would like to rotate dataset names
       props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
       props.x.domain([0, 100]);
+      console.timeEnd("TIME: svgContainer");
 
-      if(imagetype=='single'){
+      console.time("TIME: if (imagetype");
+
+      if (imagetype == 'single'){
         create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
-      }else if(imagetype=='double'){
+      }else if(imagetype == 'double'){
         create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
       }else{  // group
         try{
@@ -668,7 +687,7 @@ barcharts: function(req, res){
             console.log('Error in create_bars_svg_object() '+err.toString())
         }
       }
-
+      console.timeEnd("TIME: if (imagetype");
 
       var html = body.select('.container').html()
       
@@ -683,8 +702,10 @@ barcharts: function(req, res){
       res.json(data)
           
 
-} // end else
-}) // end fs.readFile
+    } // end else
+    console.timeEnd("TIME: readFile(matrix_file_path");
+
+  }); // end fs.readFile
 
 },  // end barcharts
 
