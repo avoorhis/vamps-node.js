@@ -613,17 +613,12 @@ barcharts: function(req, res){
       let props = get_image_properties(imagetype, ds_count);
 
       console.time("TIME: for (let p in matrix.columns)");
-      let mtxdata = [];
-      for (let p in matrix.columns){
-        let tmp = {};
-        tmp.pjds = matrix.columns[p].id;
-        tmp.did = matrix.columns[p].did;
-        for (let t in matrix.rows){
-          tmp[matrix.rows[t].id] = matrix.data[t][p];
-        }
-        mtxdata.push(tmp);
-      }
+      let mtxdata = make_mtxdata(matrix);
       console.timeEnd("TIME: for (let p in matrix.columns)");
+
+      console.time("TIME: 2 for (let p in matrix.columns)");
+      mtxdata = make_mtxdata2(matrix);
+      console.timeEnd("TIME: 2 for (let p in matrix.columns)");
 
       console.time("TIME: scaler");
       let scaler = d3.scaleOrdinal()
@@ -1671,4 +1666,33 @@ function thin_out_data_for_display(mtx){
 function barcharts_otus(req, biom_data) {
   console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
   return thin_out_data_for_display(biom_data);
+}
+
+function make_mtxdata(matrix) {
+  let mtxdata = [];
+  for (let p in matrix.columns) {
+    let tmp = {};
+    tmp.pjds = matrix.columns[p].id;
+    tmp.did = matrix.columns[p].did;
+    for (let t in matrix.rows) {
+      tmp[matrix.rows[t].id] = matrix.data[t][p];
+    }
+    mtxdata.push(tmp);
+  }
+  return mtxdata
+}
+
+function make_mtxdata2(matrix) {
+  let mtxdata = [];
+  for (let p in matrix.columns) {
+    let tmp = {};
+    tmp.pjds = matrix.columns[p].id;
+    tmp.did = matrix.columns[p].did;
+    matrix.rows.map((r, i) => tmp[r.id] = matrix.data[i][p]);
+    // for (let t in matrix.rows) {
+    //   tmp[matrix.rows[t].id] = matrix.data[t][p];
+    // }
+    mtxdata.push(tmp);
+  }
+  return mtxdata
 }
