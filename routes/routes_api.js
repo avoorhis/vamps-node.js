@@ -234,8 +234,11 @@ router.get('/', helpers.isLoggedIn, function(req, res){
 //
 // API: CREATE IMAGE
 //
+// test: view selection heatmap
+// TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 router.post('/create_image',  function(req, res){
-  console.log('in API/create_image')
+  console.log('in API/create_image');
+  console.time("TIME: API/create_image");
   if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
         return
@@ -252,7 +255,8 @@ router.post('/create_image',  function(req, res){
   var file  = false
   
   //metadata = get_metadata(JSON.parse(req.body.ds_order))
-  
+  console.time("TIME: req.body");
+
   if(req.body.hasOwnProperty('image') && allowed_images.indexOf(req.body.image) != -1){
     image = req.body.image
     console.log("Success: Image =",image)
@@ -264,6 +268,10 @@ router.post('/create_image',  function(req, res){
     res.sendJSON.stringify(("Error -- Could not find Image or File"))
     return
   }
+  console.timeEnd("TIME: req.body");
+
+
+  console.time("TIME: if(image)");
   if(image){
       switch(image) {
         case 'dheatmap':            // Distance Heatmap
@@ -301,7 +309,9 @@ router.post('/create_image',  function(req, res){
           console.log(image,'- Not Implemented Yet!')
       }
   }
- 
+  console.timeEnd("TIME: if(image)");
+
+  console.timeEnd("TIME: API/create_image");
 
 });
 //

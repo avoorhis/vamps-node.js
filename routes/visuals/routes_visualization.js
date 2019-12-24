@@ -90,10 +90,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
 
   console.log('entering MTX.get_biom_matrix');
-  console.time("TIME: biom_matrix_new");
+  // console.time("TIME: biom_matrix_new");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, visual_post_items);
   let biom_matrix = biom_matrix_obj.biom_matrix;
-  console.timeEnd("TIME: biom_matrix_new");
+  // console.timeEnd("TIME: biom_matrix_new");
 
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
 
@@ -598,17 +598,17 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
 
   // sum counts
-  console.time("TIME: get_sumator new");
+  // console.time("TIME: get_sumator new");
   const taxonomy_class = new biom_matrix_controller.Taxonomy({"chosen_dids": req.session.chosen_id_order, "visual_post_items": {}, "taxa_counts_module": {}});
 
   let sumator_new = taxonomy_class.get_sumator(biom_matrix);
 
-  console.timeEnd("TIME: get_sumator new");
+  // console.timeEnd("TIME: get_sumator new");
 
-  console.time("TIME: format_sumator sumator new");
+  // console.time("TIME: format_sumator sumator new");
 
   let result_xml = format_sumator(sumator_new);
-  console.timeEnd("TIME: format_sumator sumator new");
+  // console.timeEnd("TIME: format_sumator sumator new");
 
   // console.log("result_xml: ");
   // console.log(result_xml);
@@ -741,7 +741,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
   const svgfile_path = path.join(tmp_file_path, svgfile_name);
 
   let plot_type = req.body.plot_type;
-  console.time("TIME: plot_type = " + plot_type);
+  // console.time("TIME: plot_type = " + plot_type);
 
   let options = get_plot_specific_options(plot_type, req, user_timestamp, svgfile_name);
 
@@ -784,7 +784,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       res.json(data);
     }
   });
-  console.timeEnd("TIME: plot_type = " + plot_type);
+  // console.timeEnd("TIME: plot_type = " + plot_type);
 
 });
 
@@ -819,10 +819,10 @@ function make_pi(selected_did_arr, req, pd_vars, metric = undefined) {
 
 function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   let overwrite_the_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
-  console.time("TIME: biom_matrix_new_from_bar_single");
+  // console.time("TIME: biom_matrix_new_from_bar_single");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
-  console.timeEnd("TIME: biom_matrix_new_from_bar_single");
+  // console.timeEnd("TIME: biom_matrix_new_from_bar_single");
   new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
   new_matrix.did = selected_did;
   new_matrix.total = 0;
@@ -831,7 +831,7 @@ function make_new_matrix(req, pi, selected_did, order, pd_vars) {
 }
 
 function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
-  console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
+  // console.time("TIME: mysqlSelectedSeqsPerDID_to_file");
 
   if (err)  {
     // TODO: test
@@ -873,7 +873,7 @@ function mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did){
 
     fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]));
   }
-  console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
+  // console.timeEnd("TIME: mysqlSelectedSeqsPerDID_to_file");
 }
 
 // On the bar_single page with the single taxonomy bar and list of included taxonomies
@@ -976,10 +976,10 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
   let pi = make_pi([did1, did2], req, pd_vars, metric);
 
   let overwrite_matrix_file = false;  // DO NOT OVERWRITE The Matrix File
-  console.time("TIME: biom_matrix_new_from_bar_double");
+  // console.time("TIME: biom_matrix_new_from_bar_double");
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
-  console.timeEnd("TIME: biom_matrix_new_from_bar_double");
+  // console.timeEnd("TIME: biom_matrix_new_from_bar_double");
 
   //DOUBLE
   //console.log(JSON.stringify(new_matrix))
@@ -1147,7 +1147,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       }
       else {
         fs.readFile(seqs_filename_path, 'utf8', function readFile(err, data) {
-          console.time("TIME: readFile");
+          // console.time("TIME: readFile");
           if (err) {
             err_read_file(err, req, res, seqs_filename);
           }
@@ -1155,16 +1155,16 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
           let clean_data = get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, seqs_filename);
 
-          console.time("TIME: loop through clean_data");
+          // console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
           // TODO: Andy, do we still need to print it out? It's huge!
           // console.log('filtered_data')
           // console.log(filtered_data)
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
-          console.timeEnd("TIME: loop through clean_data");
+          // console.timeEnd("TIME: loop through clean_data");
 
           render_seq(req, res, pjds, search_tax, seqs_filename, JSON.stringify(seq_list));
-          console.timeEnd("TIME: readFile");
+          // console.timeEnd("TIME: readFile");
         }.bind());
       }
     });
@@ -1889,7 +1889,7 @@ function get_options_by_node(node) {
 //
 // test: choose custom taxonomy, show tree
 router.get('/tax_custom_dhtmlx', function(req, res) {
-  console.time("TIME: tax_custom_dhtmlx");
+  // console.time("TIME: tax_custom_dhtmlx");
   //console.log('IN tax_custom_dhtmlx')
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
@@ -1929,7 +1929,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
 
-  console.timeEnd("TIME: tax_custom_dhtmlx");
+  // console.timeEnd("TIME: tax_custom_dhtmlx");
 
   res.json(json);
 });
@@ -1965,7 +1965,7 @@ function get_itemtext(pid) {
 // test: show tree
 router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
-  console.time("TIME: project_dataset_tree_dhtmlx");
+  // console.time("TIME: project_dataset_tree_dhtmlx");
   let myurl = url.parse(req.url, true);
   let id = myurl.query.id;
   console.log('id = ' + id);
@@ -2050,7 +2050,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
   json.item.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.text, b.text);
   });
-  console.timeEnd("TIME: project_dataset_tree_dhtmlx");
+  // console.timeEnd("TIME: project_dataset_tree_dhtmlx");
   res.send(json);
 });
 //
