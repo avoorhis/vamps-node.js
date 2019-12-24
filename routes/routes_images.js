@@ -604,11 +604,12 @@ barcharts: function(req, res){
       let matrix = biom_data;
 
       console.time("TIME: otus");
-      let otus = req.body.hasOwnProperty('type') && req.body.type == 'otus';
-      if (otus){
-        console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
-        matrix = thin_out_data_for_display(biom_data);
-      }
+      matrix = barcharts_otus(req, biom_data);
+      // let otus = req.body.hasOwnProperty('type') && req.body.type === 'otus';
+      // if (otus){
+      //   console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
+      //   matrix = thin_out_data_for_display(biom_data);
+      // }
       console.timeEnd("TIME: otus");
 
       let ds_count = matrix.shape[1];
@@ -1668,4 +1669,12 @@ function thin_out_data_for_display(mtx){
 
     return new_mtx
 
+}
+
+function barcharts_otus(req, biom_data) {
+  let otus = req.body.hasOwnProperty('type') && req.body.type === 'otus';
+  if (otus) {
+    console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
+    return thin_out_data_for_display(biom_data);
+  }
 }
