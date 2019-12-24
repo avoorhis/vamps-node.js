@@ -616,11 +616,21 @@ barcharts: function(req, res){
       let mtxdata = make_mtxdata(matrix);
       console.timeEnd("TIME: for (let p in matrix.columns)");
 
+
       console.time("TIME: scaler");
       let scaler = d3.scaleOrdinal()
       .range( matrix.rows );
-      scaler.domain(d3.keys(mtxdata[0]).filter(function(key) { return key !== "pjds" && key !== "did"; }));
+      scaler.domain(d3.keys(mtxdata[0])
+        .filter(function(key) {
+          return key !== "pjds" && key !== "did";
+        }));
       console.timeEnd("TIME: scaler");
+      console.log(JSON.stringify(scaler));
+
+      console.time("TIME: 2 scaler");
+      scaler = get_scaler(mtxdata, matrix);
+      console.timeEnd("TIME: 2 scaler");
+      console.log(JSON.stringify(scaler));
 
       console.time("TIME: mtxdata.forEach1");
       mtxdata.forEach(function(d) {
@@ -637,6 +647,7 @@ barcharts: function(req, res){
       //console.log(d.total);
       });
       console.timeEnd("TIME: mtxdata.forEach1");
+      console.log(d);
 
       console.time("TIME: mtxdata.forEach2");
 
@@ -648,8 +659,10 @@ barcharts: function(req, res){
           o.total = tot;
           o.x0 = (o.x0*100)/tot;
           o.x1 = (o.x1*100)/tot;
+        });
       });
-      });
+      console.log(d);
+
       console.timeEnd("TIME: mtxdata.forEach2");
 
       console.time("TIME: svgContainer");
@@ -1676,4 +1689,13 @@ function make_mtxdata(matrix) {
     mtxdata.push(tmp);
   });
   return mtxdata
+}
+
+function get_scaler(mtxdata, matrix) {
+  let scaler = d3.scaleOrdinal()
+    .range(matrix.rows);
+  scaler.domain(d3.keys(mtxdata[0]).filter(function (key) {
+    return key !== "pjds" && key !== "did";
+  }));
+  return scaler;
 }
