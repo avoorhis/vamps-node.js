@@ -618,8 +618,8 @@ barcharts: function(req, res){
 
       console.time("TIME: make_mtxdata");
       let mtxdata = make_mtxdata(matrix);
-      let mtxdata_orig1 = [...mtxdata];
-      let mtxdata_orig2 = [...mtxdata];
+      // let mtxdata_orig1 = [...mtxdata];
+      // let mtxdata_orig2 = [...mtxdata];
       console.timeEnd("TIME: make_mtxdata");
 
       console.time("TIME: scaler");
@@ -647,30 +647,30 @@ barcharts: function(req, res){
       console.timeEnd("TIME: mtxdata.forEach1");
       console.log(mtxdata);
 
-      let dom = Object.keys(mtxdata_orig1[0]).filter(function(key) {
-        return key !== "pjds" && key !== "did";
-      });
-      mtxdata_orig1.forEach(function(pr_did_taxa_obj) {
-        let x0 = 0;
-        pr_did_taxa_obj.unitObj = dom
-          .map(function(name) {
-            return {
-              tax: name,
-              x0: x0,
-              x1: x0 += +pr_did_taxa_obj[name],
-              did: pr_did_taxa_obj.did,
-              pjds: pr_did_taxa_obj.pjds,
-              cnt: pr_did_taxa_obj[name]
-            };
-          });
-        pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-        console.log(pr_did_taxa_obj.total);
-      });
+      // let dom = Object.keys(mtxdata_orig1[0]).filter(function(key) {
+      //   return key !== "pjds" && key !== "did";
+      // });
+      // mtxdata_orig1.forEach(function(pr_did_taxa_obj) {
+      //   let x0 = 0;
+      //   pr_did_taxa_obj.unitObj = dom
+      //     .map(function(name) {
+      //       return {
+      //         tax: name,
+      //         x0: x0,
+      //         x1: x0 += +pr_did_taxa_obj[name],
+      //         did: pr_did_taxa_obj.did,
+      //         pjds: pr_did_taxa_obj.pjds,
+      //         cnt: pr_did_taxa_obj[name]
+      //       };
+      //     });
+      //   pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
+      //   console.log(pr_did_taxa_obj.total);
+      // });
 
 
-      console.time("TIME: add_unitObj mtxdata.forEach1");
-      mtxdata = add_unitObj(mtxdata_orig2);
-      console.timeEnd("TIME: add_unitObj mtxdata.forEach1");
+      // console.time("TIME: add_unitObj mtxdata.forEach1");
+      // mtxdata = add_unitObj(mtxdata_orig2);
+      // console.timeEnd("TIME: add_unitObj mtxdata.forEach1");
 
       console.time("TIME: mtxdata.forEach2");
 
@@ -1727,7 +1727,7 @@ function add_unitObj(mtxdata) {
   let not_tax_key = ["pjds", "did"];
   mtxdata.forEach(function(pr_did_taxa_obj) {
     let x0 = 0;
-    pr_did_taxa_obj.unitObj = {};
+    pr_did_taxa_obj.unitObj = [];
     Object.keys(pr_did_taxa_obj).forEach(name => {
       if (!not_tax_key.includes(name)) {
         let ob_temp = {
