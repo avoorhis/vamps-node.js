@@ -612,14 +612,8 @@ barcharts: function(req, res){
       let ds_count = matrix.shape[1];
       let props = get_image_properties(imagetype, ds_count);
 
-      console.time("TIME: make_mtxdata + add_unitObj1");
-      let q = add_unitObj1(matrix);
-      console.timeEnd("TIME: make_mtxdata + add_unitObj1");
-
       console.time("TIME: make_mtxdata");
       let mtxdata = make_mtxdata(matrix);
-      // let mtxdata_orig1 = [...mtxdata];
-      // let mtxdata_orig2 = [...mtxdata];
       console.timeEnd("TIME: make_mtxdata");
 
       console.time("TIME: scaler");
@@ -642,38 +636,14 @@ barcharts: function(req, res){
           };
         });
         pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-        console.log("pr_did_taxa_obj.total:", pr_did_taxa_obj.total);
       });
       console.timeEnd("TIME: mtxdata.forEach1");
-      console.log(mtxdata);
 
-      // let dom = Object.keys(mtxdata_orig1[0]).filter(function(key) {
-      //   return key !== "pjds" && key !== "did";
-      // });
-      // mtxdata_orig1.forEach(function(pr_did_taxa_obj) {
-      //   let x0 = 0;
-      //   pr_did_taxa_obj.unitObj = dom
-      //     .map(function(name) {
-      //       return {
-      //         tax: name,
-      //         x0: x0,
-      //         x1: x0 += +pr_did_taxa_obj[name],
-      //         did: pr_did_taxa_obj.did,
-      //         pjds: pr_did_taxa_obj.pjds,
-      //         cnt: pr_did_taxa_obj[name]
-      //       };
-      //     });
-      //   pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-      //   console.log(pr_did_taxa_obj.total);
-      // });
-
-
-      // console.time("TIME: add_unitObj mtxdata.forEach1");
-      // mtxdata = add_unitObj(mtxdata_orig2);
-      // console.timeEnd("TIME: add_unitObj mtxdata.forEach1");
+      console.time("TIME: make_mtxdata + add_unitObj1");
+      let mtxdata1 = add_unitObj1(matrix);
+      console.timeEnd("TIME: make_mtxdata + add_unitObj1");
 
       console.time("TIME: mtxdata.forEach2");
-
       mtxdata.forEach(function(pr_did_taxa_unit_obj) {
         // normalize to 100%
         let tot = pr_did_taxa_unit_obj.total;
@@ -685,7 +655,6 @@ barcharts: function(req, res){
           });
       });
       console.timeEnd("TIME: mtxdata.forEach2");
-      console.log(mtxdata);
 
       console.time("TIME: svgContainer");
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -699,12 +668,11 @@ barcharts: function(req, res){
       .append('g')
         .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
       // axis legends -- would like to rotate dataset names
-      props.y.domain(mtxdata.map(function(d) { return d.pjds; }));
+      props.y.domain(matrix.columns.map(c => c.id));
       props.x.domain([0, 100]);
       console.timeEnd("TIME: svgContainer");
 
       console.time("TIME: if (imagetype");
-
       switch (imagetype) {
         case 'single':
           create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
@@ -726,10 +694,9 @@ barcharts: function(req, res){
       let html = body.select('.container').html();
 
       let outfile_name = ts + '-barcharts-api.svg';
-      outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+      let outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
       console.log('outfile_path:', outfile_path);
-      result = save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
-      //console.log(result)
+      save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
       data = {};
       data.html = html;
       data.filename = outfile_name;
@@ -1721,30 +1688,6 @@ function get_scaler(mtxdata, matrix) {
       return key !== "pjds" && key !== "did";
     }));
   return scaler;
-}
-
-function add_unitObj(mtxdata) {
-  let not_tax_key = ["pjds", "did"];
-  mtxdata.forEach(function(pr_did_taxa_obj) {
-    let x0 = 0;
-    pr_did_taxa_obj.unitObj = [];
-    Object.keys(pr_did_taxa_obj).forEach(name => {
-      if (!not_tax_key.includes(name)) {
-        let ob_temp = {
-          tax: name,
-          x0: x0,
-          x1: x0 += +pr_did_taxa_obj[name],
-          did: pr_did_taxa_obj.did,
-          pjds: pr_did_taxa_obj.pjds,
-          cnt: pr_did_taxa_obj[name]
-        };
-        pr_did_taxa_obj.unitObj.push(ob_temp);
-      }
-    });
-    pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-  });
-
-  return mtxdata;
 }
 
 function add_unitObj1(matrix) {
