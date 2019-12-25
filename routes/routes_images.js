@@ -612,36 +612,36 @@ barcharts: function(req, res){
       let ds_count = matrix.shape[1];
       let props = get_image_properties(imagetype, ds_count);
 
-      console.time("TIME: make_mtxdata");
-      let mtxdata = make_mtxdata(matrix);
-      console.timeEnd("TIME: make_mtxdata");
+      // console.time("TIME: make_mtxdata");
+      // let mtxdata = make_mtxdata(matrix);
+      // console.timeEnd("TIME: make_mtxdata");
 
-      console.time("TIME: scaler");
-      let scaler = get_scaler(mtxdata, matrix);
-      console.timeEnd("TIME: scaler");
-
-      console.time("TIME: mtxdata.forEach1");
-      mtxdata.forEach(function(pr_did_taxa_obj) {
-        let x0 = 0;
-        pr_did_taxa_obj.unitObj = scaler
-          .domain()
-          .map(function(name) {
-          return {
-            tax: name,
-            x0: x0,
-            x1: x0 += +pr_did_taxa_obj[name],
-            did: pr_did_taxa_obj.did,
-            pjds: pr_did_taxa_obj.pjds,
-            cnt: pr_did_taxa_obj[name]
-          };
-        });
-        pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-      });
-      console.timeEnd("TIME: mtxdata.forEach1");
+      // console.time("TIME: mtxdata.forEach1");
+      // mtxdata.forEach(function(pr_did_taxa_obj) {
+      //   let x0 = 0;
+      //   pr_did_taxa_obj.unitObj = scaler
+      //     .domain()
+      //     .map(function(name) {
+      //     return {
+      //       tax: name,
+      //       x0: x0,
+      //       x1: x0 += +pr_did_taxa_obj[name],
+      //       did: pr_did_taxa_obj.did,
+      //       pjds: pr_did_taxa_obj.pjds,
+      //       cnt: pr_did_taxa_obj[name]
+      //     };
+      //   });
+      //   pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
+      // });
+      // console.timeEnd("TIME: mtxdata.forEach1");
 
       console.time("TIME: make_mtxdata + add_unitObj1");
-      let mtxdata1 = add_unitObj1(matrix);
+      let mtxdata = add_unitObj(matrix);
       console.timeEnd("TIME: make_mtxdata + add_unitObj1");
+
+      // console.time("TIME: scaler");
+      // let scaler = get_scaler(mtxdata, matrix);
+      // console.timeEnd("TIME: scaler");
 
       console.time("TIME: mtxdata.forEach2");
       mtxdata.forEach(function(pr_did_taxa_unit_obj) {
@@ -1690,36 +1690,22 @@ function get_scaler(mtxdata, matrix) {
   return scaler;
 }
 
-function add_unitObj1(matrix) {
+function add_unitObj(matrix) {
   let mtxdata = [];
   matrix.columns.forEach((column, p_ind) => {
     let tmp = {};
-    tmp.unitObj = [];
     tmp.pjds = column.id;
     tmp.did = column.did;
-    tmp = add_data_from_rows(matrix, tmp, p_ind, column);
-    // matrix.rows.forEach((row, t_ind) => {
-    //   let name = row.id;
-    //   let cnts = matrix.data[t_ind][p_ind];
-    //   tmp[name] = cnts;
-    //   let tmp_unitObj = {
-    //     tax: name,
-    //     x0: x0,
-    //     x1: x0 += +cnts,
-    //     did: column.did,
-    //     pjds: column.id,
-    //     cnt: cnts
-    //   };
-    //   tmp.unitObj.push(tmp_unitObj);
-    // });
+    tmp = add_data_from_rows(matrix, tmp, column, p_ind);
     tmp.total = matrix.column_totals[p_ind];
     mtxdata.push(tmp);
   });
   return mtxdata;
 }
 
-function add_data_from_rows(matrix, tmp_ob, p_ind, column) {
+function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
   let x0 = 0;
+  tmp_ob.unitObj = [];
   matrix.rows.forEach((row, t_ind) => {
     let name = row.id;
     let cnts = matrix.data[t_ind][p_ind];
