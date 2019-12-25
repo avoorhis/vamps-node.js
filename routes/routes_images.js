@@ -1694,27 +1694,45 @@ function add_unitObj1(matrix) {
   let mtxdata = [];
   matrix.columns.forEach((column, p_ind) => {
     let tmp = {};
-    let x0 = 0;
     tmp.unitObj = [];
     tmp.pjds = column.id;
     tmp.did = column.did;
-    matrix.rows.forEach((row, t_ind) => {
-      let name = row.id;
-      let cnts = matrix.data[t_ind][p_ind];
-      tmp[name] = cnts;
-      let tmp_unitObj = {
-        tax: name,
-        x0: x0,
-        x1: x0 += +cnts,
-        did: column.did,
-        pjds: column.id,
-        cnt: cnts
-      };
-      tmp.unitObj.push(tmp_unitObj);
-    });
+    tmp = add_data_from_rows(matrix, tmp, p_ind, column);
+    // matrix.rows.forEach((row, t_ind) => {
+    //   let name = row.id;
+    //   let cnts = matrix.data[t_ind][p_ind];
+    //   tmp[name] = cnts;
+    //   let tmp_unitObj = {
+    //     tax: name,
+    //     x0: x0,
+    //     x1: x0 += +cnts,
+    //     did: column.did,
+    //     pjds: column.id,
+    //     cnt: cnts
+    //   };
+    //   tmp.unitObj.push(tmp_unitObj);
+    // });
     tmp.total = matrix.column_totals[p_ind];
     mtxdata.push(tmp);
   });
   return mtxdata;
 }
 
+function add_data_from_rows(matrix, tmp_ob, p_ind, column) {
+  let x0 = 0;
+  matrix.rows.forEach((row, t_ind) => {
+    let name = row.id;
+    let cnts = matrix.data[t_ind][p_ind];
+    tmp_ob[name] = cnts;
+    let tmp_unitObj = {
+      tax: name,
+      x0: x0,
+      x1: x0 += +cnts,
+      did: column.did,
+      pjds: column.id,
+      cnt: cnts
+    };
+    tmp_ob.unitObj.push(tmp_unitObj);
+  });
+  return tmp_ob;
+}
