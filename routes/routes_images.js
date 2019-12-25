@@ -582,16 +582,14 @@ piecharts: function(req, res) {
 //   BAR CHARTS
 //
 barcharts: function(req, res){
-  console.log('In routes_images/function: images/barcharts')
+  console.log('In routes_images/function: images/barcharts');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
-  let jsdom = require('jsdom');  // NEED version <10 for jsdom.env
-  const { JSDOM } = jsdom;
-
   let ts = req.session.ts;
 
   let imagetype = 'group';
 
   let matrix_file_path = path.join(req.CONFIG.TMP_FILES, ts + '_count_matrix.biom');
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (6)(W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     console.time("TIME: readFile(matrix_file_path");
 
@@ -612,29 +610,6 @@ barcharts: function(req, res){
       let ds_count = matrix.shape[1];
       let props = get_image_properties(imagetype, ds_count);
 
-      // console.time("TIME: make_mtxdata");
-      // let mtxdata = make_mtxdata(matrix);
-      // console.timeEnd("TIME: make_mtxdata");
-
-      // console.time("TIME: mtxdata.forEach1");
-      // mtxdata.forEach(function(pr_did_taxa_obj) {
-      //   let x0 = 0;
-      //   pr_did_taxa_obj.unitObj = scaler
-      //     .domain()
-      //     .map(function(name) {
-      //     return {
-      //       tax: name,
-      //       x0: x0,
-      //       x1: x0 += +pr_did_taxa_obj[name],
-      //       did: pr_did_taxa_obj.did,
-      //       pjds: pr_did_taxa_obj.pjds,
-      //       cnt: pr_did_taxa_obj[name]
-      //     };
-      //   });
-      //   pr_did_taxa_obj.total = pr_did_taxa_obj.unitObj[pr_did_taxa_obj.unitObj.length - 1].x1;
-      // });
-      // console.timeEnd("TIME: mtxdata.forEach1");
-
       console.time("TIME: make_mtxdata + add_unitObj1");
       let mtxdata = add_unitObj(matrix);
       console.timeEnd("TIME: make_mtxdata + add_unitObj1");
@@ -644,51 +619,49 @@ barcharts: function(req, res){
       // console.timeEnd("TIME: scaler");
 
       console.time("TIME: mtxdata.forEach2");
-      mtxdata.forEach(function(pr_did_taxa_unit_obj) {
-        // normalize to 100%
-        let tot = pr_did_taxa_unit_obj.total;
-        pr_did_taxa_unit_obj.unitObj.forEach(function(unit_obj) {
-
-            unit_obj.total = tot;
-            unit_obj.x0 = (unit_obj.x0*100)/tot;
-            unit_obj.x1 = (unit_obj.x1*100)/tot;
-          });
-      });
+      mtxdata = normalize_to_100_prc(mtxdata);
       console.timeEnd("TIME: mtxdata.forEach2");
 
       console.time("TIME: svgContainer");
+      let jsdom = require('jsdom');  // NEED version <10 for jsdom.env
+      const { JSDOM } = jsdom;
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
-      let svgContainer = body.append('div').attr('class', 'container')
-      .append('svg')
-          .attr("xmlns", 'http://www.w3.org/2000/svg')
-          .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-          .attr("width", props.width)
-          .attr("height", props.height)
-      .append('g')
-        .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
+      let svgContainer = make_svgContainer(props, body);
+
+      // const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+      // let body = d3.select(fakeDom.window.document).select('body');
+      // let svgContainer = body.append('div').attr('class', 'container')
+      // .append('svg')
+      //     .attr("xmlns", 'http://www.w3.org/2000/svg')
+      //     .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+      //     .attr("width", props.width)
+      //     .attr("height", props.height)
+      // .append('g')
+      //   .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
       // axis legends -- would like to rotate dataset names
       props.y.domain(matrix.columns.map(c => c.id));
       props.x.domain([0, 100]);
       console.timeEnd("TIME: svgContainer");
 
       console.time("TIME: if (imagetype");
-      switch (imagetype) {
-        case 'single':
-          create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
-          break;
-        case 'double':
-          create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
-          break;
-        default:
-          try {
-            create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
-          }
-          catch(err){
-            console.log('Error in create_bars_svg_object() '+err.toString())
-          }
-          break;
-      }
+      create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts});
+      // switch (imagetype) {
+      //   case 'single':
+      //     create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      //     break;
+      //   case 'double':
+      //     create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      //     break;
+      //   default:
+      //     try {
+      //       create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
+      //     }
+      //     catch(err){
+      //       console.log('Error in create_bars_svg_object() ' + err.toString());
+      //     }
+      //     break;
+      // }
       console.timeEnd("TIME: if (imagetype");
 
       let html = body.select('.container').html();
@@ -1721,4 +1694,47 @@ function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
     tmp_ob.unitObj.push(tmp_unitObj);
   });
   return tmp_ob;
+}
+
+function normalize_to_100_prc(mtxdata) {
+  mtxdata.forEach(function (pr_did_taxa_unit_obj) {
+    let tot = pr_did_taxa_unit_obj.total;
+    pr_did_taxa_unit_obj.unitObj.forEach(function (unit_obj) {
+      unit_obj.total = tot;
+      unit_obj.x0 = (unit_obj.x0 * 100) / tot;
+      unit_obj.x1 = (unit_obj.x1 * 100) / tot;
+    });
+  });
+  return mtxdata;
+}
+
+function make_svgContainer(props, body) {
+  let svgContainer = body.append('div').attr('class', 'container')
+    .append('svg')
+    .attr("xmlns", 'http://www.w3.org/2000/svg')
+    .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+    .attr("width", props.width)
+    .attr("height", props.height)
+    .append('g')
+    .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
+  return svgContainer;
+}
+
+function create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts}) {
+  switch (imagetype) {
+    case 'single':
+      create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      break;
+    case 'double':
+      create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
+      break;
+    default:
+      try {
+        create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
+      }
+      catch (err) {
+        console.log('Error in create_bars_svg_object() ' + err.toString());
+      }
+      break;
+  }
 }
