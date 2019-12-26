@@ -7,12 +7,14 @@ var CONSTS = require('../public/constants');
 var config  = require(app_root + '/config/config');
 var helpers = require('./helpers/helpers');
 let d3 = require('d3');
+const file_controller = require(app_root + '/controllers/fileController');
+const file_path_obj = new file_controller.FilePath();
 
 module.exports = {
 taxon_color_legend: function(req, res) {
     console.log('In routes_images/function: images/taxon_color_legend')
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
@@ -34,7 +36,7 @@ taxon_color_legend: function(req, res) {
         }
         html += '</table>'
         var outfile_name = ts + '-color_legend-api.html'
-        outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+        outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
         result = save_file(html, outfile_path)
         console.log('result',result)
@@ -57,7 +59,7 @@ counts_matrix: function(req, res) {
     //console.log(req.session)
     
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
           var msg = 'ERROR Message '+err;
@@ -218,7 +220,7 @@ counts_matrix: function(req, res) {
             html += "</table>";
       
             var outfile_name = ts + '-counts_table-api.html'
-            outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+            outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         
             result = save_file(html, outfile_path)
             data = {}
@@ -239,27 +241,28 @@ dheatmap: function(req, res){
     console.log('In routes_images/function: images/dheatmap')
     //console.log(req.session)
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
     console.log(matrix_file_path)
 
-    //var pwd = req.CONFIG.TMP_FILES;
+    //var pwd = file_path_obj.get_tmp_file_path(req);
     
 
     var html = '';
     var title = 'VAMPS';
 
     //var distmtx_file_name = ts+'_distance.csv';
-    //var distmtx_file = path.join(req.CONFIG.TMP_FILES, distmtx_file_name);
-    var dist_json_file_path = path.join(req.CONFIG.TMP_FILES, ts+'_distance.json')
+    //var distmtx_file = path.join(file_path_obj.get_tmp_file_path(req), distmtx_file_name);
+    var dist_json_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_distance.json')
     console.log(dist_json_file_path)
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', req.CONFIG.TMP_FILES, '--prefix', ts],
+       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', file_path_obj.get_tmp_file_path(req), '--prefix', ts],
      };
     
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            env:{'PATH':req.CONFIG.PATH,
+              'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
@@ -300,7 +303,7 @@ dheatmap: function(req, res){
                 var html = module.exports.create_hm_table(req, JSON.parse(distance_matrix), metadata )
                 
                 var outfile_name = ts + '-dheatmap-api.html'
-                outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+                outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
                 console.log('outfile_path:',outfile_path)
                 result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
                 //console.log(result)
@@ -340,7 +343,7 @@ dheatmap: function(req, res){
 fheatmap: function(req, res){
     console.log('In routes_images/function: images/fheatmap')
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
     console.log(matrix_file_path)
 
     
@@ -374,7 +377,7 @@ fheatmap: function(req, res){
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS
             var svgfile_name  = ts + '_fheatmap.svg'  // must match file name written in R script: dendrogram.R
-            svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
+            svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file')}
 
@@ -407,7 +410,7 @@ piecharts: function(req, res) {
 
   var imagetype = 'group'
 
-  matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+  matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
         var msg = 'ERROR Message '+err;
@@ -566,7 +569,7 @@ piecharts: function(req, res) {
 
         var html = body.select('.container').html()
         var outfile_name = ts + '-piecharts-api.svg'
-        outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+        outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         console.log('outfile_path:',outfile_path)
         result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
         data = {}
@@ -588,8 +591,7 @@ barcharts: function(req, res){
 
   let imagetype = 'group';
 
-  let matrix_file_path = path.join(req.CONFIG.TMP_FILES, ts + '_count_matrix.biom');
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (6)(W074)
+  let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     console.time("TIME: readFile(matrix_file_path");
 
@@ -614,10 +616,6 @@ barcharts: function(req, res){
       let mtxdata = add_unitObj(matrix);
       console.timeEnd("TIME: make_mtxdata + add_unitObj1");
 
-      // console.time("TIME: scaler");
-      // let scaler = get_scaler(mtxdata, matrix);
-      // console.timeEnd("TIME: scaler");
-
       console.time("TIME: mtxdata.forEach2");
       mtxdata = normalize_to_100_prc(mtxdata);
       console.timeEnd("TIME: mtxdata.forEach2");
@@ -628,17 +626,6 @@ barcharts: function(req, res){
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
       let svgContainer = make_svgContainer(props, body);
-
-      // const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-      // let body = d3.select(fakeDom.window.document).select('body');
-      // let svgContainer = body.append('div').attr('class', 'container')
-      // .append('svg')
-      //     .attr("xmlns", 'http://www.w3.org/2000/svg')
-      //     .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-      //     .attr("width", props.width)
-      //     .attr("height", props.height)
-      // .append('g')
-      //   .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
       // axis legends -- would like to rotate dataset names
       props.y.domain(matrix.columns.map(c => c.id));
       props.x.domain([0, 100]);
@@ -646,30 +633,15 @@ barcharts: function(req, res){
 
       console.time("TIME: if (imagetype");
       create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts});
-      // switch (imagetype) {
-      //   case 'single':
-      //     create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
-      //     break;
-      //   case 'double':
-      //     create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
-      //     break;
-      //   default:
-      //     try {
-      //       create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
-      //     }
-      //     catch(err){
-      //       console.log('Error in create_bars_svg_object() ' + err.toString());
-      //     }
-      //     break;
-      // }
       console.timeEnd("TIME: if (imagetype");
 
       let html = body.select('.container').html();
 
-      let outfile_name = ts + '-barcharts-api.svg';
-      let outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
-      console.log('outfile_path:', outfile_path);
-      save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
+      save_file_to_user_location(ts, html);
+      // let outfile_name = ts + '-barcharts-api.svg';
+      // let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+      // console.log('outfile_path:', outfile_path);
+      // save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
       data = {};
       data.html = html;
       data.filename = outfile_name;
@@ -731,7 +703,7 @@ metadata_csv: function(req, res){
 
     //console.log(html)
     var outfile_name = ts + '-metadata-api.csv'
-    outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+    outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
     console.log('outfile_path:',outfile_path)
     result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
     //console.log(result)
@@ -746,10 +718,10 @@ metadata_csv: function(req, res){
 adiversity: function(req, res){
     console.log('in routes_images/adiversity')
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES, ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts+'_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = req.CONFIG.PROCESS_DIR;
+    var pwd = file_path_obj.get_process_dir(req);
     
 
     var html = '';
@@ -757,13 +729,14 @@ adiversity: function(req, res){
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', matrix_file_path, '--site_base', req.CONFIG.PROCESS_DIR, '--prefix', ts],
+      args :       [ '-in', matrix_file_path, '--site_base', file_path_obj.get_process_dir(req), '--prefix', ts],
     };
 
 
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            env:{'PATH':req.CONFIG.PATH,
+              'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
@@ -813,7 +786,7 @@ adiversity: function(req, res){
            html += '</table>';
 
             var outfile_name = ts + '-adiversity-api.csv'
-            outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+            outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
             console.log('outfile_path:',outfile_path)
             result = save_file(output, outfile_path) // this saved file should now be downloadable from jupyter notebook
             //console.log(result)
@@ -834,23 +807,24 @@ dendrogram: function(req, res){
     ///groups/vampsweb/vampsdev/seqinfobin/bin/Rscript --no-save --slave --no-restore tree_create.R avoorhis_4742180_normalized.mtx horn avoorhis_4742180 trees
     //console.log(phylo)
     var ts = req.session.ts
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
     console.log(matrix_file_path)
 
-    var pwd = req.CONFIG.PROCESS_DIR;
+    var pwd = file_path_obj.get_process_dir(req);
 
     var metric = req.session.selected_distance;
     var html = '';
     var title = 'VAMPS';
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ req.CONFIG.PROCESS_DIR, metric, ts ],
+      args :       [ file_path_obj.get_process_dir(req), metric, ts ],
     };
 
     
     console.log(options.scriptPath+'/dendrogram2.R '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/dendrogram2.R', options.args, {
-            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+            env:{'PATH': req.CONFIG.PATH,
+              'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
             detached: true,
             //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
@@ -879,7 +853,7 @@ dendrogram: function(req, res){
         if(code === 0){   // SUCCESS
             //console.log('stdout: '+output);
             var svgfile_name  = ts + '_dendrogram.svg'  // must match file name written in R script: dendrogram.R
-            svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
+            svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
             fs.readFile(svgfile_path, 'utf8', function(err, contents){
                 if(err){ res.send('ERROR reading file');return}
 
@@ -912,7 +886,7 @@ phyloseq: function(req,res){
     var tax_depth = req.session.tax_depth
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ req.CONFIG.PROCESS_DIR, metric, ts, tax_depth ],
+      args :       [ file_path_obj.get_process_dir(req), metric, ts, tax_depth ],
     };
     console.log(options.scriptPath+'/phyloseq_test.R'+' '+options.args.join(' '));
     var phyloseq_process = spawn( options.scriptPath+'/phyloseq_test.R', options.args, {
@@ -937,7 +911,7 @@ phyloseq: function(req,res){
           if(code === 0){   // SUCCESS
 
                 var svgfile_name  = ts + '_phyloseq_test.svg'  // must match file name written in R script: dendrogram.R
-                svgfile_path = path.join(req.CONFIG.TMP_FILES, svgfile_name);  // file name save to user_location
+                svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
                 fs.readFile(svgfile_path, 'utf8', function(err, contents){
                     if(err){ res.send('ERROR reading file');return}
 
@@ -1670,7 +1644,15 @@ function add_unitObj(matrix) {
     tmp.pjds = column.id;
     tmp.did = column.did;
     tmp = add_data_from_rows(matrix, tmp, column, p_ind);
+    tmp = normalize_to_100_prc(tmp);
+    // let tot = pr_did_taxa_unit_obj.total;
+    // pr_did_taxa_unit_obj tmp.unitObj. tmp.total
     tmp.total = matrix.column_totals[p_ind];
+    tmp.unitObj.forEach(function (unit_obj) {
+      unit_obj.x0 = (unit_obj.x0 * 100) / tmp.total;
+      unit_obj.x1 = (unit_obj.x1 * 100) / tmp.total;
+    });
+    // });
     mtxdata.push(tmp);
   });
   return mtxdata;
@@ -1737,4 +1719,11 @@ function create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts}) {
       }
       break;
   }
+}
+
+function save_file_to_user_location(ts, html) {
+  let outfile_name = ts + '-barcharts-api.svg';
+  let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+  console.log('outfile_path:', outfile_path); // get_tmp_file_path
+  save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
 }
