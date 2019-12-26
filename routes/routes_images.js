@@ -616,10 +616,6 @@ barcharts: function(req, res){
       let mtxdata = add_unitObj(matrix);
       console.timeEnd("TIME: make_mtxdata + add_unitObj1");
 
-      console.time("TIME: mtxdata.forEach2");
-      mtxdata = normalize_to_100_prc(mtxdata);
-      console.timeEnd("TIME: mtxdata.forEach2");
-
       console.time("TIME: svgContainer");
       let jsdom = require('jsdom');  // NEED version <10 for jsdom.env
       const { JSDOM } = jsdom;
@@ -637,11 +633,7 @@ barcharts: function(req, res){
 
       let html = body.select('.container').html();
 
-      save_file_to_user_location(ts, html);
-      // let outfile_name = ts + '-barcharts-api.svg';
-      // let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-      // console.log('outfile_path:', outfile_path);
-      // save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
+      let outfile_name = save_file_to_user_location(req, ts, html);
       data = {};
       data.html = html;
       data.filename = outfile_name;
@@ -1644,15 +1636,9 @@ function add_unitObj(matrix) {
     tmp.pjds = column.id;
     tmp.did = column.did;
     tmp = add_data_from_rows(matrix, tmp, column, p_ind);
-    tmp = normalize_to_100_prc(tmp);
-    // let tot = pr_did_taxa_unit_obj.total;
-    // pr_did_taxa_unit_obj tmp.unitObj. tmp.total
     tmp.total = matrix.column_totals[p_ind];
-    tmp.unitObj.forEach(function (unit_obj) {
-      unit_obj.x0 = (unit_obj.x0 * 100) / tmp.total;
-      unit_obj.x1 = (unit_obj.x1 * 100) / tmp.total;
-    });
-    // });
+    tmp = normalize_to_100_prc(tmp);
+
     mtxdata.push(tmp);
   });
   return mtxdata;
@@ -1678,16 +1664,12 @@ function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
   return tmp_ob;
 }
 
-function normalize_to_100_prc(mtxdata) {
-  mtxdata.forEach(function (pr_did_taxa_unit_obj) {
-    let tot = pr_did_taxa_unit_obj.total;
-    pr_did_taxa_unit_obj.unitObj.forEach(function (unit_obj) {
-      unit_obj.total = tot;
-      unit_obj.x0 = (unit_obj.x0 * 100) / tot;
-      unit_obj.x1 = (unit_obj.x1 * 100) / tot;
-    });
+function normalize_to_100_prc(tmp_obj) {
+  tmp_obj.unitObj.forEach(function (unit_obj) {
+    unit_obj.x0 = (unit_obj.x0 * 100) / tmp_obj.total;
+    unit_obj.x1 = (unit_obj.x1 * 100) / tmp_obj.total;
   });
-  return mtxdata;
+  return tmp_obj;
 }
 
 function make_svgContainer(props, body) {
@@ -1721,9 +1703,10 @@ function create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts}) {
   }
 }
 
-function save_file_to_user_location(ts, html) {
+function save_file_to_user_location(req, ts, html) {
   let outfile_name = ts + '-barcharts-api.svg';
   let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-  console.log('outfile_path:', outfile_path); // get_tmp_file_path
+  console.log('outfile_path:', outfile_path);
   save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
+  return outfile_name;
 }
