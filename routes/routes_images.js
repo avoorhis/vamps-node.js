@@ -568,26 +568,28 @@ fheatmap: function(req, res){
           }
         }
 
+        let ds_count = matrix.shape[1];
 
-        var ds_count = matrix.shape[1];
-        var tmp={};
-        var tmp_names={};
-        for (var d in matrix.columns){
+        let tmp = {};
+        for (let d in matrix.columns){
           tmp[matrix.columns[d].id]=[]; // data
         }
-        for (var x in matrix.data){
-          for (var y in matrix.columns){
+
+        for (let x in matrix.data){
+          for (let y in matrix.columns){
             tmp[matrix.columns[y].id].push(matrix.data[x][y]);
           }
         }
-        var mtxdata={};
+
+        let mtxdata = {};
         mtxdata.names=[];
         mtxdata.values=[];
 
-        for (var z in tmp) {
+        for (let z in tmp) {
           mtxdata.names.push(z);
           mtxdata.values.push(tmp[z]);
         }
+
         if(imagetype == 'single'){
           var pies_per_row = 1;
           var m = 20; // margin
