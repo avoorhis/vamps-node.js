@@ -533,24 +533,27 @@ fheatmap: function(req, res){
 // },  // end piecharts
 
   piecharts: function(req, res) {
-    console.log('In routes_images/function: images/piecharts')
+    console.log('In routes_images/function: images/piecharts');
     // d3 = require('d3');
     // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
-    var jsdom = require('jsdom');
+
+    let jsdom = require('jsdom');
     const { JSDOM } = jsdom;
-    var ts = req.session.ts
+    let ts = req.session.ts;
+    let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
 
-    var imagetype = 'group'
+    let imagetype = 'group';
 
-    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    // TODO: JSHint: This function's cyclomatic complexity is too high. (13)(W074)
     fs.readFile(matrix_file_path, 'utf8', function(err, data){
       if (err) {
-        var msg = 'ERROR Message '+err;
-        console.log(msg)
-      }else{
+        let msg = 'ERROR Message ' + err;
+        console.log(msg);
+      }
+      else{
 
-        var biom_data = JSON.parse(data)
-        matrix = biom_data
+        let biom_data = JSON.parse(data);
+        let matrix = biom_data;
         // parse data remove data less than 1%
         if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
           console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
