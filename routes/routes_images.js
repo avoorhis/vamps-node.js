@@ -417,10 +417,6 @@ piecharts: function(req, res) {
         matrix = charts_otus(req, biom_data);
       }
 
-      let unit_list = [];
-      for (let n in matrix.rows){
-        unit_list.push(matrix.rows[n].id);
-      }
       let total = 0;
       let imagetype = 'group';
 
@@ -447,96 +443,82 @@ piecharts: function(req, res) {
         mtxdata.values.push(tmp[z]);
       }
 
-      const image_options_obj = image_options(imagetype, matrix, d3);
-
       let jsdom = require('jsdom');
       const { JSDOM } = jsdom;
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
 
-      let pies_per_row = image_options_obj.pies_per_row;
-      let pie_rows = image_options_obj.pie_rows;
-      let svgContainer = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
-
-      let pies = svgContainer.selectAll("svg")
-        .data(mtxdata.values)
-        .enter().append("g")
-        .attr("transform", function(d, i){
-          let diam = (pie_rows) + margin;
-          let h_spacer = diam * 2 * (i % pies_per_row);
-          let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-          return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-        });
-
-      if(req.body.source === 'website'){
-        pies = svgContainer.selectAll("svg")
-          .data(mtxdata.values)
-          .enter().append("g")
-          .attr("transform", function(d, i){
-              let diam = (pie_rows)+margin;
-              let h_spacer = diam * 2 * (i % pies_per_row);
-              let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-              //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
-              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-          })
-        .append("a")
-        .attr("xlink:xlink:href", function(d, i) {
-          return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
-        })
-        .attr("target", '_blank' );
-      }
-
-      pies.append("text")
-          .attr("dx", -(pie_rows+margin))
-          .attr("dy", pie_rows+margin)
-          .attr("text-anchor", "center")
-          .attr("font-size","10px")
-          .text(function(d, i) {
-              if(imagetype === 'single'){
-                return 'SumCount: '+total.toString();
-              }
-              else{
-                return matrix.columns[i].id;
-              }
-          });
-      if (req.body.source === 'website'){
-          pies.selectAll("path")
-            .data(d3.pie().sort(null))
-            .enter()
-            .append("path")
-            .attr("class", "arc")
-            .attr("d", arc)
-            .attr("id",function(d, i) {
-              let cnt = d.value;
-              let total = 0;
-              for (let k in this.parentNode.__data__){
-                total += this.parentNode.__data__[k];
-              }
-              let ds = ''; // PLACEHOLDER for TT
-              let pct = (cnt * 100 / total).toFixed(2);
-              let id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
-              return id;
-            })
-            .attr("class","tooltip_viz")
-            .attr("fill", function(d, i) {
-                return string_to_color_code(unit_list[i]);
-            });
-      }
-      else {
-        pies.selectAll("path")
-          .data(d3.pie().sort(null))
-          .enter()
-          .append("path")
-          .attr("class", "arc")
-          .attr("d", arc)
-          .attr("fill", function(d, i) {
-              return string_to_color_code(unit_list[i]);
-          })
-          .append("title")
-          .text(function(d, i) {
-            return unit_list[i]+' -- ' + d.value;
-          });
-      }
+      let pies = pies_factory(req, matrix, mtxdata, imagetype);
+      // let pies = svgContainer.selectAll("svg")
+      //   .data(mtxdata.values)
+      //   .enter().append("g")
+      //   .attr("transform", function(d, i){
+      //     let diam = (pie_rows) + margin;
+      //     let h_spacer = diam * 2 * (i % pies_per_row);
+      //     let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+      //     return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+      //   });
+      //
+      // if(req.body.source === 'website'){
+      //   pies.append("a")
+      //   .attr("xlink:xlink:href", function(d, i) {
+      //     return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+      //   })
+      //   .attr("target", '_blank' );
+      // }
+      //
+      // pies.append("text")
+      //     .attr("dx", -(pie_rows+margin))
+      //     .attr("dy", pie_rows+margin)
+      //     .attr("text-anchor", "center")
+      //     .attr("font-size","10px")
+      //     .text(function(d, i) {
+      //         if(imagetype === 'single'){
+      //           return 'SumCount: '+total.toString();
+      //         }
+      //         else{
+      //           return matrix.columns[i].id;
+      //         }
+      //     });
+      //
+      // if (req.body.source === 'website'){
+      //     pies.selectAll("path")
+      //       .data(d3.pie().sort(null))
+      //       .enter()
+      //       .append("path")
+      //       .attr("class", "arc")
+      //       .attr("d", arc)
+      //       .attr("id",function(d, i) {
+      //         let cnt = d.value;
+      //         let total = 0;
+      //         for (let k in this.parentNode.__data__){
+      //           total += this.parentNode.__data__[k];
+      //         }
+      //         let ds = ''; // PLACEHOLDER for TT
+      //         let pct = (cnt * 100 / total).toFixed(2);
+      //         let id = 'pc/'+unit_list[i] + '/' + cnt.toString() + '/' + pct;
+      //         return id;
+      //       })
+      //       .attr("class","tooltip_viz")
+      //       .attr("fill", function(d, i) {
+      //           return string_to_color_code(unit_list[i]);
+      //       });
+      // }
+      // else {
+      //   pies.selectAll("path")
+      //     .data(d3.pie().sort(null))
+      //     .enter()
+      //     .append("path")
+      //     .attr("class", "arc")
+      //     .attr("d", arc)
+      //     .attr("fill", function(d, i) {
+      //         return string_to_color_code(unit_list[i]);
+      //     })
+      //     .append("title")
+      //     .text(function(d, i) {
+      //       return unit_list[i]+' -- ' + d.value;
+      //     });
+      // }
 
       let html = body.select('.container').html();
       let outfile_name = ts + '-piecharts-api.svg';
@@ -1709,4 +1691,101 @@ function get_image_hight(matrix, pie_rows, pies_per_row) {
   let image_h = no_of_rows * ((pie_rows * 2) + 40);
   console.log('image_h', image_h);
   return image_h;
+}
+
+function get_unit_list(matrix) {
+  let unit_list = [];
+  for (let n in matrix.rows){
+    unit_list.push(matrix.rows[n].id);
+  }
+
+  let unit_list0 = matrix.rows.map(row => row.id);
+  let unit_list1 = matrix.rows.reduce((unit_list_, row) => unit_list_.concat(row.id), []);
+  let unit_list3 = [];
+  matrix.rows.forEach(row => {
+    unit_list3.push(row.id);
+  });
+  return unit_list;
+
+
+}
+function pies_factory(req, matrix, mtxdata, imagetype) {
+  const image_options_obj = image_options(imagetype, matrix, d3);
+  const unit_list = get_unit_list(matrix);
+
+  let pies_per_row = image_options_obj.pies_per_row;
+  let pie_rows = image_options_obj.pie_rows;
+  let svgContainer = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
+
+  let pies = svgContainer.selectAll("svg")
+    .data(mtxdata.values)
+    .enter().append("g")
+    .attr("transform", function(d, i){
+      let diam = (pie_rows) + margin;
+      let h_spacer = diam * 2 * (i % pies_per_row);
+      let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+      return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+    });
+
+  if (req.body.source === 'website'){
+    pies.append("a")
+      .attr("xlink:xlink:href", function(d, i) {
+        return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+      })
+      .attr("target", '_blank' );
+  }
+
+  pies.append("text")
+    .attr("dx", -(pie_rows + margin))
+    .attr("dy", pie_rows + margin)
+    .attr("text-anchor", "center")
+    .attr("font-size","10px")
+    .text(function(d, i) {
+      if(imagetype === 'single'){
+        return 'SumCount: ' + total.toString();
+      }
+      else{
+        return matrix.columns[i].id;
+      }
+    });
+
+  if (req.body.source === 'website'){
+    pies.selectAll("path")
+      .data(d3.pie().sort(null))
+      .enter()
+      .append("path")
+      .attr("class", "arc")
+      .attr("d", arc)
+      .attr("id",function(d, i) {
+        let cnt = d.value;
+        let total = 0;
+        for (let k in this.parentNode.__data__){
+          total += this.parentNode.__data__[k];
+        }
+        let ds = ''; // PLACEHOLDER for TT
+        let pct = (cnt * 100 / total).toFixed(2);
+        let id = 'pc/' + unit_list[i] + '/' + cnt.toString() + '/' + pct;
+        return id;
+      })
+      .attr("class","tooltip_viz")
+      .attr("fill", function(d, i) {
+        return string_to_color_code(unit_list[i]);
+      });
+  }
+  else {
+    pies.selectAll("path")
+      .data(d3.pie().sort(null))
+      .enter()
+      .append("path")
+      .attr("class", "arc")
+      .attr("d", arc)
+      .attr("fill", function(d, i) {
+        return string_to_color_code(unit_list[i]);
+      })
+      .append("title")
+      .text(function(d, i) {
+        return unit_list[i]+' -- ' + d.value;
+      });
+  }
+
 }
