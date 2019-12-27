@@ -448,7 +448,7 @@ piecharts: function(req, res) {
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
 
-      let pies = pies_factory(req, matrix, mtxdata, imagetype);
+      let pies = pies_factory(req, matrix, mtxdata, imagetype, body);
       // let pies = svgContainer.selectAll("svg")
       //   .data(mtxdata.values)
       //   .enter().append("g")
@@ -1694,22 +1694,10 @@ function get_image_hight(matrix, pie_rows, pies_per_row) {
 }
 
 function get_unit_list(matrix) {
-  let unit_list = [];
-  for (let n in matrix.rows){
-    unit_list.push(matrix.rows[n].id);
-  }
-
-  let unit_list0 = matrix.rows.map(row => row.id);
-  let unit_list1 = matrix.rows.reduce((unit_list_, row) => unit_list_.concat(row.id), []);
-  let unit_list3 = [];
-  matrix.rows.forEach(row => {
-    unit_list3.push(row.id);
-  });
-  return unit_list;
-
-
+  return matrix.rows.map(row => row.id);
 }
-function pies_factory(req, matrix, mtxdata, imagetype) {
+
+function pies_factory(req, matrix, mtxdata, imagetype, body) {
   const image_options_obj = image_options(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
