@@ -402,14 +402,7 @@ fheatmap: function(req, res){
 //
 piecharts: function(req, res) {
   console.log('In routes_images/function: images/piecharts');
-  // d3 = require('d3');
-  // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
-  let jsdom = require('jsdom');
-  const { JSDOM } = jsdom;
   let ts = req.session.ts;
-
-  let imagetype = 'group';
-
   let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
@@ -429,6 +422,8 @@ piecharts: function(req, res) {
         unit_list.push(matrix.rows[n].id);
       }
       let total = 0;
+      let imagetype = 'group';
+
       for (let n in matrix.rows){
         if (imagetype === 'single'){
           total += parseInt(matrix.data[n]);
@@ -454,12 +449,14 @@ piecharts: function(req, res) {
 
       const image_options_obj = image_options(imagetype, matrix, d3);
 
+      let jsdom = require('jsdom');
+      const { JSDOM } = jsdom;
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
 
       let pies_per_row = image_options_obj.pies_per_row;
       let pie_rows = image_options_obj.pie_rows;
-      make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
+      let svgContainer = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
 
       let pies = svgContainer.selectAll("svg")
         .data(mtxdata.values)
@@ -1643,14 +1640,6 @@ function normalize_to_100_prc(tmp_obj) {
   return tmp_obj;
 }
 
-//       let svgContainer = body.append('div').attr('class', 'container')
-//           .append('svg')
-//               .attr("xmlns", 'http://www.w3.org/2000/svg')
-//               .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-//               .attr("width", image_w)
-//               .attr("height", image_h)
-//           .append('g')
-//             .attr("transform", "translate(" + 0 + "," + 0 + ")");
 function make_svgContainer(width, height, margin_left, margin_top, body) {
   let svgContainer = body.append('div').attr('class', 'container')
     .append('svg')
