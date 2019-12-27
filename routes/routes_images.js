@@ -401,7 +401,7 @@ fheatmap: function(req, res){
 //   PIE CHARTS
 //
 piecharts: function(req, res) {
-  console.log('In routes_images/function: images/piecharts')
+  console.log('In routes_images/function: images/piecharts');
   // d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
   let jsdom = require('jsdom');
@@ -410,7 +410,7 @@ piecharts: function(req, res) {
 
   let imagetype = 'group';
 
-  matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
+  let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
         let msg = 'ERROR Message '+err;
@@ -420,24 +420,21 @@ piecharts: function(req, res) {
       let biom_data = JSON.parse(data);
       let matrix = biom_data;
       // parse data remove data less than 1%
-      if (req.body.hasOwnProperty('type') && req.body.type == 'otus'){
-          console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
-          matrix = thin_out_data_for_display(biom_data);
+      if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+        matrix = charts_otus(req, biom_data);
       }
 
       let unit_list = [];
       for (let n in matrix.rows){
         unit_list.push(matrix.rows[n].id);
       }
-      let total = 0
-      for(let n in matrix.rows){
-        if(imagetype === 'single'){
-          total +=  parseInt(matrix.data[n]);
+      let total = 0;
+      for (let n in matrix.rows){
+        if (imagetype === 'single'){
+          total += parseInt(matrix.data[n]);
         }
       }
-      let ds_count = matrix.shape[1];
-      let tmp={};
-      let tmp_names={};
+      let tmp = {};
       for (let d in matrix.columns){
           tmp[matrix.columns[d].id]=[]; // data
       }
@@ -446,7 +443,7 @@ piecharts: function(req, res) {
           tmp[matrix.columns[y].id].push(matrix.data[x][y]);
           }
       }
-      let mtxdata={};
+      let mtxdata = {};
       mtxdata.names=[];
       mtxdata.values=[];
 
@@ -454,82 +451,58 @@ piecharts: function(req, res) {
         mtxdata.names.push(z);
         mtxdata.values.push(tmp[z]);
       }
-      if(imagetype == 'single'){
-          let pies_per_row = 1;
-          let m = 20; // margin
-          let r = 120; // five pies per row
-      }
-      else{
-        let pies_per_row = 4;
-        let m = 15; // margin
-        let r = 320/pies_per_row; // four pies per row
-      }
-      // image start in upper left corner
-      let image_w = 1200;
-      let no_of_rows =  Math.ceil(ds_count/pies_per_row);
-      let image_h = no_of_rows * ((r * 2) + 40);
-      console.log('image_h', image_h);
-      let arc = d3.arc()
-        .innerRadius(0)
-        .outerRadius(r);
+
+      const image_options_obj = image_options(imagetype, matrix, d3);
 
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
-      let margin_left = 0;
-      let margin_top = 0;
-      make_svgContainer(image_w, image_h, margin_left, margin_top, body);
-      // let svgContainer = body.append('div').attr('class', 'container')
-      //     .append('svg')
-      //         .attr("xmlns", 'http://www.w3.org/2000/svg')
-      //         .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-      //         .attr("width", image_w)
-      //         .attr("height", image_h)
-      //     .append('g')
-      //       .attr("transform", "translate(" + 0 + "," + 0 + ")");
-      // axis legends -- would like to rotate dataset names
-      if(req.body.source == 'website'){
-          let pies = svgContainer.selectAll("svg")
-            .data(mtxdata.values)
-            .enter().append("g")
-            .attr("transform", function(d, i){
-                let diam = (r)+m;
-                let h_spacer = diam * 2 * (i % pies_per_row);
-                let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-                //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
-                return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-            })
-          .append("a")
-          .attr("xlink:xlink:href", function(d, i) {
-            return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
+
+      let pies_per_row = image_options_obj.pies_per_row;
+      let pie_rows = image_options_obj.pie_rows;
+      make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
+
+      let pies = svgContainer.selectAll("svg")
+        .data(mtxdata.values)
+        .enter().append("g")
+        .attr("transform", function(d, i){
+          let diam = (pie_rows) + margin;
+          let h_spacer = diam * 2 * (i % pies_per_row);
+          let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+          return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+        });
+
+      if(req.body.source === 'website'){
+        pies = svgContainer.selectAll("svg")
+          .data(mtxdata.values)
+          .enter().append("g")
+          .attr("transform", function(d, i){
+              let diam = (pie_rows)+margin;
+              let h_spacer = diam * 2 * (i % pies_per_row);
+              let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+              //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
+              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
           })
-          .attr("target", '_blank' );
-      }else{
-          let pies = svgContainer.selectAll("svg")
-            .data(mtxdata.values)
-            .enter().append("g")
-            .attr("transform", function(d, i){
-                let diam = (r)+m;
-                let h_spacer = diam * 2* (i % pies_per_row);
-                let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-                return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-            });
+        .append("a")
+        .attr("xlink:xlink:href", function(d, i) {
+          return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+        })
+        .attr("target", '_blank' );
       }
 
-
-
       pies.append("text")
-          .attr("dx", -(r+m))
-          .attr("dy", r+m)
+          .attr("dx", -(pie_rows+margin))
+          .attr("dy", pie_rows+margin)
           .attr("text-anchor", "center")
           .attr("font-size","10px")
           .text(function(d, i) {
-              if(imagetype == 'single'){
-                return 'SumCount: '+total.toString()
-              }else{
+              if(imagetype === 'single'){
+                return 'SumCount: '+total.toString();
+              }
+              else{
                 return matrix.columns[i].id;
               }
           });
-      if(req.body.source === 'website'){
+      if (req.body.source === 'website'){
           pies.selectAll("path")
             .data(d3.pie().sort(null))
             .enter()
@@ -549,38 +522,37 @@ piecharts: function(req, res) {
             })
             .attr("class","tooltip_viz")
             .attr("fill", function(d, i) {
-                return string_to_color_code(unit_list[i])
+                return string_to_color_code(unit_list[i]);
             });
-      }else{
-          pies.selectAll("path")
-            .data(d3.pie().sort(null))
-            .enter()
-            .append("path")
-            .attr("class", "arc")
-            .attr("d", arc)
-
-            .attr("fill", function(d, i) {
-                return string_to_color_code(unit_list[i])
-            })
-            .append("title")
-              .text(function(d, i) {
-                return unit_list[i]+' -- '+d.value;
-              })
+      }
+      else {
+        pies.selectAll("path")
+          .data(d3.pie().sort(null))
+          .enter()
+          .append("path")
+          .attr("class", "arc")
+          .attr("d", arc)
+          .attr("fill", function(d, i) {
+              return string_to_color_code(unit_list[i]);
+          })
+          .append("title")
+          .text(function(d, i) {
+            return unit_list[i]+' -- ' + d.value;
+          });
       }
 
-
-      let html = body.select('.container').html()
-      let outfile_name = ts + '-piecharts-api.svg'
-      outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-      console.log('outfile_path:',outfile_path)
-      result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
-      data = {}
-      data.html = html
-      data.filename = outfile_name
-      res.json(data)
+      let html = body.select('.container').html();
+      let outfile_name = ts + '-piecharts-api.svg';
+      let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+      console.log('outfile_path:', outfile_path);
+      save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
+      data = {};
+      data.html = html;
+      data.filename = outfile_name;
+      res.json(data);
 
     } // end else
-    }); // end readFile matrix
+  }); // end readFile matrix
 
 },  // end piecharts
 //
@@ -605,11 +577,9 @@ barcharts: function(req, res){
       let biom_data = JSON.parse(data);
       let matrix = biom_data;
 
-      console.time("TIME: otus");
       if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
-        matrix = barcharts_otus(req, biom_data);
+        matrix = charts_otus(req, biom_data);
       }
-      console.timeEnd("TIME: otus");
 
       let ds_count = matrix.shape[1];
       let props = get_image_properties(imagetype, ds_count);
@@ -1601,7 +1571,7 @@ function thin_out_data_for_display(mtx){
     return new_mtx
 }
 
-function barcharts_otus(req, biom_data) {
+function charts_otus(req, biom_data) {
   console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
   return thin_out_data_for_display(biom_data);
 }
@@ -1686,10 +1656,10 @@ function make_svgContainer(width, height, margin_left, margin_top, body) {
     .append('svg')
     .attr("xmlns", 'http://www.w3.org/2000/svg')
     .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-    .attr("width", props.width)
-    .attr("height", props.height)
+    .attr("width", width)
+    .attr("height", height)
     .append('g')
-    .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
+    .attr("transform", "translate(" + margin_left + "," + margin_top + ")");
   return svgContainer;
 }
 
@@ -1718,4 +1688,36 @@ function save_file_to_user_location(req, ts, html) {
   console.log('outfile_path:', outfile_path);
   save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
   return outfile_name;
+}
+
+function image_options(imagetype, matrix, d3) {
+  const image_options = {};
+  image_options.pies_per_row = 4;
+  image_options.margin = 15;
+  image_options.pie_rows = 320 / image_options.pies_per_row; // four pies per row
+
+  if (imagetype === 'single') {
+    image_options.pies_per_row = 1;
+    image_options.margin = 20;
+    image_options.pie_rows = 120; // five pies per row
+  }
+
+  // image start in upper left corner
+  image_options.image_w = 1200;
+  image_options.image_h = get_image_hight(matrix, image_options.pie_rows, image_options.pies_per_row);
+  image_options.arc = d3.arc()
+    .innerRadius(0)
+    .outerRadius(image_options.pie_rows);
+  image_options.margin_left = 0;
+  image_options.margin_top = 0;
+
+  return image_options;
+}
+
+function get_image_hight(matrix, pie_rows, pies_per_row) {
+  let ds_count = matrix.shape[1];
+  let no_of_rows = Math.ceil(ds_count / pies_per_row);
+  let image_h = no_of_rows * ((pie_rows * 2) + 40);
+  console.log('image_h', image_h);
+  return image_h;
 }
