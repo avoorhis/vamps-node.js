@@ -555,15 +555,12 @@ fheatmap: function(req, res){
         let biom_data = JSON.parse(data);
         let matrix = biom_data;
         // parse data remove data less than 1%
-        if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
-          console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
-          matrix = thin_out_data_for_display(biom_data)
+        if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+          matrix = charts_otus(req, biom_data);
         }
 
-        var unit_list = [];
-        for (var n in matrix.rows){
-          unit_list.push(matrix.rows[n].id);
-        }
+        const unit_list = get_unit_list(matrix);
+
         var total = 0
         for(n in matrix.rows){
           if(imagetype == 'single'){
