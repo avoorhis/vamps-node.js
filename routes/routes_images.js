@@ -561,14 +561,14 @@ fheatmap: function(req, res){
 
         const unit_list = get_unit_list(matrix);
 
-        var total = 0
-        for(n in matrix.rows){
-          if(imagetype == 'single'){
-            total +=  parseInt(matrix.data[n])
-          }else{
-            //pass
+        let total = 0;
+        for (let n in matrix.rows){
+          if (imagetype === 'single'){
+            total += parseInt(matrix.data[n]);
           }
         }
+
+
         var ds_count = matrix.shape[1];
         var tmp={};
         var tmp_names={};
