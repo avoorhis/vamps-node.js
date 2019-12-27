@@ -1845,7 +1845,7 @@ function save_file_to_user_location(req, ts, html) {
   return outfile_name;
 }
 
-function image_options(imagetype, matrix, d3) {
+function get_image_options(imagetype, matrix, d3) {
   const image_options = {};
   image_options.pies_per_row = 4;
   image_options.margin = 15;
@@ -1887,7 +1887,7 @@ function pies_factory1(req, matrix, mtxdata, imagetype, ts) {
   const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
   let body = d3.select(fakeDom.window.document).select('body');
 
-  const image_options_obj = image_options(imagetype, matrix, d3);
+  const image_options_obj = get_image_options(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
   let pies_per_row = image_options_obj.pies_per_row;
@@ -1971,25 +1971,26 @@ function pies_factory1(req, matrix, mtxdata, imagetype, ts) {
 }
 
 function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
-  if(imagetype == 'single'){
-    var pies_per_row = 1;
-    var m = 20; // margin
-    var r = 120; // five pies per row
-  }else{
-    var pies_per_row = 4;
-    var m = 15; // margin
-    var r = 320/pies_per_row; // four pies per row
-  }
-  let ds_count = matrix.shape[1];
-
-  // image start in upper left corner
-  var image_w = 1200
-  var no_of_rows =  Math.ceil(ds_count/pies_per_row)
-  var image_h = no_of_rows * ((r * 2)+40)
-  console.log('image_h',image_h)
-  var arc = d3.arc()
-    .innerRadius(0)
-    .outerRadius(r);
+  const image_options_obj = get_image_options(imagetype, matrix, d3);
+  // if(imagetype === 'single'){
+  //   var pies_per_row = 1;
+  //   var m = 20; // margin
+  //   var r = 120; // five pies per row
+  // }else{
+  //   var pies_per_row = 4;
+  //   var m = 15; // margin
+  //   var r = 320/pies_per_row; // four pies per row
+  // }
+  // let ds_count = matrix.shape[1];
+  //
+  // // image start in upper left corner
+  // var image_w = 1200
+  // var no_of_rows =  Math.ceil(ds_count/pies_per_row)
+  // var image_h = no_of_rows * ((r * 2)+40)
+  // console.log('image_h',image_h)
+  // var arc = d3.arc()
+  //   .innerRadius(0)
+  //   .outerRadius(r);
 
   const unit_list = get_unit_list(matrix);
 
@@ -1999,8 +2000,8 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
     .append('svg')
     .attr("xmlns", 'http://www.w3.org/2000/svg')
     .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-    .attr("width", image_w)
-    .attr("height", image_h)
+    .attr("width", image_options_obj.image_w)
+    .attr("height", image_options_obj.image_h)
     .append('g')
     .attr("transform", "translate(" + 0 + "," + 0 + ")");
   // axis legends -- would like to rotate dataset names
@@ -2009,9 +2010,9 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
       .data(mtxdata.values)
       .enter().append("g")
       .attr("transform", function(d, i){
-        var diam = (r)+m;
-        var h_spacer = diam * 2* (i % pies_per_row);
-        var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        let diam = (image_options_obj.pie_rows) + image_options_obj.margin;
+        var h_spacer = diam * 2* (i % image_options_obj.pies_per_row);
+        var v_spacer = diam * 2 * Math.floor(i / image_options_obj.pies_per_row);
         //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
         return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
       })
@@ -2026,34 +2027,34 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
       .data(mtxdata.values)
       .enter().append("g")
       .attr("transform", function(d, i){
-        var diam = (r)+m;
-        var h_spacer = diam * 2* (i % pies_per_row);
-        var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        let diam = (image_options_obj.pie_rows) + image_options_obj.margin;
+        var h_spacer = diam * 2* (i % image_options_obj.pies_per_row);
+        var v_spacer = diam * 2 * Math.floor(i / image_options_obj.pies_per_row);
         return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
       })
   }
 
-
-
   pies.append("text")
-    .attr("dx", -(r+m))
-    .attr("dy", r+m)
+    .attr("dx", -(image_options_obj.pie_rows + image_options_obj.margin))
+    .attr("dy", image_options_obj.pie_rows + image_options_obj.margin)
     .attr("text-anchor", "center")
-    .attr("font-size","10px")
-    .text(function(d, i) {
-      if(imagetype == 'single'){
-        return 'SumCount: '+total.toString()
-      }else{
+    .attr("font-size", "10px")
+    .text(function(current_cnts, i) {
+      if (imagetype === 'single') {
+        return 'SumCount: ' + total.toString();
+      }
+      else {
         return matrix.columns[i].id;
       }
     });
+  
   if(req.body.source == 'website'){
     pies.selectAll("path")
       .data(d3.pie().sort(null))
       .enter()
       .append("path")
       .attr("class", "arc")
-      .attr("d", arc)
+      .attr("d", image_options_obj.arc)
       .attr("id",function(d, i) {
         var cnt = d.value;
         var total = 0;
@@ -2076,7 +2077,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
       .enter()
       .append("path")
       .attr("class", "arc")
-      .attr("d", arc)
+      .attr("d", image_options_obj.arc)
 
       .attr("fill", function(d, i) {
         return string_to_color_code(unit_list[i])
