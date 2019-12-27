@@ -404,6 +404,7 @@ piecharts: function(req, res) {
   console.log('In routes_images/function: images/piecharts');
   let ts = req.session.ts;
   let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (9)(W074)
   fs.readFile(matrix_file_path, 'utf8', function(err, data){
     if (err) {
         let msg = 'ERROR Message '+err;
@@ -448,7 +449,7 @@ piecharts: function(req, res) {
       const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
       let body = d3.select(fakeDom.window.document).select('body');
 
-      let pies = pies_factory(req, matrix, mtxdata, imagetype, body);
+      pies_factory(req, matrix, mtxdata, imagetype, body, ts);
       // let pies = svgContainer.selectAll("svg")
       //   .data(mtxdata.values)
       //   .enter().append("g")
@@ -1697,7 +1698,7 @@ function get_unit_list(matrix) {
   return matrix.rows.map(row => row.id);
 }
 
-function pies_factory(req, matrix, mtxdata, imagetype, body) {
+function pies_factory(req, matrix, mtxdata, imagetype, body, ts) {
   const image_options_obj = image_options(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
@@ -1705,10 +1706,12 @@ function pies_factory(req, matrix, mtxdata, imagetype, body) {
   let pie_rows = image_options_obj.pie_rows;
   let svgContainer = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
 
+  let margin = image_options_obj.margin;
+  let arc = image_options_obj.arc;
   let pies = svgContainer.selectAll("svg")
     .data(mtxdata.values)
     .enter().append("g")
-    .attr("transform", function(d, i){
+    .attr("transform", function(current_cnts, i){
       let diam = (pie_rows) + margin;
       let h_spacer = diam * 2 * (i % pies_per_row);
       let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
@@ -1716,8 +1719,8 @@ function pies_factory(req, matrix, mtxdata, imagetype, body) {
     });
 
   if (req.body.source === 'website'){
-    pies.append("a")
-      .attr("xlink:xlink:href", function(d, i) {
+    pies = pies.selectAll("svg").append("a")
+      .attr("xlink:xlink:href", function(current_cnts, i) {
         return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
       })
       .attr("target", '_blank' );
@@ -1728,11 +1731,11 @@ function pies_factory(req, matrix, mtxdata, imagetype, body) {
     .attr("dy", pie_rows + margin)
     .attr("text-anchor", "center")
     .attr("font-size","10px")
-    .text(function(d, i) {
-      if(imagetype === 'single'){
+    .text(function(current_cnts, i) {
+      if (imagetype === 'single') {
         return 'SumCount: ' + total.toString();
       }
-      else{
+      else {
         return matrix.columns[i].id;
       }
     });
@@ -1744,13 +1747,13 @@ function pies_factory(req, matrix, mtxdata, imagetype, body) {
       .append("path")
       .attr("class", "arc")
       .attr("d", arc)
-      .attr("id",function(d, i) {
-        let cnt = d.value;
+      .attr("id", function(current_cnts, i) {
+        let cnt = current_cnts.value;
         let total = 0;
         for (let k in this.parentNode.__data__){
           total += this.parentNode.__data__[k];
         }
-        let ds = ''; // PLACEHOLDER for TT
+        // let ds = ''; // PLACEHOLDER for TT
         let pct = (cnt * 100 / total).toFixed(2);
         let id = 'pc/' + unit_list[i] + '/' + cnt.toString() + '/' + pct;
         return id;
