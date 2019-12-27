@@ -591,7 +591,7 @@ barcharts: function(req, res){
   }); // end fs.readFile
 },  // end barcharts
 
-  //ЕЩВЩЖ JSHint: This function's cyclomatic complexity is too high. (7)(W074)
+  //TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
   metadata_csv: function(req, res){
     console.log('in routes_images/metadata_csv')
     var ts = req.session.ts
@@ -1777,9 +1777,8 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       })
       .append("title")
       .text(function(d, i) {
-        return unit_list[i]+' -- ' + d.value;
+        return unit_list[i] + ' -- ' + d.value;
       });
   }
   return body;
-
 }
