@@ -559,7 +559,6 @@ fheatmap: function(req, res){
           matrix = charts_otus(req, biom_data);
         }
 
-        const unit_list = get_unit_list(matrix);
 
         let total = 0;
         for (let n in matrix.rows){
@@ -567,8 +566,6 @@ fheatmap: function(req, res){
             total += parseInt(matrix.data[n]);
           }
         }
-
-        let ds_count = matrix.shape[1];
 
         let tmp = {};
         for (let d in matrix.columns){
@@ -590,116 +587,121 @@ fheatmap: function(req, res){
           mtxdata.values.push(tmp[z]);
         }
 
-        if(imagetype == 'single'){
-          var pies_per_row = 1;
-          var m = 20; // margin
-          var r = 120; // five pies per row
-        }else{
-          var pies_per_row = 4;
-          var m = 15; // margin
-          var r = 320/pies_per_row; // four pies per row
-        }
-        // image start in upper left corner
-        var image_w = 1200
-        var no_of_rows =  Math.ceil(ds_count/pies_per_row)
-        var image_h = no_of_rows * ((r * 2)+40)
-        console.log('image_h',image_h)
-        var arc = d3.arc()
-          .innerRadius(0)
-          .outerRadius(r);
-
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
-        let svgContainer = body.append('div').attr('class', 'container')
-          .append('svg')
-          .attr("xmlns", 'http://www.w3.org/2000/svg')
-          .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
-          .attr("width", image_w)
-          .attr("height", image_h)
-          .append('g')
-          .attr("transform", "translate(" + 0 + "," + 0 + ")");
-        // axis legends -- would like to rotate dataset names
-        if(req.body.source == 'website'){
-          var pies = svgContainer.selectAll("svg")
-            .data(mtxdata.values)
-            .enter().append("g")
-            .attr("transform", function(d, i){
-              var diam = (r)+m;
-              var h_spacer = diam * 2* (i % pies_per_row);
-              var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-              //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
-              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-            })
-            .append("a")
-            .attr("xlink:xlink:href", function(d, i) {
-              return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
-            })
-            .attr("target", '_blank' );
-        }else{
-          var pies = svgContainer.selectAll("svg")
-            .data(mtxdata.values)
-            .enter().append("g")
-            .attr("transform", function(d, i){
-              var diam = (r)+m;
-              var h_spacer = diam * 2* (i % pies_per_row);
-              var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-            })
-        }
 
+        body = pies_factory(req, matrix, mtxdata, imagetype, ts, body);
 
-
-        pies.append("text")
-          .attr("dx", -(r+m))
-          .attr("dy", r+m)
-          .attr("text-anchor", "center")
-          .attr("font-size","10px")
-          .text(function(d, i) {
-            if(imagetype == 'single'){
-              return 'SumCount: '+total.toString()
-            }else{
-              return matrix.columns[i].id;
-            }
-          });
-        if(req.body.source == 'website'){
-          pies.selectAll("path")
-            .data(d3.pie().sort(null))
-            .enter()
-            .append("path")
-            .attr("class", "arc")
-            .attr("d", arc)
-            .attr("id",function(d, i) {
-              var cnt = d.value;
-              var total = 0;
-              for (var k in this.parentNode.__data__){
-                total += this.parentNode.__data__[k];
-              }
-              var ds = ''; // PLACEHOLDER for TT
-              var pct = (cnt * 100 / total).toFixed(2);
-              var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
-              return id;
-            })
-            .attr("class","tooltip_viz")
-            .attr("fill", function(d, i) {
-              return string_to_color_code(unit_list[i])
-            });
-        }else{
-          pies.selectAll("path")
-            .data(d3.pie().sort(null))
-            .enter()
-            .append("path")
-            .attr("class", "arc")
-            .attr("d", arc)
-
-            .attr("fill", function(d, i) {
-              return string_to_color_code(unit_list[i])
-            })
-            .append("title")
-            .text(function(d, i) {
-              return unit_list[i]+' -- '+d.value;
-            })
-        }
-
+        // if(imagetype == 'single'){
+        //   var pies_per_row = 1;
+        //   var m = 20; // margin
+        //   var r = 120; // five pies per row
+        // }else{
+        //   var pies_per_row = 4;
+        //   var m = 15; // margin
+        //   var r = 320/pies_per_row; // four pies per row
+        // }
+        // // image start in upper left corner
+        // var image_w = 1200
+        // var no_of_rows =  Math.ceil(ds_count/pies_per_row)
+        // var image_h = no_of_rows * ((r * 2)+40)
+        // console.log('image_h',image_h)
+        // var arc = d3.arc()
+        //   .innerRadius(0)
+        //   .outerRadius(r);
+        //
+        // const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+        // let body = d3.select(fakeDom.window.document).select('body');
+        // let svgContainer = body.append('div').attr('class', 'container')
+        //   .append('svg')
+        //   .attr("xmlns", 'http://www.w3.org/2000/svg')
+        //   .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+        //   .attr("width", image_w)
+        //   .attr("height", image_h)
+        //   .append('g')
+        //   .attr("transform", "translate(" + 0 + "," + 0 + ")");
+        // // axis legends -- would like to rotate dataset names
+        // if(req.body.source == 'website'){
+        //   var pies = svgContainer.selectAll("svg")
+        //     .data(mtxdata.values)
+        //     .enter().append("g")
+        //     .attr("transform", function(d, i){
+        //       var diam = (r)+m;
+        //       var h_spacer = diam * 2* (i % pies_per_row);
+        //       var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        //       //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
+        //       return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+        //     })
+        //     .append("a")
+        //     .attr("xlink:xlink:href", function(d, i) {
+        //       return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
+        //     })
+        //     .attr("target", '_blank' );
+        // }else{
+        //   var pies = svgContainer.selectAll("svg")
+        //     .data(mtxdata.values)
+        //     .enter().append("g")
+        //     .attr("transform", function(d, i){
+        //       var diam = (r)+m;
+        //       var h_spacer = diam * 2* (i % pies_per_row);
+        //       var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        //       return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+        //     })
+        // }
+        //
+        //
+        //
+        // pies.append("text")
+        //   .attr("dx", -(r+m))
+        //   .attr("dy", r+m)
+        //   .attr("text-anchor", "center")
+        //   .attr("font-size","10px")
+        //   .text(function(d, i) {
+        //     if(imagetype == 'single'){
+        //       return 'SumCount: '+total.toString()
+        //     }else{
+        //       return matrix.columns[i].id;
+        //     }
+        //   });
+        // if(req.body.source == 'website'){
+        //   pies.selectAll("path")
+        //     .data(d3.pie().sort(null))
+        //     .enter()
+        //     .append("path")
+        //     .attr("class", "arc")
+        //     .attr("d", arc)
+        //     .attr("id",function(d, i) {
+        //       var cnt = d.value;
+        //       var total = 0;
+        //       for (var k in this.parentNode.__data__){
+        //         total += this.parentNode.__data__[k];
+        //       }
+        //       var ds = ''; // PLACEHOLDER for TT
+        //       var pct = (cnt * 100 / total).toFixed(2);
+        //       var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
+        //       return id;
+        //     })
+        //     .attr("class","tooltip_viz")
+        //     .attr("fill", function(d, i) {
+        //       return string_to_color_code(unit_list[i])
+        //     });
+        // }else{
+        //   pies.selectAll("path")
+        //     .data(d3.pie().sort(null))
+        //     .enter()
+        //     .append("path")
+        //     .attr("class", "arc")
+        //     .attr("d", arc)
+        //
+        //     .attr("fill", function(d, i) {
+        //       return string_to_color_code(unit_list[i])
+        //     })
+        //     .append("title")
+        //     .text(function(d, i) {
+        //       return unit_list[i]+' -- '+d.value;
+        //     })
+        // }
+        //
 
         var html = body.select('.container').html()
         var outfile_name = ts + '-piecharts-api.svg'
@@ -1879,7 +1881,7 @@ function get_unit_list(matrix) {
   return matrix.rows.map(row => row.id);
 }
 
-function pies_factory(req, matrix, mtxdata, imagetype, ts) {
+function pies_factory1(req, matrix, mtxdata, imagetype, ts) {
   let jsdom = require('jsdom');
   const { JSDOM } = jsdom;
   const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -1966,4 +1968,124 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       });
   }
   return body;
+}
+
+function pies_factory(req, matrix, mtxdata, imagetype, ts, body) {
+  if(imagetype == 'single'){
+    var pies_per_row = 1;
+    var m = 20; // margin
+    var r = 120; // five pies per row
+  }else{
+    var pies_per_row = 4;
+    var m = 15; // margin
+    var r = 320/pies_per_row; // four pies per row
+  }
+  let ds_count = matrix.shape[1];
+
+  // image start in upper left corner
+  var image_w = 1200
+  var no_of_rows =  Math.ceil(ds_count/pies_per_row)
+  var image_h = no_of_rows * ((r * 2)+40)
+  console.log('image_h',image_h)
+  var arc = d3.arc()
+    .innerRadius(0)
+    .outerRadius(r);
+
+  const unit_list = get_unit_list(matrix);
+
+  // const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+  // let body = d3.select(fakeDom.window.document).select('body');
+  let svgContainer = body.append('div').attr('class', 'container')
+    .append('svg')
+    .attr("xmlns", 'http://www.w3.org/2000/svg')
+    .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+    .attr("width", image_w)
+    .attr("height", image_h)
+    .append('g')
+    .attr("transform", "translate(" + 0 + "," + 0 + ")");
+  // axis legends -- would like to rotate dataset names
+  if(req.body.source == 'website'){
+    var pies = svgContainer.selectAll("svg")
+      .data(mtxdata.values)
+      .enter().append("g")
+      .attr("transform", function(d, i){
+        var diam = (r)+m;
+        var h_spacer = diam * 2* (i % pies_per_row);
+        var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
+        return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+      })
+      .append("a")
+      .attr("xlink:xlink:href", function(d, i) {
+        return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
+      })
+      .attr("target", '_blank' );
+  }
+  else{
+    var pies = svgContainer.selectAll("svg")
+      .data(mtxdata.values)
+      .enter().append("g")
+      .attr("transform", function(d, i){
+        var diam = (r)+m;
+        var h_spacer = diam * 2* (i % pies_per_row);
+        var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+        return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+      })
+  }
+
+
+
+  pies.append("text")
+    .attr("dx", -(r+m))
+    .attr("dy", r+m)
+    .attr("text-anchor", "center")
+    .attr("font-size","10px")
+    .text(function(d, i) {
+      if(imagetype == 'single'){
+        return 'SumCount: '+total.toString()
+      }else{
+        return matrix.columns[i].id;
+      }
+    });
+  if(req.body.source == 'website'){
+    pies.selectAll("path")
+      .data(d3.pie().sort(null))
+      .enter()
+      .append("path")
+      .attr("class", "arc")
+      .attr("d", arc)
+      .attr("id",function(d, i) {
+        var cnt = d.value;
+        var total = 0;
+        for (var k in this.parentNode.__data__){
+          total += this.parentNode.__data__[k];
+        }
+        var ds = ''; // PLACEHOLDER for TT
+        var pct = (cnt * 100 / total).toFixed(2);
+        var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
+        return id;
+      })
+      .attr("class","tooltip_viz")
+      .attr("fill", function(d, i) {
+        return string_to_color_code(unit_list[i])
+      });
+  }
+  else{
+    pies.selectAll("path")
+      .data(d3.pie().sort(null))
+      .enter()
+      .append("path")
+      .attr("class", "arc")
+      .attr("d", arc)
+
+      .attr("fill", function(d, i) {
+        return string_to_color_code(unit_list[i])
+      })
+      .append("title")
+      .text(function(d, i) {
+        return unit_list[i]+' -- '+d.value;
+      })
+  }
+
+return body;
 }
