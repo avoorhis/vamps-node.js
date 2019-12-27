@@ -1710,7 +1710,8 @@ function pies_factory(req, matrix, mtxdata, imagetype, body, ts) {
   let arc = image_options_obj.arc;
   let pies = svgContainer.selectAll("svg")
     .data(mtxdata.values)
-    .enter().append("g")
+    .enter()
+    .append("g")
     .attr("transform", function(current_cnts, i){
       let diam = (pie_rows) + margin;
       let h_spacer = diam * 2 * (i % pies_per_row);
@@ -1719,7 +1720,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, body, ts) {
     });
 
   if (req.body.source === 'website'){
-    pies = pies.selectAll("svg").append("a")
+    pies.append("a")
       .attr("xlink:xlink:href", function(current_cnts, i) {
         return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
       })
