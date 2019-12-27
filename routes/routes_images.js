@@ -400,137 +400,320 @@ fheatmap: function(req, res){
 //
 //   PIE CHARTS
 //
-piecharts: function(req, res) {
-  console.log('In routes_images/function: images/piecharts');
-  let ts = req.session.ts;
-  let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
-  // TODO: JSHint: This function's cyclomatic complexity is too high. (9)(W074)
-  fs.readFile(matrix_file_path, 'utf8', function(err, data){
-    if (err) {
-        let msg = 'ERROR Message '+err;
-        console.log(msg);
-    }
-    else {
-      let biom_data = JSON.parse(data);
-      let matrix = biom_data;
-      // parse data remove data less than 1%
-      if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
-        matrix = charts_otus(req, biom_data);
-      }
+// piecharts: function(req, res) {
+//   console.log('In routes_images/function: images/piecharts');
+//   let ts = req.session.ts;
+//   let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
+//   // TODO: JSHint: This function's cyclomatic complexity is too high. (9)(W074)
+//   fs.readFile(matrix_file_path, 'utf8', function(err, data){
+//     if (err) {
+//         let msg = 'ERROR Message '+err;
+//         console.log(msg);
+//     }
+//     else {
+//       let biom_data = JSON.parse(data);
+//       let matrix = biom_data;
+//       // parse data remove data less than 1%
+//       if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+//         matrix = charts_otus(req, biom_data);
+//       }
+//
+//       let total = 0;
+//       let imagetype = 'group';
+//
+//       for (let n in matrix.rows){
+//         if (imagetype === 'single'){
+//           total += parseInt(matrix.data[n]);
+//         }
+//       }
+//       let tmp = {};
+//       for (let d in matrix.columns){
+//           tmp[matrix.columns[d].id]=[]; // data
+//       }
+//       for (let x in matrix.data){
+//           for (let y in matrix.columns){
+//           tmp[matrix.columns[y].id].push(matrix.data[x][y]);
+//           }
+//       }
+//       let mtxdata = {};
+//       mtxdata.names=[];
+//       mtxdata.values=[];
+//
+//       for (let z in tmp) {
+//         mtxdata.names.push(z);
+//         mtxdata.values.push(tmp[z]);
+//       }
+//
+//       let body = pies_factory(req, matrix, mtxdata, imagetype, ts);
+//
+//       // let pies = svgContainer.selectAll("svg")
+//       //   .data(mtxdata.values)
+//       //   .enter().append("g")
+//       //   .attr("transform", function(d, i){
+//       //     let diam = (pie_rows) + margin;
+//       //     let h_spacer = diam * 2 * (i % pies_per_row);
+//       //     let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+//       //     return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+//       //   });
+//       //
+//       // if(req.body.source === 'website'){
+//       //   pies.append("a")
+//       //   .attr("xlink:xlink:href", function(d, i) {
+//       //     return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+//       //   })
+//       //   .attr("target", '_blank' );
+//       // }
+//       //
+//       // pies.append("text")
+//       //     .attr("dx", -(pie_rows+margin))
+//       //     .attr("dy", pie_rows+margin)
+//       //     .attr("text-anchor", "center")
+//       //     .attr("font-size","10px")
+//       //     .text(function(d, i) {
+//       //         if(imagetype === 'single'){
+//       //           return 'SumCount: '+total.toString();
+//       //         }
+//       //         else{
+//       //           return matrix.columns[i].id;
+//       //         }
+//       //     });
+//       //
+//       // if (req.body.source === 'website'){
+//       //     pies.selectAll("path")
+//       //       .data(d3.pie().sort(null))
+//       //       .enter()
+//       //       .append("path")
+//       //       .attr("class", "arc")
+//       //       .attr("d", arc)
+//       //       .attr("id",function(d, i) {
+//       //         let cnt = d.value;
+//       //         let total = 0;
+//       //         for (let k in this.parentNode.__data__){
+//       //           total += this.parentNode.__data__[k];
+//       //         }
+//       //         let ds = ''; // PLACEHOLDER for TT
+//       //         let pct = (cnt * 100 / total).toFixed(2);
+//       //         let id = 'pc/'+unit_list[i] + '/' + cnt.toString() + '/' + pct;
+//       //         return id;
+//       //       })
+//       //       .attr("class","tooltip_viz")
+//       //       .attr("fill", function(d, i) {
+//       //           return string_to_color_code(unit_list[i]);
+//       //       });
+//       // }
+//       // else {
+//       //   pies.selectAll("path")
+//       //     .data(d3.pie().sort(null))
+//       //     .enter()
+//       //     .append("path")
+//       //     .attr("class", "arc")
+//       //     .attr("d", arc)
+//       //     .attr("fill", function(d, i) {
+//       //         return string_to_color_code(unit_list[i]);
+//       //     })
+//       //     .append("title")
+//       //     .text(function(d, i) {
+//       //       return unit_list[i]+' -- ' + d.value;
+//       //     });
+//       // }
+//
+//       let html = body.select('.container').html();
+//       let outfile_name = ts + '-piecharts-api.svg';
+//       let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+//       console.log('outfile_path:', outfile_path);
+//       save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
+//       data = {};
+//       data.html = html;
+//       data.filename = outfile_name;
+//       res.json(data);
+//
+//     } // end else
+//   }); // end readFile matrix
+//
+// },  // end piecharts
 
-      let total = 0;
-      let imagetype = 'group';
+  piecharts: function(req, res) {
+    console.log('In routes_images/function: images/piecharts')
+    // d3 = require('d3');
+    // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
+    var jsdom = require('jsdom');
+    const { JSDOM } = jsdom;
+    var ts = req.session.ts
 
-      for (let n in matrix.rows){
-        if (imagetype === 'single'){
-          total += parseInt(matrix.data[n]);
+    var imagetype = 'group'
+
+    matrix_file_path = path.join(req.CONFIG.TMP_FILES,ts+'_count_matrix.biom')
+    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+      if (err) {
+        var msg = 'ERROR Message '+err;
+        console.log(msg)
+      }else{
+
+        var biom_data = JSON.parse(data)
+        matrix = biom_data
+        // parse data remove data less than 1%
+        if(req.body.hasOwnProperty('type') && req.body.type == 'otus'){
+          console.log('calling thin_out_data_for_display: length= '+biom_data.rows.length.toString())
+          matrix = thin_out_data_for_display(biom_data)
         }
-      }
-      let tmp = {};
-      for (let d in matrix.columns){
-          tmp[matrix.columns[d].id]=[]; // data
-      }
-      for (let x in matrix.data){
-          for (let y in matrix.columns){
-          tmp[matrix.columns[y].id].push(matrix.data[x][y]);
+
+        var unit_list = [];
+        for (var n in matrix.rows){
+          unit_list.push(matrix.rows[n].id);
+        }
+        var total = 0
+        for(n in matrix.rows){
+          if(imagetype == 'single'){
+            total +=  parseInt(matrix.data[n])
+          }else{
+            //pass
           }
-      }
-      let mtxdata = {};
-      mtxdata.names=[];
-      mtxdata.values=[];
+        }
+        var ds_count = matrix.shape[1];
+        var tmp={};
+        var tmp_names={};
+        for (var d in matrix.columns){
+          tmp[matrix.columns[d].id]=[]; // data
+        }
+        for (var x in matrix.data){
+          for (var y in matrix.columns){
+            tmp[matrix.columns[y].id].push(matrix.data[x][y]);
+          }
+        }
+        var mtxdata={};
+        mtxdata.names=[];
+        mtxdata.values=[];
 
-      for (let z in tmp) {
-        mtxdata.names.push(z);
-        mtxdata.values.push(tmp[z]);
-      }
+        for (var z in tmp) {
+          mtxdata.names.push(z);
+          mtxdata.values.push(tmp[z]);
+        }
+        if(imagetype == 'single'){
+          var pies_per_row = 1;
+          var m = 20; // margin
+          var r = 120; // five pies per row
+        }else{
+          var pies_per_row = 4;
+          var m = 15; // margin
+          var r = 320/pies_per_row; // four pies per row
+        }
+        // image start in upper left corner
+        var image_w = 1200
+        var no_of_rows =  Math.ceil(ds_count/pies_per_row)
+        var image_h = no_of_rows * ((r * 2)+40)
+        console.log('image_h',image_h)
+        var arc = d3.arc()
+          .innerRadius(0)
+          .outerRadius(r);
 
-      let body = pies_factory(req, matrix, mtxdata, imagetype, ts);
+        const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+        let body = d3.select(fakeDom.window.document).select('body');
+        let svgContainer = body.append('div').attr('class', 'container')
+          .append('svg')
+          .attr("xmlns", 'http://www.w3.org/2000/svg')
+          .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+          .attr("width", image_w)
+          .attr("height", image_h)
+          .append('g')
+          .attr("transform", "translate(" + 0 + "," + 0 + ")");
+        // axis legends -- would like to rotate dataset names
+        if(req.body.source == 'website'){
+          var pies = svgContainer.selectAll("svg")
+            .data(mtxdata.values)
+            .enter().append("g")
+            .attr("transform", function(d, i){
+              var diam = (r)+m;
+              var h_spacer = diam * 2* (i % pies_per_row);
+              var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+              //console.log('diam',diam,'h_spacer',h_spacer,'v_spacer',v_spacer)
+              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+            })
+            .append("a")
+            .attr("xlink:xlink:href", function(d, i) {
+              return '/visuals/bar_single?did='+matrix.columns[i].did+'&ts='+ts+'&orderby=alpha&val=z';
+            })
+            .attr("target", '_blank' );
+        }else{
+          var pies = svgContainer.selectAll("svg")
+            .data(mtxdata.values)
+            .enter().append("g")
+            .attr("transform", function(d, i){
+              var diam = (r)+m;
+              var h_spacer = diam * 2* (i % pies_per_row);
+              var v_spacer = diam * 2 * Math.floor(i / pies_per_row);
+              return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+            })
+        }
 
-      // let pies = svgContainer.selectAll("svg")
-      //   .data(mtxdata.values)
-      //   .enter().append("g")
-      //   .attr("transform", function(d, i){
-      //     let diam = (pie_rows) + margin;
-      //     let h_spacer = diam * 2 * (i % pies_per_row);
-      //     let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-      //     return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-      //   });
-      //
-      // if(req.body.source === 'website'){
-      //   pies.append("a")
-      //   .attr("xlink:xlink:href", function(d, i) {
-      //     return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
-      //   })
-      //   .attr("target", '_blank' );
-      // }
-      //
-      // pies.append("text")
-      //     .attr("dx", -(pie_rows+margin))
-      //     .attr("dy", pie_rows+margin)
-      //     .attr("text-anchor", "center")
-      //     .attr("font-size","10px")
-      //     .text(function(d, i) {
-      //         if(imagetype === 'single'){
-      //           return 'SumCount: '+total.toString();
-      //         }
-      //         else{
-      //           return matrix.columns[i].id;
-      //         }
-      //     });
-      //
-      // if (req.body.source === 'website'){
-      //     pies.selectAll("path")
-      //       .data(d3.pie().sort(null))
-      //       .enter()
-      //       .append("path")
-      //       .attr("class", "arc")
-      //       .attr("d", arc)
-      //       .attr("id",function(d, i) {
-      //         let cnt = d.value;
-      //         let total = 0;
-      //         for (let k in this.parentNode.__data__){
-      //           total += this.parentNode.__data__[k];
-      //         }
-      //         let ds = ''; // PLACEHOLDER for TT
-      //         let pct = (cnt * 100 / total).toFixed(2);
-      //         let id = 'pc/'+unit_list[i] + '/' + cnt.toString() + '/' + pct;
-      //         return id;
-      //       })
-      //       .attr("class","tooltip_viz")
-      //       .attr("fill", function(d, i) {
-      //           return string_to_color_code(unit_list[i]);
-      //       });
-      // }
-      // else {
-      //   pies.selectAll("path")
-      //     .data(d3.pie().sort(null))
-      //     .enter()
-      //     .append("path")
-      //     .attr("class", "arc")
-      //     .attr("d", arc)
-      //     .attr("fill", function(d, i) {
-      //         return string_to_color_code(unit_list[i]);
-      //     })
-      //     .append("title")
-      //     .text(function(d, i) {
-      //       return unit_list[i]+' -- ' + d.value;
-      //     });
-      // }
 
-      let html = body.select('.container').html();
-      let outfile_name = ts + '-piecharts-api.svg';
-      let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-      console.log('outfile_path:', outfile_path);
-      save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
-      data = {};
-      data.html = html;
-      data.filename = outfile_name;
-      res.json(data);
 
-    } // end else
-  }); // end readFile matrix
+        pies.append("text")
+          .attr("dx", -(r+m))
+          .attr("dy", r+m)
+          .attr("text-anchor", "center")
+          .attr("font-size","10px")
+          .text(function(d, i) {
+            if(imagetype == 'single'){
+              return 'SumCount: '+total.toString()
+            }else{
+              return matrix.columns[i].id;
+            }
+          });
+        if(req.body.source == 'website'){
+          pies.selectAll("path")
+            .data(d3.pie().sort(null))
+            .enter()
+            .append("path")
+            .attr("class", "arc")
+            .attr("d", arc)
+            .attr("id",function(d, i) {
+              var cnt = d.value;
+              var total = 0;
+              for (var k in this.parentNode.__data__){
+                total += this.parentNode.__data__[k];
+              }
+              var ds = ''; // PLACEHOLDER for TT
+              var pct = (cnt * 100 / total).toFixed(2);
+              var id = 'pc/'+unit_list[i]+'/'+cnt.toString()+'/'+pct;
+              return id;
+            })
+            .attr("class","tooltip_viz")
+            .attr("fill", function(d, i) {
+              return string_to_color_code(unit_list[i])
+            });
+        }else{
+          pies.selectAll("path")
+            .data(d3.pie().sort(null))
+            .enter()
+            .append("path")
+            .attr("class", "arc")
+            .attr("d", arc)
 
-},  // end piecharts
+            .attr("fill", function(d, i) {
+              return string_to_color_code(unit_list[i])
+            })
+            .append("title")
+            .text(function(d, i) {
+              return unit_list[i]+' -- '+d.value;
+            })
+        }
+
+
+        var html = body.select('.container').html()
+        var outfile_name = ts + '-piecharts-api.svg'
+        outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
+        console.log('outfile_path:',outfile_path)
+        result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+        data = {}
+        data.html = html
+        data.filename = outfile_name
+        res.json(data)
+
+      } // end else
+    }); // end readFile matrix
+
+  },  // end piecharts
+
 //
 //   BAR CHARTS
 //
