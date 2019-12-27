@@ -444,12 +444,8 @@ piecharts: function(req, res) {
         mtxdata.values.push(tmp[z]);
       }
 
-      let jsdom = require('jsdom');
-      const { JSDOM } = jsdom;
-      const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-      let body = d3.select(fakeDom.window.document).select('body');
+      let body = pies_factory(req, matrix, mtxdata, imagetype, ts);
 
-      pies_factory(req, matrix, mtxdata, imagetype, body, ts);
       // let pies = svgContainer.selectAll("svg")
       //   .data(mtxdata.values)
       //   .enter().append("g")
@@ -1698,7 +1694,12 @@ function get_unit_list(matrix) {
   return matrix.rows.map(row => row.id);
 }
 
-function pies_factory(req, matrix, mtxdata, imagetype, body, ts) {
+function pies_factory(req, matrix, mtxdata, imagetype, ts) {
+  let jsdom = require('jsdom');
+  const { JSDOM } = jsdom;
+  const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+  let body = d3.select(fakeDom.window.document).select('body');
+
   const image_options_obj = image_options(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
@@ -1779,5 +1780,6 @@ function pies_factory(req, matrix, mtxdata, imagetype, body, ts) {
         return unit_list[i]+' -- ' + d.value;
       });
   }
+  return body;
 
 }
