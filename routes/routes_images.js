@@ -423,33 +423,8 @@ module.exports = {
         if (imagetype === 'single') {
           total = if_imagetype_single(matrix, total);
         }
-        //
-        // let tmp = {};
-        // for (let d in matrix.columns){
-        //   tmp[matrix.columns[d].id]=[]; // data
-        // }
-        // for (let x in matrix.data){
-        //   for (let y in matrix.columns){
-        //     tmp[matrix.columns[y].id].push(matrix.data[x][y]);
-        //   }
-        // }
-        // let mtxdata = {};
-        // mtxdata.names=[];
-        // mtxdata.values=[];
-        //
-        // for (let z in tmp) {
-        //   mtxdata.names.push(z);
-        //   mtxdata.values.push(tmp[z]);
-        // }
-        //
 
-        console.time("TIME: make_pie_mtxdata1");
         let mtxdata = make_pie_mtxdata(matrix);
-        console.timeEnd("TIME: make_pie_mtxdata1");
-
-        console.time("TIME: make_pie_mtxdata2");
-        let m2_temp = make_pie_mtxdata1(matrix);
-        console.timeEnd("TIME: make_pie_mtxdata2");
 
         let body = pies_factory(req, matrix, mtxdata, imagetype, ts);
 
@@ -1725,32 +1700,9 @@ function if_imagetype_single(matrix, total) {
 }
 
 function make_pie_mtxdata(matrix) {
-
-  let tmp = {};
-  for (let d in matrix.columns) {
-    tmp[matrix.columns[d].id] = []; // data
-  }
-  for (let x in matrix.data) {
-    for (let y in matrix.columns) {
-      tmp[matrix.columns[y].id].push(matrix.data[x][y]);
-    }
-  }
   let mtxdata = {};
   mtxdata.names = [];
   mtxdata.values = [];
-
-  for (let z in tmp) {
-    mtxdata.names.push(z);
-    mtxdata.values.push(tmp[z]);
-  }
-  return mtxdata;
-} // 84% slower
-
-function make_pie_mtxdata1(matrix) {
-  let mtxdata = {};
-  mtxdata.names = [];
-  mtxdata.values = [];
-  // mtxdata.names = matrix.columns.map(col => col.id);
   matrix.columns.forEach((column, p_ind) => {
     mtxdata.names.push(column.id);
     let col_values = [];
@@ -1762,19 +1714,5 @@ function make_pie_mtxdata1(matrix) {
 
   return mtxdata;
 }
-
-// function make_mtxdata(matrix) {
-//   let mtxdata = [];
-//   matrix.columns.forEach((column, p_ind) => {
-//     let tmp = {};
-//     tmp.pjds = column.id;
-//     tmp.did = column.did;
-//     matrix.rows.forEach((row, t_ind) => {
-//       tmp[row.id] = matrix.data[t_ind][p_ind];
-//     });
-//     mtxdata.push(tmp);
-//   });
-//   return mtxdata
-// }
 
 
