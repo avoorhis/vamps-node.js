@@ -417,12 +417,12 @@ module.exports = {
           matrix = charts_otus(req, biom_data);
         }
 
-        let total = 0;
+        // let total = 0;
         let imagetype = 'group';
 
-        if (imagetype === 'single') {
-          total = if_imagetype_single(matrix, total);
-        }
+        // if (imagetype === 'single') {
+        //   total = if_imagetype_single(matrix, total);
+        // }
 
         let mtxdata = make_pie_mtxdata(matrix);
 
@@ -440,7 +440,6 @@ module.exports = {
 
       } // end else
     }); // end readFile matrix
-
   },  // end piecharts
 //
 //   BAR CHARTS
@@ -924,7 +923,7 @@ module.exports = {
             if(req.body.source == 'website'){
               html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
               html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  //<!-- needed for png image -->
             }else{
               var title = xpjds+'&#13;'+ypjds+'&#13;'+ choices[metadata.metric] +' -- '+d;
               html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
@@ -940,7 +939,7 @@ module.exports = {
             if(req.body.source == 'website'){
               html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
               html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+              html += "&nbsp;&nbsp;&nbsp;&nbsp;"//  <!-- needed for png image -->
             }else{
               var title = xpjds+'&#13;'+ypjds+'&#13;'+ choices[metadata.metric] +' -- '+d;
               html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
@@ -1074,7 +1073,7 @@ module.exports = {
             if(req.body.source == 'website'){
               html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
               html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+              html += "&nbsp;&nbsp;&nbsp;&nbsp;" // <!-- needed for png image -->
             }else{
               var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
               html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
@@ -1090,7 +1089,7 @@ module.exports = {
             if(req.body.source == 'website'){
               html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
               html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+              html += "&nbsp;&nbsp;&nbsp;&nbsp;" // <!-- needed for png image -->
             }else{
               var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
               html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
