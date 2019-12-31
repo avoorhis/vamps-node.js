@@ -725,9 +725,9 @@ module.exports = {
 
   },
 //
-//
-//
-  phyloseq: function(req,res){
+// TODO:
+// Andy, is it used anywhere? Can't find how to test it.
+  phyloseq: function(req, res){
     console.log('in routes_images/phyloseq')
     var ts = req.session.ts
     //var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
