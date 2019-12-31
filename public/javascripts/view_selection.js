@@ -1617,14 +1617,65 @@ function get_htmlstring(code) {
   return;
 }
 
+function phyloseq_bars01(ts, code) {
+  alert("2 pi_local = ");
+  alert(JSON.stringify(pi_local));
+  var phylo_div, info_line, md1='', md2='', phy='', ord_type;
+  var html = '';
+  var args =  {};
+  args.metric = pi_local.selected_distance;
+  args.plot_type = code;
+  args.ts = ts;
+  phy = document.getElementById('phyloseq_bar_phylum').value;
+  if(phy === '0'){
+    alert('You must choose a phylum.');
+    return;
+  }
+  phylo_div = document.getElementById('phyloseq_bars01_div');
+  info_line = create_header('phyloseq_bars01', pi_local);
+  document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
+  document.getElementById('phyloseq_bars01_title').style.color = 'white';
+  document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
+  document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
+  args.phy = phy;
+
+  phylo_div.innerHTML = '';
+  phylo_div.style.display = 'block';
+  //var dist = cnsts.DISTANCECHOICES.choices.id[]
+
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("POST", '/visuals/phyloseq', true);
+  //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.setRequestHeader("Content-Type", "application/json");
+  //xmlhttp.setRequestHeader("Content-type","application/xml");
+  showDots='';
+  var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 ) {
+      clearInterval(myWaitVar);
+      //var response = xmlhttp.responseText;
+      var data = JSON.parse(xmlhttp.response)
+      phylo_div.innerHTML = data.html;
+      document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
+    }
+  };
+  args = JSON.stringify(args);
+  xmlhttp.send(args);
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
       alert('im HM');
       //phyloseq_created = true;
-    if(new_window) {
+    if (new_window) {
       get_htmlstring(code);
     }
-
+  alert('code = ', code);
+  alert("pi_local = ");
+  alert(JSON.stringify(pi_local));
+    if(code == 'bar') {
+      phyloseq_bars01(ts, code);
+    }
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
     //       }else if(code == 'heatmap'){
