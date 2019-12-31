@@ -1665,17 +1665,26 @@ function phyloseq_bars01(ts, code) {
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
-      alert('im HM');
+  alert('im HM');
       //phyloseq_created = true;
     if (new_window) {
       get_htmlstring(code);
     }
-  alert('code = ', code);
+  alert('code = ');
+  alert(code);
   alert("pi_local = ");
   alert(JSON.stringify(pi_local));
-    if(code == 'bar') {
-      phyloseq_bars01(ts, code);
-    }
+
+  var args =  {};
+  args.metric = pi_local.selected_distance;
+  args.plot_type = code;
+  args.ts = ts;
+
+  alert('args = ');
+  alert(JSON.stringify(args));
+  if (code === 'bar') {
+    phyloseq_bars01(ts, code);
+  }
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
     //       }else if(code == 'heatmap'){
@@ -1694,145 +1703,145 @@ function create_phyloseq(ts, code, new_window) {
     //
     //
     // }
-      var phylo_div,info_line,md1='',md2='',phy='',ord_type;
-      var html = '';
-      var args =  {};
-      args.metric = pi_local.selected_distance;
-      args.plot_type = code;
-      args.ts = ts;
-      // "metric="+pi_local.selected_distance;
-      // args += "&plot_type="+code;
-      // args += "&ts="+ts;
-
-      if(code === 'bar'){
-        phy = document.getElementById('phyloseq_bar_phylum').value;
-        if(phy === '0'){
-          alert('You must choose a phylum.');
-          return;
-        }
-        phylo_div = document.getElementById('phyloseq_bars01_div');
-        info_line = create_header('phyloseq_bars01', pi_local);
-        document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
-        document.getElementById('phyloseq_bars01_title').style.color = 'white';
-        document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
-        document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
-        args.phy = phy;
-        //args += "&phy="+phy;
-      }
-      else if(code === 'heatmap'){
-        phy = document.getElementById('phyloseq_heatmap_phylum').value;
-        if (phy === '0'){
-          alert('You must choose a phylum.');
-          return;
-        }
-        phylo_div = document.getElementById('phyloseq_hm02_div');
-        info_line = create_header('phyloseq_hm02', pi_local);
-        document.getElementById('phyloseq_hm02_title').innerHTML = info_line;
-        document.getElementById('phyloseq_hm02_title').style.color = 'white';
-        document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
-        document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
-
-        let ord_types = document.getElementsByName('phyloseq_heatmap_type');
-        md1 = document.getElementById('phyloseq_heatmap_md1').value;
-        ord_type = 'PCoA';
-        if(ord_types[0].checked){
-          ord_type = 'NMDS';
-        }
-        //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
-        args.phy = phy;
-        args.md1 = md1;
-        args.ordtype = ord_type;
-      }
-      else if(code === 'network'){
-        phylo_div = document.getElementById('phyloseq_nw03_div');
-        info_line = create_header('phyloseq_nw03', pi_local);
-        document.getElementById('phyloseq_nw03_title').innerHTML = info_line;
-        document.getElementById('phyloseq_nw03_title').style.color = 'white';
-        document.getElementById('phyloseq_nw03_title').style['font-size'] = 'small';
-        document.getElementById('pre_phyloseq_nw03_div').style.display = 'block';
-        md1 = document.getElementById('phyloseq_network_md1').value;
-        md2 = document.getElementById('phyloseq_network_md2').value;
-        max_dists = document.getElementsByName('phyloseq_nwk_dist');
-        max_dist = '0.3';
-        if(max_dists[0].checked == true){
-          max_dist = '0.1';
-        }else if(max_dists[1].checked == true){
-          max_dist = '0.2';
-        }else if(max_dists[2].checked == true){
-          max_dist = '0.3';
-        }else if(max_dists[3].checked == true){
-          max_dist = '0.4';
-        }
-        //args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
-
-        args.md1 = md1;
-        args.md2 = md2;
-        args.maxdist = max_dist;
-      }
-      else if(code == 'ord'){
-
-        phylo_div = document.getElementById('phyloseq_ord04_div');
-        info_line = create_header('phyloseq_ord04', pi_local);
-        document.getElementById('phyloseq_ord04_title').innerHTML = info_line;
-        document.getElementById('phyloseq_ord04_title').style.color = 'white';
-        document.getElementById('phyloseq_ord04_title').style['font-size'] = 'small';
-        document.getElementById('pre_phyloseq_ord04_div').style.display = 'block';
-        md1 = document.getElementById('phyloseq_ord_md1').value;
-        md2 = document.getElementById('phyloseq_ord_md2').value;
-        ord_types = document.getElementsByName('phyloseq_ord_type');
-        ord_type = 'PCoA';
-        if(ord_types[0].checked == true){
-          ord_type = 'NMDS';
-        }
-        //args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
-        args.md1 = md1;
-        args.md2 = md2;
-        args.ordtype = ord_type;
-      }
-      else if(code == 'tree'){
-        phylo_div = document.getElementById('phyloseq_tree05_div');
-        info_line = create_header('phyloseq_tree05', pi_local);
-        document.getElementById('phyloseq_tree05_title').innerHTML = info_line;
-        document.getElementById('phyloseq_tree05_title').style.color = 'white';
-        document.getElementById('phyloseq_tree05_title').style['font-size'] = 'small';
-        document.getElementById('pre_phyloseq_tree05_div').style.display = 'block';
-        md1 = document.getElementById('phyloseq_tree_md1').value;
-        //args += "&md1="+md1;
-        args.md1 = md1;
-
-      }
-      phylo_div.innerHTML = '';
-      phylo_div.style.display = 'block';
-      //var dist = cnsts.DISTANCECHOICES.choices.id[]
-
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.open("POST", '/visuals/phyloseq', true);
-      //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xmlhttp.setRequestHeader("Content-Type", "application/json");
-      //xmlhttp.setRequestHeader("Content-type","application/xml");
-      showDots='';
-      var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
-      xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 ) {
-           clearInterval(myWaitVar);
-           //var response = xmlhttp.responseText;
-           var data = JSON.parse(xmlhttp.response)
-           phylo_div.innerHTML = data.html;
-           if(code == 'bar'){
-              document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
-            }else if(code == 'heatmap'){
-              document.getElementById('phyloseq_hm02_dnld_btn').disabled = false
-            }else if(code == 'network'){
-              document.getElementById('phyloseq_nw03_dnld_btn').disabled = false
-            }else if(code == 'ord'){
-              document.getElementById('phyloseq_ord04_dnld_btn').disabled = false
-            }else if(code == 'tree'){
-              document.getElementById('phyloseq_tree05_dnld_btn').disabled = false
-            }
-        }
-      };
-      args = JSON.stringify(args)
-      xmlhttp.send(args);
+    //   var phylo_div,info_line,md1='',md2='',phy='',ord_type;
+    //   var html = '';
+    //   var args =  {};
+    //   args.metric = pi_local.selected_distance;
+    //   args.plot_type = code;
+    //   args.ts = ts;
+    //   // "metric="+pi_local.selected_distance;
+    //   // args += "&plot_type="+code;
+    //   // args += "&ts="+ts;
+    //
+    //   if(code === 'bar'){
+    //     phy = document.getElementById('phyloseq_bar_phylum').value;
+    //     if(phy === '0'){
+    //       alert('You must choose a phylum.');
+    //       return;
+    //     }
+    //     phylo_div = document.getElementById('phyloseq_bars01_div');
+    //     info_line = create_header('phyloseq_bars01', pi_local);
+    //     document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
+    //     document.getElementById('phyloseq_bars01_title').style.color = 'white';
+    //     document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
+    //     document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
+    //     args.phy = phy;
+    //     //args += "&phy="+phy;
+    //   }
+    //   else if(code === 'heatmap'){
+    //     phy = document.getElementById('phyloseq_heatmap_phylum').value;
+    //     if (phy === '0'){
+    //       alert('You must choose a phylum.');
+    //       return;
+    //     }
+    //     phylo_div = document.getElementById('phyloseq_hm02_div');
+    //     info_line = create_header('phyloseq_hm02', pi_local);
+    //     document.getElementById('phyloseq_hm02_title').innerHTML = info_line;
+    //     document.getElementById('phyloseq_hm02_title').style.color = 'white';
+    //     document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
+    //     document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
+    //
+    //     let ord_types = document.getElementsByName('phyloseq_heatmap_type');
+    //     md1 = document.getElementById('phyloseq_heatmap_md1').value;
+    //     ord_type = 'PCoA';
+    //     if(ord_types[0].checked){
+    //       ord_type = 'NMDS';
+    //     }
+    //     //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
+    //     args.phy = phy;
+    //     args.md1 = md1;
+    //     args.ordtype = ord_type;
+    //   }
+    //   else if(code === 'network'){
+    //     phylo_div = document.getElementById('phyloseq_nw03_div');
+    //     info_line = create_header('phyloseq_nw03', pi_local);
+    //     document.getElementById('phyloseq_nw03_title').innerHTML = info_line;
+    //     document.getElementById('phyloseq_nw03_title').style.color = 'white';
+    //     document.getElementById('phyloseq_nw03_title').style['font-size'] = 'small';
+    //     document.getElementById('pre_phyloseq_nw03_div').style.display = 'block';
+    //     md1 = document.getElementById('phyloseq_network_md1').value;
+    //     md2 = document.getElementById('phyloseq_network_md2').value;
+    //     max_dists = document.getElementsByName('phyloseq_nwk_dist');
+    //     max_dist = '0.3';
+    //     if(max_dists[0].checked == true){
+    //       max_dist = '0.1';
+    //     }else if(max_dists[1].checked == true){
+    //       max_dist = '0.2';
+    //     }else if(max_dists[2].checked == true){
+    //       max_dist = '0.3';
+    //     }else if(max_dists[3].checked == true){
+    //       max_dist = '0.4';
+    //     }
+    //     //args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
+    //
+    //     args.md1 = md1;
+    //     args.md2 = md2;
+    //     args.maxdist = max_dist;
+    //   }
+    //   else if(code == 'ord'){
+    //
+    //     phylo_div = document.getElementById('phyloseq_ord04_div');
+    //     info_line = create_header('phyloseq_ord04', pi_local);
+    //     document.getElementById('phyloseq_ord04_title').innerHTML = info_line;
+    //     document.getElementById('phyloseq_ord04_title').style.color = 'white';
+    //     document.getElementById('phyloseq_ord04_title').style['font-size'] = 'small';
+    //     document.getElementById('pre_phyloseq_ord04_div').style.display = 'block';
+    //     md1 = document.getElementById('phyloseq_ord_md1').value;
+    //     md2 = document.getElementById('phyloseq_ord_md2').value;
+    //     ord_types = document.getElementsByName('phyloseq_ord_type');
+    //     ord_type = 'PCoA';
+    //     if(ord_types[0].checked == true){
+    //       ord_type = 'NMDS';
+    //     }
+    //     //args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
+    //     args.md1 = md1;
+    //     args.md2 = md2;
+    //     args.ordtype = ord_type;
+    //   }
+    //   else if(code == 'tree'){
+    //     phylo_div = document.getElementById('phyloseq_tree05_div');
+    //     info_line = create_header('phyloseq_tree05', pi_local);
+    //     document.getElementById('phyloseq_tree05_title').innerHTML = info_line;
+    //     document.getElementById('phyloseq_tree05_title').style.color = 'white';
+    //     document.getElementById('phyloseq_tree05_title').style['font-size'] = 'small';
+    //     document.getElementById('pre_phyloseq_tree05_div').style.display = 'block';
+    //     md1 = document.getElementById('phyloseq_tree_md1').value;
+    //     //args += "&md1="+md1;
+    //     args.md1 = md1;
+    //
+    //   }
+    //   phylo_div.innerHTML = '';
+    //   phylo_div.style.display = 'block';
+    //   //var dist = cnsts.DISTANCECHOICES.choices.id[]
+    //
+    //   var xmlhttp = new XMLHttpRequest();
+    //   xmlhttp.open("POST", '/visuals/phyloseq', true);
+    //   //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    //   xmlhttp.setRequestHeader("Content-Type", "application/json");
+    //   //xmlhttp.setRequestHeader("Content-type","application/xml");
+    //   showDots='';
+    //   var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
+    //   xmlhttp.onreadystatechange = function() {
+    //     if (xmlhttp.readyState == 4 ) {
+    //        clearInterval(myWaitVar);
+    //        //var response = xmlhttp.responseText;
+    //        var data = JSON.parse(xmlhttp.response)
+    //        phylo_div.innerHTML = data.html;
+    //        if(code == 'bar'){
+    //           document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
+    //         }else if(code == 'heatmap'){
+    //           document.getElementById('phyloseq_hm02_dnld_btn').disabled = false
+    //         }else if(code == 'network'){
+    //           document.getElementById('phyloseq_nw03_dnld_btn').disabled = false
+    //         }else if(code == 'ord'){
+    //           document.getElementById('phyloseq_ord04_dnld_btn').disabled = false
+    //         }else if(code == 'tree'){
+    //           document.getElementById('phyloseq_tree05_dnld_btn').disabled = false
+    //         }
+    //     }
+    //   };
+    //   args = JSON.stringify(args)
+    //   xmlhttp.send(args);
 
 }
 //
