@@ -1649,16 +1649,19 @@ function phyloseq_bars01(args, xmlhttp) {
   // showDots='';
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState == 4 ) {
+    if (xmlhttp.readyState === 4 ) {
       clearInterval(myWaitVar);
       //var response = xmlhttp.responseText;
-      var data = JSON.parse(xmlhttp.response)
+      let data = JSON.parse(xmlhttp.response);
+      alert('data = ');
+
       phylo_div.innerHTML = data.html;
-      document.getElementById('phyloseq_bars01_dnld_btn').disabled = false
+      document.getElementById('phyloseq_bars01_dnld_btn').disabled = false;
     }
   };
-  args = JSON.stringify(args);
-  xmlhttp.send(args);
+  return args;
+  // args = JSON.stringify(args);
+  // xmlhttp.send(args);
 }
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
@@ -1688,7 +1691,7 @@ function create_phyloseq(ts, code, new_window) {
   alert('args = ');
   alert(JSON.stringify(args));
   if (code === 'bar') {
-    phyloseq_bars01(args, xmlhttp);
+    args = phyloseq_bars01(args, xmlhttp);
   }
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
@@ -1845,8 +1848,8 @@ function create_phyloseq(ts, code, new_window) {
     //         }
     //     }
     //   };
-    //   args = JSON.stringify(args)
-    //   xmlhttp.send(args);
+  args = JSON.stringify(args)
+  xmlhttp.send(args);
 
 }
 //
