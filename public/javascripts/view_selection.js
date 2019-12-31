@@ -1585,38 +1585,67 @@ function create_adiversity(ts, new_window){
 //
 //  CREATE PHYLOSEQ
 //
+function openindex(htmlstring)
+{
+  let rando = Math.floor(Math.random() * 20);
+  OpenWindow = window.open("", "phyloseq"+rando.toString(), "height=900, width=900, toolbar=no,scrollbars=yes, menubar=no");
+  OpenWindow.document.write(new_window_skeleton(htmlstring));
+  OpenWindow.document.close();
+  self.name = "main";
+}
+
+function get_htmlstring(code) {
+  let htmlstring = "";
+  switch(code) {
+    case 'bar':
+      htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
+      break;
+    case 'heatmap':
+      htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
+      break;
+    case 'network':
+      htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
+      break;
+    case 'ord':
+      htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
+      break;
+    case 'tree':
+      htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
+      break;
+  }
+  openindex(htmlstring);
+  return;
+}
+
+//TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
-      //alert('im HM')
+      alert('im HM');
       //phyloseq_created = true;
-      if(new_window){
-          if(code == 'bar'){
-            var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
-          }else if(code == 'heatmap'){
-            var htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
-          }else if(code == 'network'){
-            var htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
-          }else if(code == 'ord'){
-            var htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
-          }else if(code == 'tree'){
-            var htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
-          }
-          function openindex()
-            {
-                  rando = Math.floor(Math.random() * 20);
-                  OpenWindow=window.open("", "phyloseq"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
-                  OpenWindow.document.write(new_window_skeleton(htmlstring))
-                  OpenWindow.document.close()
-                  self.name="main"
-            }
-
-          openindex()
-          return
-
-
+    if(new_window) {
+      get_htmlstring(code);
     }
+
+    //       if(code == 'bar'){
+    //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
+    //       }else if(code == 'heatmap'){
+    //         var htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
+    //       }else if(code == 'network'){
+    //         var htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
+    //       }else if(code == 'ord'){
+    //         var htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
+    //       }else if(code == 'tree'){
+    //         var htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
+    //       }
+    //
+    //
+    //       openindex(htmlstring);
+    //       return;
+    //
+    //
+    // }
       var phylo_div,info_line,md1='',md2='',phy='',ord_type;
       var html = '';
-      var args =  {}
+      var args =  {};
       args.metric = pi_local.selected_distance;
       args.plot_type = code;
       args.ts = ts;
@@ -1624,11 +1653,11 @@ function create_phyloseq(ts, code, new_window) {
       // args += "&plot_type="+code;
       // args += "&ts="+ts;
 
-      if(code == 'bar'){
+      if(code === 'bar'){
         phy = document.getElementById('phyloseq_bar_phylum').value;
-        if(phy == '0'){
-          alert('You must choose a phylum.')
-          return
+        if(phy === '0'){
+          alert('You must choose a phylum.');
+          return;
         }
         phylo_div = document.getElementById('phyloseq_bars01_div');
         info_line = create_header('phyloseq_bars01', pi_local);
@@ -1638,11 +1667,12 @@ function create_phyloseq(ts, code, new_window) {
         document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
         args.phy = phy;
         //args += "&phy="+phy;
-      }else if(code == 'heatmap'){
+      }
+      else if(code === 'heatmap'){
         phy = document.getElementById('phyloseq_heatmap_phylum').value;
-        if(phy == '0'){
-          alert('You must choose a phylum.')
-          return
+        if (phy === '0'){
+          alert('You must choose a phylum.');
+          return;
         }
         phylo_div = document.getElementById('phyloseq_hm02_div');
         info_line = create_header('phyloseq_hm02', pi_local);
@@ -1651,17 +1681,18 @@ function create_phyloseq(ts, code, new_window) {
         document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
 
-        ord_types = document.getElementsByName('phyloseq_heatmap_type');
+        let ord_types = document.getElementsByName('phyloseq_heatmap_type');
         md1 = document.getElementById('phyloseq_heatmap_md1').value;
         ord_type = 'PCoA';
-        if(ord_types[0].checked == true){
+        if(ord_types[0].checked){
           ord_type = 'NMDS';
         }
         //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
         args.phy = phy;
         args.md1 = md1;
         args.ordtype = ord_type;
-      }else if(code == 'network'){
+      }
+      else if(code === 'network'){
         phylo_div = document.getElementById('phyloseq_nw03_div');
         info_line = create_header('phyloseq_nw03', pi_local);
         document.getElementById('phyloseq_nw03_title').innerHTML = info_line;
@@ -1686,7 +1717,8 @@ function create_phyloseq(ts, code, new_window) {
         args.md1 = md1;
         args.md2 = md2;
         args.maxdist = max_dist;
-      }else if(code == 'ord'){
+      }
+      else if(code == 'ord'){
 
         phylo_div = document.getElementById('phyloseq_ord04_div');
         info_line = create_header('phyloseq_ord04', pi_local);
@@ -1705,7 +1737,8 @@ function create_phyloseq(ts, code, new_window) {
         args.md1 = md1;
         args.md2 = md2;
         args.ordtype = ord_type;
-      }else if(code == 'tree'){
+      }
+      else if(code == 'tree'){
         phylo_div = document.getElementById('phyloseq_tree05_div');
         info_line = create_header('phyloseq_tree05', pi_local);
         document.getElementById('phyloseq_tree05_title').innerHTML = info_line;
