@@ -1617,15 +1617,13 @@ function get_htmlstring(code) {
   return;
 }
 
-function phyloseq_bars01(args) {
+function phyloseq_bars01(args, xmlhttp) {
   alert("2 pi_local = ");
   alert(JSON.stringify(pi_local));
-  // var phylo_div, info_line, md1='', md2='', phy='', ord_type;
-  // var html = '';
-  // var args =  {};
-  // args.metric = pi_local.selected_distance;
-  // args.plot_type = code;
-  // args.ts = ts;
+
+  alert("2 args = ");
+  alert(JSON.stringify(args));
+
   let phy = document.getElementById('phyloseq_bar_phylum').value;
   if(phy === '0'){
     alert('You must choose a phylum.');
@@ -1643,13 +1641,13 @@ function phyloseq_bars01(args) {
   phylo_div.style.display = 'block';
   //var dist = cnsts.DISTANCECHOICES.choices.id[]
 
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("POST", '/visuals/phyloseq', true);
-  //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  xmlhttp.setRequestHeader("Content-Type", "application/json");
-  //xmlhttp.setRequestHeader("Content-type","application/xml");
-  showDots='';
-  var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
+  // var xmlhttp = new XMLHttpRequest();
+  // xmlhttp.open("POST", '/visuals/phyloseq', true);
+  // //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  // xmlhttp.setRequestHeader("Content-Type", "application/json");
+  // //xmlhttp.setRequestHeader("Content-type","application/xml");
+  // showDots='';
+  let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4 ) {
       clearInterval(myWaitVar);
@@ -1675,15 +1673,22 @@ function create_phyloseq(ts, code, new_window) {
   // alert("pi_local = ");
   // alert(JSON.stringify(pi_local));
 
-  var args =  {};
+  let args =  {};
   args.metric = pi_local.selected_distance;
   args.plot_type = code;
   args.ts = ts;
 
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("POST", '/visuals/phyloseq', true);
+  //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.setRequestHeader("Content-Type", "application/json");
+  //xmlhttp.setRequestHeader("Content-type","application/xml");
+  showDots = '';
+
   alert('args = ');
   alert(JSON.stringify(args));
   if (code === 'bar') {
-    phyloseq_bars01(args);
+    phyloseq_bars01(args, xmlhttp);
   }
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
