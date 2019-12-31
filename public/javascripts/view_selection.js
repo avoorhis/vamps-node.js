@@ -1617,16 +1617,16 @@ function get_htmlstring(code) {
   return;
 }
 
-function phyloseq_bars01(ts, code) {
+function phyloseq_bars01(args) {
   alert("2 pi_local = ");
   alert(JSON.stringify(pi_local));
-  var phylo_div, info_line, md1='', md2='', phy='', ord_type;
-  var html = '';
-  var args =  {};
-  args.metric = pi_local.selected_distance;
-  args.plot_type = code;
-  args.ts = ts;
-  phy = document.getElementById('phyloseq_bar_phylum').value;
+  // var phylo_div, info_line, md1='', md2='', phy='', ord_type;
+  // var html = '';
+  // var args =  {};
+  // args.metric = pi_local.selected_distance;
+  // args.plot_type = code;
+  // args.ts = ts;
+  let phy = document.getElementById('phyloseq_bar_phylum').value;
   if(phy === '0'){
     alert('You must choose a phylum.');
     return;
@@ -1670,10 +1670,10 @@ function create_phyloseq(ts, code, new_window) {
     if (new_window) {
       get_htmlstring(code);
     }
-  alert('code = ');
-  alert(code);
-  alert("pi_local = ");
-  alert(JSON.stringify(pi_local));
+  // alert('code = ');
+  // alert(code);
+  // alert("pi_local = ");
+  // alert(JSON.stringify(pi_local));
 
   var args =  {};
   args.metric = pi_local.selected_distance;
@@ -1683,7 +1683,7 @@ function create_phyloseq(ts, code, new_window) {
   alert('args = ');
   alert(JSON.stringify(args));
   if (code === 'bar') {
-    phyloseq_bars01(ts, code);
+    phyloseq_bars01(args);
   }
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
