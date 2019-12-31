@@ -17,7 +17,6 @@ map_file   <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
-start_time <- Sys.time()
 if(dist_metric  == "morisita_horn"){
 	dist = 'horn'
 	disp = "Morisita-Horn"
@@ -34,13 +33,6 @@ if(dist_metric  == "morisita_horn"){
 	dist = 'bray'
 	disp = "Bray_Curtis"
 }
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("if")
-print(time_res1)
-
-
-start_time <- Sys.time()
 
 #biom_file<- "andy_1443630794574_count_matrix.biom"
 #tax_file <- "andy_1443630794574_taxonomy.txt"
@@ -49,56 +41,12 @@ library(scales)
 library(vegan)
 library(phyloseq)
 library(ggplot2)
-
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("library")
-print(time_res1)
-
-start_time <- Sys.time()
 theme_set(theme_bw())
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("theme_set")
-print(time_res1)
-
-start_time <- Sys.time()
-
 TAX1<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("TAX1")
-print(time_res1)
-
-start_time <- Sys.time()
 TAX <- tax_table(TAX1)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("tax_table")
-print(time_res1)
-
-start_time <- Sys.time()
 OTU <- import_biom(biom_file)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("OTU import_biom")
-print(time_res1)
-
-start_time <- Sys.time()
 OTU <- otu_table(OTU)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("otu_table")
-print(time_res1)
-
-start_time <- Sys.time()
 MAP <- import_qiime_sample_data(map_file)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("MAP import_qiime_sample_data")
-print(time_res1)
-
-start_time <- Sys.time()
 
 ###################################################
 # WRITE DISTANCE TABLE
@@ -107,36 +55,17 @@ stand <- decostand(data.matrix(biods),"total")
 d <- vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
 distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
 write.table(as.matrix(d), file=distance_file)
-
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("WRITE DISTANCE TABLE")
-print(time_res1)
-
 ####################################################
 #print(colnames(TAX))
 #print(class(TAX))
 #print(is.recursive(TAX))
 #print(is.atomic(TAX))
 #print(OTU)
-start_time <- Sys.time()
-
 df <- as.data.frame(TAX)[taxa_label]
 rows <- nrow(df)
 #print(df)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("df")
-print(time_res1)
 
-start_time <- Sys.time()
 physeq <- phyloseq(OTU,TAX,MAP)
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("phyloseq")
-print(time_res1)
-
-start_time <- Sys.time()
 
 ds_count<-ncol(OTU)
 w = floor(ds_count/5)
@@ -156,25 +85,10 @@ w_png = 200 + (md1_unique_count*50)
 h_png = rows*5
 out_file = paste(tmp_path,'/',out_file,sep='')
 unlink(out_file)
-physeq <- phyloseq(OTU,TAX,MAP)
-
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("out_file")
-print(time_res1)
-
-start_time <- Sys.time()
-
 #print(physeq)
 #pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
 #png(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
 svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans")
-end_time <- Sys.time()
-time_res1 <- end_time - start_time
-print("svg")
-print(time_res1)
-
-start_time <- Sys.time()
 #png(out_file, width=w_svg, height=h_svg)
 gpac <- subset_taxa(physeq, Phylum==phy)
 
@@ -194,21 +108,12 @@ gpac <- tryCatch({
 
 
 print(gpac)
-time_res1 <- end_time - start_time
-print("gpac")
-print(time_res1)
-
-start_time <- Sys.time()
 plot_title = paste('Phylum:',phy, sep=' ')
 #p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title,  sample.label='X.SampleID', taxa.label=taxa_label, na.value = "black")
 p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=taxa_label,low="#000033", high="#CCFF66")
 #p<-heatmap(otu_table(gpac), Rowv=NA, Colv=NA, col = heat.colors(256), scale="column", margins=c(5,10))
 print(p$scales)
 print(p)
-time_res1 <- end_time - start_time
-print("plot_heatmap")
-print(time_res1)
-
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
 
