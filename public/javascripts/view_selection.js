@@ -1658,24 +1658,22 @@ function phyloseq_bars01(args, xmlhttp) {
 function create_phyloseq(ts, code, new_window) {
   alert('im HM');
       //phyloseq_created = true;
-    if (new_window) {
-      get_htmlstring(code);
-    }
+  if (new_window) {
+    get_htmlstring(code);
+  }
 
   let args =  {};
   args.metric = pi_local.selected_distance;
   args.plot_type = code;
   args.ts = ts;
 
-  var xmlhttp = new XMLHttpRequest();
+  let xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/visuals/phyloseq', true);
   //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.setRequestHeader("Content-Type", "application/json");
   //xmlhttp.setRequestHeader("Content-type","application/xml");
-  showDots = '';
+  let showDots = '';
 
-  alert('args = ');
-  alert(JSON.stringify(args));
   if (code === 'bar') {
     args = phyloseq_bars01(args, xmlhttp);
   }
