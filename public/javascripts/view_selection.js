@@ -1657,7 +1657,8 @@ function phyloseq_bars01(args, xmlhttp) {
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
   alert('im HM');
-      //phyloseq_created = true;
+  //phyloseq_created = true;
+  // TODO: add to individual functions by code
   if (new_window) {
     get_htmlstring(code);
   }
@@ -1672,11 +1673,29 @@ function create_phyloseq(ts, code, new_window) {
   //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.setRequestHeader("Content-Type", "application/json");
   //xmlhttp.setRequestHeader("Content-type","application/xml");
-  let showDots = '';
+  // let showDots = '';
 
-  if (code === 'bar') {
-    args = phyloseq_bars01(args, xmlhttp);
+  // if (code === 'bar') {
+  //   args = phyloseq_bars01(args, xmlhttp);
+  // }
+  switch(code) {
+    case 'bar':
+      args = phyloseq_bars01(args, xmlhttp);
+      break;
+    case 'heatmap':
+      htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
+      break;
+    case 'network':
+      htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
+      break;
+    case 'ord':
+      htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
+      break;
+    case 'tree':
+      htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
+      break;
   }
+
     //       if(code == 'bar'){
     //         var htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
     //       }else if(code == 'heatmap'){
