@@ -1629,8 +1629,8 @@ function phyloseq_bars01(args, xmlhttp) {
     alert('You must choose a phylum.');
     return;
   }
-  phylo_div = document.getElementById('phyloseq_bars01_div');
-  info_line = create_header('phyloseq_bars01', pi_local);
+  let phylo_div = document.getElementById('phyloseq_bars01_div');
+  let info_line = create_header('phyloseq_bars01', pi_local);
   document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
   document.getElementById('phyloseq_bars01_title').style.color = 'white';
   document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
@@ -1639,19 +1639,11 @@ function phyloseq_bars01(args, xmlhttp) {
 
   phylo_div.innerHTML = '';
   phylo_div.style.display = 'block';
-  //var dist = cnsts.DISTANCECHOICES.choices.id[]
 
-  // var xmlhttp = new XMLHttpRequest();
-  // xmlhttp.open("POST", '/visuals/phyloseq', true);
-  // //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  // xmlhttp.setRequestHeader("Content-Type", "application/json");
-  // //xmlhttp.setRequestHeader("Content-type","application/xml");
-  // showDots='';
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState === 4 ) {
       clearInterval(myWaitVar);
-      //var response = xmlhttp.responseText;
       let data = JSON.parse(xmlhttp.response);
       alert('data = ');
 
@@ -1660,8 +1652,6 @@ function phyloseq_bars01(args, xmlhttp) {
     }
   };
   return args;
-  // args = JSON.stringify(args);
-  // xmlhttp.send(args);
 }
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
@@ -1671,10 +1661,6 @@ function create_phyloseq(ts, code, new_window) {
     if (new_window) {
       get_htmlstring(code);
     }
-  // alert('code = ');
-  // alert(code);
-  // alert("pi_local = ");
-  // alert(JSON.stringify(pi_local));
 
   let args =  {};
   args.metric = pi_local.selected_distance;
