@@ -1705,7 +1705,7 @@ function collect_args(ts, phyloseq_type, current_names) {
   args = add_md(args, current_names, 'md2');
 
   args = add_maxdist(args, current_names);
-  alert(JSON.stringify(args));
+  // alert(JSON.stringify(args));
 
   return args;
 }
@@ -1742,8 +1742,6 @@ function create_phyloseq(ts, code, new_window) {
     get_htmlstring(code, current_names);
   }
 
-  let args = collect_args(ts, code, current_names);
-
   let phylo_div = document.getElementById(current_names['numbered_name'] + '_div');
   phylo_div.innerHTML = '';
   phylo_div.style.display = 'block';
@@ -1763,6 +1761,7 @@ function create_phyloseq(ts, code, new_window) {
       document.getElementById(id_dnld_btn).disabled = false;
     }
   };
+  let args = collect_args(ts, code, current_names);
   args = JSON.stringify(args);
   xmlhttp.send(args);
 }
