@@ -1617,6 +1617,7 @@ function get_htmlstring(code) {
   return;
 }
 
+//TODO: JSHint: This function's cyclomatic complexity is too high. (11)(W074)
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
     'bar': {
@@ -1626,7 +1627,13 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
     'heatmap': {
       'long_name': 'phyloseq_heatmap',
       'other_names': 'phyloseq_hm02'
+    },
+    'network': {
+      'long_name': 'phyloseq_network',
+      'other_names': 'phyloseq_nw03',
+      'dist_name': 'phyloseq_nwk'
     }
+
   };
 
   let current_names = phyloseq_names[phyloseq_type];
@@ -1673,6 +1680,32 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   }
   catch(e){}
 
+  try {
+    let md2 = document.getElementById(current_names['long_name'] + '_md2').value;
+    args.md2 = md2;
+  }
+  catch(e){}
+
+  try {
+    let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
+    let max_dist = '0.3';
+    if(max_dists[0].checked){
+      max_dist = '0.1';
+    }
+    else if(max_dists[1].checked){
+      max_dist = '0.2';
+    }
+    else if(max_dists[2].checked){
+      max_dist = '0.3';
+    }
+    else if(max_dists[3].checked){
+      max_dist = '0.4';
+    }
+    args.maxdist = max_dist;
+  }
+  catch(e){}
+
+
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState === 4 ) {
@@ -1688,67 +1721,67 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
 }
 
 
-function phyloseq_bars01(args, xmlhttp) {
-  alert("2 pi_local = ");
-  alert(JSON.stringify(pi_local));
+// function phyloseq_bars01(args, xmlhttp) {
+//   alert("2 pi_local = ");
+//   alert(JSON.stringify(pi_local));
+//
+//   alert("2 args = ");
+//   alert(JSON.stringify(args));
+//
+//   let phy = document.getElementById('phyloseq_bar_phylum').value;
+//   if(phy === '0'){
+//     alert('You must choose a phylum.');
+//     return;
+//   }
+//   let phylo_div = document.getElementById('phyloseq_bars01_div');
+//   let info_line = create_header('phyloseq_bars01', pi_local);
+//   document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
+//   document.getElementById('phyloseq_bars01_title').style.color = 'white';
+//   document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
+//   document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
+//   args.phy = phy;
+//
+//   phylo_div.innerHTML = '';
+//   phylo_div.style.display = 'block';
+//
+//   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
+//   xmlhttp.onreadystatechange = function() {
+//     if (xmlhttp.readyState === 4 ) {
+//       clearInterval(myWaitVar);
+//       let data = JSON.parse(xmlhttp.response);
+//       alert('data = ');
+//
+//       phylo_div.innerHTML = data.html;
+//       document.getElementById('phyloseq_bars01_dnld_btn').disabled = false;
+//     }
+//   };
+//   return args;
+// }
 
-  alert("2 args = ");
-  alert(JSON.stringify(args));
-
-  let phy = document.getElementById('phyloseq_bar_phylum').value;
-  if(phy === '0'){
-    alert('You must choose a phylum.');
-    return;
-  }
-  let phylo_div = document.getElementById('phyloseq_bars01_div');
-  let info_line = create_header('phyloseq_bars01', pi_local);
-  document.getElementById('phyloseq_bars01_title').innerHTML = info_line;
-  document.getElementById('phyloseq_bars01_title').style.color = 'white';
-  document.getElementById('phyloseq_bars01_title').style['font-size'] = 'small';
-  document.getElementById('pre_phyloseq_bars01_div').style.display = 'block';
-  args.phy = phy;
-
-  phylo_div.innerHTML = '';
-  phylo_div.style.display = 'block';
-
-  let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
-  xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState === 4 ) {
-      clearInterval(myWaitVar);
-      let data = JSON.parse(xmlhttp.response);
-      alert('data = ');
-
-      phylo_div.innerHTML = data.html;
-      document.getElementById('phyloseq_bars01_dnld_btn').disabled = false;
-    }
-  };
-  return args;
-}
-
-function phyloseq_hm02(args, xmlhttp){
-  phy = document.getElementById('phyloseq_heatmap_phylum').value;
-  if (phy === '0'){
-    alert('You must choose a phylum.');
-    return;
-  }
-  phylo_div = document.getElementById('phyloseq_hm02_div');
-  info_line = create_header('phyloseq_hm02', pi_local);
-  document.getElementById('phyloseq_hm02_title').innerHTML = info_line;
-  document.getElementById('phyloseq_hm02_title').style.color = 'white';
-  document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
-  document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
-
-  let ord_types = document.getElementsByName('phyloseq_heatmap_type');
-  md1 = document.getElementById('phyloseq_heatmap_md1').value;
-  ord_type = 'PCoA';
-  if(ord_types[0].checked){
-    ord_type = 'NMDS';
-  }
-  //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
-  args.phy = phy;
-  args.md1 = md1;
-  args.ordtype = ord_type;
-}
+// function phyloseq_hm02(args, xmlhttp){
+//   phy = document.getElementById('phyloseq_heatmap_phylum').value;
+//   if (phy === '0'){
+//     alert('You must choose a phylum.');
+//     return;
+//   }
+//   phylo_div = document.getElementById('phyloseq_hm02_div');
+//   info_line = create_header('phyloseq_hm02', pi_local);
+//   document.getElementById('phyloseq_hm02_title').innerHTML = info_line;
+//   document.getElementById('phyloseq_hm02_title').style.color = 'white';
+//   document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
+//   document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
+//
+//   let ord_types = document.getElementsByName('phyloseq_heatmap_type');
+//   md1 = document.getElementById('phyloseq_heatmap_md1').value;
+//   ord_type = 'PCoA';
+//   if(ord_types[0].checked){
+//     ord_type = 'NMDS';
+//   }
+//   //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
+//   args.phy = phy;
+//   args.md1 = md1;
+//   args.ordtype = ord_type;
+// }
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
@@ -1779,12 +1812,15 @@ function create_phyloseq(ts, code, new_window) {
       args = phyloseq_all(args, xmlhttp, 'bar');
       break;
     case 'heatmap':
+      args = phyloseq_all(args, xmlhttp, 'heatmap');
       // args = phyloseq_hm02(args, xmlhttp);
 
-      htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
+      // htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
       break;
     case 'network':
-      htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
+      args = phyloseq_all(args, xmlhttp, 'network');
+
+      // htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
       break;
     case 'ord':
       htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
