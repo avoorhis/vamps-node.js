@@ -1641,6 +1641,7 @@ function add_ord_types(args, current_names) {
     if (ord_types[0].checked) {
       ord_type = 'NMDS';
     }
+
     args.ordtype = ord_type;
     alert('args.ordtype');
     alert(JSON.stringify(args.ordtype));
@@ -1649,7 +1650,7 @@ function add_ord_types(args, current_names) {
   return args;
 }
 
-//TODO: JSHint: This function's cyclomatic complexity is too high. (11)(W074)
+//TODO: JSHint: This function's cyclomatic complexity is too high. (8)(W074)
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
     'bar': {
@@ -1664,6 +1665,14 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
       'long_name': 'phyloseq_network',
       'other_names': 'phyloseq_nw03',
       'dist_name': 'phyloseq_nwk'
+    },
+    'ord': {
+      'long_name': 'phyloseq_ord',
+      'other_names': 'phyloseq_ord04',
+    },
+    'tree': {
+      'long_name': 'phyloseq_tree',
+      'other_names': 'phyloseq_tree05',
     }
 
   };
@@ -1830,20 +1839,15 @@ function create_phyloseq(ts, code, new_window) {
       break;
     case 'heatmap':
       args = phyloseq_all(args, xmlhttp, 'heatmap');
-      // args = phyloseq_hm02(args, xmlhttp);
-
-      // htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
       break;
     case 'network':
       args = phyloseq_all(args, xmlhttp, 'network');
-
-      // htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
       break;
     case 'ord':
-      htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
+      args = phyloseq_all(args, xmlhttp, 'ord');
       break;
     case 'tree':
-      htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
+      args = phyloseq_all(args, xmlhttp, 'tree');
       break;
   }
 
