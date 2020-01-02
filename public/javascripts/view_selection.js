@@ -1670,10 +1670,19 @@ function add_maxdist(args, current_names) {
   } catch (e) {
   }
   return args;
-
 }
 
-//TODO: JSHint: This function's cyclomatic complexity is too high. (8)(W074)
+function add_md(args, current_names, md_num) {
+  try {
+    let md = document.getElementById(current_names['long_name'] + '_' + md_num).value;
+    args[md_num] = md;
+    alert('args[md_num]');
+    alert(JSON.stringify(args[md_num]));
+  }
+  catch(e){}
+  return args;
+}
+
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
     'bar': {
@@ -1723,10 +1732,14 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   // TODO: use list of types
   args = add_ord_types(args, current_names);
 
-  // TODO: use list of types
+  args = add_md(args, current_names, 'md1');
+
   try {
     let md1 = document.getElementById(current_names['long_name'] + '_md1').value;
     args.md1 = md1;
+    alert('args[md1]');
+    alert(JSON.stringify(args['md1']));
+    alert(JSON.stringify(args.md1));
   }
   catch(e){}
 
