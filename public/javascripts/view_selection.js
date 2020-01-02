@@ -1655,24 +1655,24 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
     'bar': {
       'long_name': 'phyloseq_bar',
-      'other_names': 'phyloseq_bars01'
+      'numbered_names': 'phyloseq_bars01'
     },
     'heatmap': {
       'long_name': 'phyloseq_heatmap',
-      'other_names': 'phyloseq_hm02'
+      'numbered_names': 'phyloseq_hm02'
     },
     'network': {
       'long_name': 'phyloseq_network',
-      'other_names': 'phyloseq_nw03',
+      'numbered_names': 'phyloseq_nw03',
       'dist_name': 'phyloseq_nwk'
     },
     'ord': {
       'long_name': 'phyloseq_ord',
-      'other_names': 'phyloseq_ord04',
+      'numbered_names': 'phyloseq_ord04',
     },
     'tree': {
       'long_name': 'phyloseq_tree',
-      'other_names': 'phyloseq_tree05',
+      'numbered_names': 'phyloseq_tree05',
     }
 
   };
@@ -1684,18 +1684,18 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
 
   args = add_phy(args, current_names);
 
-  alert("current_names['other_names']");
-  alert(current_names['other_names']);
+  alert("current_names['numbered_names']");
+  alert(current_names['numbered_names']);
 
-  let phylo_div = document.getElementById(current_names['other_names'] + '_div');
+  let phylo_div = document.getElementById(current_names['numbered_names'] + '_div');
   phylo_div.innerHTML = '';
   phylo_div.style.display = 'block';
 
-  let info_line = create_header(current_names['other_names'] + '', pi_local);
-  document.getElementById(current_names['other_names'] + '_title').innerHTML = info_line;
-  document.getElementById(current_names['other_names'] + '_title').style.color = 'white';
-  document.getElementById(current_names['other_names'] + '_title').style['font-size'] = 'small';
-  document.getElementById('pre_' + current_names['other_names'] + '_div').style.display = 'block';
+  let info_line = create_header(current_names['numbered_names'] + '', pi_local);
+  document.getElementById(current_names['numbered_names'] + '_title').innerHTML = info_line;
+  document.getElementById(current_names['numbered_names'] + '_title').style.color = 'white';
+  document.getElementById(current_names['numbered_names'] + '_title').style['font-size'] = 'small';
+  document.getElementById('pre_' + current_names['numbered_names'] + '_div').style.display = 'block';
 
   // TODO: use list of types
   args = add_ord_types(args, current_names);
@@ -1740,7 +1740,7 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
       alert('data = ');
 
       phylo_div.innerHTML = data.html;
-      document.getElementById(current_names['other_names'] + '_dnld_btn').disabled = false;
+      document.getElementById(current_names['numbered_names'] + '_dnld_btn').disabled = false;
     }
   };
   return args;
@@ -2006,7 +2006,7 @@ function create_phyloseq(ts, code, new_window) {
     //         }
     //     }
     //   };
-  args = JSON.stringify(args)
+  args = JSON.stringify(args);
   xmlhttp.send(args);
 
 }
