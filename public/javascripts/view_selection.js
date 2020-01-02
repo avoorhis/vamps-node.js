@@ -1641,27 +1641,32 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   alert("current_names = ");
   alert(JSON.stringify(current_names));
 
-  let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
+  try {
+    let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
 
-  alert("phy = ");
-  alert(JSON.stringify(phy));
+    alert("phy = ");
+    alert(JSON.stringify(phy));
 
-  if(phy === '0'){
-    alert('You must choose a phylum.');
-    return;
+    if(phy === '0'){
+      alert('You must choose a phylum.');
+      return;
+    }
+    args.phy = phy;
   }
-  let phylo_div = document.getElementById(current_names['other_names'] + '_div');
-  let info_line = create_header(current_names['other_names'] + '', pi_local);
+  catch (e) {}
+
   alert("current_names['other_names']");
   alert(current_names['other_names']);
+
+  let phylo_div = document.getElementById(current_names['other_names'] + '_div');
+  phylo_div.innerHTML = '';
+  phylo_div.style.display = 'block';
+
+  let info_line = create_header(current_names['other_names'] + '', pi_local);
   document.getElementById(current_names['other_names'] + '_title').innerHTML = info_line;
   document.getElementById(current_names['other_names'] + '_title').style.color = 'white';
   document.getElementById(current_names['other_names'] + '_title').style['font-size'] = 'small';
   document.getElementById('pre_' + current_names['other_names'] + '_div').style.display = 'block';
-  args.phy = phy;
-
-  phylo_div.innerHTML = '';
-  phylo_div.style.display = 'block';
 
   // TODO: use list of types
   try {
@@ -1704,7 +1709,6 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
     args.maxdist = max_dist;
   }
   catch(e){}
-
 
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
