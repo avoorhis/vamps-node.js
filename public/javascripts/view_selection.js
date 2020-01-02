@@ -1634,6 +1634,21 @@ function add_phy(args, current_names) {
   return args;
 }
 
+function add_ord_types(args, current_names) {
+  try {
+    let ord_types = document.getElementsByName(current_names['long_name'] + '_type');
+    let ord_type = 'PCoA';
+    if (ord_types[0].checked) {
+      ord_type = 'NMDS';
+    }
+    args.ordtype = ord_type;
+    alert('args.ordtype');
+    alert(JSON.stringify(args.ordtype));
+  }
+  catch(e){}
+  return args;
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (11)(W074)
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
@@ -1674,14 +1689,7 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   document.getElementById('pre_' + current_names['other_names'] + '_div').style.display = 'block';
 
   // TODO: use list of types
-  try {
-    let ord_types = document.getElementsByName(current_names['long_name'] + '_type');
-    let ord_type = 'PCoA';
-    if (ord_types[0].checked) {
-      ord_type = 'NMDS';
-    }
-  }
-  catch(e){}
+  args = add_ord_types(args, current_names);
 
   // TODO: use list of types
   try {
