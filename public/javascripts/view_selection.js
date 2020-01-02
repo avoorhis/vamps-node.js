@@ -1594,35 +1594,38 @@ function openindex(htmlstring)
   self.name = "main";
 }
 
-function get_htmlstring(code) {
+function get_htmlstring(code, current_names) {
+
   let htmlstring = "";
-  switch(code) {
-    case 'bar':
-      htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
-      break;
-    case 'heatmap':
-      htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
-      break;
-    case 'network':
-      htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
-      break;
-    case 'ord':
-      htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
-      break;
-    case 'tree':
-      htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
-      break;
-  }
+  htmlstring = document.getElementById(current_names['numbered_name'] + '_div').innerHTML;
+
+  // switch(code) {
+  //   case 'bar':
+  //     htmlstring = document.getElementById('phyloseq_bars01_div').innerHTML;
+  //     break;
+  //   case 'heatmap':
+  //     htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
+  //     break;
+  //   case 'network':
+  //     htmlstring = document.getElementById('phyloseq_nw03_div').innerHTML;
+  //     break;
+  //   case 'ord':
+  //     htmlstring = document.getElementById('phyloseq_ord04_div').innerHTML;
+  //     break;
+  //   case 'tree':
+  //     htmlstring = document.getElementById('phyloseq_tree05_div').innerHTML;
+  //     break;
+  // }
   openindex(htmlstring);
-  return;
+  // return;
 }
 
 function add_phy(args, current_names) {
   try {
     let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
 
-    alert("phy = ");
-    alert(JSON.stringify(phy));
+    // alert("phy = ");
+    // alert(JSON.stringify(phy));
 
     if(phy === '0'){
       alert('You must choose a phylum.');
@@ -1643,20 +1646,20 @@ function add_ord_types(args, current_names) {
     }
 
     args.ordtype = ord_type;
-    alert('args.ordtype');
-    alert(JSON.stringify(args.ordtype));
+    // alert('args.ordtype');
+    // alert(JSON.stringify(args.ordtype));
   }
   catch(e){}
   return args;
 }
 
-// JSHint: This function's cyclomatic complexity is too high. (6)(W074)
+// TODO: JSHint: This function's cyclomatic complexity is too high. (6)(W074)
 function add_maxdist(args, current_names) {
   try {
     let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
     let max_dist = '0.3';
-    alert('max_dists');
-    alert(JSON.stringify(max_dists));
+    // alert('max_dists');
+    // alert(JSON.stringify(max_dists));
     if (max_dists[0].checked) {
       max_dist = '0.1';
     } else if (max_dists[1].checked) {
@@ -1676,14 +1679,38 @@ function add_md(args, current_names, md_num) {
   try {
     let md = document.getElementById(current_names['long_name'] + '_' + md_num).value;
     args[md_num] = md;
-    alert('args[md_num]');
-    alert(JSON.stringify(args[md_num]));
   }
   catch(e){}
   return args;
 }
 
-function collect_args(ts, phyloseq_type) {
+function collect_args(ts, phyloseq_type, current_names) {
+  let args =  {};
+  args.metric = pi_local.selected_distance;
+  args.plot_type = phyloseq_type;
+  args.ts = ts;
+
+  args = add_phy(args, current_names);
+
+  let info_line = create_header(current_names['numbered_name'] + '', pi_local);
+  document.getElementById(current_names['numbered_name'] + '_title').innerHTML = info_line;
+  document.getElementById(current_names['numbered_name'] + '_title').style.color = 'white';
+  document.getElementById(current_names['numbered_name'] + '_title').style['font-size'] = 'small';
+  document.getElementById('pre_' + current_names['numbered_name'] + '_div').style.display = 'block';
+
+  // TODO: use list of types?
+  args = add_ord_types(args, current_names);
+
+  args = add_md(args, current_names, 'md1');
+  args = add_md(args, current_names, 'md2');
+
+  args = add_maxdist(args, current_names);
+  alert(JSON.stringify(args));
+
+  return args;
+}
+
+function create_phyloseq(ts, code, new_window) {
   const phyloseq_names = {
     'bar': {
       'long_name': 'phyloseq_bar',
@@ -1708,52 +1735,24 @@ function collect_args(ts, phyloseq_type) {
     }
 
   };
-  let current_names = phyloseq_names[phyloseq_type];
-  let args =  {};
-  args.metric = pi_local.selected_distance;
-  args.plot_type = phyloseq_type;
-  args.ts = ts;
-  args.numbered_name = current_names['numbered_name'];
-    
-  args = add_phy(args, current_names);
+  let current_names = phyloseq_names[code];
 
-  let info_line = create_header(current_names['numbered_name'] + '', pi_local);
-  document.getElementById(current_names['numbered_name'] + '_title').innerHTML = info_line;
-  document.getElementById(current_names['numbered_name'] + '_title').style.color = 'white';
-  document.getElementById(current_names['numbered_name'] + '_title').style['font-size'] = 'small';
-  document.getElementById('pre_' + current_names['numbered_name'] + '_div').style.display = 'block';
-
-  // TODO: use list of types?
-  args = add_ord_types(args, current_names);
-
-  args = add_md(args, current_names, 'md1');
-  args = add_md(args, current_names, 'md2');
-
-  args = add_maxdist(args, current_names);
-  alert(JSON.stringify(args));
-
-  return args;
-}
-
-//TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
-function create_phyloseq(ts, code, new_window) {
   // alert('im HM');
-  // TODO: add to individual functions by code
   if (new_window) {
-    get_htmlstring(code);
+    get_htmlstring(code, current_names);
   }
+
+  let args = collect_args(ts, code, current_names);
+
+  let phylo_div = document.getElementById(current_names['numbered_name'] + '_div');
+  phylo_div.innerHTML = '';
+  phylo_div.style.display = 'block';
 
   let xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/visuals/phyloseq', true);
   xmlhttp.setRequestHeader("Content-Type", "application/json");
 
-  let args = collect_args(ts, code);
-
-  let phylo_div = document.getElementById(args.numbered_name + '_div');
-  phylo_div.innerHTML = '';
-  phylo_div.style.display = 'block';
-  let id_dnld_btn = args.numbered_name + '_dnld_btn';
-  
+  let id_dnld_btn = current_names['numbered_name'] + '_dnld_btn';
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState === 4 ) {
