@@ -1650,6 +1650,29 @@ function add_ord_types(args, current_names) {
   return args;
 }
 
+// JSHint: This function's cyclomatic complexity is too high. (6)(W074)
+function add_maxdist(args, current_names) {
+  try {
+    let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
+    let max_dist = '0.3';
+    alert('max_dists');
+    alert(JSON.stringify(max_dists));
+    if (max_dists[0].checked) {
+      max_dist = '0.1';
+    } else if (max_dists[1].checked) {
+      max_dist = '0.2';
+    } else if (max_dists[2].checked) {
+      max_dist = '0.3';
+    } else if (max_dists[3].checked) {
+      max_dist = '0.4';
+    }
+    args.maxdist = max_dist;
+  } catch (e) {
+  }
+  return args;
+
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (8)(W074)
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
@@ -1713,24 +1736,25 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   }
   catch(e){}
 
-  try {
-    let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
-    let max_dist = '0.3';
-    if(max_dists[0].checked){
-      max_dist = '0.1';
-    }
-    else if(max_dists[1].checked){
-      max_dist = '0.2';
-    }
-    else if(max_dists[2].checked){
-      max_dist = '0.3';
-    }
-    else if(max_dists[3].checked){
-      max_dist = '0.4';
-    }
-    args.maxdist = max_dist;
-  }
-  catch(e){}
+  args = add_maxdist(args, current_names);
+  // try {
+  //   let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
+  //   let max_dist = '0.3';
+  //   if(max_dists[0].checked){
+  //     max_dist = '0.1';
+  //   }
+  //   else if(max_dists[1].checked){
+  //     max_dist = '0.2';
+  //   }
+  //   else if(max_dists[2].checked){
+  //     max_dist = '0.3';
+  //   }
+  //   else if(max_dists[3].checked){
+  //     max_dist = '0.4';
+  //   }
+  //   args.maxdist = max_dist;
+  // }
+  // catch(e){}
 
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
@@ -1748,8 +1772,7 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
 
 //TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
 function create_phyloseq(ts, code, new_window) {
-  alert('im HM');
-  //phyloseq_created = true;
+  // alert('im HM');
   // TODO: add to individual functions by code
   if (new_window) {
     get_htmlstring(code);
@@ -1783,7 +1806,6 @@ function create_phyloseq(ts, code, new_window) {
   }
   args = JSON.stringify(args);
   xmlhttp.send(args);
-
 }
 //
 //  Interval timer
