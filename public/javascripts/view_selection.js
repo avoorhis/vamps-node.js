@@ -1683,45 +1683,45 @@ function add_md(args, current_names, md_num) {
   return args;
 }
 
-function phyloseq_all(args, xmlhttp, phyloseq_type) {
+function collect_args(ts, phyloseq_type) {
   const phyloseq_names = {
     'bar': {
       'long_name': 'phyloseq_bar',
-      'numbered_names': 'phyloseq_bars01'
+      'numbered_name': 'phyloseq_bars01'
     },
     'heatmap': {
       'long_name': 'phyloseq_heatmap',
-      'numbered_names': 'phyloseq_hm02'
+      'numbered_name': 'phyloseq_hm02'
     },
     'network': {
       'long_name': 'phyloseq_network',
-      'numbered_names': 'phyloseq_nw03',
+      'numbered_name': 'phyloseq_nw03',
       'dist_name': 'phyloseq_nwk'
     },
     'ord': {
       'long_name': 'phyloseq_ord',
-      'numbered_names': 'phyloseq_ord04',
+      'numbered_name': 'phyloseq_ord04',
     },
     'tree': {
       'long_name': 'phyloseq_tree',
-      'numbered_names': 'phyloseq_tree05',
+      'numbered_name': 'phyloseq_tree05',
     }
 
   };
-
   let current_names = phyloseq_names[phyloseq_type];
-
+  let args =  {};
+  args.metric = pi_local.selected_distance;
+  args.plot_type = phyloseq_type;
+  args.ts = ts;
+  args.numbered_name = current_names['numbered_name'];
+    
   args = add_phy(args, current_names);
 
-  let phylo_div = document.getElementById(current_names['numbered_names'] + '_div');
-  phylo_div.innerHTML = '';
-  phylo_div.style.display = 'block';
-
-  let info_line = create_header(current_names['numbered_names'] + '', pi_local);
-  document.getElementById(current_names['numbered_names'] + '_title').innerHTML = info_line;
-  document.getElementById(current_names['numbered_names'] + '_title').style.color = 'white';
-  document.getElementById(current_names['numbered_names'] + '_title').style['font-size'] = 'small';
-  document.getElementById('pre_' + current_names['numbered_names'] + '_div').style.display = 'block';
+  let info_line = create_header(current_names['numbered_name'] + '', pi_local);
+  document.getElementById(current_names['numbered_name'] + '_title').innerHTML = info_line;
+  document.getElementById(current_names['numbered_name'] + '_title').style.color = 'white';
+  document.getElementById(current_names['numbered_name'] + '_title').style['font-size'] = 'small';
+  document.getElementById('pre_' + current_names['numbered_name'] + '_div').style.display = 'block';
 
   // TODO: use list of types?
   args = add_ord_types(args, current_names);
@@ -1730,17 +1730,8 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   args = add_md(args, current_names, 'md2');
 
   args = add_maxdist(args, current_names);
+  alert(JSON.stringify(args));
 
-  let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
-  xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState === 4 ) {
-      clearInterval(myWaitVar);
-      let data = JSON.parse(xmlhttp.response);
-
-      phylo_div.innerHTML = data.html;
-      document.getElementById(current_names['numbered_names'] + '_dnld_btn').disabled = false;
-    }
-  };
   return args;
 }
 
@@ -1752,34 +1743,27 @@ function create_phyloseq(ts, code, new_window) {
     get_htmlstring(code);
   }
 
-  let args =  {};
-  args.metric = pi_local.selected_distance;
-  args.plot_type = code;
-  args.ts = ts;
-
   let xmlhttp = new XMLHttpRequest();
   xmlhttp.open("POST", '/visuals/phyloseq', true);
   xmlhttp.setRequestHeader("Content-Type", "application/json");
 
-  args = phyloseq_all(args, xmlhttp, code);
+  let args = collect_args(ts, code);
 
-  // switch(code) {
-  //   case 'bar':
-  //     args = phyloseq_all(args, xmlhttp, 'bar');
-  //     break;
-  //   case 'heatmap':
-  //     args = phyloseq_all(args, xmlhttp, 'heatmap');
-  //     break;
-  //   case 'network':
-  //     args = phyloseq_all(args, xmlhttp, 'network');
-  //     break;
-  //   case 'ord':
-  //     args = phyloseq_all(args, xmlhttp, 'ord');
-  //     break;
-  //   case 'tree':
-  //     args = phyloseq_all(args, xmlhttp, 'tree');
-  //     break;
-  // }
+  let phylo_div = document.getElementById(args.numbered_name + '_div');
+  phylo_div.innerHTML = '';
+  phylo_div.style.display = 'block';
+  let id_dnld_btn = args.numbered_name + '_dnld_btn';
+  
+  let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState === 4 ) {
+      clearInterval(myWaitVar);
+      let data = JSON.parse(xmlhttp.response);
+
+      phylo_div.innerHTML = data.html;
+      document.getElementById(id_dnld_btn).disabled = false;
+    }
+  };
   args = JSON.stringify(args);
   xmlhttp.send(args);
 }
