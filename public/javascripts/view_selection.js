@@ -1617,6 +1617,23 @@ function get_htmlstring(code) {
   return;
 }
 
+function add_phy(args, current_names) {
+  try {
+    let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
+
+    alert("phy = ");
+    alert(JSON.stringify(phy));
+
+    if(phy === '0'){
+      alert('You must choose a phylum.');
+      return;
+    }
+    args.phy = phy;
+  }
+  catch (e) {}
+  return args;
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (11)(W074)
 function phyloseq_all(args, xmlhttp, phyloseq_type) {
   const phyloseq_names = {
@@ -1641,19 +1658,7 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   alert("current_names = ");
   alert(JSON.stringify(current_names));
 
-  try {
-    let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
-
-    alert("phy = ");
-    alert(JSON.stringify(phy));
-
-    if(phy === '0'){
-      alert('You must choose a phylum.');
-      return;
-    }
-    args.phy = phy;
-  }
-  catch (e) {}
+  args = add_phy(args, current_names);
 
   alert("current_names['other_names']");
   alert(current_names['other_names']);
