@@ -1617,6 +1617,77 @@ function get_htmlstring(code) {
   return;
 }
 
+function phyloseq_all(args, xmlhttp, phyloseq_type) {
+  const phyloseq_names = {
+    'bar': {
+      'long_name': 'phyloseq_bar',
+      'other_names': 'phyloseq_bars01'
+    },
+    'heatmap': {
+      'long_name': 'phyloseq_heatmap',
+      'other_names': 'phyloseq_hm02'
+    }
+  };
+
+  let current_names = phyloseq_names[phyloseq_type];
+
+  alert("current_names = ");
+  alert(JSON.stringify(current_names));
+
+  let phy = document.getElementById(current_names['long_name'] + '_phylum').value;
+
+  alert("phy = ");
+  alert(JSON.stringify(phy));
+
+  if(phy === '0'){
+    alert('You must choose a phylum.');
+    return;
+  }
+  let phylo_div = document.getElementById(current_names['other_names'] + '_div');
+  let info_line = create_header(current_names['other_names'] + '', pi_local);
+  alert("current_names['other_names']");
+  alert(current_names['other_names']);
+  document.getElementById(current_names['other_names'] + '_title').innerHTML = info_line;
+  document.getElementById(current_names['other_names'] + '_title').style.color = 'white';
+  document.getElementById(current_names['other_names'] + '_title').style['font-size'] = 'small';
+  document.getElementById('pre_' + current_names['other_names'] + '_div').style.display = 'block';
+  args.phy = phy;
+
+  phylo_div.innerHTML = '';
+  phylo_div.style.display = 'block';
+
+  // TODO: use list of types
+  try {
+    let ord_types = document.getElementsByName(current_names['long_name'] + '_type');
+    let ord_type = 'PCoA';
+    if (ord_types[0].checked) {
+      ord_type = 'NMDS';
+    }
+  }
+  catch(e){}
+
+  // TODO: use list of types
+  try {
+    let md1 = document.getElementById(current_names['long_name'] + '_md1').value;
+    args.md1 = md1;
+  }
+  catch(e){}
+
+  let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState === 4 ) {
+      clearInterval(myWaitVar);
+      let data = JSON.parse(xmlhttp.response);
+      alert('data = ');
+
+      phylo_div.innerHTML = data.html;
+      document.getElementById(current_names['other_names'] + '_dnld_btn').disabled = false;
+    }
+  };
+  return args;
+}
+
+
 function phyloseq_bars01(args, xmlhttp) {
   alert("2 pi_local = ");
   alert(JSON.stringify(pi_local));
@@ -1654,6 +1725,31 @@ function phyloseq_bars01(args, xmlhttp) {
   return args;
 }
 
+function phyloseq_hm02(args, xmlhttp){
+  phy = document.getElementById('phyloseq_heatmap_phylum').value;
+  if (phy === '0'){
+    alert('You must choose a phylum.');
+    return;
+  }
+  phylo_div = document.getElementById('phyloseq_hm02_div');
+  info_line = create_header('phyloseq_hm02', pi_local);
+  document.getElementById('phyloseq_hm02_title').innerHTML = info_line;
+  document.getElementById('phyloseq_hm02_title').style.color = 'white';
+  document.getElementById('phyloseq_hm02_title').style['font-size'] = 'small';
+  document.getElementById('pre_phyloseq_hm02_div').style.display = 'block';
+
+  let ord_types = document.getElementsByName('phyloseq_heatmap_type');
+  md1 = document.getElementById('phyloseq_heatmap_md1').value;
+  ord_type = 'PCoA';
+  if(ord_types[0].checked){
+    ord_type = 'NMDS';
+  }
+  //args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
+  args.phy = phy;
+  args.md1 = md1;
+  args.ordtype = ord_type;
+}
+
 //TODO: JSHint: This function's cyclomatic complexity is too high. (20)(W074)
 function create_phyloseq(ts, code, new_window) {
   alert('im HM');
@@ -1680,9 +1776,11 @@ function create_phyloseq(ts, code, new_window) {
   // }
   switch(code) {
     case 'bar':
-      args = phyloseq_bars01(args, xmlhttp);
+      args = phyloseq_all(args, xmlhttp, 'bar');
       break;
     case 'heatmap':
+      // args = phyloseq_hm02(args, xmlhttp);
+
       htmlstring = document.getElementById('phyloseq_hm02_div').innerHTML;
       break;
     case 'network':
