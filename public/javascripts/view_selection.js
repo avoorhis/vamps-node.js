@@ -1711,13 +1711,7 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
 
   let current_names = phyloseq_names[phyloseq_type];
 
-  alert("current_names = ");
-  alert(JSON.stringify(current_names));
-
   args = add_phy(args, current_names);
-
-  alert("current_names['numbered_names']");
-  alert(current_names['numbered_names']);
 
   let phylo_div = document.getElementById(current_names['numbered_names'] + '_div');
   phylo_div.innerHTML = '';
@@ -1729,52 +1723,19 @@ function phyloseq_all(args, xmlhttp, phyloseq_type) {
   document.getElementById(current_names['numbered_names'] + '_title').style['font-size'] = 'small';
   document.getElementById('pre_' + current_names['numbered_names'] + '_div').style.display = 'block';
 
-  // TODO: use list of types
+  // TODO: use list of types?
   args = add_ord_types(args, current_names);
 
   args = add_md(args, current_names, 'md1');
-
-  try {
-    let md1 = document.getElementById(current_names['long_name'] + '_md1').value;
-    args.md1 = md1;
-    alert('args[md1]');
-    alert(JSON.stringify(args['md1']));
-    alert(JSON.stringify(args.md1));
-  }
-  catch(e){}
-
-  try {
-    let md2 = document.getElementById(current_names['long_name'] + '_md2').value;
-    args.md2 = md2;
-  }
-  catch(e){}
+  args = add_md(args, current_names, 'md2');
 
   args = add_maxdist(args, current_names);
-  // try {
-  //   let max_dists = document.getElementsByName(current_names['dist_name'] + '_dist');
-  //   let max_dist = '0.3';
-  //   if(max_dists[0].checked){
-  //     max_dist = '0.1';
-  //   }
-  //   else if(max_dists[1].checked){
-  //     max_dist = '0.2';
-  //   }
-  //   else if(max_dists[2].checked){
-  //     max_dist = '0.3';
-  //   }
-  //   else if(max_dists[3].checked){
-  //     max_dist = '0.4';
-  //   }
-  //   args.maxdist = max_dist;
-  // }
-  // catch(e){}
 
   let myWaitVar = setInterval(myWaitFunction,1000, phylo_div);
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState === 4 ) {
       clearInterval(myWaitVar);
       let data = JSON.parse(xmlhttp.response);
-      alert('data = ');
 
       phylo_div.innerHTML = data.html;
       document.getElementById(current_names['numbered_names'] + '_dnld_btn').disabled = false;
@@ -1800,23 +1761,25 @@ function create_phyloseq(ts, code, new_window) {
   xmlhttp.open("POST", '/visuals/phyloseq', true);
   xmlhttp.setRequestHeader("Content-Type", "application/json");
 
-  switch(code) {
-    case 'bar':
-      args = phyloseq_all(args, xmlhttp, 'bar');
-      break;
-    case 'heatmap':
-      args = phyloseq_all(args, xmlhttp, 'heatmap');
-      break;
-    case 'network':
-      args = phyloseq_all(args, xmlhttp, 'network');
-      break;
-    case 'ord':
-      args = phyloseq_all(args, xmlhttp, 'ord');
-      break;
-    case 'tree':
-      args = phyloseq_all(args, xmlhttp, 'tree');
-      break;
-  }
+  args = phyloseq_all(args, xmlhttp, code);
+
+  // switch(code) {
+  //   case 'bar':
+  //     args = phyloseq_all(args, xmlhttp, 'bar');
+  //     break;
+  //   case 'heatmap':
+  //     args = phyloseq_all(args, xmlhttp, 'heatmap');
+  //     break;
+  //   case 'network':
+  //     args = phyloseq_all(args, xmlhttp, 'network');
+  //     break;
+  //   case 'ord':
+  //     args = phyloseq_all(args, xmlhttp, 'ord');
+  //     break;
+  //   case 'tree':
+  //     args = phyloseq_all(args, xmlhttp, 'tree');
+  //     break;
+  // }
   args = JSON.stringify(args);
   xmlhttp.send(args);
 }
