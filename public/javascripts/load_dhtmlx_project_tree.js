@@ -220,8 +220,8 @@ function clear_filters(from_clear_btn) {
 //  After Loading Tree: get checked count and focus to top checked project (if any)
 //
 function afterLoadTree(){
-    var delay=2000; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000 
-    setTimeout(function() {
+    // var delay=2000; //0.5 second - need 1/2 second for LOTS of saved datasets to load ~1000
+  requestAnimationFrame(function() {
         //your code to be executed after 0.5 second
         set_dataset_count(0);
         var cnodes = projectTree.getAllChecked()
@@ -229,7 +229,7 @@ function afterLoadTree(){
             var l = cnodes.split(',')
             projectTree.focusItem(projectTree.getParentId(l[0]));
         }
-    }, delay);
+    });//, delay
 }
 //
 //   substring for project name filter
