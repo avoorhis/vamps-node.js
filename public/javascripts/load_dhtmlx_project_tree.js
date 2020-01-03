@@ -224,9 +224,9 @@ function afterLoadTree(){
   requestAnimationFrame(function() {
         //your code to be executed after 0.5 second
         set_dataset_count(0);
-        var cnodes = projectTree.getAllChecked()
+        let cnodes = projectTree.getAllChecked();
         if(cnodes.length > 0){
-            var l = cnodes.split(',')
+            let l = cnodes.split(',');
             projectTree.focusItem(projectTree.getParentId(l[0]));
         }
     });//, delay
