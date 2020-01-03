@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <% proj = JSON.parse(projects) %>
-<script>
+<script defer>
   var dco_code  = '<%= alter_dco_code %>'
   var portal = '<%= portal_code %>'
 </script>
@@ -57,13 +57,13 @@
 	  </div>
 </div>
 
-<script>
+<script defer>
   
 </script>
 
 	
 <% include ../add_ins/end.ejs %>
-   <script type="text/javascript" src="/javascripts/portals.js"></script> 
-   <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script> 
+   <script type="text/javascript" src="/javascripts/portals.js" defer></script>>
+   <script type="text/javascript" src="/javascripts/bootstrap-sortable.js" defer></script>>
  </body>
  </html>

@@ -7,7 +7,7 @@
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var activate_thumbs = true; %>
 <%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
-<script> 
+<script defer>
   var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local  = JSON.parse('<%- matrix %>');
   var cts_local  = JSON.parse('<%- constants %>');
@@ -189,26 +189,26 @@
  
  
   <% include ../../add_ins/end.ejs %>
- <!-- <script src ="https://maps.googleapis.com/maps/api/js"></script> -->
+ <!-- <script src ="https://maps.googleapis.com/maps/api/js" defer></script>> -->
 
- <script type="text/javascript" src="/javascripts/tablesort.min.js"></script>
- <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>
- <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
- <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
- <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/tablesort.min.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/jquery.tablednd.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8" defer></script>>
+ <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8" defer></script>>
  
- <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script>
- <script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8" defer></script>>
+ <script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8" defer></script>>
 
- <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
- <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
- <script type="text/javascript" src="/javascripts/global.js"></script>
- <script type="text/javascript" src="/javascripts/common_selection.js"></script>
- <script type="text/javascript" src="/javascripts/view_selection_otus.js"></script>
-<!--  <script type="text/javascript" src="/javascripts/visual_divs.js"></script> -->
- <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
- <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
- <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js"></script>
+ <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8" defer></script>>
+ <script type="text/javascript" src="/javascripts/drag_rows.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/global.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/common_selection.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/view_selection_otus.js" defer></script>>
+<!--  <script type="text/javascript" src="/javascripts/visual_divs.js" defer></script>> -->
+ <script type="text/javascript" src="/javascripts/bootstrap-select.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/jquery.flot.min.js" defer></script>>
+ <script type="text/javascript" src="/javascripts/tooltipster.bundle.min.js" defer></script>>
 
 </body>
 </html>

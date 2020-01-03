@@ -5,7 +5,7 @@
 <% // sort keys %>
 
 
-<script>  
+<script defer>
   var mi_local  = JSON.parse('<%- metadata_items %>');
 </script>
 <p class='title'>Search</p>
@@ -116,7 +116,7 @@
 
 	
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/search.js"></script>
+<script type="text/javascript" src="/javascripts/global.js" defer></script>>
+<script type="text/javascript" src="/javascripts/search.js" defer></script>>
 </body>
 </html>

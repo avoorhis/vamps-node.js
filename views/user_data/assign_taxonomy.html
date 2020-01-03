@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <% choices = JSON.parse(tax_choices); %>
-<script>
+<script defer>
   var choices_local  = JSON.parse('<%- tax_choices %>');
 </script>
 <% if(messages.success){ %>
@@ -76,6 +76,6 @@
 
 	
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/user_data.js"></script>
+<script type="text/javascript" src="/javascripts/user_data.js" defer></script>>
  </body>
  </html>

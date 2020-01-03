@@ -7,7 +7,7 @@
     <div class="alert_flash_message_fail"><%= messages.fail %></div>
 <% } %>
 
-<script>
+<script defer>
 	var rando = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
 </script>
 
@@ -52,6 +52,6 @@
 
 
 <% include ../add_ins/end.ejs %>
- <script type="text/javascript" src="/javascripts/otus.js"></script>
+ <script type="text/javascript" src="/javascripts/otus.js" defer></script>>
  </body>
  </html>

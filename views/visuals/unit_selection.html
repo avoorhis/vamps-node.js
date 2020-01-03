@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <%  var items  = JSON.parse(chosen_datasets); %>
 <%  var referer = 'unit_selection'; %>
-<script>
+<script defer>
   var ds_local       = JSON.parse('<%- chosen_datasets %>');
   var unit_choice = '<%= unit_choice %>';
   var user_local     = '<%= user.username %>';
@@ -111,14 +111,14 @@
   
  <% include ../add_ins/end.ejs %>
 
-  <script type="text/javascript" src="/javascripts/global.js"></script>
-  <script type="text/javascript" src="/javascripts/common_selection.js"></script>
-  <script type="text/javascript" src="/javascripts/unit_selection.js"></script>
-  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+  <script type="text/javascript" src="/javascripts/global.js" defer></script>>
+  <script type="text/javascript" src="/javascripts/common_selection.js" defer></script>>
+  <script type="text/javascript" src="/javascripts/unit_selection.js" defer></script>>
+  <script type="text/javascript" src="/javascripts/bootstrap-select.js" defer></script>>
 
-  <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
+  <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js"  defer></script>>
   
-  <!-- <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script> -->
+  <!-- <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js"  defer></script>> -->
    
  
  </body>

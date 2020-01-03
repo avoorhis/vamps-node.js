@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
    crossorigin=""/>
-<script>
+<script defer>
 var data = JSON.parse('<%- data %>')
 var accessToken = '<%- token %>'
 </script>
@@ -81,14 +81,14 @@ var accessToken = '<%- token %>'
 
 <% include ../add_ins/end.ejs %>
 
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/search.js"></script>
+<script type="text/javascript" src="/javascripts/global.js" defer></script>>
+<script type="text/javascript" src="/javascripts/search.js" defer></script>>
 <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
    integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
    crossorigin="">   
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
-<script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js" defer></script>>
+<script defer>
 		var mapOptions = {          
           id: 'mapbox.streets',
           accessToken: accessToken

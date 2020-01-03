@@ -7,7 +7,7 @@
 <% if(filtering == undefined){ %>
 <%  filtering = 0 %>
 <% } %>
-<script>
+<script defer>
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = "<%= portal_to_show %>";
   var env_sources_local  = JSON.parse('<%- md_env_package %>');
@@ -118,14 +118,14 @@
 
 <% include ../add_ins/end.ejs %>
 
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<!-- <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script> -->
-<!-- <script type="text/javascript" src="/javascripts/load_otu_project_tree.js"></script> -->
-<script type="text/javascript" src="/javascripts/otus.js"></script>
-<!-- <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script> -->
-<!-- <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script> -->
+<script type="text/javascript" src="/javascripts/global.js" defer></script>>
+<!-- <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js"  defer></script>> -->
+<!-- <script type="text/javascript" src="/javascripts/load_otu_project_tree.js" defer></script>> -->
+<script type="text/javascript" src="/javascripts/otus.js" defer></script>>
+<!-- <script type="text/javascript" src="/javascripts/check_form_pg1.js" defer></script>> -->
+<!-- <script type="text/javascript" src="/javascripts/project_dataset_tree.js" defer></script>> -->
 
-<script>
+<script defer>
 
     // code for tooltips
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
@@ -167,7 +167,7 @@
 
    
 </script>
-<script>
+<script defer>
 var $, clear_filters, initialize_dhtmlx_otu_tree
 $(document).ready(function () {
   // show_dataset_tree = true;
@@ -178,6 +178,6 @@ $(document).ready(function () {
 </script>
 
 
-<!-- <script type="text/javascript" src="/javascripts/visuals_index.js"></script> -->
+<!-- <script type="text/javascript" src="/javascripts/visuals_index.js" defer></script>> -->
  </body>
  </html>
