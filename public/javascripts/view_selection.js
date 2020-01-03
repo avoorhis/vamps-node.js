@@ -96,16 +96,16 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
         }
         html += "</tr><table>";
-        showTip = setTimeout(function() {
+        showTip = requestAnimationFrame(function() {
           $link.data('tipActive', true);
           tip.position(event);
-          //alert(event.pageX)
+          // alert(event.pageX);
           $liveTip
           .html('<div>' + html  + '</div>')
           .fadeOut(0)
           .fadeIn(200);
 
-        }, tip.delay);
+        }); //, tip.delay
       }
       if (event.type == 'mouseout') {
         link.id = tip.id || link.id;
