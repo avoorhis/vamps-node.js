@@ -72,8 +72,8 @@
             <li><b>dataset</b> -- MUST be first column and must match exactly (spelling and case) what is already in the VAMPS database.
             <br>Order is not important for the following required fields:
             <li><b>collection_date</b>  -- Format: YYYY-MM-DD (example: 2017-03-01 for March 1st, 2017).
-            <li><b>latitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for below equator. NOTE: Do not use zero '0' here unless you sampled at the equator!
-            <li><b>longitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank'>decimal degrees</a>. No degree symbol and use minus sign for west of PM. NOTE: Do not use zero '0' here unless you sampled along the Prime Meridian!
+            <li><b>latitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank' rel='noopener'>decimal degrees</a>. No degree symbol and use minus sign for below equator. NOTE: Do not use zero '0' here unless you sampled at the equator!
+            <li><b>longitude</b>  -- Format: Must be <a href='https://en.wikipedia.org/wiki/Decimal_degrees' target='_blank' rel='noopener'>decimal degrees</a>. No degree symbol and use minus sign for west of PM. NOTE: Do not use zero '0' here unless you sampled along the Prime Meridian!
             <li><b>geo_loc_name</b>  -- Name of country or sea region. Choose names from this <a href='country_list' target='_blank'>country list</a> or short name from the <a href='lzt_list' target='_blank'>Longhurst Zones</a> sea regions.
             <li><b>env_package</b>   -- Environmental Source (Choose one from this list that fits best for each sample): 
                                                                                                                         <select>
@@ -121,8 +121,8 @@ ds05,4.7,30.345,-130.3,34,Canada,water-marine,6.0,2018-01-25
 
 	
 <% include ../../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/import.js" defer></script>>
-<script type='text/javascript' src='/javascripts/bootstrap-select.js' defer></script>>
+<script type="text/javascript" src="/javascripts/import.js" defer></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js' defer></script>
 <script defer>
   $(document).ready(function(){
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});

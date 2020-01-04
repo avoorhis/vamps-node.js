@@ -255,7 +255,7 @@ router.post('/dco_project_list',  function(req, res) {
         }
         html += "<td>"
         for(n in prj.accessions){
-            html += "<a href='https://www.ncbi.nlm.nih.gov/bioproject?term="+prj.accessions[n]+"' target='_blank'>"+prj.accessions[n]+"</a><br>"
+            html += "<a href='https://www.ncbi.nlm.nih.gov/bioproject?term="+prj.accessions[n]+"' target='_blank'  rel='noopener'>"+prj.accessions[n]+"</a><br>"
         }
         html += "</td>"
         html += "<td>"+prj.latlon_status+"</td>"

@@ -213,7 +213,7 @@
                     <tr><td>SRA Accession(s)</td><td>
                         <% for(n in publish_data[key].sra_accessions){ %>                            
                             <% bp = publish_data[key].sra_accessions[n].bioproject %>
-                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>' target='_blank'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
+                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>' target='_blank' rel='noopener'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
                         <br>
                         <% } %>
                     </td></tr>

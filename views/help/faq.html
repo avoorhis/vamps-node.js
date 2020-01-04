@@ -195,23 +195,23 @@
             <h4><center>Sequencing Pipeline</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
             <p><strong>Our sequencing pipeline is public and the details are stored on GitHub. The links are here:</strong></p>
             <ul>
-            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline' target='_blank'>https://github.com/annaship/py_mbl_sequencing_pipeline</a>
-            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py' target='_blank'>https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py</a>
+            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline' target='_blank' rel='noopener'>https://github.com/annaship/py_mbl_sequencing_pipeline</a>
+            <li><a href='https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py' target='_blank' rel='noopener'>https://github.com/annaship/py_mbl_sequencing_pipeline/blob/master/pipeline/illumina_files.py</a>
             </ul>
             
             <p>The Steps in order are: Demultiplexing, Merging, Uniqueing, Chimera Checking and Taxonomy Assignment</p>
     
-            <p>We use <a href='http://merenlab.org/' target='_blank'>Meren's</a> scripts to perform some of these steps. You can find them here on his GitHub site: <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></p>
+            <p>We use <a href='http://merenlab.org/' target='_blank' rel='noopener'>Meren's</a> scripts to perform some of these steps. You can find them here on his GitHub site: <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank' rel='noopener'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></p>
             <ol>
                 <li><strong>Demultiplexing</strong></li>
                 <ul>
-                  <li><a href='https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex' target='_blank'>https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex</a></li>
+                  <li><a href='https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex' target='_blank' rel='noopener'>https://github.com/merenlab/illumina-utils/blob/master/scripts/iu-demultiplex</a></li>
                 </ul>
                 
                 
                 <br><li><strong>Merging (with <a href='#quality_control'>Quality Control</a>)</strong></li>
                 <ul>
-                  <li>From <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></li>
+                  <li>From <a href='https://github.com/merenlab/illumina-utils/tree/master/scripts' target='_blank' rel='noopener'>https://github.com/merenlab/illumina-utils/tree/master/scripts</a></li>
                   <ul>
                     <li>overlap: iu-merge-pairs</li>
                     <li>filter mismatches: iu-filter-merged-reads</li>
@@ -222,13 +222,13 @@
                 
                 <br><li><strong>Uniqueing</strong></li>
                 <ul>
-                <li><a href='https://gist.github.com/meren/abd5c6f014da9aa554a4' target='_blank'>https://gist.github.com/meren/abd5c6f014da9aa554a4</a></li>
+                <li><a href='https://gist.github.com/meren/abd5c6f014da9aa554a4' target='_blank' rel='noopener'>https://gist.github.com/meren/abd5c6f014da9aa554a4</a></li>
                 </ul>
                 
                 
                 <br><li><strong>Chimera Checking</strong></li>
                 <ul>
-                  <li>We use <a href='https://github.com/torognes/vsearch' target='_blank'>vsearch</a> for chimera checking (combining result from both ref and denovo)</li>
+                  <li>We use <a href='https://github.com/torognes/vsearch' target='_blank' rel='noopener'>vsearch</a> for chimera checking (combining result from both ref and denovo)</li>
                  
                     <li>[<b>sample ref:</b>] vsearch -uchime_ref ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chg -db rRNA16S.gold.fasta -uchimeout ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chimeras.db -chimeras ACAGTG_ACTGC_1_MERGED-MAX-MISMATCH-3.unique.chimeras.db.chimeric.fa -strand plus -notrunclabel</li>
                     <li>[<b>sample denovo:</b>] vsearch -uchime_denovo TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chg -uchimeout TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chimeras.txt -chimeras TTAGGC_NNNNCGACG_1_MERGED-MAX-MISMATCH-3.unique.chimeras.txt.chimeric.fa -notrunclabels</li>
@@ -238,8 +238,8 @@
                 
                 <br><li><strong>Taxonomy Assignment (using GAST)</strong></li>
                 <ul>
-                <li>gast_ill (<a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank'>https://github.com/annaship/BPC-scripts/blob/master/gast_ill</a>)</li>
-                <li>You also will need <a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank'>Taxonomy.pm</a> and taxonomy reference database files.</li>
+                <li>gast_ill (<a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank' rel='noopener'>https://github.com/annaship/BPC-scripts/blob/master/gast_ill</a>)</li>
+                <li>You also will need <a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank' rel='noopener'>Taxonomy.pm</a> and taxonomy reference database files.</li>
                 </ul>
             </ol>
         </div>
@@ -254,7 +254,7 @@
               <li>There are several steps in the quality control process. Some of these steps are tied up in other pipeline steps (See <a href='#pipeline'>Sequencing Pipeline</a> above).</li>
               <li>While demultiplexing we check if barcodes and indexes are the same as in provided metadata, if not reads are discarded.</li>
               <li>Merging read 1 and read 2 into fasta files. At this point we also discard low quality reads. Primers and barcodes are striped out.</li>
-              <li>For part of it "iu-merge-pairs" and "iu-filter-merged-reads" <a href='http://merenlab.org/' target='_blank'>Meren's</a> utilities are used. (See <a href='#pipeline'>Sequencing Pipeline</a> above)</li>
+              <li>For part of it "iu-merge-pairs" and "iu-filter-merged-reads" <a href='http://merenlab.org/' target='_blank' rel='noopener'>Meren's</a> utilities are used. (See <a href='#pipeline'>Sequencing Pipeline</a> above)</li>
               <ul>
                       
              
@@ -292,13 +292,13 @@ Q30 enforced? ..............................................  True
           <p><strong>GAST stands for <u>G</u>lobal <u>A</u>lignment for <u>S</u>equence <u>T</u>axonomy</strong>.</p>
           <p>It uses a reference database of SSU sequences to determine the taxonomy of hypervariable region tags. The specifics are described in the citation below.</p>
           <ul>
-          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank'>GAST Code on GitHub</a></li>
-          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank'>Taxonomy.pm perl module</a></li>
-          <li>Available GAST-formatted SSU <a href='https://vamps2.mbl.edu/resources/reference_data' target='_blank'>Reference Sets</a>.</li>
+          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/gast_ill' target='_blank' rel='noopener'>GAST Code on GitHub</a></li>
+          <li><a href='https://github.com/annaship/BPC-scripts/blob/master/Taxonomy.pm' target='_blank' rel='noopener'>Taxonomy.pm perl module</a></li>
+          <li>Available GAST-formatted SSU <a href='https://vamps2.mbl.edu/resources/reference_data' target='_blank' rel='noopener'>Reference Sets</a>.</li>
           </ul>
           
           Citation:
-          <a href='https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000255' target='_blank'>
+          <a href='https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000255' target='_blank' rel='noopener'>
           <pre>
 Huse SM, Dethlefsen L, Huber JA, Welch DM, Relman DA, Sogin ML (2008) 
 Exploring Microbial Diversity and Taxonomy Using SSU rRNA Hypervariable Tag Sequencing. 
@@ -349,7 +349,7 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
           </p>
           <p class='standard'><strong>Metadata file (for projects already in VAMPS)</strong></p>
           <p>This is a csv (comma separated values) file but the data are actually separated by &lt;TABS&gt; to make it more human readable.
-          	These files must conform to the <a href='http://qiime.org/documentation/file_formats.html' target='_blank'>qiime mapping file format</a>.
+          	These files must conform to the <a href='http://qiime.org/documentation/file_formats.html' target='_blank' rel='noopener'>qiime mapping file format</a>.
           	Since these are processed (trimmed) data that are being uploaded, the 'BarcodeSequence' and 'LinkerPrimerSequence' fields can be left empty
           	but the header names have to be present. The #SampleID field must be present and there can be no duplicate sample names.
           	The Description field must also be present and must be the last field. There is a handy 'validate_mapping_file.py' script available
@@ -388,7 +388,7 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
         relies upon on a two-thirds majority of the taxonomy for each cluster member; CATCHALL estimates the estimate richness. 
 <br><br>Citation:
 <pre>
-  Huse, S.M., D. Mark Welch, H.G Morrison, and M.L. Sogin. (2010) <a href='http://www3.interscience.wiley.com/cgi-bin/fulltext/123320293/HTMLSTART' target='_blank'>
+  Huse, S.M., D. Mark Welch, H.G Morrison, and M.L. Sogin. (2010) <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2909393/' target='_blank' rel='noopener'>
   Ironing out the wrinkles in the rare biosphere</a>. <i>Environmental Microbiology</i> early view.
 </pre>
         </div>
@@ -400,8 +400,8 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
           <h4><center>Phyloseq and ggplot2</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</span></a>
 
 					<p class='standard'><strong>What is Phyloseq?</strong></p>
-					<p>Phyloseq is an R library for microbiome data: (<a href='https://joey711.github.io/phyloseq/' target='_blank'>https://joey711.github.io/phyloseq/</a>).
-						<br>VAMPS uses R (<a href='https://www.r-project.org/' target='_blank'>https://www.r-project.org/</a>) and Python (<a href='https://www.python.org/' target='_blank'>https://www.python.org/</a>) scripts to produce some of the visualizations.
+					<p>Phyloseq is an R library for microbiome data: (<a href='https://joey711.github.io/phyloseq/' target='_blank' rel='noopener'>https://joey711.github.io/phyloseq/</a>).
+						<br>VAMPS uses R (<a href='https://www.r-project.org/' target='_blank'>https://www.r-project.org/</a>) and Python (<a href='https://www.python.org/' target='_blank' rel='noopener'>https://www.python.org/</a>) scripts to produce some of the visualizations.
 						<br><br>
 						To use the Phyloseq library with your VAMPS data download the three Phyloseq files from the 'Display Choices' Page:
 						<br>Import them directly into R (or R-script) as shown below to create a Phyloseq Object:
@@ -420,11 +420,11 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
 							<li>physeq <- phyloseq(OTU,TAX,MAP)
 						</ul>
 					</p>
-					<p>See the <a href='https://joey711.github.io/phyloseq/'>Phyloseq website</a> for more help and examples.</p>
+					<p>See the <a href='https://joey711.github.io/phyloseq/' target='_blank' rel='noopener'>Phyloseq website</a> for more help and examples.</p>
 					
 					<br><p class='standard'><strong>What is ggplot2</strong></p>
 					ggplot2 is an R library that provides quality graphic displays using various big data formats such as VAMPS downloads.
-					<br>See <a href='https://ggplot2.tidyverse.org/'>https://ggplot2.tidyverse.org/</a> for more information.
+					<br>See <a href='https://ggplot2.tidyverse.org/' target='_blank' rel='noopener'>https://ggplot2.tidyverse.org/</a> for more information.
 					 
 					
         </div>
@@ -505,7 +505,7 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
           		<tr><td>dna_region</td><td><a class='pull-right' href='/user_data/required_metadata_options'>More Information</a></td></tr>
           		<tr><td>domain</td><td><a class='pull-right' href='/user_data/required_metadata_options'>More Information</a></td></tr>
           		
-          		<tr><td>env_biome; env_feature; env_material</td><td><a href='http://www.ebi.ac.uk/ols/ontologies/envo' target='_blank'>Envo Ontology Browser</a> Biome: Description of the site;
+          		<tr><td>env_biome; env_feature; env_material</td><td><a href='http://www.ebi.ac.uk/ols/ontologies/envo' target='_blank' rel='noopener'>Envo Ontology Browser</a> Biome: Description of the site;
           			<br>Feature: Description of feature in the biome where sample was obtained;<a class='pull-right' href='/user_data/required_metadata_options'>More Information</a>
           			<br>Material: Description of material</td></tr>
           		<tr><td>env_package</td><td><a class='pull-right' href='/user_data/required_metadata_options'>More Information</a></td></tr>
@@ -552,14 +552,14 @@ PLoS Genet 4(11): e1000255. https://doi.org/10.1371/journal.pgen.1000255
 						<br>
 						<p class='standard'><strong>TaxBySeq File and Metadata from Old (legacy) VAMPS</strong></p>
 							<ul>
-								<li>See <a href='https://vamps.mbl.edu/exporter/export_data.php' target='_blank'>VAMPS Exports</a></li>
+								<li>See <a href='https://vamps.mbl.edu/exporter/export_data.php' target='_blank' rel='noopener'>VAMPS Exports</a></li>
 								<li>Download the TaxBySeq and Metadata files to your harddrive.</li>
 								<li>Import them as a pair either directly (still compressed) or uncompressed.</li>
 							</ul>
                         <br>
 						<p class='standard'><strong>JSON Configuration File</strong></p>
 							<ul>
-								<li>Required to be valid JSON (try <a href='https://jsonlint.com'>https://jsonlint.com</a>)</li>	
+								<li>Required to be valid JSON (try <a href='https://jsonlint.com' target='_blank' rel='noopener'>https://jsonlint.com</a>)</li>
 								<li>Requires "source":"VAMPS*"</li>								
 								<li>Requires id_name_hash.ids: [ ] --A valid list of dataset ids that you have permissions to view.</li>
 								<li>Optional:

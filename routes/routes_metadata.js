@@ -394,7 +394,7 @@ router.post('/metadata_upload',
     form.field("iron_iii", helpers.get_second("iron_iii")).trim().custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("isol_growth_cond", helpers.get_second("isol_growth_cond")).trim().entityEncode().array(),
     // form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/).required().entityEncode().array(),
-    //, see <a href='https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees' target='_blank'>a converter</a>
+    //, see <a href='https://www.latlong.net/degrees-minutes-seconds-to-decimal-degrees' target='_blank' rel='noopener'>a converter</a>
     form.field("latitude", helpers.get_second("latitude")).trim().custom(helpers.latitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
     form.field("longitude", helpers.get_second("longitude")).trim().custom(helpers.longitude_valid).is(/^$|^[0-9.-]+$/, "%s should be in decimal degrees (numbers only). Please see the Tutorial for help").required().entityEncode().array(),
     form.field("magnesium", helpers.get_second("magnesium")).trim().custom(helpers.numbers_n_period).entityEncode().array(),

@@ -52,6 +52,7 @@ module.exports = {
 
 
   }, // end color_legend
+  // test: frequency table
   counts_matrix: function(req, res) {
     console.log('In routes_images/function: images/counts_matrix')
 
@@ -135,9 +136,9 @@ module.exports = {
                   && taxitems[t] != 'Unknown'
                   && taxitems[t] != 'Unassigned'){
                   ttip = '<span class="taxa">External "'+taxitems[t]+'" Links:'
-                  ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank">Wikipedia</a></li>'
-                  ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank">NCBI</a></li>'
-                  ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank">EOL</a></li>'
+                  ttip += '<li><a href="https://en.wikipedia.org/wiki/'+taxitems[t]+'" target="_blank" rel="noopener">Wikipedia</a></li>'
+                  ttip += '<li><a href="https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?name='+taxitems[t]+'" target="_blank" rel="noopener">NCBI</a></li>'
+                  ttip += '<li><a href="http://www.eol.org/search?q='+taxitems[t]+'" target="_blank" rel="noopener">EOL</a></li>'
                   ttip += '</span>'
                   ttip2 = taxitems[t]
                 }

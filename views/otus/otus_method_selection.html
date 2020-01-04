@@ -33,8 +33,8 @@
 									<td><input type='radio' name='otu_method' value='closed_ref' onclick="adjust_radios('closed_ref')">
 									</td><td><div class='' style='width:300px'>
 										Closed Reference OTUs using the Greengenes database	and USEARCH
-                    <br><small>External Links: <ul><li><a href='http://www.drive5.com/usearch/' target='_blank'>USEARCH website</a></li>
-                    <li><a href='http://greengenes.lbl.gov/cgi-bin/nph-index.cgi' target='_blank'>Greengenes website</a></li></ul></small>
+                    <br><small>External Links: <ul><li><a href='http://www.drive5.com/usearch/' target='_blank' rel='noopener'>USEARCH website</a></li>
+                    <li><a href='http://greengenes.lbl.gov/cgi-bin/nph-index.cgi' target='_blank' rel='noopener'>Greengenes website</a></li></ul></small>
 									</div>
 									</td>
 									<td>3%<br><input type='radio' id='ref_otu_size3' disabled name='ref_otu_size' value='3'></td>
@@ -50,7 +50,7 @@
 										<input type='radio' checked name='otu_method' value='uclust' onclick="adjust_radios('uclust')">
 										</td><td>
 										UCLUST
-                    <br><small>External Link: <ul><li><a href='http://drive5.com/usearch/manual/uclust_algo.html' target='_blank'>UCLUST website</a></li>
+                    <br><small>External Link: <ul><li><a href='http://drive5.com/usearch/manual/uclust_algo.html' target='_blank' rel='noopener'>UCLUST website</a></li>
                     </ul></small>
                   </td>
 									<td>3%<br><input type='radio' id='ucl_otu_size3' checked name='ucl_otu_size' value='3'></td>
@@ -78,7 +78,7 @@
 									<td><input type='radio' name='otu_method' value='crop' onclick="adjust_radios('crop')">
 										</td><td>
 										CROP - Bayesian Clustering
-                    <br><small>External Link: <ul><li><a href='https://github.com/tingchenlab/CROP' target='_blank'>CROP website</a></li>
+                    <br><small>External Link: <ul><li><a href='https://github.com/tingchenlab/CROP' target='_blank' rel='noopener'>CROP website</a></li>
                     </ul></small>
 									</td>
 									<td>3%<br><input type='radio' id='crp_otu_size3' disabled name='crp_otu_size' value='3'></td>
@@ -96,9 +96,9 @@
 
 </form>
  <% include ../add_ins/end.ejs %>
-  <script type="text/javascript" src="/javascripts/global.js" defer></script>>
-  <script type="text/javascript" src="/javascripts/common_selection.js" defer></script>>
-  <script type="text/javascript" src="/javascripts/bootstrap-select.js" defer></script>>
-  <script type="text/javascript" src="/javascripts/otus.js" defer></script>>
+  <script type="text/javascript" src="/javascripts/global.js" defer></script>
+  <script type="text/javascript" src="/javascripts/common_selection.js" defer></script>
+  <script type="text/javascript" src="/javascripts/bootstrap-select.js" defer></script>
+  <script type="text/javascript" src="/javascripts/otus.js" defer></script>
  </body>
  </html>
