@@ -1,5 +1,4 @@
 function create_geospatial(){
-    
     var loc_data = [];
     var lat_lon_collector = {}
     var pid_collector = {}
