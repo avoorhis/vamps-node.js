@@ -565,7 +565,6 @@ function populate_secondary_select(args) {
 }
 
 fnAdjustTable = function () {
-
   var colCount = $('#firstTr').find('td').length; //get total number of column
   // var colCount = $('#fixed_table_base').find('tr:first').find('td.header_divider').length; //get total number of column
   var m            = 0;
