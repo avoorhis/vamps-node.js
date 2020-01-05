@@ -406,7 +406,7 @@ function toggle_visual_element(table_div, tog, btn){
   }
 }
 
-
+// TODO: JSHint: This function's cyclomatic complexity is too high. (22)(W074)
 function create_viz(visual, ts, new_window, cts_local) {
 
     if(visual === 'counts_matrix'){
@@ -1087,7 +1087,7 @@ function download_svg(image, ts) {
 //
 //
 function create_dheatmap(ts, new_window) {
-      console.log('in view_selection: HM')
+      console.log('in view_selection: HM');
       if(new_window){
         var htmlstring = document.getElementById('dheatmap_div').innerHTML;
         function openindex()
@@ -1122,7 +1122,6 @@ function create_dheatmap(ts, new_window) {
       //args += "&ts="+ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
-       
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.open("POST", '/api/create_image', true);
       //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
