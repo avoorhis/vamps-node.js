@@ -681,7 +681,7 @@ class CreateDataObj {
     }
     else {
 
-      console.log("In get_primers_info primer_suite_id second if/else");
+      // console.log("In get_primers_info primer_suite_id second if/else");
 
       try {
         for (let i = 0; i < MD_PRIMER_SUITE[primer_suite_id].primer.length; i++) {
