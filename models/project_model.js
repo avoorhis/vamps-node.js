@@ -226,13 +226,13 @@ class Project {
 
   get_current_project_abstract_data(project) {
     console.time('TIME: get_projects_abstract_data');
-    let current_abstr = {};
-    current_abstr.pdfs = [];
-    if (project.startsWith('DCO')) {
-      let static_addr = path.join(file_path_obj.get_path_to_static_downloads(this.req));
-      let all_abstract_data = this.get_projects_abstract_data(project, static_addr);
-      let project_prefix = this.get_project_prefix(project);
-      current_abstr = all_abstract_data[project_prefix];
+    let static_addr = path.join(file_path_obj.get_path_to_static_downloads(this.req));
+    let all_abstract_data = this.get_projects_abstract_data(project, static_addr);
+    let project_prefix    = this.get_project_prefix(project);
+    let current_abstr     = all_abstract_data[project_prefix];
+    if (typeof current_abstr === 'undefined') {
+      current_abstr      = {};
+      current_abstr.pdfs = [];
     }
     console.timeEnd('TIME: get_projects_abstract_data');
 
@@ -241,12 +241,12 @@ class Project {
 
   get_projects_abstract_data(project, path_to_static) {
 
-    let info_file     = '';
-    let abstract_data = {};
-    // if (project.substring(0, 3) === 'DCO') {
-    info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
-    abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
-    // }
+    var info_file     = '';
+    var abstract_data = {};
+    if (project.substring(0, 3) === 'DCO') {
+      info_file     = path.join(path_to_static, 'abstracts', 'DCO_info.json');
+      abstract_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
+    }
 
     // console.timeEnd('TIME: get_projects_abstract_data');
     return abstract_data;
