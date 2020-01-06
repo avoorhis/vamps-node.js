@@ -57,17 +57,6 @@ class Project {
     this.project_obj = temp_project_obj;
   }
 
-  // make_project_obj() {
-  //   if ((helpers.isInt(this.pid)) && this.pid > 0) {
-  //     this.make_project_obj_with_existing_project_info_by_pid();
-  //   }
-  //   else {
-  //     this.make_project_obj_from_new_form_info();
-  //   }
-  //
-  //   console.log("CCHH this.project_obj = ", this.project_obj);
-  // }
-
   get_pid(project_name) {
     var pid = this.pid;
     if (typeof PROJECT_INFORMATION_BY_PNAME[project_name] !== 'undefined') {
