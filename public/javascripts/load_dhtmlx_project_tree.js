@@ -101,7 +101,7 @@ function set_dataset_count(id){
     var len = 0
     if(Object.keys(datasets_local).length > 0){
       // DATA_TO_OPEN
-      for(p in datasets_local){
+      for (let p in datasets_local){
         len += datasets_local[p].length
       }
       // re-set dataset_local
