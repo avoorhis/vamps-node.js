@@ -76,6 +76,7 @@ class Project {
     return pid;
   }
 
+  // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
   make_project_obj_from_new_csv(project_name, data_arr) {
     // TODO: transpose and unique data_arr
     // That assumes one project per submission.
