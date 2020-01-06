@@ -213,6 +213,11 @@ function get_metadata_hash(md_selected) {
 // <% if (samples_number > 0){ %>
 // <% for (let i = 0; i < Number(samples_number); i++) { %>
 
+function no_project_name(req, res) {
+  req.flash('fail', 'CSV must have a project name, see the template.');
+  res.redirect("/metadata/metadata_new_csv_upload");
+}
+
 // metadata_new_csv
 router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
   res.render('metadata/metadata_new_csv_upload', {
@@ -238,6 +243,11 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     const cur_project = new Project(req, res, 0, owner_id);
     const project_name  = (cur_project.get_project_name_from_file_name(full_file_name) || req.body.project) || helpers.unique_array(transposed.project)[0];
     console.log("PPP0: project_name", project_name);
+
+    if (!project_name) {
+      no_project_name(req, res);
+      return;
+    }
 
     const pid = cur_project.get_pid(project_name);
     console.log("PPP1: pid", pid);
@@ -586,8 +596,6 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
 function new_csv(req, res, cur_project, project_name, transposed) {
   // console.time("TIME: in new_csv");
   console.log("IN: new_csv");
-
-// if (pid === 0) { // new csv
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
   let project_obj = cur_project.project_obj;
   // console.log('PPP00 project_obj', project_obj);
@@ -595,21 +603,20 @@ function new_csv(req, res, cur_project, project_name, transposed) {
 
   if (project_obj.oid === 0) {
     req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
-    ', last_name: ' + project_obj.last_name +
-    ', email: ' + project_obj.email +
-    ', institution: ' + project_obj.institution);
+      ', last_name: ' + project_obj.last_name +
+      ', email: ' + project_obj.email +
+      ', institution: ' + project_obj.institution);
     res.redirect("/");
   } else {
     cur_project.addProject(project_obj, function (err, rows) {
       console.log('New project SAVED');
       // console.log('WWW rows', rows);
-      let pid           = 0;
+      let pid = 0;
       let affected_rows = 0;
       if (typeof rows !== "undefined") {
-        pid           = rows.insertId;
+        pid = rows.insertId;
         affected_rows = rows.affectedRows;
-      }
-      else {
+      } else {
         console.log("Problems with Project.addProject, rows == undefined!");
       }
       cur_project.project_obj.pid = pid;
@@ -622,14 +629,12 @@ function new_csv(req, res, cur_project, project_name, transposed) {
           // console.log("RRR1, rows from getProjectByName", rows);
           if (typeof rows !== "undefined") {
             cur_project.project_obj.pid = rows["0"].project_id;
-          }
-          else {
+          } else {
             console.log("Problems with Project.getProjectByName, rows == undefined!");
           }
           callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
         });
-      }
-      else {
+      } else {
         callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
       }
       // console.timeEnd("TIME: in new_csv");
