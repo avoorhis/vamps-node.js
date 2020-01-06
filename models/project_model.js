@@ -1,9 +1,10 @@
 // var mysql = require('mysql2');
-var helpers = require(app_root + '/routes/helpers/helpers');
-var User    = require(app_root + '/models/user_model');
-var fs      = require('fs');
-var path    = require('path');
-var config  = require(app_root + '/config/config');
+let helpers = require(app_root + '/routes/helpers/helpers');
+let User    = require(app_root + '/models/user_model');
+let fs      = require('fs');
+let path    = require('path');
+const file_controller = require(app_root + '/controllers/fileController');
+const file_path_obj = new file_controller.FilePath();
 
 class Project {
 
@@ -224,7 +225,8 @@ class Project {
   }
 
   get_current_project_abstract_data(project) {
-    let static_addr = config.PATH_TO_STATIC_DOWNLOADS || this.req.CONFIG.PATH_TO_STATIC_DOWNLOADS;
+    console.time('TIME: get_projects_abstract_data');
+    let static_addr = path.join(file_path_obj.get_path_to_static_downloads(this.req));
     let all_abstract_data = this.get_projects_abstract_data(project, static_addr);
     let project_prefix    = this.get_project_prefix(project);
     let current_abstr     = all_abstract_data[project_prefix];
@@ -232,11 +234,12 @@ class Project {
       current_abstr      = {};
       current_abstr.pdfs = [];
     }
+    console.timeEnd('TIME: get_projects_abstract_data');
+
     return current_abstr;
   }
 
   get_projects_abstract_data(project, path_to_static) {
-    // console.time('TIME: get_projects_abstract_data');
 
     var info_file     = '';
     var abstract_data = {};

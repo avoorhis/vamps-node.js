@@ -3,6 +3,7 @@ let path = require('path');
 let spawn = require('child_process').spawn;
 let helpers = require(app_root + '/routes/helpers/helpers');
 const C = require(app_root + '/public/constants');
+let config  = require(app_root + '/config/config');
 
 class FileUtil {
   constructor(req, res) {
@@ -275,6 +276,10 @@ class FilePath {
 
   get_static_script_file_path(req) {
     return req.CONFIG.PATH_TO_STATIC_BASE + "/";
+  }
+
+  get_path_to_static_downloads(req) {
+    return req.CONFIG.PATH_TO_STATIC_DOWNLOADS || config.PATH_TO_STATIC_DOWNLOADS;
   }
 
   get_viz_scripts_path(req) {
