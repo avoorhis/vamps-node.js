@@ -255,7 +255,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
     met_obj.get_curr_country_from_new_type_csv(transposed);
 
     if (typeof req.body.project === 'undefined' || pid === 0) {
-      new_csv(req, res, cur_project, project_name, transposed);
+      new_csv(cur_project, project_name, transposed);
     }
     // console.timeEnd("TIME: in post /metadata_new_csv_upload");
   }
@@ -546,7 +546,7 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
   let pid           = cur_project.get_pid(project_name);
 
   if (typeof req.body.project === 'undefined' || pid === 0) {
-    new_csv(req, res, cur_project, project_name, transposed);
+    new_csv(cur_project, project_name, transposed);
   }
   else {
     cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
@@ -593,8 +593,10 @@ function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) 
   met_obj.make_metadata_object_with_new_datasets(req, res, cur_project.project_obj.pid, data_arr);
 }
 
-function new_csv(req, res, cur_project, project_name, transposed) {
+function new_csv(cur_project, project_name, transposed) {
   // console.time("TIME: in new_csv");
+  let req = cur_project.req;
+  let res = cur_project.res;
   console.log("IN: new_csv");
   cur_project.make_project_obj_from_new_csv(project_name, transposed);
   let project_obj = cur_project.project_obj;
