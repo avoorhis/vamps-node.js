@@ -91,5 +91,5 @@ newrelic.js
 Rplots.pdf
 .RData
 abstracts/DCO_info.json
-routes/.Rhistory
 public/scripts/visualization_scripts/.Rhistory
+routes/.Rhistory
