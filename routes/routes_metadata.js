@@ -582,15 +582,26 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
   // console.timeEnd("TIME: make_metadata_object_from_csv");
 }
 
-function callback_for_add_project_from_new_csv(req, res, cur_project, data_arr) {
-  cur_project.add_info_to_project_globals(cur_project.project_obj, cur_project.project_obj.pid);
+function callback_for_add_project_from_new_csv(cur_project, data_arr) {
+  let req = cur_project.req;
+  let res = cur_project.res;
+  let pid = cur_project.project_obj.pid;
+  cur_project.add_info_to_project_globals(cur_project.project_obj, pid);
   //   insertId: 1117,
   //  TODO: save new datasets
-  const met_obj = new metadata_controller.CreateDataObj(req, res, cur_project.project_obj.pid, []);
+  const met_obj = new metadata_controller.CreateDataObj(req, res, pid, []);
 
   //new,
   // TODO: call only after get the pid!!!
-  met_obj.make_metadata_object_with_new_datasets(req, res, cur_project.project_obj.pid, data_arr);
+  met_obj.make_metadata_object_with_new_datasets(req, res, pid, data_arr);
+}
+
+function no_user(req, res, project_obj) {
+  req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
+    ', last_name: ' + project_obj.last_name +
+    ', email: ' + project_obj.email +
+    ', institution: ' + project_obj.institution);
+  res.redirect("/");
 }
 
 function new_csv(cur_project, project_name, transposed) {
@@ -604,11 +615,12 @@ function new_csv(cur_project, project_name, transposed) {
   // console.log('PPP01 JSON.stringify(project_obj)', JSON.stringify(project_obj));
 
   if (project_obj.oid === 0) {
-    req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
-      ', last_name: ' + project_obj.last_name +
-      ', email: ' + project_obj.email +
-      ', institution: ' + project_obj.institution);
-    res.redirect("/");
+    no_user(req, res, project_obj);
+    // req.flash('fail', 'There is no such user: first_name: ' + project_obj.first_name +
+    //   ', last_name: ' + project_obj.last_name +
+    //   ', email: ' + project_obj.email +
+    //   ', institution: ' + project_obj.institution);
+    // res.redirect("/");
   } else {
     cur_project.addProject(project_obj, function (err, rows) {
       console.log('New project SAVED');
@@ -634,10 +646,10 @@ function new_csv(cur_project, project_name, transposed) {
           } else {
             console.log("Problems with Project.getProjectByName, rows == undefined!");
           }
-          callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
+          callback_for_add_project_from_new_csv(cur_project, transposed);
         });
       } else {
-        callback_for_add_project_from_new_csv(req, res, cur_project, transposed);
+        callback_for_add_project_from_new_csv(cur_project, transposed);
       }
       // console.timeEnd("TIME: in new_csv");
     });
