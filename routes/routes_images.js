@@ -240,27 +240,24 @@ module.exports = {
   dheatmap: function(req, res){
     console.log('In routes_images/function: images/dheatmap')
     //console.log(req.session)
-    var ts = req.session.ts
-    matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
-    console.log(matrix_file_path)
+    let ts = req.session.ts;
+    let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
+    console.log(matrix_file_path);
 
-    //var pwd = file_path_obj.get_tmp_file_path(req);
+    //let pwd = file_path_obj.get_tmp_file_path(req);
 
-
-    var html = '';
-    var title = 'VAMPS';
-
-    //var distmtx_file_name = ts+'_distance.csv';
-    //var distmtx_file = path.join(file_path_obj.get_tmp_file_path(req), distmtx_file_name);
-    var dist_json_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_distance.json')
-    console.log(dist_json_file_path)
-    var options = {
+    let html = '';
+    // let title = 'VAMPS';
+    
+    let dist_json_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_distance.json');
+    console.log(dist_json_file_path);
+    let options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', file_path_obj.get_tmp_file_path(req), '--prefix', ts],
     };
 
-    console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
-    var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
+    console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
+    let heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
       env:{'PATH':req.CONFIG.PATH,
         'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
       detached: true,
@@ -268,15 +265,14 @@ module.exports = {
       stdio: 'pipe' // stdin, stdout, stderr
     });
 
-
-    var stdout = '';
+    let stdout = '';
     heatmap_process.stdout.on('data', function heatmapProcessStdout(data) {
       //console.log('stdout: ' + data);
       //data = data.toString().replace(/^\s+|\s+$/g, '');
       data = data.toString();
       stdout += data;
     });
-    var stderr = '';
+    let stderr = '';
     heatmap_process.stderr.on('data', function heatmapProcessStderr(data) {
 
       console.log('stderr: ' + data);
@@ -288,44 +284,48 @@ module.exports = {
     heatmap_process.on('close', function heatmapProcessOnClose(code) {
       console.log('heatmap_process process exited with code ' + code);
 
-      //var last_line = ary[ary.length - 1];
+      //let last_line = ary[ary.length - 1];
       if(code === 0){   // SUCCESS
+        //distance_matrix = JSON.parse(stdout);
+        let distance_matrix = stdout;
+
         try{
-          console.log('dist_json_file_path',dist_json_file_path)
+          console.log('dist_json_file_path', dist_json_file_path);
 
           fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
-            if (err) throw err;
+            if (err) {throw err}
             //distance_matrix = JSON.parse(data);
-            metadata = {}
-            metadata.numbers_or_colors = 'colors'
-            metadata.split = false
-            metadata.metric = req.session.selected_distance
-            var html = module.exports.create_hm_table(req, JSON.parse(distance_matrix), metadata )
+            let metadata = {};
+            metadata.numbers_or_colors = 'colors';
+            metadata.split = false;
+            metadata.metric = req.session.selected_distance;
+            html = module.exports.create_hm_table(req, JSON.parse(distance_matrix), metadata);
 
-            var outfile_name = ts + '-dheatmap-api.html'
-            outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-            console.log('outfile_path:',outfile_path)
-            result = save_file(html, outfile_path) // this saved file should now be downloadable from jupyter notebook
+            let outfile_name = ts + '-dheatmap-api.html';
+            let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+            console.log('outfile_path:', outfile_path);
+            // let result =
+            save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
             //console.log(result)
+            let data = {};
+            data.html = html;
+            data.numbers_or_colors = '';
+            data.filename = outfile_name;
             //res.send(outfile_name)
-            var data = {}
-            data.html = html
-            data.numbers_or_colors = ''
-            data.filename = outfile_name
-            //res.send(outfile_name)
-            res.json(data)
+            res.json(data);
 
           });
-          if(req.CONFIG.site == 'vamps' ){
+          if (req.CONFIG.site === 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log(stdout)
           }
-          //distance_matrix = JSON.parse(stdout);
-          distance_matrix = stdout;
+          else{
+            console.log(stdout);
+          }
+          // //distance_matrix = JSON.parse(stdout);
+          // let distance_matrix = stdout;
         }
         catch(err){
-          distance_matrix = JSON.stringify({'ERROR':err});
+          distance_matrix = JSON.stringify({'ERROR': err});
         }
 
       }else{
