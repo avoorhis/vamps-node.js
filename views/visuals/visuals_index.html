@@ -144,7 +144,7 @@
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <!-- <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script> -->
 
-<script>
+<script defer>
 
     // code for tooltips
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
@@ -237,10 +237,9 @@
           if (event.type == 'mousemove' && $link.data('tipActive')) {
             tip.position(event);
           }
-
      });
 </script>
-<script type="text/javascript" src="/javascripts/visuals_index.js"></script>
+<script type="text/javascript" src="/javascripts/visuals_index.js" async></script>
  </body>
  </html>
 
