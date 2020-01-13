@@ -1,7 +1,9 @@
 // for newrelic: start in config.js
-var config = require('./config/config');
-connection = require('./config/database').pool;
-var consts 		= require('./public/constants');
+const config = require('./config/config');
+const dbconn = require('./config/database').pool;
+// explicitly makes conn global
+global.connection = dbconn;
+const consts 		= require('./public/constants');
 
 
 // anna's
@@ -49,59 +51,52 @@ var consts 		= require('./public/constants');
 //   ACC_CREAT  : 10 /*create non-existing files  */
 // };
 
-var compression = require('compression');
-var express = require('express');
-var expressSanitizer = require('express-sanitizer');
+const compression = require('compression');
+const express = require('express');
+const expressSanitizer = require('express-sanitizer');
 // var expressValidator = require('express-validator');
 // const { check, validationResult } = require('express-validator');
 
 //var expose = require('express-expose');
-var router = express.Router();
-var session = require('express-session');
-var path = require('path');
+const router = express.Router();
+const session = require('express-session');
+const path = require('path');
 global.app_root = path.resolve(__dirname);
 //var hdf5 = require('hdf5');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var flash = require('express-flash');
-var passport = require('passport');
-var favicon = require('serve-favicon');
-var fs = require('fs-extra');
-var zlib = require('zlib');
-
-//var db = require('mysql2');
-// without var declaration connection is global
-// needed for DATASETS initialization
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const flash = require('express-flash');
+const passport = require('passport');
+const favicon = require('serve-favicon');
+const fs = require('fs-extra');
+const zlib = require('zlib');
 
 
-
-
-
-var routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
-var users     = require('./routes/routes_users');
-var tmp       = require('./routes/routes_tmp');
-var user_data = require('./routes/routes_user_data');
-var search    = require('./routes/routes_search');
-var projects  = require('./routes/routes_projects');
-var datasets  = require('./routes/routes_datasets');
-var help      = require('./routes/routes_help');
-var resources = require('./routes/routes_resources');
-var admin     = require('./routes/routes_admin');
-var oligotyping = require('./routes/routes_oligotyping');
-var otus        = require('./routes/routes_otus');
-var api        = require('./routes/routes_api');
-var portals    = require('./routes/routes_portals');
-var metadata   = require('./routes/routes_metadata');
-var metagenome = require('./routes/routes_metagenome');
+const routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
+const users     = require('./routes/routes_users');
+const tmp       = require('./routes/routes_tmp');
+const user_data = require('./routes/routes_user_data');
+const search    = require('./routes/routes_search');
+const projects  = require('./routes/routes_projects');
+const datasets  = require('./routes/routes_datasets');
+const help      = require('./routes/routes_help');
+const resources = require('./routes/routes_resources');
+const admin     = require('./routes/routes_admin');
+const oligotyping = require('./routes/routes_oligotyping');
+const otus        = require('./routes/routes_otus');
+const api        = require('./routes/routes_api');
+const portals    = require('./routes/routes_portals');
+const metadata   = require('./routes/routes_metadata');
+const metagenome = require('./routes/routes_metagenome');
 //console.log('test')
-var visuals = require('./routes/visuals/routes_visualization');
+const visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
-var expressSanitized = require('express-sanitized');
+const expressSanitized = require('express-sanitized');
 // add timestamps in front of log messages
 require('console-stamp')(console, { pattern: 'yyyy/mm/dd HH:MM:ss.l' });
 
-var app = express();
+const app = express();
 app.set('appName', 'VAMPS');
 require('./config/passport')(passport, connection); // pass passport for configuration
 
@@ -170,7 +165,7 @@ app.use(function(req, res, next){
 	   this.send('We cannot reach the database right now, please try again later.');
 	   return;
 	 }else{
-	    req.db = connection;
+	    req.db = connection; // not needed because connection is global
 	    req.CONSTS = consts;
 	    req.CONFIG = config;
 	    return next();

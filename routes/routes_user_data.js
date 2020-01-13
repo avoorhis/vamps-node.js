@@ -4293,7 +4293,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 // DOWNLOAD SEQUENCES
 //
 router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
-  var db = req.db;
+  
   console.log('seqs req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -4372,7 +4372,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 
   var wstream = fs.createWriteStream(out_file_path);
   var rs = new Readable();
-  var collection = db.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
+  var collection = connection.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
     if (err) {
         console.log('query ERROR')
         throw err;
@@ -4450,7 +4450,7 @@ router.get('/required_metadata_options', function(req, res) {
 //
 //TODO: function is overly complex (cyclomatic complexity = 26)
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
-  var db = req.db;
+  
   const file_util_obj = new file_controller.FileUtil(req, res);
 
   console.log('metadata download POST req.body-->>');
@@ -4683,7 +4683,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //
 // router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
 //   
-//   var db = req.db;
+//  
 //   console.log('metadate download GET req.body-->>');
 //   
 //   var timestamp = +new Date();  // millisecs since the epoch!
@@ -4803,7 +4803,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 // DOWNLOAD MATRIX
 //
 router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res) {
-    var db = req.db;
+    
     console.log('matrix req.body-->>');
     console.log(req.body);
     //var timestamp = +new Date();  // millisecs since the epoch!

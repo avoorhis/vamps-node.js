@@ -64,7 +64,7 @@ router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
     var phyla = []
     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
-    var query = req.db.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, function (err, rows, fields){
         
         for(i in rows){
             //console.log(rows[i])
@@ -155,7 +155,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
         var phyla = []
         var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
-        var query = req.db.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, function (err, rows, fields){
         
             for(i in rows){
                 //console.log(rows[i])
@@ -192,7 +192,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     var latlon_datasets = {}
     latlon_datasets.points = {}
     taxa_collector = {}
-    var query = req.db.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, function (err, rows, fields){
             if (err) return(err);
             console.log('Long Query Finished')
             if(rows.length == 0){
@@ -284,7 +284,7 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
         var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
         console.log(qSelect)
        
-        var query = req.db.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, function (err, rows, fields){
             if (err) return(err);
             for(i in rows){
                 if(rows[i][rank]){
@@ -502,7 +502,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	}
 	qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 	console.log(qSelect);
-	var query = req.db.query(qSelect, function (err, rows, fields){
+	var query = connection.query(qSelect, function (err, rows, fields){
     if (err) {
         req.flash('fail', 'SQL Error: '+err);
         res.redirect('search_index#taxonomy');

@@ -4,7 +4,7 @@
 
 /*jshint multistr: true */
 
-var helpers = require('./helpers');
+const helpers = require('./helpers');
 
 // Private
 function make_count_dict(row, dataset_seq_tax_dict)

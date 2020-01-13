@@ -1,10 +1,10 @@
 // LOAD_ALL_DATASETS.js
-var express = require('express');
-var router = express.Router();
-var queries = require('./queries');
-var helpers = require('./helpers/helpers');
-var config  = require('../config/config');
-var async = require('async');
+const express = require('express');
+let router = express.Router();
+const queries = require('./queries');
+const helpers = require('./helpers/helpers');
+const config  = require('../config/config');
+const async = require('async');
 const global_vars_controller = require(app_root + '/controllers/globalVarsController');
 const global_vars = new global_vars_controller.GlobalVars();
 

@@ -552,7 +552,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function 
     res.send('FAILED: You cannot inactivate yourself!');
   } else {
     delete ALL_USERS_BY_UID[uid_to_delete]
-    req.db.query(queries.inactivate_user(uid_to_delete), function (err, rows) {
+    connection.query(queries.inactivate_user(uid_to_delete), function (err, rows) {
       if (err) {
         response = 'FAILED: sql error ' + err
       } else {
@@ -616,7 +616,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
 
   } else {
 
-    req.db.query(queries.get_user_by_name(new_user.username), function (err, rows) {
+    connection.query(queries.get_user_by_name(new_user.username), function (err, rows) {
       if (err) {
         console.log(err);
         req.flash('fail', err);
@@ -638,7 +638,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
         newUserMysql.security_level = 50;  //reg user
         var insertQuery             = queries.insert_new_user(newUserMysql)
 
-        req.db.query(insertQuery, function (err, rows) {
+        connection.query(insertQuery, function (err, rows) {
           if (err) {
             console.log(insertQuery);
             console.log(err);
@@ -704,7 +704,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 
     var updateQuery = queries.reset_user_password_by_uid(password, uid)
     console.log(updateQuery);
-    req.db.query(updateQuery, function (err, rows) {
+    connection.query(updateQuery, function (err, rows) {
       if (err) {
         req.flash('fail', 'FAILED: sql error ' + err);
       } else {
@@ -1463,7 +1463,7 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
 // 	    });
     var qSelect    = "SELECT * from user where active='1'";
-    var collection = req.db.query(qSelect, function (err, rows, fields) {
+    var collection = connection.query(qSelect, function (err, rows, fields) {
       if (err) {
         msg = 'ERROR Message ' + err;
         helpers.render_error_page(req, res, msg);

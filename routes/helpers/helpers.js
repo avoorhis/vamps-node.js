@@ -1,17 +1,17 @@
-let C       = require(app_root + '/public/constants');
-let queries = require(app_root + '/routes/queries');
+const C       = require(app_root + '/public/constants');
+const queries = require(app_root + '/routes/queries');
 const config  = require(app_root + '/config/config');
 
-let express     = require('express');
+const express     = require('express');
 // let router      = express.Router();
-let fs          = require('fs-extra');
-let nodemailer  = require('nodemailer');
+const fs          = require('fs-extra');
+const nodemailer  = require('nodemailer');
 let transporter = nodemailer.createTransport({});
-let util        = require('util');
-let path        = require('path');
-//let crypto = require('crypto');
-// let mysql       = require('mysql2');
-// let spawn       = require('child_process').spawn;
+const util        = require('util');
+const path        = require('path');
+//const crypto = require('crypto');
+// const mysql       = require('mysql2');
+// const spawn       = require('child_process').spawn;
 
 // route middleware to make sure a user is logged in
 module.exports.isLoggedIn = function (req, res, next) {
@@ -723,9 +723,11 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
   script_text += "#$ -j y\n";
   script_text += "#$ -o " + scriptlog + "\n";
   script_text += "#$ -N " + cmd_name + "\n";
+  script_text += "#$ -pe smp 4\n";
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
+  
   script_text += 'echo -n "Hostname: "' + "\n";
   script_text += "hostname\n";
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
