@@ -1,13 +1,12 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var fs = require('fs-extra');
-var async = require('async');
-var validator = require('validator');
-//var crypto = require('crypto')
-var path = require('path');
-var nodemailer = require('nodemailer');
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const fs = require('fs-extra');
+const async = require('async');
+const validator = require('validator');
+const path = require('path');
+const nodemailer = require('nodemailer');
 
 new_user = {}
 /* GET User List (index) page. */
@@ -369,7 +368,7 @@ router.post('/reset_password1', function(req, res) {
 router.post('/reset_password2', function(req, res) {
     console.log('IN POST::reset_password2')
     console.log(req.body);
-    var queries       = require('../routes/queries_admin');
+    const queries       = require('../routes/queries_admin');
     var new_password = req.body.new_password
     var confirm_password = req.body.confirm_password
     if (!validator.equals(new_password, confirm_password)) {

@@ -1,9 +1,9 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var helpers = require('./helpers/helpers');
-var path = require('path');
-var fs   = require('fs-extra');
-var IMAGES  = require('./routes_images');
+const helpers = require('./helpers/helpers');
+const path = require('path');
+const fs   = require('fs-extra');
+const IMAGES  = require('./routes_images');
 //
 // API LOGIN
 //  {'username':conn['user'], 'password':conn['passwd']}
@@ -503,16 +503,15 @@ router.post('/find_projects_by_metadata_str',  function(req, res){
 
 function test_piecharts(req, res){
   console.log('In function: api/barcharts')
-  var d3 = require('d3');
+  const d3 = require('d3');
   // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
-  var jsdom = require('jsdom');
+  const jsdom = require('jsdom');
   var ts = visual_post_items.ts
   //if(!pieData) pieData = [12,31];
 	//if(!outputLocation) outputLocation = 'test.svg';
   var chartWidth = 500
   var chartHeight = 500;
-  //console.log('1')
-  //console.log(d3.svg)
+
   var arc = d3.arc()
     .outerRadius(chartWidth/2 - 10)
     .innerRadius(0);

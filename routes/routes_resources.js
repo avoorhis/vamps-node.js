@@ -1,8 +1,8 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var path      = require('path');
-var fs        = require('fs-extra');
-var http = require('http');
+const path      = require('path');
+const fs        = require('fs-extra');
+const http = require('http');
 
 /* GET Methods Publications page. */
 router.get('/methods_pubs', function(req, res) {

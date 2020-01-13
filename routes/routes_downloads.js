@@ -1,10 +1,10 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var fs   = require('fs-extra');
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport();
-var zlib = require('zlib');
-var Readable = require('stream').Readable;
+const fs   = require('fs-extra');
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport();
+const zlib = require('zlib');
+const Readable = require('stream').Readable;
 //
 //  D O W N L O A D  FASTA
 //

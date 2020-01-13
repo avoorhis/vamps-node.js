@@ -1,10 +1,10 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var fs   = require('fs-extra');
-var path  = require('path');
-var spawn = require('child_process').spawn;
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const fs   = require('fs-extra');
+const path  = require('path');
+const spawn = require('child_process').spawn;
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
@@ -906,7 +906,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     // then run 'blastn' command
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     
-    var exec = require('child_process').exec;
+    const exec = require('child_process').exec;
     var blast_cmd = req.CONFIG.PATH_TO_BLAST+"/blastn"
     var dbs_string = '"'+db_collector.join(' ')+'"'
     //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"
@@ -943,7 +943,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     console.error(e);
                     return
                 }
-                var obj = require(out_file_path);
+                const obj = require(out_file_path);
     
                 res.render('search/search_result_blast', {
                         title    : 'VAMPS: BLAST Result',

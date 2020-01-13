@@ -1,15 +1,12 @@
-let express = require('express');
+const express = require('express');
 let router = express.Router();
-let fs   = require('fs-extra');
-let nodemailer = require('nodemailer');
-// let transporter = nodemailer.createTransport({});
-// let zlib = require('zlib');
-// let Readable = require('stream').Readable;
-let helpers = require('./helpers/helpers');
-let queries = require(app_root + '/routes/queries');
-let path = require('path');
-let config  = require(app_root + '/config/config');
-//let crypto = require('crypto');
+const fs   = require('fs-extra');
+const nodemailer = require('nodemailer');
+const helpers = require('./helpers/helpers');
+const queries = require(app_root + '/routes/queries');
+const path = require('path');
+const config  = require(app_root + '/config/config');
+
 // These are all under /projects
 /* GET New User page. */
 
