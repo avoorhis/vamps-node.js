@@ -1,10 +1,10 @@
 // TODO: get_taxonomy_query has depth 15! Can we simplify it, that it's no more then 3?
-const url       = require('url'); express = require('express');
+const express = require('express');
 var router = express.Router();
-const url       = require('url'); C = require(app_root + '/public/constants');
-const url       = require('url'); mysql = require('mysql2');
-const url       = require('url'); util = require('util');
-const url       = require('url'); helpers = require('./helpers/helpers');
+const C = require(app_root + '/public/constants');
+const mysql = require('mysql2');
+const util = require('util');
+const helpers = require('./helpers/helpers');
 
 module.exports = {
 
