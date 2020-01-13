@@ -234,74 +234,82 @@ router.get('/', helpers.isLoggedIn, function(req, res){
 //
 // API: CREATE IMAGE
 //
+// test: view selection heatmap
+// TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
 router.post('/create_image',  function(req, res){
-  console.log('in API/create_image')
+  console.log('in API/create_image');
+  console.time("TIME: API/create_image");
   if( ! req.isAuthenticated() ){
-        res.send(JSON.stringify('Failed Authentication -- Please login first'))
-        return
+        res.send(JSON.stringify('Failed Authentication -- Please login first'));
+        return;
   }
-  console.log(req.body)
+  console.log(req.body);
   
-  var allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
+  let allowed_images = ["dheatmap", "piecharts", "barcharts", "counts_matrix","metadata_csv",
                 "metadata_table", "fheatmap", "dendrogram01", "dendrogram03","dendrogram",
                 "pcoa", "pcoa3d", "geospatial", "adiversity", "testpie", "phyloseq",
                 "taxon_color_legend"
-              ]
-  var allowed_file_types = ["fasta", "metadata-csv", "metadata-table"]
-  var image = false
-  var file  = false
+              ];
+  let allowed_file_types = ["fasta", "metadata-csv", "metadata-table"];
+  let image = false;
+  let file  = false;
   
   //metadata = get_metadata(JSON.parse(req.body.ds_order))
-  
-  if(req.body.hasOwnProperty('image') && allowed_images.indexOf(req.body.image) != -1){
-    image = req.body.image
-    console.log("Success: Image =",image)
-  }else if(req.body.hasOwnProperty('file') && allowed_file_types.indexOf(req.body.file) != -1){
-    file = req.body.file
-    console.log("Success: File =",file)
-  }else{
-    console.log("Error -- Could not find Image or File")
-    res.sendJSON.stringify(("Error -- Could not find Image or File"))
-    return
+  if (req.body.hasOwnProperty('image') && allowed_images.includes(req.body.image)){
+    image = req.body.image;
+    console.log("Success: Image = ", image);
   }
+  else if(req.body.hasOwnProperty('file') && allowed_file_types.includes(req.body.file)){
+    file = req.body.file;
+    console.log("Success: File = ", file);
+  }
+  else {
+    console.log("Error -- Could not find Image or File");
+    res.sendJSON.stringify(("Error -- Could not find Image or File"));
+    return;
+  }
+  
+  console.time("TIME: if(image)");
   if(image){
       switch(image) {
         case 'dheatmap':            // Distance Heatmap
-          IMAGES.dheatmap(req, res)
+          IMAGES.dheatmap(req, res);
           break;
         case 'fheatmap':            // Frequency Heatmap
-          IMAGES.fheatmap(req, res)
+          IMAGES.fheatmap(req, res);
           break;
         case 'barcharts':
-          IMAGES.barcharts(req, res)
+          IMAGES.barcharts(req, res);
           break;
         case 'piecharts':
-          IMAGES.piecharts(req, res)
+          IMAGES.piecharts(req, res);
           break;
         case 'counts_matrix':
-          IMAGES.counts_matrix(req, res)       
+          IMAGES.counts_matrix(req, res);
           break;
         case 'metadata_csv':
-          IMAGES.metadata_csv(req, res)       
+          IMAGES.metadata_csv(req, res);
           break;
         case 'adiversity':          // Alpha Diversity
-          IMAGES.adiversity(req, res)       
+          IMAGES.adiversity(req, res);
           break;
         case 'dendrogram':
-          IMAGES.dendrogram(req, res)       
+          IMAGES.dendrogram(req, res);
           break;
         case 'phyloseq':
-          IMAGES.phyloseq(req, res)       
+          IMAGES.phyloseq(req, res);
           break;
         case 'taxon_color_legend':
-          IMAGES.taxon_color_legend(req, res)       
+          IMAGES.taxon_color_legend(req, res);
           break;
         default:
-          test_piecharts(req,res)
-          console.log(image,'- Not Implemented Yet!')
+          test_piecharts(req,res);
+          console.log(image, '- Not Implemented Yet!');
       }
   }
- 
+  console.timeEnd("TIME: if(image)");
+
+  console.timeEnd("TIME: API/create_image");
 
 });
 //

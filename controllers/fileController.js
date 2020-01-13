@@ -41,37 +41,38 @@ class FileUtil {
     }
   }
 
+  no_file_to_delete(file_full_path, redirect_url_after_delete) {
+    let data = {
+      err_msg: "ERROR no such file ",
+      redirect_url: redirect_url_after_delete
+    };
+    console.log(data.err_msg, file_full_path);
+    this.req.flash('fail', data.err_msg);
+    this.res.redirect(data.redirect_url);
+  }
+
   file_delete(redirect_url_after_delete = undefined) {
     let file_full_path = this.file_paths.get_user_file_path(this.req, this.user, this.filename);
-    if (!this.file_exists(file_full_path)) {
-      let data = {
-        err_msg: "ERROR no such file ",
-        redirect_url: redirect_url_after_delete
-      };
-      console.log(data.err_msg, file_full_path);
-      this.req.flash('fail', data.err_msg);
-      this.res.redirect(data.redirect_url);
+    try {
+      fs.statSync(file_full_path).isFile();
+    }
+    catch (e) {
+      this.no_file_to_delete(file_full_path, redirect_url_after_delete);
     }
 
+    let data = {
+      err_msg: "err 9: ",
+      redirect_url: redirect_url_after_delete
+    };
     if (this.req.query.type === 'elements') {
-      let data = {
+      data = {
         err_msg: "err 8: ",
         redirect_url: "/visuals/saved_elements"
       };
-      fs.unlink(file_full_path, function callback(err) {
-        this.react_to_delete(err, data);
-      }.apply(this, data));
     }
-    else {
-      let data = {
-        err_msg: "err 9: ",
-        redirect_url: redirect_url_after_delete
-      };
-      fs.unlink(file_full_path, function callback(err) {
-        this.react_to_delete(err, data);
-        }.apply(this, data)
-      );
-    }
+    fs.unlink(file_full_path, function callback(err) {
+      this.react_to_delete(err, data);
+    }.apply(this, data));
   }
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
@@ -243,7 +244,7 @@ class FileUtil {
     catch (err) {
       return false;
     }
-  };
+  }
 }
 
 class FilePath {

@@ -4276,7 +4276,6 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 //  FILE UTILS
 //
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
-
   console.log('in file_utils');
   const file_util_obj = new file_controller.FileUtil(req, res);
 
@@ -4286,7 +4285,6 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   else if (req.query.fxn === 'delete') {
     file_util_obj.file_delete("/user_data/file_retrieval");
   }
-
 });
 
 //

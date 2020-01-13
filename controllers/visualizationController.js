@@ -355,7 +355,7 @@ class visualizationFilters {
     //console.log(PROJECT_INFORMATION_BY_PID)
     //console.log('IN FilterProjects')
     //console.log(prj_obj, filter_obj)
-    console.time("TIME: filter_projects");
+    // console.time("TIME: filter_projects");
     // SUBSTRING
     let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
 
@@ -383,7 +383,7 @@ class visualizationFilters {
     let new_obj = NewPROJECT_TREE_OBJ8;
     //console.log('new_obj')
     //console.log(new_obj)
-    console.timeEnd("TIME: filter_projects");
+    // console.timeEnd("TIME: filter_projects");
     return new_obj;
 
   }
