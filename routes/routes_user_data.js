@@ -4277,6 +4277,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 //
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   console.log('in file_utils');
+  console.log(req.query)
   const file_util_obj = new file_controller.FileUtil(req, res);
 
   if (req.query.fxn === 'download') {

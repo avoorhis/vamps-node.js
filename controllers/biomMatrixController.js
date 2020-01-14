@@ -11,7 +11,7 @@ const CONFIG = require(app_root + '/config/config');
 const path   = require("path");
 const extend = require('util')._extend;
 
-let helpers = require(app_root + '/routes/helpers/helpers');
+const helpers = require(app_root + '/routes/helpers/helpers');
 // const visualization_controller = require(app_root + '/controllers/visualizationController');
 const file_controller = require(app_root + '/controllers/fileController');
 const viz_files_obj = new file_controller.visualizationFiles();
@@ -409,7 +409,7 @@ class TaxaCounts {
     this.chosen_dids.map(did => {
       try {
         let path_to_file                    = path.join(this.taxonomy_file_prefix, did + '.json');
-        let jsonfile                        = require(path_to_file);
+        const jsonfile                      = require(path_to_file);
         taxcounts_obj_for_all_datasets[did] = jsonfile['taxcounts'];
       } catch (err) {
         console.log('2-no file ' + err.toString() + ' Exiting');

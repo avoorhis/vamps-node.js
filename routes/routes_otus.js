@@ -515,9 +515,6 @@ function get_otu_matrix(otudata, datasets, post_items){
 
         return otu_matrix	
 
-        // function onlyUnique(value, index, self) {
-//             return self.indexOf(value) === index;
-//         }
 
 }
 //

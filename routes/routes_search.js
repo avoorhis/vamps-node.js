@@ -442,7 +442,7 @@ function get_metadata_values(){
             if(name in tmp_metadata_fields){
               tmp_metadata_fields[name].push(val);
             }else{
-              if(IsNumeric(val)){
+              if(helpers.IsNumeric(val)){
                 tmp_metadata_fields[name]=[];
               }else{
                 tmp_metadata_fields[name]=['non-numeric'];
@@ -456,7 +456,7 @@ function get_metadata_values(){
         MD_items.metadata_fields_array.push(tmp_name);
         if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
           tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
-          MD_items.metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
+          MD_items.metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(helpers.onlyUnique);
         }else{
           var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
           var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
@@ -1217,11 +1217,5 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
       return ds_plus;
   }
 
-  function IsNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
+ 
   module.exports = router;

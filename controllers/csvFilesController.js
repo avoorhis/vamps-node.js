@@ -1,13 +1,13 @@
-let helpers = require(app_root + '/routes/helpers/helpers');
-let config  = require(app_root + '/config/config');
-let fs      = require("fs");
-let path    = require("path");
+const helpers = require(app_root + '/routes/helpers/helpers');
+const config  = require(app_root + '/config/config');
+const fs      = require("fs");
+const path    = require("path");
 
 class CsvFileRead {
   constructor(req, res, full_file_name) {
     this.inputPath   = full_file_name;
     let file_content = fs.readFileSync(this.inputPath);
-    let parse_sync   = require('csv-parse/lib/sync');
+    const parse_sync   = require('csv-parse/lib/sync');
     this.data_arr    = parse_sync(file_content, {columns: true, trim: true}); //
     this.data_arr_no_head = parse_sync(file_content, {trim: true}); //columns: true,
   }
@@ -156,7 +156,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   get_file_diff(files) {
-    let coopy      = require('coopyhx');
+    const coopy    = require('coopyhx');
     let inputPath1 = path.join(config.USER_FILES_BASE, this.user.username, files[0]["filename"]);
     let inputPath2 = path.join(config.USER_FILES_BASE, this.user.username, files[1]["filename"]);
 
@@ -172,14 +172,14 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     // console.log("AAA7 data1");
     // console.log(data1);
     // todo: async?
-    // let parse = require('csv-parse');
+    // const parse = require('csv-parse');
     // let parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
     //   console.log("AAA7 data");
     //   console.log(data);
     // });
     // fs.createReadStream(inputPath1).pipe(parser);
 
-    let parse_sync = require('csv-parse/lib/sync');
+    const parse_sync = require('csv-parse/lib/sync');
     let records1   = parse_sync(data1, {trim: true});
     let records2   = parse_sync(data2, {trim: true});
 

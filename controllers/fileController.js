@@ -1,7 +1,7 @@
-let fs   = require('fs-extra');
-let path = require('path');
-let spawn = require('child_process').spawn;
-let helpers = require(app_root + '/routes/helpers/helpers');
+const fs   = require('fs-extra');
+const path = require('path');
+const spawn = require('child_process').spawn;
+const helpers = require(app_root + '/routes/helpers/helpers');
 const C = require(app_root + '/public/constants');
 
 class FileUtil {
@@ -59,7 +59,6 @@ class FileUtil {
     catch (e) {
       this.no_file_to_delete(file_full_path, redirect_url_after_delete);
     }
-
     let data = {
       err_msg: "err 9: ",
       redirect_url: redirect_url_after_delete
@@ -69,10 +68,10 @@ class FileUtil {
         err_msg: "err 8: ",
         redirect_url: "/visuals/saved_elements"
       };
-    }
-    fs.unlink(file_full_path, function callback(err) {
+    }    
+    fs.unlink(file_full_path, (err) => {
       this.react_to_delete(err, data);
-    }.apply(this, data));
+    });
   }
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)

@@ -238,7 +238,9 @@ module.exports.IsJsonString = function (str) {
   }
   return true;
 };
-
+function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
 module.exports.onlyUnique = function (value, index, self) {
   // usage: ukeys = ukeys.filter(helpers.onlyUnique);
   return self.indexOf(value) === index;
