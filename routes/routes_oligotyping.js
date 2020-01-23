@@ -1,20 +1,18 @@
 /*jslint node: true */
 // "use strict" ;
-
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var path = require('path');
-var fs = require('fs-extra');
-var queries = require('./queries');
-var config = require('../config/config');
-var mysql = require('mysql2');
-var iniparser = require('iniparser');
-var COMMON = require('./visuals/routes_common');
-var Readable = require('readable-stream').Readable;
-//var chokidar = require('chokidar');
-var spawn = require('child_process').spawn;
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const path = require('path');
+const fs = require('fs-extra');
+const queries = require('./queries');
+const config = require('../config/config');
+const mysql = require('mysql2');
+const iniparser = require('iniparser');
+const COMMON = require('./visuals/routes_common');
+const Readable = require('readable-stream').Readable;
+const spawn = require('child_process').spawn;
 //
 //
 //
@@ -693,8 +691,8 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     var appendC = ['-C',SELECTED_COMPONENTS]
     var rando = helpers.getRandomInt(10000,99999)
     var destination = path.join(data_repo_path,'OLIGOTYPE-runs',rando.toString())
-    var ncp = require('ncp').ncp;
-    var chmodr = require('chmodr');
+    const ncp = require('ncp').ncp;
+    const chmodr = require('chmodr');
     ncp(html_dir, destination, function (err) {
       if (err) {   return console.error(err);  }
         
@@ -804,90 +802,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
             
             
           
-            // var oligo_process = spawn( script_file_path, {}, {
-//                                env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-//                                detached: true,
-//                                stdio:['pipe', 'pipe', 'pipe']
-//                                  //stdio: [ 'ignore', null, log ]
-//             });  // stdin, stdout, stderr1
-
-//             oligo_process.stdout.on('data', function oligoProcessStdout(data) {
-//             //console.log('Processing data');
-//             // data = data.toString().replace(/^\s+|\s+$/g, '');
-//                   data = data.toString().trim();
-// 
-//             });
-//             oligo_process.stderr.on('data', function oligoProcessStderr(data) {
-//             //console.log('Processing data');
-//             // data = data.toString().replace(/^\s+|\s+$/g, '');
-//                   data = data.toString().trim();
-//                   console.log('STDERR:',data)
-// 
-//             });
-//             oligo_process.on('close', function oligoProcessOnClose(close_code) {
-// 
-//               console.log('Finished Oligotype Process Script')
-//               // check for files:
-//               //minaligned.fa-ENTROPY and minaligned.fa-ENTROPY.pdf
-//               // if present then update config file
-// 
-//               //var minaligned_file = path.join(data_repository,'minaligned.fa-ENTROPY')
-//               //var pdf_file        = path.join(data_repository,'minaligned.fa-ENTROPY.pdf')
-//               var OLIGO_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-OLIGO')
-//               var html_dir = path.join(out_oligotype_path,'HTML-OUTPUT')
-//               var rando = helpers.getRandomInt(10000,99999)
-//               var destination = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir+'_'+rando.toString())
-//               
-//               fs.stat(html_dir, function checkDirPresence(err, stats){
-//                 if(err){
-//                     status = 'oligo_status=FAIL\n'
-//                     console.log('FAIL fs.stat no html_dir')
-//                     //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-//                     res.send('ERROR - HTML-OUTPUT not found:<br>Most likely because no remaining oligotypes.<br>Try changing tags (-a,-A,-M or -s)');
-//                 }else if (stats.isDirectory()) {
-//                     status = 'oligo_status=COMPLETE\n'
-//                     console.log('SUCCESS fs.stat html_dir found')
-//                     //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-//                     fs.closeSync(fs.openSync(OLIGO_SUCCESS_FILE, 'w'));
-//                     var ncp = require('ncp').ncp;
-//                     var chmodr = require('chmodr');
-//                     ncp(html_dir, destination, function (err) {
-//                        if (err) {   return console.error(err);  }
-//                        console.log('redirecting back to project page')
-//                        chmodr(destination, 0o777, (err) => {
-//                         if (err) {
-//                             console.log('Failed to execute chmodr', err);
-//                         } else {
-//                             console.log('Success');
-//                         }
-//                        });
-//                        //var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
-//                        var link = '/user_projects/'+req.user.username+'_oligotyping-'+oligo_code+'_'+rando.toString()+'/index.html'
-//                        var html_link_file = path.join(data_repo_path, 'html_link.txt');
-//                        fs.writeFileSync(html_link_file, link)
-//                        //var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
-//                        console.log({"link":link,"rando":rando.toString()})
-//                       
-//                        res.json({"link":link,"rando":rando.toString()});
-//                        //res.redirect('/oligotyping/project/'+oligo_code)
-//                     });
-//                     // var rando = helpers.getRandomInt(10000,99999)
-//                     // var link = "/oligotyping/projects/"+req.user.username+"_OLIGOTYPING_"+oligo_code+"/HTML-OUTPUT/index.html?rando="+rando.toString()
-//                     // var html = "** <a href='"+link+"' target='_blank'>Open HTML</a> **"
-//                     // console.log(html)
-//                     // res.send(html);
-//                 }else{
-//                   status = 'oligo_status=FAIL\n'
-//                   //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
-//                   res.send('ERROR - unknown error');
-//                 }
-// 
-// 
-//               })
-// 
-//             });
-      //});
-
+ 
   });
 
 

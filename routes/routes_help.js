@@ -1,10 +1,7 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-//var nodemailer = require('nodemailer');
-var spawn = require('child_process').spawn;
+const spawn = require('child_process').spawn;
 
-//var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
-//var crypto = require('crypto');
 // These are all under /help
 
 /* GET Overview page. */

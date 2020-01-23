@@ -1,9 +1,9 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var fs   = require('fs-extra');
-var path  = require('path');
-var helpers = require('./helpers/helpers');
-var ds = require('./load_all_datasets');
+const fs   = require('fs-extra');
+const path  = require('path');
+const helpers = require('./helpers/helpers');
+const ds = require('./load_all_datasets');
 
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   

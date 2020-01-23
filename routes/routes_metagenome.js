@@ -1,12 +1,10 @@
 /*jslint node: true */
 // "use strict" ;
 
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var helpers = require('./helpers/helpers');
-var queries = require('./queries');
-//var mysql = require('mysql2');
-//var COMMON = require('./visuals/routes_common');
+const helpers = require('./helpers/helpers');
+const queries = require('./queries');
 
 
 METAGENOMIC_INFORMATION_BY_PID = {}  // GLOBAL

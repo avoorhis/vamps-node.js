@@ -1,17 +1,12 @@
-let C       = require(app_root + '/public/constants');
-let queries = require(app_root + '/routes/queries');
+const C       = require(app_root + '/public/constants');
+const queries = require(app_root + '/routes/queries');
 const config  = require(app_root + '/config/config');
-
-let express     = require('express');
-// let router      = express.Router();
-let fs          = require('fs-extra');
-let nodemailer  = require('nodemailer');
+const express     = require('express');
+const fs          = require('fs-extra');
+const nodemailer  = require('nodemailer');
 let transporter = nodemailer.createTransport({});
-let util        = require('util');
-let path        = require('path');
-//let crypto = require('crypto');
-// let mysql       = require('mysql2');
-// let spawn       = require('child_process').spawn;
+const util        = require('util');
+const path        = require('path');
 
 // route middleware to make sure a user is logged in
 module.exports.isLoggedIn = function (req, res, next) {
@@ -243,7 +238,9 @@ module.exports.IsJsonString = function (str) {
   }
   return true;
 };
-
+function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
 module.exports.onlyUnique = function (value, index, self) {
   // usage: ukeys = ukeys.filter(helpers.onlyUnique);
   return self.indexOf(value) === index;
@@ -313,9 +310,9 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
   console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
   console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
   // re-run re-create new_taxonomy (see app.js)
-  var silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
+  const silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
   var all_silva_taxonomy = new silvaTaxonomy();
-  var CustomTaxa         = require('./custom_taxa_class');
+  const CustomTaxa         = require('./custom_taxa_class');
   all_silva_taxonomy.get_all_taxa(function (err, results) {
     if (err)
       throw err; // or return an error message, or something
@@ -723,9 +720,11 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
   script_text += "#$ -j y\n";
   script_text += "#$ -o " + scriptlog + "\n";
   script_text += "#$ -N " + cmd_name + "\n";
+  script_text += "#$ -pe smp 8\n";
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
+  
   script_text += 'echo -n "Hostname: "' + "\n";
   script_text += "hostname\n";
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
@@ -1002,7 +1001,7 @@ module.exports.convertJSDateToString = function (jddate) {
 module.exports.run_external_command             = function (script_path) {
   console.log('in helpers.run_external_command()')
   console.log(script_path)
-  var exec   = require('child_process').exec;
+  const exec   = require('child_process').exec;
   var child  = exec(script_path);
   var output = '';
 

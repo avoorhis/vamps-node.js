@@ -1,24 +1,22 @@
 /*jslint node: true */
 // "use strict" ;
 
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var path = require('path');
-var fs = require('fs-extra');
-var queries = require('./queries');
-var config = require('../config/config');
-var mysql = require('mysql2');
-var url = require('url');
-var iniparser = require('iniparser');
-var COMMON = require('./visuals/routes_common');
-// var MTX     = require('./visuals/routes_counts_matrix');
-var Readable = require('readable-stream').Readable;
-//var chokidar = require('chokidar');
-var spawn = require('child_process').spawn;
-var extend = require('util')._extend;
-//var USER_DATA  = require('./routes_user_data');
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const path = require('path');
+const fs = require('fs-extra');
+const queries = require('./queries');
+const config = require('../config/config');
+const mysql = require('mysql2');
+const url = require('url');
+const iniparser = require('iniparser');
+const COMMON = require('./visuals/routes_common');
+const Readable = require('readable-stream').Readable;
+const spawn = require('child_process').spawn;
+const extend = require('util')._extend;
+
 
 //
 // POST ENTROPY
@@ -148,7 +146,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     //console.log(chosen_id_name_hash)
     visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
     
-    var parse = require('csv-parse');
+    const parse = require('csv-parse');
     
     var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
     
@@ -225,7 +223,7 @@ router.post('/view_selection2', helpers.isLoggedIn, function(req, res) {
     //console.log(chosen_id_name_hash)
     visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
     
-    var parse = require('csv-parse');
+    const parse = require('csv-parse');
     
     var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
     var csvData=[];
@@ -517,9 +515,6 @@ function get_otu_matrix(otudata, datasets, post_items){
 
         return otu_matrix	
 
-        // function onlyUnique(value, index, self) {
-//             return self.indexOf(value) === index;
-//         }
 
 }
 //

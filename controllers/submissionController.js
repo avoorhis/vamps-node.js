@@ -1,5 +1,5 @@
-var Submission = require(app_root + '/models/submission');
-var helpers    = require(app_root + '/routes/helpers/helpers');
+const Submission = require(app_root + '/models/submission');
+const helpers    = require(app_root + '/routes/helpers/helpers');
 
 // Display list of all Submissions.
 // exports.submission_list = function (req, res) {

@@ -1,10 +1,7 @@
-// common.js
+
 const path = require('path');
 const fs = require('fs-extra');
-// var extend = require('util')._extend;
 const spawn = require('child_process').spawn;
-// var CONSTS = require('../public/constants');
-// var config  = require(app_root + '/config/config');
 const helpers = require('./helpers/helpers');
 const d3 = require('d3');
 const file_controller = require(app_root + '/controllers/fileController');
@@ -476,7 +473,7 @@ module.exports = {
         console.timeEnd("TIME: make_mtxdata + add_unitObj1");
 
         console.time("TIME: svgContainer");
-        let jsdom = require('jsdom');  // NEED version <10 for jsdom.env
+        const jsdom = require('jsdom');  // NEED version <10 for jsdom.env
         const { JSDOM } = jsdom;
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
@@ -1592,7 +1589,7 @@ function get_unit_list(matrix) {
 }
 
 function pies_factory(req, matrix, mtxdata, imagetype, ts) {
-  let jsdom = require('jsdom');
+  const jsdom = require('jsdom');
   const { JSDOM } = jsdom;
   const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
   let body = d3.select(fakeDom.window.document).select('body');

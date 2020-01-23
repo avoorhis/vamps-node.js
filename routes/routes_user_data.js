@@ -1,30 +1,30 @@
 /*jslint node: true */
 // "use strict" ;
 
-var express   = require('express');
+const express   = require('express');
 var router    = express.Router();
-var passport  = require('passport');
-var path      = require('path');
-var fs        = require('fs-extra');
-var url       = require('url');
-var ini       = require('ini');
-var iniparser = require('iniparser');
-var zlib      = require('zlib');
-var multer    = require('multer');
-var util      = require('util');
-var escape    = require('escape-html');
-var form      = require("express-form");
-var mysql     = require('mysql2');
-var pdf       = require('html-pdf');
-var Readable  = require('readable-stream').Readable;
-var spawn     = require('child_process').spawn;
+const passport  = require('passport');
+const path      = require('path');
+const fs        = require('fs-extra');
+const url       = require('url');
+const ini       = require('ini');
+const iniparser = require('iniparser');
+const zlib      = require('zlib');
+const multer    = require('multer');
+const util      = require('util');
+const escape    = require('escape-html');
+const form      = require("express-form");
+const mysql     = require('mysql2');
+const pdf       = require('html-pdf');
+const Readable  = require('readable-stream').Readable;
+const spawn     = require('child_process').spawn;
 
-var helpers = require(app_root + '/routes/helpers/helpers');
-var queries = require(app_root + '/routes/queries');
-var config  = require(app_root + '/config/config');
-var CONSTS  = require(app_root + '/public/constants');
-var COMMON  = require(app_root + '/routes/visuals/routes_common');
-var META    = require('./visuals/routes_visuals_metadata');
+const helpers = require(app_root + '/routes/helpers/helpers');
+const queries = require(app_root + '/routes/queries');
+const config  = require(app_root + '/config/config');
+const CONSTS  = require(app_root + '/public/constants');
+const COMMON  = require(app_root + '/routes/visuals/routes_common');
+const META    = require('./visuals/routes_visuals_metadata');
 
 const file_controller = require(app_root + '/controllers/fileController');
 const file_path_obj = new file_controller.FilePath();
@@ -754,7 +754,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         console.log(original_file_path);
         console.log(new_file_path);
         if(IsFileCompressed(req.files[0])){     
-            gunzip = require('gunzip-file');
+            const gunzip = require('gunzip-file');
             console.log('File is gzip compressed');
             gunzip(original_file_path, new_file_path, function (err) {
                 if(err) throw err;
@@ -851,7 +851,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
         console.log(original_file_path)
         console.log(new_file_path)
         if(IsFileCompressed(req.files[0])){     
-            gunzip = require('gunzip-file')
+            const gunzip = require('gunzip-file')
             console.log('File is gzip compressed')
             gunzip(original_file_path, new_file_path, function (err) {
                 if(err) throw err;
@@ -862,7 +862,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
             fs.rename(original_file_path, new_file_path, function (err) {
                 if(err) throw err;
                 //upload_finish(req, res, file_type, info, new_file_path)
-                var parse = require('csv-parse');
+                const parse = require('csv-parse');
                 var csvData=[];
                 fs.createReadStream(new_file_path)
                   .pipe(parse({delimiter: ','}))
@@ -1950,8 +1950,8 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 // USER PROJECT METADATA:ID
 //
 router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res) {
-  var parse = require('csv-parse');
-  var async = require('async');
+  const parse = require('csv-parse');
+  const async = require('async');
   console.log("req.params.id 2: ");
   console.log(req.params.id);
   var project = req.params.id;
@@ -3408,7 +3408,7 @@ function CreateUploadOptions(req, res, project)
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   // console.log("data_repository DDD: " + data_repository);
 
-  var fs_old   = require('fs');
+  const fs_old   = require('fs');
 
   is_valid = ProjectValidation(req, project, data_repository, res);
 
@@ -3610,7 +3610,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   console.log("QQQ6 in RunAndCheck");
   console.log("QQQRRR1 script_path: " + script_path);
 
-  var exec = require('child_process').exec;
+  const exec = require('child_process').exec;
   // TODO:  use file_path_obj;
   var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
   var child = exec(script_path, opts);
@@ -3751,7 +3751,7 @@ function validate_metadata(req, res, options)
   var metadata_file = req.files[1].path
   console.log('metadata_file')
   console.log(metadata_file)
-  var parse = require('csv-parse');
+  const parse = require('csv-parse');
   var url_parts = url.parse(req.url);
   var import_type = url_parts.pathname.split("/").slice(-1)[0];
   var project = req.body.project
@@ -4277,6 +4277,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 //
 router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
   console.log('in file_utils');
+  console.log(req.query)
   const file_util_obj = new file_controller.FileUtil(req, res);
 
   if (req.query.fxn === 'download') {
@@ -4291,7 +4292,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 // DOWNLOAD SEQUENCES
 //
 router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
-  var db = req.db;
+  
   console.log('seqs req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -4370,7 +4371,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 
   var wstream = fs.createWriteStream(out_file_path);
   var rs = new Readable();
-  var collection = db.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
+  var collection = connection.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
     if (err) {
         console.log('query ERROR')
         throw err;
@@ -4448,7 +4449,7 @@ router.get('/required_metadata_options', function(req, res) {
 //
 //TODO: function is overly complex (cyclomatic complexity = 26)
 router.post('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
-  var db = req.db;
+  
   const file_util_obj = new file_controller.FileUtil(req, res);
 
   console.log('metadata download POST req.body-->>');
@@ -4681,7 +4682,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //
 // router.get('/download_selected_metadata', helpers.isLoggedIn, function download_metadata(req, res) {
 //   
-//   var db = req.db;
+//  
 //   console.log('metadate download GET req.body-->>');
 //   
 //   var timestamp = +new Date();  // millisecs since the epoch!
@@ -4801,7 +4802,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 // DOWNLOAD MATRIX
 //
 router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res) {
-    var db = req.db;
+    
     console.log('matrix req.body-->>');
     console.log(req.body);
     //var timestamp = +new Date();  // millisecs since the epoch!
@@ -4858,8 +4859,8 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
     console.log('in copy_html_to_image');
     //console.log(req.body);
-    var he = require('he')
-    var webshot = require('webshot');
+    const he = require('he')
+    const webshot = require('webshot');
     var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
     // req.on('readable', function(){
 //       console.log(req.read());

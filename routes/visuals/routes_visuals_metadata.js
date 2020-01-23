@@ -1,8 +1,8 @@
-var path = require('path');
-var fs = require('fs-extra');
-var COMMON  = require('./routes_common');
-var CONFIG  = require(app_root + '/config/config');
-var helpers = require('../helpers/helpers');
+const path = require('path');
+const fs = require('fs-extra');
+const COMMON  = require('./routes_common');
+const CONFIG  = require(app_root + '/config/config');
+const helpers = require('../helpers/helpers');
 
 
 

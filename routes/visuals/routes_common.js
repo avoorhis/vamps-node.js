@@ -1,13 +1,10 @@
 // common.js
-var path = require('path');
-var fs = require('fs-extra');
-var extend = require('util')._extend;
-//var COMMON  = require('./routes_common');
-var C = require('../../public/constants');
-var config  = require(app_root + '/config/config');
-//var HMAP    = require('./routes_distance_heatmap');
-//var DEND    = require('./routes_dendrogram');
-//var PCOA    = require('./routes_pcoa');
+const path = require('path');
+const fs = require('fs-extra');
+const extend = require('util')._extend;
+const C = require('../../public/constants');
+const config  = require(app_root + '/config/config');
+
 
 module.exports = {
 
@@ -379,7 +376,7 @@ module.exports = {
 //
 //
 run_script_cmd: function (req,res, ts, command, visual_name) {
-     var exec = require('child_process').exec;
+     const exec = require('child_process').exec;
 
     console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (err, stdout, stderr) {  // currently 16000*1024 handles 232 datasets

@@ -1,14 +1,15 @@
-var express  = require('express');
+const express  = require('express');
 var router   = express.Router();
-var passport = require('passport');
-let helpers  = require('./helpers/helpers');
-//var queries = require('./queries');
-var queries  = require('./queries_admin');
-var config   = require(app_root + '/config/config');
-var fs       = require('fs-extra');
-var path     = require('path');
-var spawn    = require('child_process').spawn;
-var multer   = require('multer');
+const passport = require('passport');
+const helpers  = require('./helpers/helpers');
+const queries  = require('./queries_admin');
+const config   = require(app_root + '/config/config');
+const fs       = require('fs-extra');
+const path     = require('path');
+const spawn    = require('child_process').spawn;
+const multer   = require('multer');
+const url       = require('url');
+
 var storage  = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, '/tmp');
@@ -17,7 +18,7 @@ var storage  = multer.diskStorage({
     callback(null, file.fieldname + '-' + Date.now());
   }
 });
-var User     = require(app_root + '/models/user_model');
+const User     = require(app_root + '/models/user_model');
 var upload   = multer({storage: storage}).single('upload_metadata_file');
 const file_controller = require(app_root + '/controllers/fileController');
 
@@ -199,7 +200,6 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function (
 router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
 
   console.log('in alter_datasets')
-  var url       = require('url');
   var url_parts = url.parse(req.url, true);
   var query     = url_parts.query;
 
@@ -233,7 +233,6 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function (r
 router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
 
   console.log('in alter_project');
-  var url       = require('url');
   var url_parts = url.parse(req.url, true);
   var query     = url_parts.query;
   var pid;
@@ -552,7 +551,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function 
     res.send('FAILED: You cannot inactivate yourself!');
   } else {
     delete ALL_USERS_BY_UID[uid_to_delete]
-    req.db.query(queries.inactivate_user(uid_to_delete), function (err, rows) {
+    connection.query(queries.inactivate_user(uid_to_delete), function (err, rows) {
       if (err) {
         response = 'FAILED: sql error ' + err
       } else {
@@ -616,7 +615,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
 
   } else {
 
-    req.db.query(queries.get_user_by_name(new_user.username), function (err, rows) {
+    connection.query(queries.get_user_by_name(new_user.username), function (err, rows) {
       if (err) {
         console.log(err);
         req.flash('fail', err);
@@ -638,7 +637,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
         newUserMysql.security_level = 50;  //reg user
         var insertQuery             = queries.insert_new_user(newUserMysql)
 
-        req.db.query(insertQuery, function (err, rows) {
+        connection.query(insertQuery, function (err, rows) {
           if (err) {
             console.log(insertQuery);
             console.log(err);
@@ -704,7 +703,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 
     var updateQuery = queries.reset_user_password_by_uid(password, uid)
     console.log(updateQuery);
-    req.db.query(updateQuery, function (err, rows) {
+    connection.query(updateQuery, function (err, rows) {
       if (err) {
         req.flash('fail', 'FAILED: sql error ' + err);
       } else {
@@ -885,10 +884,8 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
     env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
     detached: true, stdio: 'pipe'
   });  // stdin, stdout, stderr
-  //var exec = require('child_process').exec;
 
   console.log(full_script_path)
-  //var child = exec(full_script_path);
   var output = '';
 
   update_metadata_process.stdout.on('data', function UpdateMetadata(data) {
@@ -1463,7 +1460,7 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
 // 	    });
     var qSelect    = "SELECT * from user where active='1'";
-    var collection = req.db.query(qSelect, function (err, rows, fields) {
+    var collection = connection.query(qSelect, function (err, rows, fields) {
       if (err) {
         msg = 'ERROR Message ' + err;
         helpers.render_error_page(req, res, msg);

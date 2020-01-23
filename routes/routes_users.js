@@ -1,13 +1,12 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var fs = require('fs-extra');
-var async = require('async');
-var validator = require('validator');
-//var crypto = require('crypto')
-var path = require('path');
-var nodemailer = require('nodemailer');
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const fs = require('fs-extra');
+const async = require('async');
+const validator = require('validator');
+const path = require('path');
+const nodemailer = require('nodemailer');
 
 new_user = {}
 /* GET User List (index) page. */
@@ -237,7 +236,7 @@ router.post('/update_account', helpers.isLoggedIn, function(req, res) {
         res.redirect('/users/update_account');
     }else{
         var query = "UPDATE user set email='"+email+"', institution='"+inst+"' where user_id='"+req.body.uid+"'"
-        req.db.query(query, function (err, rows, fields){
+        connection.query(query, function (err, rows, fields){
             if (err)  {
                 req.flash('fail', 'Something went wrong with update - exiting');
                 res.redirect('/users/update_account');
@@ -286,7 +285,7 @@ router.post('/reset_password1', function(req, res) {
     }
     var query = "SELECT user_id from user where username='"+username+"' and email ='"+email+"'"
     console.log(query)
-    req.db.query(query, function(err, rows, fields){
+    connection.query(query, function(err, rows, fields){
         if (err)  {
                 req.flash('fail', 'We cannot find that username--email combination. Please contact us [vamps@mbl.edu] for assistance.');
                 res.redirect('/users/forgotten_password');
@@ -369,7 +368,7 @@ router.post('/reset_password1', function(req, res) {
 router.post('/reset_password2', function(req, res) {
     console.log('IN POST::reset_password2')
     console.log(req.body);
-    var queries       = require('../routes/queries_admin');
+    const queries       = require('../routes/queries_admin');
     var new_password = req.body.new_password
     var confirm_password = req.body.confirm_password
     if (!validator.equals(new_password, confirm_password)) {
@@ -417,7 +416,7 @@ router.post('/reset_password2', function(req, res) {
         // now valid must enter new PW in database and return user to logon screen
     
         console.log('Trying: '+queries.reset_user_password_by_uid(new_password, req.body.uid))
-        req.db.query(queries.reset_user_password_by_uid(new_password, req.body.uid), function(err, rows, fields){
+        connection.query(queries.reset_user_password_by_uid(new_password, req.body.uid), function(err, rows, fields){
             if(err){ console.log(err);return }
             console.log('Success -- password Updated')
             req.flash('success', 'Password updated! Password updated! Password updated! Password updated! Password updated!');
@@ -443,7 +442,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
    }else{
            var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
            console.log(qSelect)
-           var collection = req.db.query(qSelect, function (err, rows, fields){
+           var collection = connection.query(qSelect, function (err, rows, fields){
             if (err)  {
               msg = 'ERROR Message '+err;
               helpers.render_error_page(req,res,msg);

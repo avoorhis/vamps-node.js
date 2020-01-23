@@ -1,10 +1,10 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var passport = require('passport');
-var helpers = require('./helpers/helpers');
-var fs   = require('fs-extra');
-var path  = require('path');
-var spawn = require('child_process').spawn;
+const passport = require('passport');
+const helpers = require('./helpers/helpers');
+const fs   = require('fs-extra');
+const path  = require('path');
+const spawn = require('child_process').spawn;
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
@@ -64,7 +64,7 @@ router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
     var phyla = []
     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
-    var query = req.db.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, function (err, rows, fields){
         
         for(i in rows){
             //console.log(rows[i])
@@ -155,7 +155,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
         var phyla = []
         var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
-        var query = req.db.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, function (err, rows, fields){
         
             for(i in rows){
                 //console.log(rows[i])
@@ -192,7 +192,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     var latlon_datasets = {}
     latlon_datasets.points = {}
     taxa_collector = {}
-    var query = req.db.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, function (err, rows, fields){
             if (err) return(err);
             console.log('Long Query Finished')
             if(rows.length == 0){
@@ -284,7 +284,7 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
         var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
         console.log(qSelect)
        
-        var query = req.db.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, function (err, rows, fields){
             if (err) return(err);
             for(i in rows){
                 if(rows[i][rank]){
@@ -442,7 +442,7 @@ function get_metadata_values(){
             if(name in tmp_metadata_fields){
               tmp_metadata_fields[name].push(val);
             }else{
-              if(IsNumeric(val)){
+              if(helpers.IsNumeric(val)){
                 tmp_metadata_fields[name]=[];
               }else{
                 tmp_metadata_fields[name]=['non-numeric'];
@@ -456,7 +456,7 @@ function get_metadata_values(){
         MD_items.metadata_fields_array.push(tmp_name);
         if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
           tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
-          MD_items.metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
+          MD_items.metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(helpers.onlyUnique);
         }else{
           var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
           var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
@@ -502,7 +502,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	}
 	qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 	console.log(qSelect);
-	var query = req.db.query(qSelect, function (err, rows, fields){
+	var query = connection.query(qSelect, function (err, rows, fields){
     if (err) {
         req.flash('fail', 'SQL Error: '+err);
         res.redirect('search_index#taxonomy');
@@ -906,7 +906,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     // then run 'blastn' command
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     
-    var exec = require('child_process').exec;
+    const exec = require('child_process').exec;
     var blast_cmd = req.CONFIG.PATH_TO_BLAST+"/blastn"
     var dbs_string = '"'+db_collector.join(' ')+'"'
     //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"
@@ -943,7 +943,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     console.error(e);
                     return
                 }
-                var obj = require(out_file_path);
+                const obj = require(out_file_path);
     
                 res.render('search/search_result_blast', {
                         title    : 'VAMPS: BLAST Result',
@@ -1217,11 +1217,5 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
       return ds_plus;
   }
 
-  function IsNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
+ 
   module.exports = router;

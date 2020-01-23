@@ -1,8 +1,8 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
-var helpers = require('./helpers/helpers');
-var path  = require('path');
-var fs   = require('fs-extra');
+const helpers = require('./helpers/helpers');
+const path  = require('path');
+const fs   = require('fs-extra');
 
 /* GET Portals page. */
 router.get('/portals_index', function(req, res) {
