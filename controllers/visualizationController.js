@@ -83,9 +83,10 @@ class viewSelectionGetData {
       let pid = PROJECT_INFORMATION_BY_PNAME[this.req.body.project].pid;
       this.new_dataset_ids = helpers.screen_dids_for_permissions(this.req, DATASET_IDS_BY_PID[pid.toString()]);
       this.visual_post_items.ds_order = this.new_dataset_ids;
-      console.log(PROJECT_INFORMATION_BY_PNAME[this.req.body.project]);
-      console.log(this.visual_post_items.ds_order);
-      this.req.session.chosen_id_order = this.dataset_ids = this.visual_post_items.ds_order;
+      // console.log(PROJECT_INFORMATION_BY_PNAME[this.req.body.project]);
+      // console.log(this.visual_post_items.ds_order);
+      this.req.session.chosen_id_order = this.new_dataset_ids;
+      // = this.visual_post_items.ds_order;
       //console.log('dids',this.dataset_ids)
     } else {
       console.log('API ALERT - no dids or project');
@@ -124,8 +125,16 @@ class viewSelectionGetData {
     // populate this.visual_post_items from this.req.session (except new ds_order)
     this.req.flash('success','The dataset order has been updated.');
     this.dataset_ids = this.req.body.ds_order;
-    this.req.session.chosen_id_order = this.dataset_ids;
     this.get_visual_post_items_common();
+    this.visual_post_items.custom_taxa = this.req.session.custom_taxa;
+    this.update_req_session();
+  }
+
+  update_req_session() {
+    let viz_vars = new module.exports.visualizationCommonVariables(this.req, this.dataset_ids);
+    this.visual_post_items.chosen_datasets = viz_vars.get_dataset_obj_by_did(this.dataset_ids);
+    this.req.session.project_dataset_vars.current_project_dataset_obj_w_keys = this.visual_post_items.chosen_datasets;
+    this.req.session.chosen_id_order = this.dataset_ids;
   }
 }
 
@@ -273,7 +282,7 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
         const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
         return filter_obj.env.includes(current_pr_env_package_id);
-        });
+      });
     }
     // console.timeEnd("TIME: filter_by_env filter");
     return NewPROJECT_TREE_OBJ2;
