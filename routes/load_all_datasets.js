@@ -14,7 +14,7 @@ const global_vars = new global_vars_controller.GlobalVars();
 
 //console.log(queries.qSequenceCounts)
 // This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
-module.exports.get_datasets = function(callback){
+module.exports.get_datasets = callback => {
   PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
   ALL_CLASSIFIERS_BY_CID      = {};
   ALL_DATASETS                = {};  // GLOBAL
@@ -50,7 +50,7 @@ module.exports.get_datasets = function(callback){
   MD_CUSTOM_FIELDS_UNITS      = {};
 
 
-  connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
+  connection.query(queries.get_select_datasets_query(), (err, rows, fields) => {
       if (err)  {
 		    console.log('Query error: ' + err);
 		    console.log(err.stack);
@@ -75,7 +75,7 @@ module.exports.get_datasets = function(callback){
       callback(ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
   });
 
-  connection.query(queries.get_all_user_query(), function(err, rows, fields){
+  connection.query(queries.get_all_user_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -104,7 +104,7 @@ module.exports.get_datasets = function(callback){
           ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
           ALL_USERS_BY_UnK[uniq_key].groups = [];
         }
-        connection.query(queries.get_all_user_groups(), function(err, rows, fields){
+        connection.query(queries.get_all_user_groups(), (err, rows, fields) => {
           if (err)  {
             console.log('Query error: ' + err);
             console.log(err.stack);
@@ -125,7 +125,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_USERS_BY_UID and ALL_USERS_BY_UnK');
   });
 
-  connection.query(queries.get_select_classifier_query(), function(err, rows, fields){
+  connection.query(queries.get_select_classifier_query(), (err, rows, fields) => {
 
       //console.log(qSequenceCounts)
       if (err)  {
@@ -141,7 +141,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');
   });
 
-  connection.query(queries.get_select_env_term_query(), function(err, rows, fields){
+  connection.query(queries.get_select_env_term_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -173,7 +173,7 @@ module.exports.get_datasets = function(callback){
   //console.log(ug_array)
   //ug_array = ['one','two']
   async.eachSeries(ug_array, fakeAsyncApi,
-      function(err) {
+      err => {
         if (err) {
           console.log('An error occurred!');
           console.log(err);
@@ -186,7 +186,7 @@ module.exports.get_datasets = function(callback){
 
 
   ///////////////////////////////////////////////////
-  connection.query(queries.get_select_env_package_query(), function(err, rows, fields){
+  connection.query(queries.get_select_env_package_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -197,7 +197,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_ENV_PACKAGE');
   });
-  connection.query(queries.get_select_domain_query(), function(err, rows, fields){
+  connection.query(queries.get_select_domain_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -207,7 +207,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_DOMAIN');
   });
-  connection.query(queries.get_select_dna_region_query(), function(err, rows, fields){
+  connection.query(queries.get_select_dna_region_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -218,7 +218,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING MD_DNA_REGION');
   });
 
-  connection.query(queries.get_select_target_gene_query(), function(err, rows, fields){
+  connection.query(queries.get_select_target_gene_query(),  (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -229,7 +229,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING MD_TARGET_GENE');
   });
 
-  connection.query(queries.get_select_sequencing_platform_query(), function(err, rows, fields){
+  connection.query(queries.get_select_sequencing_platform_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -240,7 +240,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
   });
 
-  connection.query(queries.get_select_Illumina_3letter_adapter_query(), function(err, rows, fields){
+  connection.query(queries.get_select_Illumina_3letter_adapter_query(), (err, rows, fields) => {
     if (err)  {
       console.log('Query error: ' + err);
       console.log(err.stack);
@@ -251,7 +251,7 @@ module.exports.get_datasets = function(callback){
     console.log(' INITIALIZING MD_3LETTER_ADAPTER');
   });
 
-    connection.query(queries.get_select_adapter_sequence_query(), function(err, rows, fields){
+    connection.query(queries.get_select_adapter_sequence_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -261,7 +261,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING MD_ADAPTER_SEQUENCE');
   });
-  connection.query(queries.get_select_illumina_index_query(), function(err, rows, fields){
+  connection.query(queries.get_select_illumina_index_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -272,7 +272,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING MD_ILLUMINA_INDEX');
   });
 
-  connection.query(queries.get_select_primer_suite_query(), function(err, rows, fields){
+  connection.query(queries.get_select_primer_suite_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -284,7 +284,7 @@ module.exports.get_datasets = function(callback){
 
 
   });
-  connection.query(queries.get_select_run_query(), function(err, rows, fields){
+  connection.query(queries.get_select_run_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -296,7 +296,7 @@ module.exports.get_datasets = function(callback){
   });
 
   // slow query
-  connection.query(queries.get_select_seq_count_query(), function(err, rows, fields){
+  connection.query(queries.get_select_seq_count_query(), (err, rows, fields) => {
 
       //console.log(qSequenceCounts)
       if (err)  {
@@ -314,7 +314,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
 
-  connection.query(queries.get_select_custom_units_query(), function(err, rows, fields){
+  connection.query(queries.get_select_custom_units_query(), (err, rows, fields) => {
     // console.time("TIME: connection queries.get_select_custom_units_query");
     if (err)  {
       console.log('Query error: ' + err);
@@ -331,11 +331,11 @@ module.exports.get_datasets = function(callback){
 
 };
 ///// For USER_GROUPS ////////////////////////
-var fakeAsyncApi = function(thing, callback) {
+var fakeAsyncApi = (thing, callback) => {
   var gp = thing.gp   // group from config file
   var q = thing.q     // query from config file
-  setTimeout(function() {
-        connection.query(q, function(err, rows, fields){
+  setTimeout( () => {
+        connection.query(q, (err, rows, fields) => {
               if (err)  {
                 console.log('Query error: ' + err);
                 return

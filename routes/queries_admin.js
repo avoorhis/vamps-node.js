@@ -6,34 +6,34 @@ const helpers = require('./helpers/helpers');
 
 module.exports = {
 
-alter_project_public: function(public, pid){
+alter_project_public: (public, pid) => {
     var q = "UPDATE project set public='"+public+"' WHERE project_id='"+pid+"'";
     return q;    
 },
 
-alter_security_level: function( status, uid ){
+alter_security_level: ( status, uid ) => {
     
     var qAlterSecLevel = "UPDATE user set security_level='"+status+"' WHERE user_id='"+uid+"'";
     console.log(qAlterSecLevel);
     return qAlterSecLevel;      
 },
-reset_user_password_by_uid: function(pass, uid){
+reset_user_password_by_uid: (pass, uid) => {
     //var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where user_id='"+uid+"'";
     var updateQuery = "UPDATE user set encrypted_password=PASSWORD('"+pass+"'), active='1' where user_id='"+uid+"'";
     
     return updateQuery
 },
-reset_user_password_by_uname: function(pass, uname){
+reset_user_password_by_uname: (pass, uname) => {
     //var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(pass)+"', active='1' where username='"+uname+"'";
     var updateQuery = "UPDATE user set encrypted_password=PASSWORD('"+pass+"'), active='1' where username='"+uname+"'";
     return updateQuery
 },
-reset_user_signin: function(new_count, old_date, uid){
+reset_user_signin: (new_count, old_date, uid) => {
     var updateQuery = "UPDATE user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+old_date+"' WHERE user_id='"+uid+"'"
     return updateQuery
 },
 
-insert_access_table: function(uid,pid){
+insert_access_table: (uid,pid) => {
     
     var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
     qInsertAccess += " VALUES(" + connection.escape(uid) + ", " + connection.escape(pid) + ")"; 
@@ -41,7 +41,7 @@ insert_access_table: function(uid,pid){
     return qInsertAccess; 
      
 },
-inactivate_user: function( uid ){
+inactivate_user: (uid) => {
     
     var qDeleteAccess = "UPDATE user set active='0' WHERE user_id='"+uid+"'";
     console.log(qDeleteAccess);
@@ -50,7 +50,7 @@ inactivate_user: function( uid ){
 //
 //
 //
-insert_new_user: function(mysql_new_user){
+insert_new_user: (mysql_new_user) => {
     
     var qInsertUser = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, security_level, current_sign_in_at, last_sign_in_at)";
     qInsertUser +=    " VALUES ('" + mysql_new_user.username +"', "+
@@ -68,7 +68,7 @@ insert_new_user: function(mysql_new_user){
     //console.log(qInsertUser)
     return qInsertUser
 },
-get_user_by_name: function(uname, passwd){
+get_user_by_name: (uname, passwd) =>{
     var q = "SELECT user_id, username, email, institution, first_name, last_name, active, security_level,"
      q += " encrypted_password, PASSWORD('"+passwd+"') as entered_pw, sign_in_count,"
      q += " DATE_FORMAT(current_sign_in_at,'%Y-%m-%d %T') as current_sign_in_at,last_sign_in_at FROM user"
@@ -76,11 +76,11 @@ get_user_by_name: function(uname, passwd){
     return q;
 },
 
-get_user_by_uid: function(uid){
+get_user_by_uid: (uid) => {
     var q = "SELECT * from user WHERE user_id ='"+uid+"'"
     return q;
 },
-update_project_info: function(item_to_update, item, pid){
+update_project_info: (item_to_update, item, pid) => {
     var q = 'UPDATE project set'
     switch(item_to_update){
         case 'pname':

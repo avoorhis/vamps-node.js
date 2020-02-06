@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 /* GET datasets listing. */
-router.get('/', function(req, res) {
+router.get('/', (req, res) => {
   res.send('respond with a dataset resource');
 });
 

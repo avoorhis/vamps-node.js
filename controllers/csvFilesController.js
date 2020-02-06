@@ -122,7 +122,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   }
 
   sorted_files_by_time() {//TODO:
-    /*async.map(['file1','file2','file3'], fs.stat, function(err, results){
+    /*async.map(['file1','file2','file3'], fs.stat, (err, results) => {
     // results is now an array of stats for each file
   });*/
     // console.time("sorted_files_by_time");
@@ -173,7 +173,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     // console.log(data1);
     // todo: async?
     // const parse = require('csv-parse');
-    // let parser = parse({delimiter: columnDelimiter, trim: true}, function(err, data){
+    // let parser = parse({delimiter: columnDelimiter, trim: true}, (err, data) => {
     //   console.log("AAA7 data");
     //   console.log(data);
     // });

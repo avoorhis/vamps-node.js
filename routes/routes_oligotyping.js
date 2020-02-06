@@ -19,7 +19,7 @@ const spawn = require('child_process').spawn;
 // OLIGOTYPING
 //
 
-router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, (req, res) => {
   var q = req.params.q;
   if(q.length <= 2){
     var result = (hint === "") ? ("Too Short") : (hint);
@@ -54,7 +54,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 //
 // LIVESEARCH TAX
 //
-router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, (req, res) => {
   console.log('oligo in livesearch_taxonomy-2')
   var selected_taxon = req.params.taxon;
   var selected_rank = req.params.rank;
@@ -82,7 +82,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 //  OLIGOTYPING-1 GET GENUS (FAMILY)
 //
 /* GET Import Choices page. */
-router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
+router.post('/taxa_selection', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_oligotyping.js /oligo_taxa_selection');
   console.log('req.body: oligo_taxa_selection-->>');
   console.log(req.body);
@@ -120,7 +120,7 @@ router.post('/taxa_selection', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
+router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
     console.log('in routes_oligotyping.js /project_list2');
     console.log('req.body: 1-oligo status-->>');
     console.log(req.body);
@@ -157,7 +157,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
     var timestamp = +new Date();  // millisecs since the epoch!
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
-    var collection = connection.query(q, function (err, rows, fields) {
+    var collection = connection.query(q, (err, rows, fields) => {
       if (err) {
           throw err;
       } else {
@@ -176,7 +176,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
           var config_file_path = path.join(data_repo_path, config_file);
           var FASTA_SUCCESS_FILE    = path.join(data_repo_path,'COMPLETED-FASTA')
           console.log(config_file_path)
-          fs.ensureDir(data_repo_path, function (err) {
+          fs.ensureDir(data_repo_path, err => {
             if(err){ return console.log(err) } // => null
             fs.chmod(data_repo_path, '0777', function chmodFile(err) {
                 if(err){ return console.log(err) } // => null
@@ -270,7 +270,7 @@ router.post('/project_list2', helpers.isLoggedIn, function (req, res) {
 //
 // YOUR OLIGO PROJECTS
 //
-router.get('/project_list', helpers.isLoggedIn, function (req, res) {
+router.get('/project_list', helpers.isLoggedIn, (req, res) => {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
     console.log('GET in oligo : project_list')
     //var pwd = req.CONFIG.PROCESS_DIR;
@@ -348,7 +348,7 @@ console.log('user_dir_path '+user_dir_path)
 //
 // POST PROJECT
 //
-router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
+router.get('/project/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in oligo - project')
   var oligo_code = req.params.code
   console.log(oligo_code)
@@ -402,7 +402,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
 
   
   
-  fs.readdirSync(real_html_runs_path).forEach(function(dir_name) {
+  fs.readdirSync(real_html_runs_path).forEach( (dir_name) => {
     curPath = path.join(real_html_runs_path, dir_name)
     stats = fs.statSync(curPath)
     link_path = path.join('/', 'static_base', 'user_data', req.user.username, olig_dir, 'OLIGOTYPE-runs', dir_name, 'index.html')
@@ -441,7 +441,7 @@ router.get('/project/:code', helpers.isLoggedIn, function (req, res) {
 //
 // POST ENTROPY
 //
-router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
+router.post('/entropy/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in oligo - entropy-->>')
   console.log(req.body);
   console.log('<<--in oligo - entropy')
@@ -571,7 +571,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                 if (stats.isFile()) {
                   fs.stat(pdf_file, function checkFilePresence(err,stats){
                     if(err){ return console.log(err) }
-                    //fs.copy(pdf_file, new_pdf_file, {}, function(err){
+                    //fs.copy(pdf_file, new_pdf_file, {}, err => {
                       //if(err){return console.log(err) }
                       //console.log('COPIED')
                       if (stats.isFile()) {
@@ -579,7 +579,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                       }else{
                         status = 'entropy_status=FAIL\n'
                       }
-                      fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                      fs.appendFile(config_file, status, (err) => {if(err){return console.log(err) } });
                       fs.closeSync(fs.openSync(ENTROPY_SUCCESS_FILE, 'w'));
                       //res.redirect('/oligotyping/project/'+oligo_code)
                       //return
@@ -589,7 +589,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
                   status = 'entropy_status=FAIL\n'
                   res.send('ERROR - unknown error');
                   return;
-                  //fs.appendFile(config_file, status, function (err) {if(err){return console.log(err) } });
+                  //fs.appendFile(config_file, status,  (err) => {if(err){return console.log(err) } });
                 }
             }) // fs.stat
                 
@@ -607,7 +607,7 @@ router.post('/entropy/:code', helpers.isLoggedIn, function (req, res) {
 //
 //
 
-router.post('/view_pdf', function(req, res, next) {
+router.post('/view_pdf', (req, res, next) => {
   console.log('in oligo - view_pdf-->>')
   console.log(req.body);
   console.log('<<--in oligo - view_pdf')
@@ -629,7 +629,7 @@ router.post('/view_pdf', function(req, res, next) {
    //console.log(html)
    //stream.pipe(res);
    //res.send(pdf_file_path);
-   fs.readFile(pdf_file_path, function (err,data){
+   fs.readFile(pdf_file_path, (err,data) => {
         res.contentType("application/pdf");
         res.send(data);
     });
@@ -641,7 +641,7 @@ router.post('/view_pdf', function(req, res, next) {
 //
 //
 //
-router.post('/open_html', function(req, res, next) {
+router.post('/open_html', (req, res, next) => {
     console.log('in oligo - open_html-->>')
     console.log(req.body);
     console.log('<<--in oligo - open_html')
@@ -660,7 +660,7 @@ router.post('/open_html', function(req, res, next) {
 //
 //
 //
-router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
+router.post('/oligo/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in oligo - oligo-->>')
   console.log(req.body);
   console.log(req.params);
@@ -693,7 +693,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
     var destination = path.join(data_repo_path,'OLIGOTYPE-runs',rando.toString())
     const ncp = require('ncp').ncp;
     const chmodr = require('chmodr');
-    ncp(html_dir, destination, function (err) {
+    ncp(html_dir, destination, err => {
       if (err) {   return console.error(err);  }
         
         chmodr(destination, 0o777, (err) => {
@@ -810,7 +810,7 @@ router.post('/oligo/:code', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
+router.get('/rewind/:code/:level', helpers.isLoggedIn, (req, res) => {
   console.log('in oligo - rewind')
   var oligo_code = req.params.code
   var level = req.params.level
@@ -861,7 +861,7 @@ router.get('/rewind/:code/:level', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
+router.get('/delete/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in oligotyping delete')
   var oligo_code = req.params.code
   console.log('code: '+oligo_code)
@@ -876,7 +876,7 @@ router.get('/delete/:code', helpers.isLoggedIn, function (req, res) {
   
   //var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects',req.user.username+'_'+olig_dir)
   // var data_repo_path2 = path.join(req.CONFIG.PROCESS_DIR,'public','user_projects')
-//   fs.readdirSync(data_repo_path2).forEach(function(dir,index){
+//   fs.readdirSync(data_repo_path2).forEach( (dir,index) => {
 //         if(dir.includes(olig_dir)){
 //             var curPath = data_repo_path2 + "/" + dir;
 //             helpers.deleteFolderRecursive(curPath)

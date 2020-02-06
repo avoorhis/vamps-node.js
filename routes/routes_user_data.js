@@ -2,7 +2,7 @@
 // "use strict" ;
 
 const express   = require('express');
-var router    = express.Router();
+var router      = express.Router();
 const passport  = require('passport');
 const path      = require('path');
 const fs        = require('fs-extra');
@@ -43,7 +43,7 @@ var infile_fa = "infile.fna";
 // this will allow adding to or deleteing these empty projects.
 // console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
 function create_empty_project_directory(req) {
-  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows) {
+  connection.query(queries.get_projects_queryUID(req.user.user_id), (err, rows) => {
     for(let n in rows){
       // let pid = rows[n].project_id;
       let dir = file_controller.get_user_file_path(req, req.user.username, 'project-' + rows[n].project);
@@ -55,6 +55,9 @@ function create_empty_project_directory(req) {
     }
   });
 }
+//
+//
+//
 router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
     console.log('in your data, req.user = ');
     console.log(req.user);
@@ -77,7 +80,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
   // see constants.js for file types to display
   let user_file_base_path = file_path_obj.get_user_file_base_path(req);
   let export_dir = path.join(user_file_base_path, req.user.username);
-  helpers.walk(export_dir, function(err, files) {
+  helpers.walk(export_dir, (err, files) => {
     if (err) {throw err;}
     files.sort(function sortByTime(a, b) {
       //reverse sort: recent-->oldest
@@ -137,7 +140,7 @@ function get_requested_files(req_body) {
 //  EXPORT CONFIRM
 //TODO: function is overly complex (cyclomatic complexity = 15)
 // test: data selection -> download data
-router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
+router.post('/export_confirm', helpers.isLoggedIn, (req, res) => {
   console.log('req.body: export_confirm-->>');
   console.log(req.body);
   //console.log(req.session);
@@ -211,7 +214,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/get_projects_only_tree', helpers.isLoggedIn, function (req, res) {
+router.get('/get_projects_only_tree', helpers.isLoggedIn, (req, res) => {
     console.log('in get_projects_only_tree');  // for export data
     var html = '';
 
@@ -228,7 +231,7 @@ router.get('/get_projects_only_tree', helpers.isLoggedIn, function (req, res) {
 //  EXPORT SELECTION
 //
 /* GET Import Choices page. */
-router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
+router.post('/export_selection', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_user_data.js /export_selection');
   console.log('req.body: export_selection-->>');
   console.log(req.body);
@@ -267,7 +270,7 @@ router.post('/export_selection', helpers.isLoggedIn, function (req, res) {
 
 
 // AAV add metadata to established project Aug 14 2017
-router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (req, res) {
+router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, (req, res) => {
     console.log('in GET import_choices/add_metadata_to_pr');
     //console.log(req.query)
     var project = req.query.project || ''
@@ -320,7 +323,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, function (r
 });
 
 //TODO: function is overly complex (cyclomatic complexity = 14)
-router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
+router.post('/retrieve_metadata', helpers.isLoggedIn, (req, res) => {
     console.log('in retrieve_metadata')
     console.log(req.body)
     var project = req.body.project;
@@ -408,7 +411,7 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, function (req, res) {
 //
 //  
 //
-router.post('/save_metadata', helpers.isLoggedIn, function (req, res) {
+router.post('/save_metadata', helpers.isLoggedIn, (req, res) => {
     console.log('in save metadata')
     console.log(req.body)
     
@@ -580,7 +583,7 @@ function save_cust_metadata(pid, mdname, data){
 // IMPORT_CHOICES
 //
 /* GET Import Choices page. */
-router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
+router.get('/import_choices', helpers.isLoggedIn, (req, res) => {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003
   // if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
@@ -604,7 +607,7 @@ router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   }
 });
 
-router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
+router.get('/import_choices/fasta', [helpers.isLoggedIn], (req, res) => {
     console.log('in GET import_choices/fasta')
     var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
@@ -616,7 +619,7 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], function (req, res) {
     });
           
 });
-router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
+router.get('/import_choices/matrix', [helpers.isLoggedIn], (req, res) => {
     console.log('in GET import_choices/matrix')
     var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
@@ -627,7 +630,7 @@ router.get('/import_choices/matrix', [helpers.isLoggedIn], function (req, res) {
     });
           
 });
-router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
+router.get('/import_choices/biom', [helpers.isLoggedIn], (req, res) => {
     console.log('in GET import_choices/biom')
     var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
     var default_project_name = req.user.username+'_'+rando.toString();
@@ -638,7 +641,7 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], function (req, res) {
     });
           
 });
-router.get('/import_choices/lzt_list', function (req, res) {
+router.get('/import_choices/lzt_list', (req, res) => {
     var list = {}
     q = "SELECT term_name, definition from term where ontology_id='3' order by term_name"
     connection.query(q, function update_req_metadata(err, rows, fields) {
@@ -655,7 +658,7 @@ router.get('/import_choices/lzt_list', function (req, res) {
     });           
     
 });
-router.get('/import_choices/country_list', function (req, res) {
+router.get('/import_choices/country_list', (req, res) => {
     var list = {}
     q = "SELECT term_name from term where ontology_id='4' order by term_name"
     connection.query(q, function update_req_metadata(err, rows, fields) {
@@ -670,7 +673,7 @@ router.get('/import_choices/country_list', function (req, res) {
            }
     });
 });
-router.get('/import_choices/metadata', [helpers.isLoggedIn], function (req, res) {
+router.get('/import_choices/metadata', [helpers.isLoggedIn], (req, res) => {
     console.log('in GET import_choices/metadata')
     // need user projects to send to GUI
     
@@ -696,7 +699,7 @@ router.get('/import_choices/metadata', [helpers.isLoggedIn], function (req, res)
 });
 //
 //
-router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], (req, res) => {
 
     console.log('in POST upload_import_file')
     console.log(req.body)
@@ -707,7 +710,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
     var timestamp = +new Date();  // millisecs since the epoch!
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
-    var error_fxn = function(req, res, msg){
+    var error_fxn = (req, res, msg) => {
         console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
         //res.redirect('/');
@@ -756,13 +759,13 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
         if(IsFileCompressed(req.files[0])){     
             const gunzip = require('gunzip-file');
             console.log('File is gzip compressed');
-            gunzip(original_file_path, new_file_path, function (err) {
+            gunzip(original_file_path, new_file_path, err => {
                 if(err) throw err;
                 upload_finish(req, res, file_type, info, new_file_path);
             })
         }else{
             console.log('Move file as is')
-            fs.rename(original_file_path, new_file_path, function (err) {
+            fs.rename(original_file_path, new_file_path, err => {
                 if(err) throw err;
                 upload_finish(req, res, file_type, info, new_file_path)
             })
@@ -774,7 +777,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], function(
 //
 //
 //
-router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, function(req, res) {
+router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, (req, res) => {
     console.log('in POST loadDB_from_metadata_fileAV')
     console.log(req.body)
     var pid = req.body.pid
@@ -797,7 +800,7 @@ router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, function(req, re
     upload_finish(req, res, 'metadata', info, md_file_path)
     //res.send('ok')
 })      
-router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], function(req, res) {
+router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], (req, res) => {
 
     console.log('in POST upload_metadata_fileAV')
     console.log(req.body)
@@ -810,7 +813,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
     console.log('1a')
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
-    var error_fxn = function(req, res, msg){
+    var error_fxn = (req, res, msg) => {
         console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
         //res.redirect('/');
@@ -853,27 +856,27 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], funct
         if(IsFileCompressed(req.files[0])){     
             const gunzip = require('gunzip-file')
             console.log('File is gzip compressed')
-            gunzip(original_file_path, new_file_path, function (err) {
+            gunzip(original_file_path, new_file_path, err => {
                 if(err) throw err;
                 //upload_finish(req, res, file_type, info, new_file_path)
             })
         }else{
             console.log('Move file as is')
-            fs.rename(original_file_path, new_file_path, function (err) {
+            fs.rename(original_file_path, new_file_path, err => {
                 if(err) throw err;
                 //upload_finish(req, res, file_type, info, new_file_path)
                 const parse = require('csv-parse');
                 var csvData=[];
                 fs.createReadStream(new_file_path)
                   .pipe(parse({delimiter: ','}))
-                  .on('data', function(csvrow) {
+                  .on('data', csvrow => {
                      //console.log(csvrow);
                      //do something with csvrow
                      if(csvrow.length > 0){
                         csvData.push(csvrow);     
                      }   
                   })
-                  .on('end',function() {
+                  .on('end',() => {
                        //do something wiht csvData
                        // var data = {}
                         var header_array = csvData[0]
@@ -1093,182 +1096,6 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
 //
 //
 //
-// function upload_finish(req, res, file_type, info, new_file_path){
-//             console.log('in upload_finish()')
-//             if (file_type == 'metadata'){
-//                 console.log('in upload_finish:metadata');
-//                 // TODO: let path_to_node_scripts = file_path_obj.get_path_to_node_scripts(req);
-//                 var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, 'vamps_script_load_metadata.py')
-//                 var load_params = ['-host',req.CONFIG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
-//                 load_cmd = load_cmd + ' ' + load_params.join(' ')
-//
-//                 var cmd_list = [] //matrixTax(req, info)
-//                 cmd_list.unshift(load_cmd)
-//                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
-//                 status_params.statusOK = 'OK-META';
-//                 status_params.statusSUCCESS = 'META-SUCCESS';
-//                 status_params.msgOK = 'Finished META';
-//                 status_params.msgSUCCESS = 'META -add metadata';
-//                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'metadata', {});
-//                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
-//                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
-//                 var script_path = path.join(info.project_dir, 'metadata_script.sh');
-//                 var ok_code_options = ['metadata', status_params, res,''];
-//                 var mode = 0775;
-//                 var oldmask = process.umask(0);
-//                 fs.writeFile(script_path,
-//                     script_text,
-//                     {
-//                       mode: mode
-//                     },
-//                     function(err) {
-//                       if(err) {
-//                           return console.log(err);
-//                       }
-//                       else
-//                       {
-//                         console.log('Before RunAndCheck Metadata')
-//                         var full_script     = script_path //+ ' > ' + scriptlog2
-//                         RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
-//                         status_params.status = status_params.statusSUCCESS;
-//                         status_params.msg = status_params.msgSUCCESS;
-//                         helpers.update_status(status_params);
-//                         console.log('After helpers.update_status Metadata')
-//
-//                         //res.redirect("/user_data/your_projects");
-//                         process.umask(oldmask);
-//                         console.log('Rendering import_choices!')
-//                     });
-//                 req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'");
-//                 res.redirect('/')
-//             }
-//             else if(file_type == 'matrix'){
-//               // let path_to_node_scripts = file_path_obj.get_path_to_node_scripts(req);
-//               var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
-//                 var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
-//                 parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
-//
-//                 //req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
-//                 var cmd_list = matrixTax(req, info)
-//                 cmd_list.unshift(parse_cmd)
-//
-//                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
-//                 status_params.statusOK = 'OK-MATRIX';
-//                 status_params.statusSUCCESS = 'MATRIX-SUCCESS';
-//                 status_params.msgOK = 'Finished MATRIX';
-//                 status_params.msgSUCCESS = 'MATRIX -Tax assignments';
-//                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'matrix', {});
-//                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
-//                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
-//                 var script_path = path.join(info.project_dir, 'matrix_script.sh');
-//
-//                 //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
-//                 var ok_code_options = ['matrix', status_params, res,''];
-//
-//                 // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
-//
-//                 var mode = 0775;
-//                 var oldmask = process.umask(0);
-//                 console.log("script_path2 = " + script_path);
-//                 fs.writeFile(script_path,
-//                     script_text,
-//                     {
-//                       mode: mode
-//                     },
-//                     function(err) {
-//                       if(err) {
-//                           return console.log(err);
-//                       }
-//                       else
-//                       {
-//                         console.log('Before RunAndCheck Matrix')
-//                         var full_script     = script_path //+ ' > ' + scriptlog2
-//                         RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
-//                         status_params.status = status_params.statusSUCCESS;
-//                         status_params.msg = status_params.msgSUCCESS;
-//                         helpers.update_status(status_params);
-//                         console.log('After helpers.update_status Matrix')
-//                         req.flash('success', 'Matrix' + " has been started for project: '" + info.project_name + "'");
-//                         //res.redirect("/user_data/your_projects");
-//                         process.umask(oldmask);
-//                         res.render('user_data/import_choices/matrix', {
-// 					        title: 'VAMPS:Import Choices',
-// 					        def_name:'',
-// 					        user: req.user, hostname: req.CONFIG.hostname
-// 					    });
-// 					    return
-//                       }
-//                       //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-//
-//                     });
-//
-//             }
-//             else if(file_type == 'fasta'){
-//                 //TODO:  let path_to_node_scripts = file_path_obj.get_path_to_node_scripts(req);
-//                 var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
-//                 var parse_params = ['-t','fasta','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
-//                 parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
-//                 var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
-//                 var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
-//                 var demultiplex_params = ['-i',new_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
-//                 //console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
-//                 demultiplex_cmd = demultiplex_cmd + ' ' + demultiplex_params.join(' ')
-//                 var cmd_list =[parse_cmd, demultiplex_cmd]
-//
-//                 var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': info.project_name, 'status': '', 'msg': '' };
-//                 status_params.statusOK = 'OK-FASTA';
-//                 status_params.statusSUCCESS = 'FASTA-SUCCESS';
-//                 status_params.msgOK = 'Finished FASTA';
-//                 status_params.msgSUCCESS = 'FASTA -Tax assignments';
-//                 var script_vars = GetScriptVars(req, info.project_dir, cmd_list, 'fasta', {});
-//                 var scriptlog2   = script_vars[0]; //path.join(info.project_dir, 'matrix_log.txt');
-//                 var script_text = script_vars[1]; //helpers.get_qsub_script_text_only(req, scriptlog2, info.project_dir, 'matrix', cmd_list);
-//                 var script_path = path.join(info.project_dir, 'fasta_script.sh');
-//
-//                 //var nodelog         = fs.openSync(path.join(info.project_dir, 'assignment.log'), 'a', 0664);
-//                 var ok_code_options = ['fasta', status_params, res,''];
-//
-//                 // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
-//
-//                 var mode = 0775;
-//                 var oldmask = process.umask(0);
-//                 console.log("script_path2 = " + script_path);
-//                 fs.writeFile(script_path,
-//                     script_text,
-//                     {
-//                       mode: mode
-//                     },
-//                     function(err) {
-//                       if(err) {
-//                           return console.log(err);
-//                       }
-//                       else
-//                       {
-//                         console.log('Before RunAndCheck Fasta')
-//                         var full_script     = script_path //+ ' > ' + scriptlog2
-//                         RunAndCheck(full_script, '', req, info.project_name, res, checkPid, ok_code_options);
-//                         status_params.status = status_params.statusSUCCESS;
-//                         status_params.msg = status_params.msgSUCCESS;
-//                         helpers.update_status(status_params);
-//
-//
-//                         req.flash('success', 'Fasta' + " has been started for project: '" + info.project_name + "'");
-//                         //res.redirect("/user_data/your_projects");
-//                         process.umask(oldmask);
-//                         res.render('user_data/import_choices/fasta', {
-// 					        title: 'VAMPS:Import Choices',
-// 					        def_name:'',
-// 					        user: req.user, hostname: req.CONFIG.hostname
-// 					    });
-// 					    return
-//                       }
-//                       //error_fxn("Success - Project `"+info.project_name+"` loaded to `Your Projects`")
-//
-//                     });
-//             }
-//             //res.redirect("/user_data/your_projects");
-//             //process.umask(oldmask);
-// } // end of finish
 function upload_finish(req, res, file_type, info, new_file_path){
   console.log('in upload_finish()')
   if(file_type == 'metadata'){
@@ -1296,7 +1123,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
       {
         mode: mode
       },
-      function(err) {
+      (err) => {
         if(err) {
           return console.log(err);
         }
@@ -1358,7 +1185,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
       {
         mode: mode
       },
-      function(err) {
+      (err) => {
         if(err) {
           return console.log(err);
         }
@@ -1420,7 +1247,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
       {
         mode: mode
       },
-      function(err) {
+      err => {
         if(err) {
           return console.log(err);
         }
@@ -1452,7 +1279,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
   //process.umask(oldmask);
 } // end of finish
 
-router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function(req, res) {
+router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, res) => {
     console.log('in POST test_upload')
     console.log(req.body)
     // project name validation/replace is in import.js
@@ -1463,7 +1290,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
     var original_file_path = req.files[0].path
     var original_file_name = req.files[0].originalname
     
-    var error_fxn = function(req, res, msg){
+    var error_fxn = (req, res, msg) => {
         console.log('FAIL re-open import choices page2')
         req.flash('fail',msg)
         //res.redirect('/');
@@ -1613,7 +1440,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
                     {
                       mode: mode
                     }, 
-                    function(err) {
+                    err => {
                       if(err) {
                           return console.log(err);
                       }
@@ -1691,16 +1518,16 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
                     detached: true, stdio: 'pipe'
             });
             var output = '';
-			proc.stderr.on('data', function (data) {
+			proc.stderr.on('data', data => {
 			  console.log(data.toString())   
 			});
-			proc.stdout.on('data', function (data) { 
+			proc.stdout.on('data', data => { 
 			  //console.log('stdout:')  
 			  //console.log(data.toString())   
 			  output += data.toString()
 			  
 			});
-			proc.on('close', function (code) {
+			proc.on('close', code => {
 				console.log('close: demultiplex (+/-fastaunique) proc exited with code ' + code);
 				//console.log("output: ");
 				output = output.trim().split("\n");
@@ -1757,7 +1584,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], function
 });
  
 
-router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
+router.get('/upload_configuration', [helpers.isLoggedIn], (req, res) => {
   console.log('in upload_configuration')
 
 
@@ -1772,7 +1599,7 @@ router.get('/upload_configuration', [helpers.isLoggedIn], function (req, res) {
 });
 
 
-router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, res) {
+router.post('/upload_file', [helpers.isLoggedIn, upload.any()], (req, res) => {
     // called from user_data.js as way to upload random files from /users/profile.html
     console.log('in POST test_upload')
     console.log(req.body)
@@ -1801,7 +1628,7 @@ router.post('/upload_file', [helpers.isLoggedIn, upload.any()], function(req, re
 //
 //
 
-router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.single('upload_files', 12)], function (req, res) {
+router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.single('upload_files', 12)], (req, res) => {
     console.log('in re_create_image_from_file')
     console.log(req.body)
     
@@ -1819,7 +1646,7 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
   // TODO:  use file_path_obj;
   new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
     console.log(new_filename_path)
-    fs.move(req.file.path, new_filename_path, function(err){
+    fs.move(req.file.path, new_filename_path, err => {
       if (err) return console.error(err)
       //var args = "?filename="+new_filename
       //args += "&from_configuration_file=1"
@@ -1832,7 +1659,7 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
 // VALIDATE FORMAT
 //
 /* GET Validate page. */
-router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
+router.get('/validate_format', helpers.isLoggedIn, (req, res) => {
   console.log('validate_format');
   console.log("JSON.stringify(req.url): ");
   console.log(JSON.stringify(req.url));
@@ -1852,7 +1679,7 @@ router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
 //
 //  VALIDATE FILE
 //
-router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], function (req, res) {
+router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], (req, res) => {
     console.log('POST validate_file');
 
     console.log("req.body");
@@ -1928,7 +1755,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 //
 // USER PROJECT INFO:ID
 //
-router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
+router.get('/user_project_info/:id', helpers.isLoggedIn, (req, res) => {
   console.log("req.params.id 1: ");
   console.log(req.params.id);
   var project = req.params.id;
@@ -1949,7 +1776,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function (req, res) {
 //
 // USER PROJECT METADATA:ID
 //
-router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res) {
+router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
   const parse = require('csv-parse');
   const async = require('async');
   console.log("req.params.id 2: ");
@@ -2004,7 +1831,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
 
 });
 
-router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, res) {
+router.get('/user_project_validation/:id', helpers.isLoggedIn, (req, res) => {
         // THIS IS FOR UNLOADED PROJECTS (After upload and before tax assignment)
         //will only show up if config.ini is present
         // check that metadata file is present
@@ -2029,7 +1856,7 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, re
 //  DELETE PROJECT:PROJECT:KIND
 //
 //TODO: function is overly complex (cyclomatic complexity = 12)
-router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, res) {
+router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
 
   var delete_kind = req.params.kind;
   var project = req.params.project;
@@ -2099,11 +1926,11 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
           var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
           var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_project'+timestamp+'-'+project);
 			
-		  fs.remove(data_dir, function(err){
+		  fs.remove(data_dir, err => {
 			if(err){ 
 				console.log(err); 
 				data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_'+project);
-				fs.rmdir(data_dir, function(err2){
+				fs.rmdir(data_dir, err2 => {
 					console.log(err2); 
 				})
 			}
@@ -2123,7 +1950,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
 //
 // DUPLICATE_PROJECT
 //
-router.get('/duplicate_project/:project', helpers.isLoggedIn, function (req, res) {
+router.get('/duplicate_project/:project', helpers.isLoggedIn, (req, res) => {
    var project = req.params.project;
   // TODO:  use file_path_obj;
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
@@ -2171,12 +1998,11 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, function (req, res
 //
 //
 //
-router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res) {
+router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, (req, res) => {
     var project = req.params.project;
   // TODO:  use file_path_obj;
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
     var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
-
     res.render('user_data/assign_taxonomy', {
       project : project,
       title   : project,
@@ -2192,8 +2018,8 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, function (req, res)
 
 // TODO: split!!!
 // !!! NOW FROM HERE !!!
-//router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
-router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
+//router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, (req, res) => {
+router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, (req, res) => {
   var cmd_list = [];
   console.log('in start_assignment--->');
   console.log("req.params: ");
@@ -2308,7 +2134,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
     {
       mode: mode
     }, 
-    function(err) {
+    err => {
       if(err) {
           return console.log(err);
       }
@@ -2352,7 +2178,7 @@ function checkPid(check_pid_options, last_line)
   if (Number.isInteger(pid))
   {
 
-    connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+    connection.query(queries.get_select_datasets_queryPID(pid), (err, rows1, fields) => {
       if (err)
       {
         console.log('1-GAST/RDP-Query error: ' + err);
@@ -2360,7 +2186,7 @@ function checkPid(check_pid_options, last_line)
       else
       {
 
-        connection.query(queries.get_select_seq_count_queryPID(pid), function (err, rows2, fields) {
+        connection.query(queries.get_select_seq_count_queryPID(pid), (err, rows2, fields) => {
         if (err)
         {
           console.log('2-GAST/RDP-Query error: ' + err);
@@ -2634,7 +2460,7 @@ function getFastaExtensions(data_dir)
 //
 // YOUR PROJECTS
 //
-router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
+router.get('/your_projects', helpers.isLoggedIn, (req, res) => {
   // TODO:  use file_path_obj;
     var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
    // AAV must find and list projects that 
@@ -2775,7 +2601,7 @@ router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
 //
 //   GET -- EDIT_PROJECT: When first enter the page.
 //
-router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
+router.get('/edit_project/:project', helpers.isLoggedIn, (req, res) => {
   console.log('in edit project:GET');
   //console.log(PROJECT_INFORMATION_BY_PID)
   var project_name = req.params.project;
@@ -2849,7 +2675,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function (req, res) {
 //   POST -- EDIT_PROJECT:  for accepting changes and re-showing the page
 //
 //TODO: function is overly complex (cyclomatic complexity = 20)
-router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
+router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
   console.log('in edit project POST, req.body:');
   console.log(req.body);
 
@@ -3051,8 +2877,8 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
 
   config_info.has_tax = project_info.config.GENERAL.has_tax;
 
-  var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function (k) { return k; });
-  var counts_array = Object.keys(project_info.config.DATASETS).map(function (k) { return project_info.config.DATASETS[k]; });
+  var old_dataset_array = Object.keys(project_info.config.DATASETS).map( k => { return k; });
+  var counts_array = Object.keys(project_info.config.DATASETS).map( k => { return project_info.config.DATASETS[k]; });
   
   project_info.config.DATASETS={};
   config_info.datasets = [];
@@ -3094,7 +2920,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
 //
 //  UPLOAD  METADATA
 //
-router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file', 12)], function (req, res) {
+router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file', 12)], (req, res) => {
   var project = req.body.project_name;
   var file_format = req.body.metadata_file_format;
   // TODO:  use file_path_obj;
@@ -3270,7 +3096,7 @@ function ProjectExistsInDB(project, req, res)
   var project_id;
   var redirect_url = path.join('/user_data', req.url);
   console.log('PROJ',project)
-  helpers.fetchInfo("SELECT project_id FROM project WHERE project = ?", [project], function(err, content) {
+  helpers.fetchInfo("SELECT project_id FROM project WHERE project = ?", [project], (err, content) => {
       if (err) {
           console.log("err 5: ");
           console.log(err);
@@ -3337,7 +3163,7 @@ function IsFileCompressed(file)
   return file_compressed;
 }
 
-var LoadDataFinishRequest = function (req, res, project, display) {
+var LoadDataFinishRequest = (req, res, project, display) => {
   console.log('display from LoadDataFinishRequest: ' + "display");
 
   // START STATUS //
@@ -3518,7 +3344,7 @@ function GetScriptVars(req, data_repository, cmd_list, classifier, opts)
     if(classifier == 'GAST'){
     	script_text = helpers.make_gast_script_txt(req, data_repository, req.params.project, cmd_list, opts)
     }else{
-    	script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, classifier, cmd_list) // req, log, dir_path, cmd_name, cmd_list= function(log, pwd, site, name, cmd_list) {
+    	script_text = helpers.get_qsub_script_text(req, scriptlog, data_repository, classifier, cmd_list) // req, log, dir_path, cmd_name, cmd_list= (log, pwd, site, name, cmd_list) => {
   	}
   }
   
@@ -3631,7 +3457,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
   
  
   
-  child.stderr.on('data', function(data) {
+  child.stderr.on('data', data => {
       console.log('stderr: ' + data);
   });
   
@@ -3653,36 +3479,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      }
   });
 
-  //
-  // var run_process = spawn( 'bash', [script_path], {
-  //   detached: true, stdio: [ 'ignore', null, nodelog ]
-  // });  // stdin, s
-  //
-  // var output = '';
-  //
-  // // TODO: where "data" come from?
-  // run_process.stdout.on('data', function AddDataToOutput(data) {
-  //   data = data.toString().trim();
-  //   output += data;
-  //   CheckIfPID(data);
-  // });
-  //
-  // run_process.on('close', function checkExitCode(code) {
-  //    console.log('run_process process exited with code ' + code);
-  //    var ary = output.split("\n");
-  //    console.log("TTT output.split (ary) ");
-  //    console.log(util.inspect(ary, false, null));
-  //    var last_line = ary[ary.length - 1];
-  //    console.log('last_line:', last_line);
-  //    if (code === 0)
-  //    {
-  //      callback_function(callback_function_options, last_line);
-  //    }
-  //    else // code != 0
-  //    {
-  //      failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
-  //    }
-  // });
+ 
 }
 
 function writeAndRunScript(req, res, project, options, data_repository)
@@ -3716,7 +3513,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
           {
             mode: mode
           }, 
-          function(err) {
+          err => {
             if(err) {
                 return console.log(err);
             }
@@ -3734,7 +3531,7 @@ function writeAndRunScript(req, res, project, options, data_repository)
 //
 //
 //
-// router.post('/validate_metadata2', [helpers.isLoggedIn, upload.array('upload_files', 12)], helpers.isLoggedIn, function (req, res) {
+// router.post('/validate_metadata2', [helpers.isLoggedIn, upload.array('upload_files', 12)], helpers.isLoggedIn, (req, res) => {
 //     console.log('in validate_metadata2')
 //     console.log('1req.body upload_data_tax_by_seq');
 //     console.log(req.body);
@@ -3891,7 +3688,7 @@ function uploadData(req, res)  // from line 406
 }
 
 
-router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
+router.get('/add_project', [helpers.isLoggedIn], (req, res) => {
   console.log('in add_project-ttt');
 
   res.render('user_data/add_project', {
@@ -3929,7 +3726,7 @@ function saveToDb(req, res){
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
           // console.log("QQQ sql_a = " + sql_a);
           connection.query(sql_a,
-          function (err, rows) {
+          (err, rows) => {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
              // TODO: fix: req flash doesn't work from here!
@@ -3981,7 +3778,7 @@ router.post('/add_project',
     form.field("email", "Email").trim().isEmail().required().entityEncode(),
     form.field("new_institution", "Institution").trim().required().entityEncode()
    ),
-  function (req, res) {
+  (req, res) => {
 
     if (!req.form.isValid) {
       req.add_project_info = req.form;
@@ -4008,7 +3805,7 @@ router.post('/add_project',
 //
 // UPLOAD DATA TAX-BY-SEQ
 //
-router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, res) {
+router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], (req, res) => {
   var url_parts = url.parse(req.url);
   var import_type = url_parts.pathname.split("/").slice(-1)[0];
   console.log(url_parts);
@@ -4019,7 +3816,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
   //import_type = req.url.split("/").slice(-1)[0];
   //'/import_choices/multi_fasta', 'multi_fasta'
   user_project_info = {}
-  connection.query(queries.get_projects_queryUID(req.user.user_id), function (err, rows, fields) {
+  connection.query(queries.get_projects_queryUID(req.user.user_id), (err, rows, fields) => {
       if (err)
       {
         console.log(err);
@@ -4044,7 +3841,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], function (req, re
 });
 
 //TODO: function is overly complex (cyclomatic complexity = 13)
-router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
+router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload_files', 12)], (req, res) => {
 
   console.log('upload_data_tax_by_seq');
   // console.log("PLPLPLPL req.url = " + req.url);
@@ -4275,7 +4072,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 //
 //  FILE UTILS
 //
-router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+router.get('/file_utils', helpers.isLoggedIn, (req, res) => {
   console.log('in file_utils');
   console.log(req.query)
   const file_util_obj = new file_controller.FileUtil(req, res);
@@ -4291,7 +4088,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 //
 // DOWNLOAD SEQUENCES
 //
-router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
+router.post('/download_selected_seqs', helpers.isLoggedIn, (req, res) => {
   
   console.log('seqs req.body-->>');
   console.log(req.body);
@@ -4423,7 +4220,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/required_metadata_options', function(req, res) {
+router.get('/required_metadata_options', (req, res) => {
     console.log('in required_metadata_options')
     res.render('user_data/required_metadata_options', {
               title     :'VAMPS Validate Metadata',
@@ -4801,7 +4598,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //
 // DOWNLOAD MATRIX
 //
-router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res) {
+router.post('/download_selected_matrix', helpers.isLoggedIn, (req, res) => {
     
     console.log('matrix req.body-->>');
     console.log(req.body);
@@ -4856,13 +4653,13 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function (req, res)
 //
 //
 //
-router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
+router.post('/copy_html_to_image', helpers.isLoggedIn, (req, res) => {
     console.log('in copy_html_to_image');
     //console.log(req.body);
     const he = require('he')
     const webshot = require('webshot');
     var id_name_order           = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
-    // req.on('readable', function(){
+    // req.on('readable', () => {
 //       console.log(req.read());
 //     });
     //console.log(req.session)
@@ -4884,7 +4681,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
       html = he.decode(req.body.html);
       //console.log(html)
       outfile = path.join( user_dir, 'barcharts-image-'+ts+'.png' );
-      webshot(html, outfile, options, function (err) {
+      webshot(html, outfile, options, err => {
       // screenshot now saved to <>.png
           if(err){
             console.log("err 10: ");
@@ -4896,7 +4693,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
       html = he.decode(req.body.html);
       outfile = path.join( user_dir, 'piecharts-image-'+ts+'.png' );
       // for svg files    
-      webshot(html, outfile, options, function (err) {
+      webshot(html, outfile, options, err => {
       // screenshot now saved to <>.png
           if(err){
             console.log("err 10: ");
@@ -4912,7 +4709,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
       // TODO:  use file_path_obj;
       distance_matrix_file = path.join(req.CONFIG.TMP_FILES,ts+'_distance.json')
         console.log(distance_matrix_file);
-        fs.readFile(distance_matrix_file, 'utf-8', function(err, data){
+        fs.readFile(distance_matrix_file, 'utf-8', (err, data) => {
             distance_matrix = JSON.parse(data)
             html += "<center><table border='1'>  <tr><td></td><td>dataset <span class='blue'>Similar</span>&nbsp;<span class='red'>Dissimilar</span></td>";
             for(i=1; i<=Object.keys(distance_matrix).length; i++) {
@@ -4969,7 +4766,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.post('/download_file', helpers.isLoggedIn, function (req, res) {
+router.post('/download_file', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_user_data download_file');
   // file_type - fasta, metadata, or matrix
   console.log(req.body);
@@ -4997,7 +4794,7 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
 // COPY FILES from tmp directory to user directory
 //
 //TODO: function is overly complex (cyclomatic complexity = 15)
-router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
+router.post('/copy_file_for_download', helpers.isLoggedIn, (req, res) => {
     console.log('copy_file_for_download req.body-->>');
 	// these files being copied are already created when the visualization page is reached
     console.log(req.body);
@@ -5090,7 +4887,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/get_template', function (req, res) {
+router.get('/get_template', (req, res) => {
     console.log('in get_template')
     var template = ''
   // TODO:  use file_path_obj;

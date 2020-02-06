@@ -212,7 +212,7 @@ function login_auth_user(req, username, password, done, db) {
       // helpers
       var user_data_dir = path.join(req.CONFIG.USER_FILES_BASE, username);
       //console.log('Validating/Creating User Data Directory: ' + user_data_dir);
-      //helpers.ensure_dir_exists(user_data_dir);
+      
       //helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
       // Here on login we delete the users tmp/* files from previous sessions.
       // This seems better than on logout bacause users are less likely to manually logout.
@@ -311,8 +311,11 @@ var delete_previous_tmp_files = function (req, username) {
   var fs             = require('fs-extra');
   // ALL 3 dirs should be present and writable however only dir3 is used
   var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  helpers.ensure_dir_exists(temp_dir_path1);  // also chmod to 0777 (ug+rwx)
   var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
+  helpers.ensure_dir_exists(temp_dir_path2);  // also chmod to 0777 (ug+rwx)
   var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+  helpers.ensure_dir_exists(temp_dir_path3);  // also chmod to 0777 (ug+rwx)
 
   console.log("temp_dir_path1: ", temp_dir_path1);
   console.log("temp_dir_path2: ", temp_dir_path2);

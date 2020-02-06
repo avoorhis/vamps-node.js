@@ -5,7 +5,7 @@ const fs        = require('fs-extra');
 const http = require('http');
 
 /* GET Methods Publications page. */
-router.get('/methods_pubs', function(req, res) {
+router.get('/methods_pubs', (req, res) => {
       res.render('resources/methods_pubs', { 
           title: 'VAMPS:Methods Publications', 
           user: req.user,
@@ -13,7 +13,7 @@ router.get('/methods_pubs', function(req, res) {
       });
 });
 /* GET Software page. */
-router.get('/primers', function(req, res) {
+router.get('/primers', (req, res) => {
       res.render('resources/primers', { 
           title: 'VAMPS:Primers',          
           user: req.user,
@@ -21,7 +21,7 @@ router.get('/primers', function(req, res) {
       });
 });
 /* GET Research Publications page. */
-router.get('/research_pubs', function(req, res) {
+router.get('/research_pubs', (req, res) => {
       res.render('resources/research_pubs', { 
           title: 'VAMPS:Research Publications',         
           user: req.user,
@@ -29,7 +29,7 @@ router.get('/research_pubs', function(req, res) {
       });
 });
 /* GET Software page. */
-router.get('/software', function(req, res) {
+router.get('/software', (req, res) => {
       res.render('resources/software', { 
           title: 'VAMPS:Software and Links',          
           user: req.user,
@@ -37,10 +37,10 @@ router.get('/software', function(req, res) {
       });
 });
 /* GET Reference Data page. */
-router.get('/reference_data', function(req, res) {
+router.get('/reference_data', (req, res) => {
 
       //get sweetcaptcha html for the contact area
-        //sweetcaptcha.api('get_html', function(err,html){
+        //sweetcaptcha.api('get_html', (err,html) => {
             //Send the guts of the captcha to your template
             res.render('resources/reference_data', {
               title: 'VAMPS:Reference Data',

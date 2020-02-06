@@ -9,7 +9,7 @@ const util        = require('util');
 const path        = require('path');
 
 // route middleware to make sure a user is logged in
-module.exports.isLoggedIn = function (req, res, next) {
+module.exports.isLoggedIn = (req, res, next) => {
   // if user is authenticated in the session, carry on
 
   if (req.isAuthenticated()) {
@@ -26,7 +26,7 @@ module.exports.isLoggedIn = function (req, res, next) {
   // return;
 };
 
-module.exports.isAdmin = function (req, res, next) {
+module.exports.isAdmin = (req, res, next) => {
   if (req.user.security_level === 1) {
     console.log("Hurray! USER is an Admin:", req.user.username);
     return next();
@@ -42,7 +42,7 @@ module.exports.isAdmin = function (req, res, next) {
   // return;
 };
 
-module.exports.array_from_object = function (data) {
+module.exports.array_from_object = data => {
   let data_arr = [];
   for (let key in data) {
     let value_arr = {};
@@ -60,7 +60,7 @@ module.exports.array_from_object = function (data) {
   return data_arr;
 };
 
-module.exports.get_second = function (element) {
+module.exports.get_second = element => {
   // console.time('TIME: get_second:'+element);
   if (C.ORDERED_METADATA_NAMES_OBJ.hasOwnProperty(element)) {
     return C.ORDERED_METADATA_NAMES_OBJ[element][1];
@@ -134,16 +134,16 @@ function add_to_retrieve(results, stat, file, filename) {
 function walk_recursively(dir, done) {
 // var file_formats = C.download_file_formats;
   let results = [];
-  fs.readdir(dir, function (err, list) {
+  fs.readdir(dir, (err, list) => {
     if (err) {return done(err)}
     let pending = list.length;
     if (!pending) {return done(null, results)}
     list.forEach(file_from_list => {
       let file = path.resolve(dir, file_from_list);
-      fs.stat(file, function (err, stat) {
+      fs.stat(file, (err, stat) => {
         let is_directory = (stat && stat.isDirectory());
         if (is_directory) {
-          walk_recursively(file, function (err, res) {
+          walk_recursively(file, (err, res) => {
             results = results.concat(res);
             if (!--pending) {done(null, results)}
           });
@@ -161,14 +161,14 @@ function walk_recursively(dir, done) {
   });
 }
 
-module.exports.walk = function (dir, done) {
+module.exports.walk = (dir, done) => {
   walk_recursively(dir, done);
 };
 
 function walk_sync_recursive(dir) {
   let results = [];
   let list    = fs.readdirSync(dir);
-  list.forEach(function (file) {
+  list.forEach( file => {
     file     = path.resolve(dir, file);
     let stat = fs.statSync(file);
     if (stat && stat.isDirectory()) {
@@ -191,11 +191,11 @@ function walk_sync_recursive(dir) {
   return results;
 }
 
-module.exports.walk_sync = function (dir) {
+module.exports.walk_sync = dir => {
   return walk_sync_recursive(dir);
 };
 
-module.exports.elapsed_time = function (note) {
+module.exports.elapsed_time = note => {
   var precision = 3; // 3 decimal places
   var elapsed   = process.hrtime(module.exports.start)[1] / 1000000; // divide by a million to get nano to milli
   console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note);
@@ -203,13 +203,13 @@ module.exports.elapsed_time = function (note) {
 
 
 // todo: use in file instead of those in the class
-module.exports.check_if_rank = function (field_name) {
+module.exports.check_if_rank = (field_name) => {
   let ranks = C.RANKS;
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
   return ranks.includes(field_name);
 };
 
-module.exports.render_error_page = function (req, res, msg) {
+module.exports.render_error_page = (req, res, msg) => {
   req.flash('fail', msg);
   res.render('error',
     {
@@ -218,19 +218,19 @@ module.exports.render_error_page = function (req, res, msg) {
     });
 };
 
-module.exports.write_to_file = function (fileName, text) {
-  fs.writeFile(fileName, text, function (err) {
+module.exports.write_to_file = (fileName, text) => {
+  fs.writeFile(fileName, text, err => {
     if (err) {
       throw err;
     }
   });
 };
 
-module.exports.getRandomInt  = function (min, max) {
+module.exports.getRandomInt  = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-module.exports.IsJsonString = function (str) {
+module.exports.IsJsonString = str => {
   try {
     JSON.parse(str);
   } catch (e) {
@@ -241,12 +241,12 @@ module.exports.IsJsonString = function (str) {
 function IsNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
-module.exports.onlyUnique = function (value, index, self) {
+module.exports.onlyUnique = (value, index, self) => {
   // usage: ukeys = ukeys.filter(helpers.onlyUnique);
   return self.indexOf(value) === index;
 };
 
-module.exports.mkdirSync = function (path) {
+module.exports.mkdirSync = path => {
   try {
     fs.mkdirSync(path);
   } catch (e) {
@@ -254,7 +254,7 @@ module.exports.mkdirSync = function (path) {
   }
 };
 
-module.exports.fileExists = function (path) {
+module.exports.fileExists = path => {
   try {
     return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
   }
@@ -263,16 +263,16 @@ module.exports.fileExists = function (path) {
   }
 };
 
-module.exports.reverseString = function (str) {
+module.exports.reverseString = str => {
   return str.split("").reverse().join("");
 };
 
-module.exports.send_mail = function (mail_info) {
+module.exports.send_mail = mail_info => {
   // let to_addr   = mail_info.addr;
   // let from_addr = mail_info.from;
   // let subj      = mail_info.subj;
   // let msg       = mail_info.msg;
-  transporter.sendMail(mail_info, function (error, info) {
+  transporter.sendMail(mail_info, (error, info) => {
     if (error) {
       console.log(error);
     } else {
@@ -289,7 +289,7 @@ module.exports.send_mail = function (mail_info) {
 
 };
 
-module.exports.assignment_finish_request = function (res, rows1, rows2, status_params) {
+module.exports.assignment_finish_request = (res, rows1, rows2, status_params) => {
   //console.log('query ok1 '+JSON.stringify(rows1));
   //console.log('query ok2 '+JSON.stringify(rows2));
   const global_vars_controller  = require(app_root + '/controllers/globalVarsController');
@@ -313,7 +313,7 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
   const silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
   var all_silva_taxonomy = new silvaTaxonomy();
   const CustomTaxa         = require('./custom_taxa_class');
-  all_silva_taxonomy.get_all_taxa(function (err, results) {
+  all_silva_taxonomy.get_all_taxa( (err, results) => {
     if (err)
       throw err; // or return an error message, or something
     else
@@ -323,16 +323,16 @@ module.exports.assignment_finish_request = function (res, rows1, rows2, status_p
   console.log(' UPDATED new_taxonomy');
 };
 
-module.exports.reverse                   = function (str) {
+module.exports.reverse                   = str => {
   return str.split("").reverse().join("");
 };
 
-module.exports.clean_string              = function (str) {
+module.exports.clean_string              = str => {
   // this replaces everything that is not letter,number or underscore (\w) with underscore
   return str.replace(/[^\w]/gi, '_');
 };
 
-module.exports.get_metadata_from_file = function () {
+module.exports.get_metadata_from_file = () => {
   let meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   try {
     AllMetadataFromFile = require(meta_file);
@@ -344,16 +344,16 @@ module.exports.get_metadata_from_file = function () {
   return AllMetadataFromFile;
 };
 
-module.exports.write_metadata_to_files = function (did) {
+module.exports.write_metadata_to_files = did => {
   let dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
 
-  fs.readFile(dataset_file, 'utf8', function (err, data) {
+  fs.readFile(dataset_file, 'utf8', (err, data) => {
     if (err) throw err;
     //Do your processing, MD5, send a satellite to the moon, etc.
     //console.log('predata',data)
     data.metadata = AllMetadata[did];
     //console.log('postdata',data)
-    fs.writeFile(dataset_file, data, function (err) {
+    fs.writeFile(dataset_file, data, err => {
       if (err) throw err;
       console.log('done writing ' + did + '.json');
     });
@@ -362,8 +362,8 @@ module.exports.write_metadata_to_files = function (did) {
 
 };
 
-module.exports.mysql_real_escape_string = function (str) {
-  return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+module.exports.mysql_real_escape_string = str => {
+  return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, char => {
     switch (char) {
       case "\0":
         return "\\0";
@@ -387,19 +387,19 @@ module.exports.mysql_real_escape_string = function (str) {
   });
 };
 
-// module.exports.checkUserName = function (username) {   // SAME FXN IN PASSPORT
+// module.exports.checkUserName = (username) => {   // SAME FXN IN PASSPORT
 //   let reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
 //   return (reg.test(username));
 // };
 
-module.exports.compareStrings_alpha = function (a, b) {
+module.exports.compareStrings_alpha = (a, b) => {
   // Assuming you want case-insensitive comparison
   a = a.toLowerCase();
   b = b.toLowerCase();
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 };
 // Sort list of json objects numerically
-module.exports.compareStrings_int   = function (a, b) {
+module.exports.compareStrings_int   = (a, b) => {
   // Assuming you want case-insensitive comparison
   a = parseInt(a);
   b = parseInt(b);
@@ -409,7 +409,7 @@ module.exports.compareStrings_int   = function (a, b) {
 // test - single_bar
 // TODO: duplicated in common_selection.js
 // JSHint: This function's cyclomatic complexity is too high. (6)(W074)
-module.exports.sort_json_matrix = function(mtx, fxn_obj) {
+module.exports.sort_json_matrix = (mtx, fxn_obj) => {
   // fxn must be one of min,max, alphaUp, alphaDown
   // else original mtx returned
   // sorts MATRIX by tax alpha or counts OF FIRST COLUMN only
@@ -458,11 +458,11 @@ module.exports.sort_json_matrix = function(mtx, fxn_obj) {
   return mtx;
 };
 
-module.exports.get_portal_projects = function (req, portal) {
+module.exports.get_portal_projects = (req, portal) => {
   let projects = [];
   let cnsts_basis = C.PORTALS[portal];
 
-  ALL_DATASETS.projects.forEach(function (prj) {
+  ALL_DATASETS.projects.forEach( prj => {
     let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
     let split = prj.name.split('_');
 
@@ -482,16 +482,16 @@ module.exports.get_portal_projects = function (req, portal) {
   return projects;
 };
 
-// module.exports.get_public_projects  = function () {
+// module.exports.get_public_projects  = () => {
 //   let projects = [];
-//   ALL_DATASETS.projects.forEach(function (prj) {
+//   ALL_DATASETS.projects.forEach( (prj) => {
 //     let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
 //     projects.push(pinfo);
 //   });
 //   return projects;
 // };
 
-module.exports.make_color_seq = function (seq) {
+module.exports.make_color_seq = seq => {
   // default color  = #333 - dark grey
 
   let previous_base = "";
@@ -528,7 +528,7 @@ module.exports.make_color_seq = function (seq) {
 };    //end of function make_color_seq
 
 // TODO: to globVar, not used
-// module.exports.update_project_information_global_object = function (pid, form, user_obj) {
+// module.exports.update_project_information_global_object = (pid, form, user_obj) => {
 //   console.log('Updating PROJECT_INFORMATION_BY_PID');
 //   if (config.site == 'vamps') {
 //     console.log('VAMPS PRODUCTION -- no print to log');
@@ -580,7 +580,7 @@ module.exports.make_color_seq = function (seq) {
 //   return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
 // }
 
-module.exports.update_status = function (status_params) {
+module.exports.update_status = (status_params) => {
   console.log('in update_status');
   console.log(util.inspect(status_params, false, null));
 
@@ -588,7 +588,7 @@ module.exports.update_status = function (status_params) {
     let delete_status_params = [status_params.user_id, status_params.pid];
     statQuery            = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
-    connection.query(statQuery, delete_status_params, function (err, rows) {
+    connection.query(statQuery, delete_status_params, (err, rows) => {
       if (err) {
         console.log('ERROR1-in status update: ' + err);
       }
@@ -601,7 +601,7 @@ module.exports.update_status = function (status_params) {
   else if (status_params.type == 'update') {
     statQuery2 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2, function (err, rows) {
+    connection.query(statQuery2, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -613,7 +613,7 @@ module.exports.update_status = function (status_params) {
   else {  // Type::New
     statQuery1 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery1: ' + statQuery1);
-    connection.query(statQuery1, function (err, rows) {
+    connection.query(statQuery1, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -624,8 +624,8 @@ module.exports.update_status = function (status_params) {
   } // Type::New
 };
 
-module.exports.fetchInfo = function (query, values, callback) {
-  connection.query(query, values, function (err, rows) {
+module.exports.fetchInfo = (query, values, callback) => {
+  connection.query(query, values, (err, rows) => {
     if (err) {
       callback(err, null);
     }
@@ -644,7 +644,7 @@ module.exports.fetchInfo = function (query, values, callback) {
 //   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // }
 
-module.exports.get_local_script_text = function (cmd_list) {
+module.exports.get_local_script_text = (cmd_list) => {
   script_text = "#!/bin/sh\n\n";
   //script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
   script_text += 'echo -n "Hostname: "' + "\n";
@@ -660,7 +660,7 @@ module.exports.get_local_script_text = function (cmd_list) {
   return script_text;
 };
 
-module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_name, cmd_list) {
+module.exports.get_qsub_script_text = (req, scriptlog, dir_path, cmd_name, cmd_list) => {
   /*
    #!/bin/sh
    # CODE:
@@ -749,7 +749,7 @@ module.exports.get_qsub_script_text = function (req, scriptlog, dir_path, cmd_na
 
 };
 
-module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, cmd_name, cmd_list) {
+module.exports.get_qsub_script_text_only = (req, scriptlog, dir_path, cmd_name, cmd_list) => {
   script_text = "#!/bin/bash\n"
   script_text += "# CODE:\t${cmd_name}\n"
   script_text += "# source environment:\n"
@@ -772,7 +772,7 @@ module.exports.get_qsub_script_text_only = function (req, scriptlog, dir_path, c
 
 };
 
-module.exports.isLocal = function (req) {
+module.exports.isLocal = req => {
   var conf = "";
   if (typeof req.CONFIG === 'undefined') {
     conf  = require(app_root + '/config/config');
@@ -789,14 +789,14 @@ module.exports.isLocal = function (req) {
     // return !(conf.dbhost === 'vampsdev' || conf.dbhost === 'bpcweb7' || conf.dbhost === 'vampsdb' || conf.dbhost === 'vamps');
 };
 
-module.exports.local_log = function (req, msg) {
+module.exports.local_log = (req, msg) => {
   if (module.exports.isLocal(req)) {
     console.log(msg);
   }
 };
 
 // TODO: to fileController
-module.exports.deleteFolderRecursive = function (path) {
+module.exports.deleteFolderRecursive = (path) => {
   if (fs.existsSync(path)) {
     if (fs.lstatSync(path).isFile()) {
       try {
@@ -805,7 +805,7 @@ module.exports.deleteFolderRecursive = function (path) {
         console.log("Could not delete1: " + path);
       }
     } else {
-      fs.readdirSync(path).forEach(function (file, index) {
+      fs.readdirSync(path).forEach( (file, index) => {
         var curPath = path + "/" + file;
         if (fs.lstatSync(curPath).isDirectory()) { // recurse
           module.exports.deleteFolderRecursive(curPath);
@@ -829,7 +829,7 @@ module.exports.deleteFolderRecursive = function (path) {
 //
 //
 //
-module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list, opts) {
+module.exports.make_gast_script_txt = (req, data_dir, project, cmd_list, opts) => {
   console.log('OPTS: ')
   console.log(opts)
   make_gast_script_txt = "";
@@ -921,7 +921,7 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   else {
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
     var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting
-    var parallel_env_tag = '-pe smp 5'  // req to work on vamps cluster 2019-01
+    var parallel_env_tag = '-pe smp 8'  // req to work on vamps cluster 2019-01
     make_gast_script_txt += "qsub "+parallel_env_tag+" "+sync_tag+" " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
   make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"
@@ -937,11 +937,11 @@ module.exports.make_gast_script_txt = function (req, data_dir, project, cmd_list
   return make_gast_script_txt
 }
 
-module.exports.isEmptyObject = function (obj) {
+module.exports.isEmptyObject = obj => {
   return !Object.keys(obj).length;
 }
 
-module.exports.isValidMySQLDate = function (dateString) {
+module.exports.isValidMySQLDate = dateString => {
   // First check for the pattern
   //if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
   //    return false;
@@ -973,7 +973,7 @@ module.exports.isValidMySQLDate = function (dateString) {
 //
 //
 //
-module.exports.convertJSDateToString = function (jddate) {
+module.exports.convertJSDateToString = jddate => {
   try {
     var full_year = jddate.getFullYear()
     var month     = parseInt(jddate.getMonth()) + 1
@@ -998,7 +998,7 @@ module.exports.convertJSDateToString = function (jddate) {
 //
 //
 //
-module.exports.run_external_command             = function (script_path) {
+module.exports.run_external_command             = script_path => {
   console.log('in helpers.run_external_command()')
   console.log(script_path)
   const exec   = require('child_process').exec;
@@ -1012,7 +1012,7 @@ module.exports.run_external_command             = function (script_path) {
   });
 
 
-  child.stderr.on('data', function (data) {
+  child.stderr.on('data', data => {
     console.log('stdout: ' + data);
   });
 
@@ -1042,7 +1042,7 @@ function get_geo_loc_name(id) {
   }
 }
 
-module.exports.required_metadata_ids_from_names = function (selection_obj, mdname) {
+module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
   // test visuals/unit_selection from custom tax
   let idname, value;
 
@@ -1129,7 +1129,7 @@ function get_current_primers(id) {
   return val.join(' ');
 }
 
-module.exports.required_metadata_names_from_ids = function (selection_obj, name_id) {
+module.exports.required_metadata_names_from_ids = (selection_obj, name_id) => {
   let id = selection_obj[name_id];
   let real_name, value;
   switch(name_id) {
@@ -1199,7 +1199,7 @@ module.exports.required_metadata_names_from_ids = function (selection_obj, name_
 //
 //
 //
-module.exports.get_metadata_obj_from_dids = function (dids) {
+module.exports.get_metadata_obj_from_dids = dids => {
   let metadata = {};
   let mdobj;
   for (let n in dids) {
@@ -1216,15 +1216,15 @@ module.exports.get_metadata_obj_from_dids = function (dids) {
 //
 //
 
-user_is_admin = function(req) {
+user_is_admin = req => {
   return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.admin, 10));
 };
 
-user_is_mbl_user = function(req) {
+user_is_mbl_user = req => {
   return ( parseInt(req.user.security_level, 10) === parseInt(C.user_security_level.mbl_user, 10));
 };
 
-user_has_project_permissions = function(req, pinfo) {
+user_has_project_permissions = (req, pinfo) => {
   user_has_permissions = false;
   project_is_public = (pinfo.public === parseInt("1", 10));
   user_is_owner = (req.user.user_id === pinfo.oid);
@@ -1233,7 +1233,7 @@ user_has_project_permissions = function(req, pinfo) {
   return user_has_permissions;
 };
 
-module.exports.screen_dids_for_permissions = function (req, dids) {
+module.exports.screen_dids_for_permissions = (req, dids) => {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
@@ -1250,7 +1250,7 @@ module.exports.screen_dids_for_permissions = function (req, dids) {
   return new_did_list;
 };
 
-module.exports.screen_pids_for_permissions = function (req, pids) {
+module.exports.screen_pids_for_permissions = (req, pids) => {
   // This is called from unit_select and view_select (others?)  to catch and remove dids that
   // are found through searches such as geo_search and go to unit_select directly
   // bypassing the usual tree filter 'filter_project_tree_for_permissions' (fxn above)
@@ -1265,20 +1265,20 @@ module.exports.screen_pids_for_permissions = function (req, pids) {
   return new_pid_list;
 };
 
-module.exports.unique_array = function (myArray) {
+module.exports.unique_array = (myArray) => {
   let uSet = new Set(myArray);
   return [...uSet];
 };
 
-module.exports.flat_array = function (myArray) {
+module.exports.flat_array = (myArray) => {
   return myArray.reduce((acc, val) => acc.concat(val), []);
 };
 
-module.exports.has_duplicates = function (myArray) {
+module.exports.has_duplicates = (myArray) => {
   return ((parseInt(new Set(myArray).size)) !== parseInt(myArray.length));
 };
 
-module.exports.log_timestamp = function () {
+module.exports.log_timestamp = () => {
   let date = new Date();
   // console.log("date.toDateString():");
   // console.log(date.toDateString());
@@ -1287,7 +1287,7 @@ module.exports.log_timestamp = function () {
   return day + " " + time;
 };
 
-module.exports.get_key_from_value = function (obj, value) {
+module.exports.get_key_from_value = (obj, value) => {
   // returns the key first found object only
   console.log('3 -in get_key from val - ' + value);
   found_key   = null;
@@ -1310,15 +1310,15 @@ module.exports.get_key_from_value = function (obj, value) {
   return found_key;
 };
 
-module.exports.ensure_dir_exists = function (dir) {
-  fs.ensureDir(dir, function (err) {
+module.exports.ensure_dir_exists = (dir) => {
+  fs.ensureDir(dir, err => {
     if (err) {
       console.log('2');
       console.log(err);
     } // => null
     else {
       //Octal literals with prefix '0' are not allowed. Use '0o' prefix instead
-      fs.chmod(dir, 0777, function (err) {
+      fs.chmod(dir, 0777, (err) => {
         if (err) {
           console.log(err);
         } // ug+rwx
@@ -1328,7 +1328,7 @@ module.exports.ensure_dir_exists = function (dir) {
 
   });
 // Use abstract equality == for "is number" test
-  module.exports.isEven = function (n) {
+  module.exports.isEven = (n) => {
     return n == parseFloat(n) ? !(n % 2) : void 0;
   }
 
@@ -1365,52 +1365,52 @@ function region_valid(value, region_low, region_high) {
   }
 }
 
-exports.numbers_n_period = function (value) {
+exports.numbers_n_period = value => {
   let reg_exp = /[^0-9.]/;
   let err_msg = ', please use only numbers and periods.';
   check_regexp(reg_exp, value, err_msg);
 };
 
-exports.numbers_n_period_n_minus = function (value) {
+exports.numbers_n_period_n_minus = value => {
   let reg_exp = /[^0-9.-]/;
   let err_msg = ', please use only numbers, periods and minus.';
   check_regexp(reg_exp, value, err_msg);
 };
 
-exports.longitude_valid = function (value) {
+exports.longitude_valid =  value => {
   region_valid(value, -180, 180);
 };
 
-exports.latitude_valid = function (value) {
+exports.latitude_valid = value => {
   region_valid(value, -90, 90);
 };
 
-exports.ph_valid = function (value) {
+exports.ph_valid = value => {
   region_valid(value, 0, 14);
 };
 
-exports.percent_valid = function (value) {
+exports.percent_valid = value => {
   region_valid(value, 0, 100);
 };
 
-exports.positive = function (value) {
+exports.positive = value => {
   if (value !== '' && parseInt(value) < 0) {
     throw new Error("'" + value + "' is not valid, %s should be greater then 0.");
   }
 };
 
-exports.dropdown_items_validation = function (value) {
+exports.dropdown_items_validation = value => {
   if (value === 'Please choose one') {
     throw new Error('%s is required. Please choose one value from the dropdown menu');
   }
 };
 
-remove_dummy_entries = function(arr){
+remove_dummy_entries = arr =>{
   let bad_values = ["Select..."];
   return arr.filter(n => !bad_values.includes(n));
 };
 
-exports.adapt_3letter_validation = function (value, source) {
+exports.adapt_3letter_validation = (value, source) => {
   // console.time('adapt_3letter_filter');
   let has_index_and_runkey = checkArray(source.illumina_index) && checkArray(source.adapter_sequence);
   let has_adapt_3letter = checkArray(remove_dummy_entries(source.adapt_3letter));
@@ -1422,7 +1422,7 @@ exports.adapt_3letter_validation = function (value, source) {
 };
 
 const const_target_gene               = C.TARGET_GENE;
-module.exports.target_gene_validation = function (gene, source) {
+module.exports.target_gene_validation = (gene, source) => {
   let u_domains_set         = new Set(source.domain);
   let u_domains_arr         = [...u_domains_set];
   let curr_domain           = u_domains_arr[0];
@@ -1435,19 +1435,19 @@ module.exports.target_gene_validation = function (gene, source) {
   }
 };
 
-exports.geo_loc_name_validation = function (value, source) {
+exports.geo_loc_name_validation = (value, source) => {
   if ((!checkArray(source.geo_loc_name_marine)) && (!checkArray(source.geo_loc_name_continental))) {
     throw new Error("Either 'Country' or 'Longhurst Zone' are required"); // jshint ignore:line
   }
 };
 
-exports.depth = function (value, source) {
+exports.depth = (value, source) => {
   if ((!checkArray(source.tot_depth_water_col)) && (!checkArray(source.depth_subseafloor)) && (!checkArray(source.depth_subterrestrial))) {
       throw new Error("Either 'Depth below surface' or 'Depth below seafloor' or 'Water column depth' are required"); // jshint ignore:line
   }
 };
 
-exports.geo_loc_name_continental_filter = function(value) {
+exports.geo_loc_name_continental_filter = value => {
   for (const key in C.GAZ_SPELLING) {
     if (C.GAZ_SPELLING[key].includes(value.toLowerCase())) {
       return key;
@@ -1455,19 +1455,19 @@ exports.geo_loc_name_continental_filter = function(value) {
   }
 };
 
-exports.recommended_temperature = function (value) {
+exports.recommended_temperature = value => {
   if (value === '') {
     throw new Error("Temperature is recommended");
   }
 };
 
-exports.recommended_conduct = function (value) {
+exports.recommended_conduct = value => {
   if (value === '') {
     throw new Error("Conductivity is recommended");
   }
 };
 
-exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
+exports.slice_object_by_keys_to_arr = (obj, slice_keys) => {
   let res_arr = [];
   for (let n in slice_keys) {
     let next_f_name = slice_keys[n];
@@ -1476,7 +1476,7 @@ exports.slice_object_by_keys_to_arr = function (obj, slice_keys) {
   return res_arr;
 };
 
-exports.slice_object_by_keys = function (object, slice_keys) {
+exports.slice_object_by_keys = (object, slice_keys) => {
   // console.time('TIME: convert to string');
   for (let i = 0; i < slice_keys.length; i++) {
     slice_keys[i] = String(slice_keys[i]);
@@ -1492,7 +1492,7 @@ exports.slice_object_by_keys = function (object, slice_keys) {
 };
 
 if (!Object.entries)
-  Object.entries = function( obj ){
+  Object.entries = obj => {
     var ownProps = Object.keys( obj ),
         i = ownProps.length,
         resArray = new Array(i); // preallocate the Array
@@ -1502,25 +1502,25 @@ if (!Object.entries)
     return resArray;
   };
 
-exports.slice_object_by_positions = function(my_object, begin_ind, end_ind) {
+exports.slice_object_by_positions = (my_object, begin_ind, end_ind) => {
   let sliced = [];
   sliced = Object.entries(my_object).slice(begin_ind, end_ind).map(entry => entry[1]);
   return sliced;
 };
 
-exports.get_key_index = function(my_obj, my_key) {
+exports.get_key_index = (my_obj, my_key) => {
   my_ind = Object.keys(my_obj).indexOf(my_key);
   // my_ind += 1;
   return my_ind;
 };
 
-exports.findByValueOfObject = function (arr, key, value) {
-  return arr.filter(function (item) {
+exports.findByValueOfObject = (arr, key, value) => {
+  return arr.filter( item => {
     return (item[key] === value);
   });
 };
 
-exports.check_for_undefined0 = function (req, to_check, err_msg) {
+exports.check_for_undefined0 = (req, to_check, err_msg) => {
   {
     let exists = (typeof to_check !== 'undefined');
     if (!exists) {
@@ -1530,7 +1530,7 @@ exports.check_for_undefined0 = function (req, to_check, err_msg) {
   }
 };
 
-exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
+exports.transpose_2d_arr_and_fill = (data_arr, matrix_length) => {
   // console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
@@ -1540,8 +1540,8 @@ exports.transpose_2d_arr_and_fill = function (data_arr, matrix_length) {
     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
   }
 
-  let newArray = length_array.map(function (col, i) {
-    return data_arr.map(function (row) {
+  let newArray = length_array.map( (col, i) => {
+    return data_arr.map( (row) => {
       return row[i];
     });
   });
@@ -1617,8 +1617,7 @@ function transpose_arr_of_obj(a) {
 //
 //
 //
-exports.retrieve_needed_constants = function(cnsts, view)
-{
+exports.retrieve_needed_constants = (cnsts, view) => {
     var obj = {};
     obj.UNITSELECT = cnsts.UNITSELECT;
     if (view === 'view_selection'){
@@ -1643,19 +1642,19 @@ exports.retrieve_needed_constants = function(cnsts, view)
     return obj;
 };
 
-exports.is_empty = function(obj_or_arr) {
+exports.is_empty = (obj_or_arr) => {
   return Object.keys(obj_or_arr).length === 0;
 };
 
-exports.is_object = function(data) {
+exports.is_object = (data) => {
   return data && (data.constructor === Object);
 };
 
-exports.is_array = function(data) {
+exports.is_array = (data) => {
   return data && (Array.isArray(data));
 };
 
-exports.create_matrix_from_biom = function(res, file_path, ts){
+exports.create_matrix_from_biom = (res, file_path, ts) => {
     console.log('IN create_matrix_from_biom');
     let out_file_name = ts + '_count_matrix.txt';
     let biom_file_name = ts + '_count_matrix.biom';
@@ -1663,7 +1662,7 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
     let out_file_path = path.join(file_path,  out_file_name);
     console.log("biom_file_path: " + biom_file_path);
     console.log("out_file_path: " + out_file_path);
-    fs.readFile(biom_file_path, function(err, data){
+    fs.readFile(biom_file_path, (err, data) => {
         if(err){ console.log(err); return; }
         const parsed_data = JSON.parse(data);
         let txt = '';
@@ -1676,7 +1675,7 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
         for(let n in parsed_data.rows){
             txt += parsed_data.rows[n].id + '\t' + parsed_data.data[n].join('\t') + '\n';
         }        
-        fs.writeFile(out_file_path, txt, function(err, data) {
+        fs.writeFile(out_file_path, txt, (err, data) => {
             if (err) { console.log(err); return; }
             console.log("Successfully Written to File.");
             
@@ -1685,7 +1684,7 @@ exports.create_matrix_from_biom = function(res, file_path, ts){
     });
 };
 
-module.exports.clean_escape = function (text) {
+module.exports.clean_escape = (text) => {
   return text.replace(/\\r?\\n|\\r|\\n/g, " ");
 };
 

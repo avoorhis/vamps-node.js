@@ -8,11 +8,11 @@ const file_controller = require(app_root + '/controllers/fileController');
 const file_path_obj = new file_controller.FilePath();
 
 module.exports = {
-  taxon_color_legend: function(req, res) {
+  taxon_color_legend: (req, res) => {
     console.log('In routes_images/function: images/taxon_color_legend')
     var ts = req.session.ts
     matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
-    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+    fs.readFile(matrix_file_path, 'utf8', (err, data) => {
       if (err) {
         var msg = 'ERROR Message '+err;
         console.log(msg)
@@ -49,7 +49,7 @@ module.exports = {
 
 
   }, // end color_legend
-  counts_matrix: function(req, res) {
+  counts_matrix: (req, res) => {
     console.log('In routes_images/function: images/counts_matrix')
 
     //console.log('req session')
@@ -57,7 +57,7 @@ module.exports = {
 
     var ts = req.session.ts
     matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
-    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+    fs.readFile(matrix_file_path, 'utf8', (err, data) => {
       if (err) {
         var msg = 'ERROR Message '+err;
         console.log(msg)
@@ -234,7 +234,7 @@ module.exports = {
 //
 //   DISTANCE HEATMAP
 //
-  dheatmap: function(req, res){
+  dheatmap: (req, res) =>{
     console.log('In routes_images/function: images/dheatmap')
     //console.log(req.session)
     var ts = req.session.ts
@@ -290,7 +290,7 @@ module.exports = {
         try{
           console.log('dist_json_file_path',dist_json_file_path)
 
-          fs.readFile(dist_json_file_path, 'utf8', function (err, distance_matrix) {
+          fs.readFile(dist_json_file_path, 'utf8', (err, distance_matrix) => {
             if (err) throw err;
             //distance_matrix = JSON.parse(data);
             metadata = {}
@@ -337,7 +337,7 @@ module.exports = {
 //
 //
 //
-  fheatmap: function(req, res){
+  fheatmap: (req, res) =>{
     console.log('In routes_images/function: images/fheatmap')
     var ts = req.session.ts
     matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
@@ -375,7 +375,7 @@ module.exports = {
       if(code === 0){   // SUCCESS
         var svgfile_name  = ts + '_fheatmap.svg'  // must match file name written in R script: dendrogram.R
         svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
-        fs.readFile(svgfile_path, 'utf8', function(err, contents){
+        fs.readFile(svgfile_path, 'utf8', (err, contents) => {
           if(err){ res.send('ERROR reading file')}
 
           //console.log(contents)
@@ -397,11 +397,11 @@ module.exports = {
 //
 //   PIE CHARTS
 //
-  piecharts: function(req, res) {
+  piecharts: (req, res) => {
     console.log('In routes_images/function: images/piecharts');
     let ts = req.session.ts;
     let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
-    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+    fs.readFile(matrix_file_path, 'utf8', (err, data) => {
       if (err) {
         let msg = 'ERROR Message '+err;
         console.log(msg);
@@ -442,7 +442,7 @@ module.exports = {
 //
 //   BAR CHARTS
 //
-  barcharts: function(req, res){
+  barcharts: (req, res) =>{
     console.log('In routes_images/function: images/barcharts');
     // see: https://bl.ocks.org/tomgp/c99a699587b5c5465228
     let ts = req.session.ts;
@@ -450,7 +450,7 @@ module.exports = {
     let imagetype = 'group';
 
     let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
-    fs.readFile(matrix_file_path, 'utf8', function(err, data){
+    fs.readFile(matrix_file_path, 'utf8', (err, data) => {
       console.time("TIME: readFile(matrix_file_path");
 
       if (err) {
@@ -500,7 +500,7 @@ module.exports = {
   },  // end barcharts
 
   //TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)
-  metadata_csv: function(req, res){
+  metadata_csv: (req, res) =>{
     console.log('in routes_images/metadata_csv')
     var ts = req.session.ts
     try{
@@ -562,7 +562,7 @@ module.exports = {
 
   },
 
-  adiversity: function(req, res){
+  adiversity: (req, res) =>{
     console.log('in routes_images/adiversity')
     var ts = req.session.ts
     matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts+'_count_matrix.biom')
@@ -649,7 +649,7 @@ module.exports = {
     });
 
   },
-  dendrogram: function(req, res){
+  dendrogram: (req, res) =>{
     console.log('in routes_images/dendrogram2')
     ///groups/vampsweb/vampsdev/seqinfobin/bin/Rscript --no-save --slave --no-restore tree_create.R avoorhis_4742180_normalized.mtx horn avoorhis_4742180 trees
     //console.log(phylo)
@@ -701,7 +701,7 @@ module.exports = {
         //console.log('stdout: '+output);
         var svgfile_name  = ts + '_dendrogram.svg'  // must match file name written in R script: dendrogram.R
         svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
-        fs.readFile(svgfile_path, 'utf8', function(err, contents){
+        fs.readFile(svgfile_path, 'utf8', (err, contents) => {
           if(err){ res.send('ERROR reading file');return}
 
           //console.log(contents)
@@ -725,7 +725,7 @@ module.exports = {
 //
 //
 //
-  phyloseq: function(req,res){
+  phyloseq: (req,res) => {
     console.log('in routes_images/phyloseq')
     var ts = req.session.ts
     //var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
@@ -759,7 +759,7 @@ module.exports = {
 
         var svgfile_name  = ts + '_phyloseq_test.svg'  // must match file name written in R script: dendrogram.R
         svgfile_path = path.join(file_path_obj.get_tmp_file_path(req), svgfile_name);  // file name save to user_location
-        fs.readFile(svgfile_path, 'utf8', function(err, contents){
+        fs.readFile(svgfile_path, 'utf8', (err, contents) => {
           if(err){ res.send('ERROR reading file');return}
 
           //console.log(contents)
@@ -783,7 +783,7 @@ module.exports = {
 //
 //
 //
-  create_hm_table_from_csv: function(req, dm, metadata){
+  create_hm_table_from_csv: (req, dm, metadata) => {
     console.log('in create_hm_table_from_csv')
     //for split heatmaps only
     //console.log(metadata)
@@ -961,7 +961,7 @@ module.exports = {
 
     return html
   },
-  create_hm_table: function(req, dm, metadata){
+  create_hm_table: (req, dm, metadata) => {
     console.log('in create_hm_table2')
     //console.log(metadata)
     var id_order = req.session.chosen_id_order
@@ -1135,9 +1135,9 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .enter()
       .append("g")
       .attr("class", "g")
-      .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
+      .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
       .append("a")
-      .attr("xlink:xlink:href",  function(d) { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown';} )
+      .attr("xlink:xlink:href",  d => { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown';} )
       .attr("target", '_blank' );
   }else{
     var datasetBar = svg.selectAll(".bar")
@@ -1145,7 +1145,7 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .enter()
       .append("g")
       .attr("class", "g")
-      .attr("transform", function(d) { return  "translate(0, " + props.y(d.pjds) + ")"; })
+      .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
 
   }
   var labels = datasetBar.append("text")
@@ -1155,29 +1155,29 @@ function create_bars_svg_object(req, svg, props, data, ts) {
     .style("font-weight",  "normal")
     .attr("x", "-2")
     .attr("y", props.bar_height*2)
-    .text(function(d) { return d.pjds; })
+    .text( d => { return d.pjds; })
   var labels = datasetBar.append("text")
     .style("text-anchor","start")
     .style("font-size",  "13px")
     .style("font-weight",  "normal" )
     .attr("x", props.plot_width+10)
     .attr("y", props.bar_height*2)
-    .text(function(d) { return 'SumCount: '+d.total; })
+    .text( d => { return 'SumCount: '+d.total; })
   if(req.body.source == 'website'){
     var gnodes = datasetBar.selectAll("rect")
-      .data(function(d) { return d.unitObj; })
+      .data( d => { return d.unitObj; })
       .enter()
 
 
       .append("rect")
-      .attr("x", function(d) { return props.x(d.x0); })
+      .attr("x", d => { return props.x(d.x0); })
       .attr("y", 15)  // adjust where first bar starts on x-axis
-      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+      .attr("width", d => { return props.x(d.x1) - props.x(d.x0); })
       .attr("height",  18)
-      // .attr("title",function(d){
+      // .attr("title", (d) => {
       //     return d.tax
       //})
-      .attr("id",function(d,i) {
+      .attr("id", (d,i) => {
         //var cnt =  d.tax;
         //var total = d.total;
 
@@ -1189,26 +1189,26 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       })
 
       .attr("class","tooltip_viz")
-      .style("fill",   function(d,i) {
+      .style("fill",   (d,i) => {
         //return get_random_color()
         return string_to_color_code(d.tax);
       });
   }else{
     var gnodes = datasetBar.selectAll("rect")
-      .data(function(d) { return d.unitObj; })
+      .data( d => { return d.unitObj; })
       .enter()
 
       .append("rect")
-      .attr("x", function(d) { return props.x(d.x0); })
+      .attr("x", d => { return props.x(d.x0); })
       .attr("y", 15)  // adjust where first bar starts on x-axis
-      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+      .attr("width", d => { return props.x(d.x1) - props.x(d.x0); })
       .attr("height",  18)
-      .style("fill",   function(d,i) {
+      .style("fill",  (d,i) => {
         //return get_random_color()
         return string_to_color_code(d.tax);
       })
       .append("title")
-      .text(function(d) {
+      .text( d => {
         //console.log('this.parentNode.__data__',d.cnt)
         return d.tax+' -- '+d.cnt
       })
@@ -1262,124 +1262,12 @@ function get_image_properties(imagetype, ds_count) {
   return props;
 }
 
-// function create_hm_table(req, dm, numbers_or_colors){
-//     console.log('in create_hm_table')
-//
-//     var id_order = req.session.chosen_id_order
-//
-//     var html = ''
-//     html += "<center>"
-//     if(req.body.source == 'website'){
-//         html += "<center>"
-//         html += "	<small>"
-//         html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
-//         html += "    </small>"
-//         html += "</center>"
-//         html += "<table class='pull-right'><tr>"
-//         html += "<td><input type='radio' name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;</td>"
-//         html += "<td><input type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors </td>"
-//         html += "</tr></table>"
-//         html += "<br>"
-//     }
-//     //html += "<div id='distance_matrix' style='visibility:hidden'><%= dm %></div>"
-//     html += "<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>"
-//     html += "<table border='1' id='drag_table' class='heatmap_table center_table' >"
-// 	if(req.body.source == 'website'){
-// 	    html += "<tr class='nodrag nodrop' ><td></td>"
-//     }else{
-//         html += "<tr class='nodrag nodrop' style='line-height:11px;'><td></td>"
-//     }
-// 	html += "<td><div id='ds_save_order_div'>"
-// 	if(req.body.source == 'website'){
-// 	    html += "<button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>"
-//         html += "<span class='label blue' bgcolor='blue'>Similar (0.0)</span> <span class='label red' bgcolor='red'>Dissimilar (1.0)</span>"
-//     }else{
-//         html += "<span class='' style='color:white;background:blue' >Similar (0.0)</span> <span class='' style='background:red' >Dissimilar (1.0)</span>"
-//     }
-// 	html += "		  <imput type='hidden' id='' name='resorted' value='1' >"
-// 	html += "	  </div>"
-// 	html += "</td>"
-//     for(i=1; i<=id_order.length; i++) {
-//         html += "<td><div class='cell'></div></td>"
-//     }
-//         html += "</tr>"
-//     k=1
-//     for(var n in id_order) {
-//         var xdid = id_order[n]
-//         var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
-//         //var x = id_order[n]
-//         if(req.body.source == 'website'){
-//             html += "<tr id='"+xpjds+"'>"
-//         }else{
-//             html += "<tr id='"+xpjds+"' style='line-height:11px;'>"
-//         }
-//         html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
-//         html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
-//         for(var m in id_order) {
-//
-//             var ydid = id_order[m]
-//             var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
-//
-//             if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
-//                 var d = dm[xpjds][ypjds].toFixed(5);
-//                 var sv = Math.round( dm[xpjds][ypjds] * 15 );
-//             }else{
-//                   var d = 1
-//                   var sv = 1 * 15
-//             }
-//             var id = 'dh/'+xpjds+'/'+ypjds+'/'+ req.session.selected_distance +'/'+d;
-//
-//             if(numbers_or_colors == 'numbers'){
-//
-//                 if(xdid === ydid){
-//                     html += "<td id='' class='heat_map_td' align='center'>0.0</td>"
-//                 }else{
-//                     if(req.body.source == 'website'){
-//                         html += "<td id='"+id+"' class='heat_map_td tooltip_viz' "
-//                         html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-//                         html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
-//                     }else{
-//                         var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
-//                         html += "<td title='"+title+"' class='heat_map_td' >"
-//                     }
-//                     html += d.toString()+"</td>"
-//                 }
-//
-//             }else{
-//                 var colors   = req.CONSTS.HEATMAP_COLORS
-//                 if(xdid === ydid){
-//                     html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-//                 }else{
-//                     if(req.body.source == 'website'){
-//                         html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
-//                         html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-//                         html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
-//                     }else{
-//                         var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
-//                         html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
-//                     }
-//                     html += "</td>"
-//                 }
-//
-//             }
-//
-//         }
-//         k++
-//         html += "</tr>"
-//
-//     }
-//     html += "</table>"
-//     html += "<input type='hidden' name='resorted' value='1'>"
-//     html += "</form>"
-//     html += "</center>"
-// /////////////////////
-//   return html
 //
 //
-// }
+//
 function standardDeviation(values){
   var avg = average(values);
-  var squareDiffs = values.map(function(value){
+  var squareDiffs = values.map( (value) => {
     var diff = value - avg;
     var sqrDiff = diff * diff;
     return sqrDiff;
@@ -1390,7 +1278,7 @@ function standardDeviation(values){
   return stdDev;
 }
 function average(data){
-  var sum = data.reduce(function(sum, value){
+  var sum = data.reduce( (sum, value) => {
     return sum + value;
   }, 0);
 
@@ -1401,7 +1289,7 @@ function save_file(data, file_path){
   //fs.writeFileSync(file_path, data)
   //fs.chmodSync(file_path, 0o664);
   //return 'Success'
-  fs.writeFile(file_path, data, function(err){
+  fs.writeFile(file_path, data, err => {
     if(err) {
       return console.log(err);
     }
@@ -1464,7 +1352,7 @@ function get_scaler(mtxdata, matrix) {
   let scaler = d3.scaleOrdinal()
     .range( matrix.rows );
   scaler.domain(d3.keys(mtxdata[0])
-    .filter(function(key) {
+    .filter( (key) =>  {
       return key !== "pjds" && key !== "did";
     }));
   return scaler;
@@ -1506,7 +1394,7 @@ function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
 }
 
 function normalize_to_100_prc(tmp_obj) {
-  tmp_obj.unitObj.forEach(function (unit_obj) {
+  tmp_obj.unitObj.forEach( (unit_obj) => {
     unit_obj.x0 = (unit_obj.x0 * 100) / tmp_obj.total;
     unit_obj.x1 = (unit_obj.x1 * 100) / tmp_obj.total;
   });
@@ -1607,7 +1495,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
     .data(mtxdata.values)
     .enter()
     .append("g")
-    .attr("transform", function(current_cnts, i){
+    .attr("transform", (current_cnts, i) => {
       let diam = (pie_rows) + margin;
       let h_spacer = diam * 2 * (i % pies_per_row);
       let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
@@ -1619,14 +1507,14 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       .data(mtxdata.values)
       .enter()
       .append("g")
-      .attr("transform", function(current_cnts, i){
+      .attr("transform", (current_cnts, i) => {
         let diam = (pie_rows) + margin;
         let h_spacer = diam * 2 * (i % pies_per_row);
         let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
         return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
       })
       .append("a")
-      .attr("xlink:xlink:href", function(current_cnts, i) {
+      .attr("xlink:xlink:href", (current_cnts, i) => {
         return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
       })
       .attr("target", '_blank' );
@@ -1637,7 +1525,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
     .attr("dy", pie_rows + margin)
     .attr("text-anchor", "center")
     .attr("font-size","10px")
-    .text(function(current_cnts, i) {
+    .text( (current_cnts, i) => {
       if (imagetype === 'single') {
         return 'SumCount: ' + total.toString();
       }
@@ -1653,7 +1541,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       .append("path")
       .attr("class", "arc")
       .attr("d", arc)
-      .attr("id", function(current_cnts, i) {
+      .attr("id", (current_cnts, i) => {
         let cnt = current_cnts.value;
         let total = 0;
         for (let k in this.parentNode.__data__){
@@ -1665,7 +1553,7 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
         return id;
       })
       .attr("class","tooltip_viz")
-      .attr("fill", function(d, i) {
+      .attr("fill", (d, i) => {
         return string_to_color_code(unit_list[i]);
       });
   }
@@ -1676,11 +1564,11 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       .append("path")
       .attr("class", "arc")
       .attr("d", arc)
-      .attr("fill", function(d, i) {
+      .attr("fill", (d, i) => {
         return string_to_color_code(unit_list[i]);
       })
       .append("title")
-      .text(function(d, i) {
+      .text( (d, i) => {
         return unit_list[i] + ' -- ' + d.value;
       });
   }

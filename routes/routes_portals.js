@@ -5,7 +5,7 @@ const path  = require('path');
 const fs   = require('fs-extra');
 
 /* GET Portals page. */
-router.get('/portals_index', function(req, res) {
+router.get('/portals_index', (req, res) => {
     res.render('portals/portals_index', { 
             title: 'VAMPS:Portals',
             portals : JSON.stringify(req.CONSTS.PORTALS),
@@ -15,7 +15,7 @@ router.get('/portals_index', function(req, res) {
 //
 //
 //
-router.get('/visuals_index/:portal', helpers.isLoggedIn, function(req, res) {
+router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
     console.log('in portals visuals_index')
     
     var portal = req.params.portal;
@@ -43,7 +43,7 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, function(req, res) {
 //
 // PROJECTS
 //
-router.get('/projects/:portal',  function(req, res) {
+router.get('/projects/:portal',  (req, res) => {
     
     var portal = req.params.portal;
     console.log('in projects/:portal:'+portal)
@@ -58,7 +58,7 @@ router.get('/projects/:portal',  function(req, res) {
     }
     //console.log('alter_dco_list')
     //console.log(alter_dco_list)
-    project_list.sort(function(a, b){
+    project_list.sort( (a, b) => {
           return helpers.compareStrings_alpha(a.project, b.project);
     });
     
@@ -74,7 +74,7 @@ router.get('/projects/:portal',  function(req, res) {
 });
 //
 //
-router.post('/dco_project_list',  function(req, res) {
+router.post('/dco_project_list',  (req, res) => {
     
     console.log('in dco_project_list')
     console.log(req.body)
@@ -106,7 +106,7 @@ router.post('/dco_project_list',  function(req, res) {
     
      //console.log(pids_with_latlon)
     new_dco_list_latlon = {}
-    project_list.forEach(function (prj) {
+    project_list.forEach( prj => {
         if(list_type=='ampl'){ 
             if(prj.metagenomic == 0){
                 projects.push(prj)
@@ -147,7 +147,7 @@ router.post('/dco_project_list',  function(req, res) {
         
     }
     
-    projects.forEach(function (prj) {
+    projects.forEach( prj => {
         prj.latlon_status = new_dco_list_latlon[prj.pid]
         proj_prefix = prj.project.substring(0,prj.project.lastIndexOf('_'))  // ie DCO_SPO_Ev9 ==> DCO_SPO
         prj.accessions = []
@@ -171,7 +171,7 @@ router.post('/dco_project_list',  function(req, res) {
 //     }else{
 //     
 //     }
-    projects.sort(function(a, b){
+    projects.sort( (a, b) => {
         if(sort_col == 'project'){
             if(direction == 'fwd'){  
                 return helpers.compareStrings_alpha(a.project, b.project);
@@ -239,7 +239,7 @@ router.post('/dco_project_list',  function(req, res) {
     html += "<th onclick=\"sort_table('md','"+list_type+"','"+direction+"')\">Lat/Lon Metadata Status</th></tr>"
     html += "</thead>"
     html += "<tbody>"
-    projects.forEach(function (prj) {
+    projects.forEach( prj => {
         //console.log(prj.pid)
         html += "<tr>"
         html += "<td>"+cnt+"</td>"
@@ -271,7 +271,7 @@ router.post('/dco_project_list',  function(req, res) {
     res.send(html);    
     
 });
-router.get('/abstracts/CMP', function(req, res) {
+router.get('/abstracts/CMP', (req, res) => {
     
     var portal = 'CMP'
     console.log('in abstracts/CMP')
@@ -282,7 +282,7 @@ router.get('/abstracts/CMP', function(req, res) {
     }
     var project_list = helpers.get_portal_projects(req, portal)
     
-    project_list.sort(function(a, b){
+    project_list.sort( (a, b) => {
           return helpers.compareStrings_alpha(a.project, b.project);
     });
     
@@ -298,7 +298,7 @@ router.get('/abstracts/CMP', function(req, res) {
 //
 // METADATA
 //
-// router.get('/metadata/:portal', function(req, res) {
+// router.get('/metadata/:portal', (req, res) => {
 //     var portal = req.params.portal;
 //     console.log('in metadata/:portal:'+portal)
 //     var project_list = helpers.get_portal_projects(req, portal)
@@ -344,7 +344,7 @@ router.get('/abstracts/CMP', function(req, res) {
 //         });
 // });
 
-router.get('/:portal', function(req, res) {
+router.get('/:portal', (req, res) => {
     
     var portal = req.params.portal;
     console.log('in /:portal -'+portal)
@@ -357,7 +357,7 @@ router.get('/:portal', function(req, res) {
     
     var project_list = helpers.get_portal_projects(req, portal)
     
-    project_list.sort(function(a, b){
+    project_list.sort( (a, b) => {
           return helpers.compareStrings_alpha(a.project, b.project);
     });
     //console.log('project_list')
@@ -377,7 +377,7 @@ router.get('/:portal', function(req, res) {
         });
     
 });
-router.get('/geomap/:portal', function(req, res) {
+router.get('/geomap/:portal', (req, res) => {
     console.log('in geomap')
     var portal = req.params.portal;
 
@@ -394,7 +394,7 @@ router.get('/geomap/:portal', function(req, res) {
 
 });
 
-// router.get('/coral_microbiome/background', function(req, res) {
+// router.get('/coral_microbiome/background', (req, res) => {
 //     console.log('in /coral_microbiome/background')
 //     // var portal = req.params.portal;
 // // 

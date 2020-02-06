@@ -69,9 +69,7 @@ class FileUtil {
         redirect_url: "/visuals/saved_elements"
       };
     }    
-    fs.unlink(file_full_path, (err) => {
-      this.react_to_delete(err, data);
-    });
+    fs.unlink(file_full_path, (err) => { this.react_to_delete(err, data); });
   }
 
   // TODO: JSHint: This function's cyclomatic complexity is too high. (7)(W074)

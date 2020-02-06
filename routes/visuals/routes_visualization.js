@@ -34,10 +34,13 @@ function start_visual_post_items(req) {
 
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
+  console.log('visual_post_items.chosen_datasets1');
+  console.log(visual_post_items.chosen_datasets);
   visual_post_items.chosen_datasets = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
-
+console.log('visual_post_items.chosen_datasets2');
+console.log(visual_post_items.chosen_datasets);
   console.log('VS--visual_post_items and id-hash:>>');
-  let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\nreq.session: ' + JSON.stringify(req.session);
+  let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\n\nreq.session: ' + JSON.stringify(req.session);
   viz_files_obj.print_log_if_not_vamps(req, msg);
   console.log('<<VS--visual_post_items');
 
@@ -48,7 +51,7 @@ function start_visual_post_items(req) {
 //  V I E W  S E L E C T I O N
 //
 // test: get graphics ("show available graphics")
-router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], function(req, res) {
+router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files', 12)], (req, res) => {
   console.log('in POST view_selection');
   /*
      var url_parts = url.parse(req.url, true);
@@ -61,7 +64,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
      in the previous two pages.
   It should be protected with isLoggedIn like /unit_selection below.
   The function call will look like this when isLoggedIn is in place:
-             router.post('/view_selection', isLoggedIn, function(req, res) {
+             router.post('/view_selection', isLoggedIn, (req, res) => {
   This page is where the user will choose to view his/her selected visuals.
   The left side will show a synopsis of what choices the user has made:
      datasets, normalization, units and any specifics such as tax rank, domain, NAs ....
@@ -86,7 +89,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
 
   let visual_post_items = start_visual_post_items(req);
-
+  console.log('visual_post_itemsXX');
+  console.log(visual_post_items);
   visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
 
   console.log('entering MTX.get_biom_matrix');
@@ -147,7 +151,7 @@ function no_data(req, res, needed_constants) {
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 // test: select datasets
-router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
+router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
   console.log("req.session.unit_choice: ");
   console.log(req.session.unit_choice);
   let current_unit_choice = "";
@@ -259,7 +263,7 @@ function render_visuals_index(res, req, needed_constants = C) {
 }
 
 // test: first page
-router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
+router.get('/visuals_index', helpers.isLoggedIn, (req, res) => {
   console.log('in GET visuals_index');
   // This page is arrived at using GET from the Main Menu
   // It will be protected using the helpers.isLoggedIn function
@@ -288,7 +292,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 });
 
 // test: show page
-router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
+router.post('/visuals_index', helpers.isLoggedIn, (req, res) => {
   console.log('in POST visuals_index '+ req.user.username);
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
@@ -317,12 +321,13 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: reorder_datasets
-router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/reorder_datasets', helpers.isLoggedIn, (req, res) => {
+  console.log('in reorder_datasets')
   let selected_dataset_order = {};
   selected_dataset_order.names = req.session.project_dataset_vars.project_dataset_names;
   selected_dataset_order.ids = req.session.chosen_id_order;
 
-  // console.log(req.session);
+  console.log(req.session);
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
   res.render('visuals/reorder_datasets', {
     title: 'VAMPS: Reorder Datasets',
@@ -337,7 +342,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: view_saved_datasets from selection
-router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/view_saved_datasets', helpers.isLoggedIn, (req, res) => {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
   // let fxn = req.body.fxn;
@@ -361,7 +366,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: dendrogram
-router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
+router.post('/dendrogram',  helpers.isLoggedIn, (req,  res) => {
   console.log('found routes_dendrogram-x');
 ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
 ///// It passes the newick string back to view_selection.js
@@ -431,7 +436,7 @@ router.post('/dendrogram',  helpers.isLoggedIn,  function(req,  res) {
 //
 
 //test: "PCoA 2D Analyses (R/pdf)"
-router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
+router.post('/pcoa', helpers.isLoggedIn, (req, res) => {
 
   console.log('in PCoA');
   // Nov 13 12:06:36 bpcweb7 ts from pcoa 2d:  ashipunova_1573664792697
@@ -475,7 +480,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 //  EMPEROR....
 // POST is for PC file link
 // test: "PCoA 3D Analyses (Emperor)"
-router.post('/pcoa3d', helpers.isLoggedIn, function(req, res) {
+router.post('/pcoa3d', helpers.isLoggedIn, (req, res) => {
   console.log('POST in pcoa3d');
 
   let metric = req.session.selected_distance;
@@ -590,7 +595,7 @@ function format_sumator(allData) {
   return array.join("");
 }
 
-router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
+router.get('/dbrowser', helpers.isLoggedIn, (req, res) => {
   console.log('in dbrowser');
   let matrix_file_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'count_matrix.biom');
   read_file_when_ready(matrix_file_path);
@@ -623,40 +628,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
   });
 });
 
-//
-// OLIGOTYPING
-//
-// Commented out on 2019/09/16 aav
-// router.post('/oligotyping', helpers.isLoggedIn, function(req, res) {
-//   let ts = req.session.ts;
-//   console.log('in POST oligotyping');
-//
-//   let html='';
-//   let matrix_file_path = path.join(config.PROCESS_DIR,'tmp',ts+'_count_matrix.biom');
-//   let biom_matrix = JSON.parse(fs.readFileSync(matrix_file_path, 'utf8'));
-//   let max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-//
-//   //console.log('max_total_count '+max_total_count.toString());
-//
-//
-//   // write html to a file and open it
-//
-//   console.log("render visuals/oligotyping");
-//   //let file_name = ts+'_krona.html';
-//   //let html_path = path.join(req.CONFIG.PROCESS_DIR,'tmp', file_name);
-//
-//   res.render('visuals/oligotyping', {
-//     title: 'VAMPS:Oligotyping',
-//     html:                html,
-//     max_total_count:     max_total_count,
-//     matrix:              JSON.stringify(biom_matrix),
-//     //chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-//     user :  req.user, hostname : req.CONFIG.hostname,
-//
-//   });
-//
-//
-// });
 
 function get_fill(req) {
   let fill = req.session.tax_depth.charAt(0).toUpperCase() + req.session.tax_depth.slice(1);
@@ -732,7 +703,7 @@ function show_data(res, contents, svgfile_name) {
 //
 //
 // test: choose phylum, "Phyloseq Bars (R/svg)"
-router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
+router.post('/phyloseq', helpers.isLoggedIn, (req, res) => {
   console.log('in phyloseq post');
 
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
@@ -770,7 +741,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     if (code === 0){   // SUCCESS
 
       read_file_when_ready(svgfile_path);
-      fs.readFile(svgfile_path, 'utf8', function(err, contents){
+      fs.readFile(svgfile_path, 'utf8', (err, contents) => {
 
         if(err){ res.send('ERROR reading file')}
         show_data(res, contents, svgfile_name);
@@ -910,12 +881,12 @@ function get_new_order_by_button(order) {
 
 function write_seq_file_async(req, res, selected_did) {
   connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
-    function (err, rows) {
+     (err, rows) => {
       mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did);
     });
 }
 
-router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
+router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_viz/bar_single');
   let myurl = url.parse(req.url, true);
   //console.log('in piechart_single',myurl.query)
@@ -960,7 +931,7 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, ne
 // B A R - C H A R T  -- D O U B L E
 //
 // test: click on cell of distance heatmap
-router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
+router.get('/bar_double', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_viz/bar_double');
 
   let myurl = url.parse(req.url, true);
@@ -1045,7 +1016,7 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
 function filter_data_by_last_taxon(search_tax, clean_data) {
   //console.log('search_tax')
   //console.log(search_tax)
-  const search_tax_arr = search_tax.split(";").filter(function(value){
+  const search_tax_arr = search_tax.split(";").filter( (value) => {
     if (!value.includes('_NA')) {
         return value;
     }
@@ -1125,7 +1096,7 @@ async function read_file_when_ready(filename_path) {
 
 // test: visuals/bar_single?did=474463&ts=anna10_1568652597457&order=alphaDown
 // click on a barchart row
-router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
+router.get('/sequences/', helpers.isLoggedIn, (req, res) => {
   console.log('in sequences');
   const myurl = url.parse(req.url, true);
   // console.log(myurl.query);
@@ -1190,7 +1161,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *       on that page.  AAV
 */
 //test: simple_taxonomy
-router.get('/partials/tax_' + C.default_taxonomy.name + '_simple', helpers.isLoggedIn,  function(req, res) {
+router.get('/partials/tax_' + C.default_taxonomy.name + '_simple', helpers.isLoggedIn,  (req, res) => {
   console.log("in '/partials/tax_' + C.default_taxonomy.name + '_simple'");
   res.render('visuals/partials/tax_' + C.default_taxonomy.name + '_simple', {
     doms : C.UNITSELECT.silva119_simple.domains
@@ -1206,7 +1177,7 @@ router.get('/partials/tax_' + C.default_taxonomy.name + '_simple', helpers.isLog
 //
 
 // test: it is only called from public/javascrips/metadata.js line 30
-router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
+router.get('/partials/load_metadata', helpers.isLoggedIn,  (req, res) => {
   let myurl = url.parse(req.url, true);
   let load = myurl.query.load  || 'all';   // either 'all' or 'selected'
   res.render('visuals/partials/load_metadata',
@@ -1217,26 +1188,26 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
 //
 //
 //
-router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedIn,  function(req, res) {
+router.get('/partials/tax_'+C.default_taxonomy.name+'_custom', helpers.isLoggedIn,  (req, res) => {
   res.render('visuals/partials/tax_'+C.default_taxonomy.name+'_custom',  { title   : C.default_taxonomy.show+' Custom Taxonomy Selection'});
 });
 
 // test: on unit_select page drop down -select RDP
-router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  function(req, res) {
+router.get('/partials/tax_rdp2.6_simple', helpers.isLoggedIn,  (req, res) => {
   res.render("visuals/partials/tax_rdp26_simple", {
     doms : C.UNITSELECT.rdp2_6_simple.domains,
   });
 });
 
 // test: on unit_select page drop down - select Generic
-router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  function(req, res) {
+router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  (req, res) => {
   res.render("visuals/partials/tax_generic_simple", {
     doms: C.DOMAINS
   });
 });
 
 //test: save_datasets
-router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
+router.post('/save_datasets', helpers.isLoggedIn,  (req, res) => {
 
   console.log('req.body: save_datasets-->>');
   viz_files_obj.print_log_if_not_vamps(req, req.body);
@@ -1255,7 +1226,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 //
 // test: click go to saved datasets
-router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
+router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
   console.log('in show_saved_datasets');
   if (req.user.username === 'guest'){
     req.flash('fail', "The 'guest' user cannot save datasets");
@@ -1270,7 +1241,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     let file_info = {};
     let modify_times = [];
     helpers.mkdirSync(saved_elements_dir);
-    fs.readdir(saved_elements_dir, function(err, files){
+    fs.readdir(saved_elements_dir, (err, files) => {
       if (err){
 
         let msg = 'ERROR Message '+err;
@@ -1346,7 +1317,7 @@ function reverse_or_reset_datasets(req, ids) {
 //
 //  R E S E T
 // test: from reorder_datasets click "reset order"
-router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
+router.post('/reset_ds_order', helpers.isLoggedIn,  (req, res) => {
   console.log('in reset_ds_order');
 
   let html = '';
@@ -1371,7 +1342,7 @@ function compare_by_key_name_asc(key_name) {
 //
 // A L P H A - B E T I Z E
 // test: from re-order datasets, "Alphabetize"
-router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
+router.post('/alphabetize_ds_order', helpers.isLoggedIn, (req, res) => {
   console.log('in alphabetize_ds_order');
 
   let name_ids = req.session.chosen_id_order.reduce((arr_of_obj, did) => {
@@ -1400,7 +1371,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 // R E V E R S E  O R D E R
 //
 // test: from re-order datasets, "Reverse"
-router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
+router.post('/reverse_ds_order', helpers.isLoggedIn, (req, res) => {
   console.log('in reverse_ds_order');
   let ids = JSON.parse(req.body.ids);
   ids.reverse();
@@ -1425,7 +1396,7 @@ function get_ds_list(output) {
 //
 //  C L U S T E R  D A T A S E T  O R D E R
 // test: from re-order datasets, "--Select distance metric to cluster by:". Should not be "undefined"
-router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
+router.post('/cluster_ds_order', helpers.isLoggedIn, (req, res) => {
   console.log('in cluster_ds_order');
   let html = '';
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
@@ -1513,7 +1484,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 //
 //
 // test heatmap
-router.post('/dheatmap_number_to_color', helpers.isLoggedIn,  function(req, res) {
+router.post('/dheatmap_number_to_color', helpers.isLoggedIn, (req, res) => {
   console.log('in dheatmap_number_to_color');
 
   const distmtx_file_tmp_path = viz_files_obj.get_file_tmp_path_by_ending(req, 'distance.json');
@@ -1566,7 +1537,7 @@ function FinishSplitFile(req, res){
 }
 
 
-router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) {
+router.post('/dheatmap_split_distance', helpers.isLoggedIn, (req, res) => {
   console.log('in dheatmap_split_distance');
   console.log(req.body);
 
@@ -1621,7 +1592,7 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn,  function(req, res) 
 //
 //
 // test: "More download choices" "Matrix file" or "Biom Matrix File" etc.
-router.post('/download_file', helpers.isLoggedIn, function(req, res) {
+router.post('/download_file', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_visualization download_file');
   const file_type = req.body.file_type;
   res.setHeader('Content-Type', 'text/plain');
@@ -1642,7 +1613,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
 //
 //
 // test: clear by substring, first opening
-router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
+router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
   //SHOW_DATA = ALL_DATASETS;
   console.log('in clear filters');
   //console.log(req.query)
@@ -1662,7 +1633,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 //
 //
 
-router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
+router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
   let portal = req.params.portal;
 
   console.log('in load_portal: ' + portal);
@@ -1685,7 +1656,7 @@ const filters_obj =  new visualization_controller.visualizationFilters();
 //  FILTER #1 LIVESEARCH PROJECTS (substring) FILTER
 //
 // test: search by substring
-router.get('/livesearch_projects/:substring', function(req, res) {
+router.get('/livesearch_projects/:substring', (req, res) => {
   console.log('viz:in livesearch_projects/:substring');
   let substring = req.params.substring.toUpperCase();
   let empty_string = filters_obj.check_if_empty_val(substring);
@@ -1710,7 +1681,7 @@ router.get('/livesearch_projects/:substring', function(req, res) {
 //  FILTER #2 LIVESEARCH ENV PROJECTS FILTER
 //
 // test click filter by ENV source on visuals_index
-router.get('/livesearch_env/:envid', function(req, res) {
+router.get('/livesearch_env/:envid', (req, res) => {
   PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
@@ -1727,7 +1698,7 @@ router.get('/livesearch_env/:envid', function(req, res) {
 //  FILTER #3 LIVESEARCH TARGET PROJECTS FILTER
 //
 // test click filter by domain/Target on visuals_index
-router.get('/livesearch_target/:gene_target', function(req, res) {
+router.get('/livesearch_target/:gene_target', (req, res) => {
   let gene_target = req.params.gene_target;
   let empty_string = filters_obj.check_if_empty_val(gene_target);
   if (empty_string) {
@@ -1749,7 +1720,7 @@ router.get('/livesearch_target/:gene_target', function(req, res) {
 // FILTER #4
 //
 // test click filter by portal on visuals_index
-router.get('/livesearch_portal/:portal', function(req, res) {
+router.get('/livesearch_portal/:portal', (req, res) => {
   console.log('viz:in livesearch portal');
   let select_box_portal = req.params.portal;
   let empty_string = filters_obj.check_if_empty_val(select_box_portal);
@@ -1772,7 +1743,7 @@ router.get('/livesearch_portal/:portal', function(req, res) {
 //  FILTER # 5 LIVESEARCH PUBLIC/PRIVATE PROJECTS FILTER
 //
 // test: click public/private on visuals_index
-router.get('/livesearch_status/:q', function(req, res) {
+router.get('/livesearch_status/:q', (req, res) => {
   console.log('viz:in livesearch status');
   PROJECT_FILTER.public = req.params.q;
 
@@ -1790,7 +1761,7 @@ router.get('/livesearch_status/:q', function(req, res) {
 //  FILTER #6  LIVESEARCH METADATA FILTER
 //
 // test click filter by Metadata on visuals_index
-router.get('/livesearch_metadata/:num/:q', function(req, res) {
+router.get('/livesearch_metadata/:num/:q', (req, res) => {
   console.log('viz:in livesearch metadata');
 
   let num = req.params.num;
@@ -1840,7 +1811,7 @@ function get_files_prefix(req) {
 }
 //
 // test: page after custom taxonomy been chosen, shows the tree
-router.post('/check_units', function(req, res) {
+router.post('/check_units', (req, res) => {
   console.log('IN check_UNITS');
   console.log(req.body);
   let path_to_file;
@@ -1888,7 +1859,7 @@ function get_options_by_node(node) {
 
 //
 // test: choose custom taxonomy, show tree
-router.get('/tax_custom_dhtmlx', function(req, res) {
+router.get('/tax_custom_dhtmlx', (req, res) => {
   // console.time("TIME: tax_custom_dhtmlx");
   //console.log('IN tax_custom_dhtmlx')
   let myurl = url.parse(req.url, true);
@@ -1963,7 +1934,7 @@ function get_itemtext(pid) {
 //  project_custom_dhtmlx
 //
 // test: show tree
-router.get('/project_dataset_tree_dhtmlx', function(req, res) {
+router.get('/project_dataset_tree_dhtmlx', (req, res) => {
   console.log('IN project_dataset_tree_dhtmlx - routes_visualizations');
   // console.time("TIME: project_dataset_tree_dhtmlx");
   let myurl = url.parse(req.url, true);
@@ -2056,7 +2027,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
 //
 //
 // test: click on row (index 1...) of taxonomy table
-router.get('/taxa_piechart', function(req, res) {
+router.get('/taxa_piechart', (req, res) => {
   console.log('IN taxa_piechart - routes_visualizations');
   const myurl = url.parse(req.url, true);
   const tax = myurl.query.tax;
@@ -2065,7 +2036,7 @@ router.get('/taxa_piechart', function(req, res) {
   const matrix_file_path = path.join(tmp_file_path, matrix_file_name);
 
   read_file_when_ready(matrix_file_path);
-  fs.readFile(matrix_file_path, 'utf8', function(err, mtxdata){
+  fs.readFile(matrix_file_path, 'utf8', (err, mtxdata) => {
     if (err) {
       let msg = 'ERROR Message ' + err;
       helpers.render_error_page(req, res, msg);

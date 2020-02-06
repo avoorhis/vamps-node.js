@@ -12,12 +12,12 @@ const IMAGES  = require('./routes_images');
 //   <<add link here to github jupyter notebook>>
 //
 
-router.post('/logmein', function(req, res){
+router.post('/logmein', (req, res) =>{
     console.log('in log-me-in')
     console.log(req.body)
     res.redirect(307, '/users/login')
 });
-router.post('/validate_login', function(req, res){
+router.post('/validate_login', (req, res) =>{
     console.log('in validate_login')
     if(req.isAuthenticated()){
         res.send('Login Success')
@@ -30,7 +30,7 @@ router.post('/validate_login', function(req, res){
 //          Must be logged in through API!
 //      'project': Gets dataset IDs from the projects that the user has permissions to access.
 //
-router.post('/get_dids_from_project', function(req, res){
+router.post('/get_dids_from_project', (req, res) =>{
     console.log('HERE in routes_api.js --> get_dids_from_project ')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -108,7 +108,7 @@ router.post('/get_dids_from_project', function(req, res){
 //          Must be logged in through API!
 //      'project': Gets dataset IDs from the projects that the user has permissions to access.
 //
-// router.post('/get_datasets_and_counts', function(req, res){
+// router.post('/get_datasets_and_counts', (req, res) =>{
 //     console.log('HERE in routes_api.js --> get_datasets_and_counts ')
 //     if( ! req.isAuthenticated() ){
 //         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -155,7 +155,7 @@ router.post('/get_dids_from_project', function(req, res){
 //
 // API: GET METADATA FROM PROJECT NAME
 //
-router.post('/get_metadata_from_project', function(req, res){
+router.post('/get_metadata_from_project', (req, res) =>{
     console.log('HERE in routes_api.js --> get_metadata_from_project ')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -194,7 +194,7 @@ router.post('/get_metadata_from_project', function(req, res){
 //
 // API: GET PROJECT INFORMATION
 //
-router.post('/get_project_information', function(req, res){
+router.post('/get_project_information', (req, res) =>{
     console.log('HERE in routes_api.js --> get_project_information ')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -223,11 +223,11 @@ router.post('/get_project_information', function(req, res){
 //
 // API ERROR
 //
-router.post('/', helpers.isLoggedIn, function(req, res){
+router.post('/', helpers.isLoggedIn, (req, res) =>{
     console.log('ERROR in router.post(/')
     res.send(JSON.stringify('Function not found'))
 })
-router.get('/', helpers.isLoggedIn, function(req, res){
+router.get('/', helpers.isLoggedIn, (req, res) =>{
     console.log('ERROR in router.get(/')
     res.send(('Function not found'))
 })
@@ -236,7 +236,7 @@ router.get('/', helpers.isLoggedIn, function(req, res){
 //
 // test: view selection heatmap
 // TODO: JSHint: This function's cyclomatic complexity is too high. (15)(W074)
-router.post('/create_image',  function(req, res){
+router.post('/create_image',  (req, res) =>{
   console.log('in API/create_image');
   console.time("TIME: API/create_image");
   if( ! req.isAuthenticated() ){
@@ -320,7 +320,7 @@ router.post('/create_image',  function(req, res){
 //                       has permissions to access.
 //       'include_info': If present the project information will be included for each project                   
 //
-router.post('/find_user_projects',  function(req, res){
+router.post('/find_user_projects',  (req, res) =>{
     console.log('in find_user_projects')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -373,7 +373,7 @@ router.post('/find_user_projects',  function(req, res){
 //     ie:   {'nw_lat':'','nw_lon':'','se_lat':'','se_lon':''}
 //       'include_info': If present the project information will be included for each project                   
 //
-router.post('/find_projects_in_geo_area',  function(req, res){
+router.post('/find_projects_in_geo_area',  (req, res) =>{
     console.log('in find_projects_in_geo_area')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -451,7 +451,7 @@ router.post('/find_projects_in_geo_area',  function(req, res){
 //   Finds project/datasets that have a certain metadata item name
 //   
 //
-router.post('/find_projects_by_metadata_str',  function(req, res){
+router.post('/find_projects_by_metadata_str',  (req, res) =>{
     console.log('in find_projects_by_metadata_str')
     if( ! req.isAuthenticated() ){
         res.send(JSON.stringify('Failed Authentication -- Please login first'))
@@ -521,7 +521,7 @@ function test_piecharts(req, res){
   jsdom.env({
     html:'',
     features:{ QuerySelector:true },
-    done:function(errors, window){
+    done: (errors, window) => {
       //console.log('inwin ')
       window.d3 = d3.select(window.document); //get d3 into the dom
       //  <svg><g transform="translate(250,250)"><path></path><path></path></g></svg>
@@ -541,7 +541,7 @@ function test_piecharts(req, res){
     	    			.attr("class", "arc")
                 .attr('d', arc)
                 .attr('stroke', '#fff')
-                .attr('fill', function(d,i){
+                .attr('fill', (d,i) => {
                   return colours[i];
                 })
 

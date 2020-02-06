@@ -5,7 +5,7 @@ const spawn = require('child_process').spawn;
 // These are all under /help
 
 /* GET Overview page. */
-router.get('/overview', function(req, res) {
+router.get('/overview', (req, res) => {
       res.render('help/overview', { title: 'VAMPS:Overview', 
       user: req.user,
       hostname: req.CONFIG.hostname,
@@ -14,7 +14,7 @@ router.get('/overview', function(req, res) {
 });
 
 /* GET FAQ page. */
-router.get('/faq', function(req, res) {
+router.get('/faq', (req, res) => {
       res.render('help/faq', { title: 'VAMPS:FAQ',
                 
                 user: req.user,
@@ -23,10 +23,10 @@ router.get('/faq', function(req, res) {
 });
 
   /* GET Contact Us page. */
-router.get('/contact', function(req, res) {
+router.get('/contact', (req, res) => {
 
       //get sweetcaptcha html for the contact area
-        //sweetcaptcha.api('get_html', function(err,html){
+        //sweetcaptcha.api('get_html', (err,html) => {
             //Send the guts of the captcha to your template
             res.render('help/contact', {
               
@@ -42,7 +42,7 @@ router.get('/contact', function(req, res) {
   //
   //
   //
-router.post('/contact', function (req, res) {
+router.post('/contact', (req, res) => {
     console.log(req.body)
     var msg = encodeURI(req.body.message)
     //console.log(msg)
@@ -64,20 +64,20 @@ router.post('/contact', function (req, res) {
     }); 
    
     stdout = '';
-    mail_process.stdout.on('data', function (data) {
+    mail_process.stdout.on('data', data => {
         
         //console.log(data.toString('utf8'))
         stdout += data;    
      
     });
     stderr = '';
-    mail_process.stderr.on('data', function (data) {
+    mail_process.stderr.on('data', data => {
         
         console.log(data.toString('utf8'))
         stderr += data;    
      
     });
-    mail_process.on('close', function (code) {
+    mail_process.on('close', code => {
         console.log('mail_process process exited with code ' + code);
         if(code == 0){           
             //res.send(stdout);  

@@ -16,7 +16,7 @@ new_user = {}
 // LOGIN ===============================
 // =====================================
 // show the login form
-router.get('/login', function(req, res) {
+router.get('/login', (req, res) => {
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       user: req.user, 
@@ -28,7 +28,7 @@ router.get('/login', function(req, res) {
 router.post('/login',  passport.authenticate('local-login', { 
   // successRedirect: '/users/profile',
   failureRedirect: 'login',   // on fail GET:login (empty form)
-  failureFlash: true }), function (req, res) {  
+  failureFlash: true }), (req, res) => {  
     var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
     //str.startsWith('/metadata/file_utils')
     var redirect_to_home = [
@@ -73,11 +73,11 @@ router.post('/login',  passport.authenticate('local-login', {
     }
     //console.log(PROJECT_INFORMATION_BY_PID)
     
-    fs.ensureDir(data_dir, function (err) {
+    fs.ensureDir(data_dir,  err => {
         if(err) {console.log(err);} // => null
         else{
             console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes');
-            fs.chmod(data_dir, 0777, function (err) {
+            fs.chmod(data_dir, 0777,  err => {
                 if(err) {console.log(err);} // ug+rwx
                 else{
                     console.log('Setting USER_FILES_BASE permissions to 0775');
@@ -104,7 +104,7 @@ router.post('/login',  passport.authenticate('local-login', {
 // SIGNUP ==============================
 // =====================================
 // show the signup form
-router.get('/signup', function(req, res) {
+router.get('/signup', (req, res) => {
         new_user = {};
         // render the page and pass in any flash data if it exists
         console.log('new_user--signup');
@@ -129,7 +129,7 @@ router.post('/signup', passport.authenticate('local-signup', {
 // =====================================
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
-router.get('/profile', helpers.isLoggedIn, function(req, res) {
+router.get('/profile', helpers.isLoggedIn, (req, res) => {
     console.log('PROFILE')    
     res.render('user_admin/profile', {
           title:'VAMPS:profile',
@@ -141,14 +141,14 @@ router.get('/profile', helpers.isLoggedIn, function(req, res) {
 // =====================================
 // LOGOUT ==============================
 // =====================================
-router.get('/logout', function(req, res) {
+router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 });
 // =====================================
 // CHANGE PASSWORD =====================
 // =====================================
-router.get('/change_password', helpers.isLoggedIn, function(req, res) {
+router.get('/change_password', helpers.isLoggedIn, (req, res) => {
   console.log('In change_password for logged in users');
 
 
@@ -158,7 +158,7 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
-router.get('/change_password/:id', function(req, res) {
+router.get('/change_password/:id', (req, res) => {
     console.log('In change_password for forgotten passwords');
     // should be private but not logged in
     console.log(req.params)
@@ -168,7 +168,7 @@ router.get('/change_password/:id', function(req, res) {
     console.log(file_code_path)
     // if file exists then valid? (or confirm some file content?) -- delete file after success
     //if(helpers.fileExists(file_code_path)){
-    fs.readFile(file_code_path, function(err,data){
+    fs.readFile(file_code_path, (err,data) => {
         if(err){
             console.log('No file exists -- does not validate -1!!')
             res.redirect('/')
@@ -198,7 +198,7 @@ router.post('/change_password',  passport.authenticate('local-reset', {
 //
 //
 //
-router.get('/update_account', helpers.isLoggedIn, function(req, res) {
+router.get('/update_account', helpers.isLoggedIn, (req, res) => {
   console.log('In GET::update_account');
 
   res.render('user_admin/update_account', {
@@ -206,7 +206,7 @@ router.get('/update_account', helpers.isLoggedIn, function(req, res) {
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
 });
-router.post('/update_account', helpers.isLoggedIn, function(req, res) {
+router.post('/update_account', helpers.isLoggedIn, (req, res) => {
     console.log('In POST::update_account');
     console.log(req.body)
     
@@ -236,7 +236,7 @@ router.post('/update_account', helpers.isLoggedIn, function(req, res) {
         res.redirect('/users/update_account');
     }else{
         var query = "UPDATE user set email='"+email+"', institution='"+inst+"' where user_id='"+req.body.uid+"'"
-        connection.query(query, function (err, rows, fields){
+        connection.query(query, (err, rows, fields) => {
             if (err)  {
                 req.flash('fail', 'Something went wrong with update - exiting');
                 res.redirect('/users/update_account');
@@ -253,7 +253,7 @@ router.post('/update_account', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-router.get('/forgotten_password', function(req, res) {
+router.get('/forgotten_password', (req, res) => {
     console.log('IN GET::forgotten_password')
     res.render('user_admin/change_password', {
           title     :'VAMPS:forgotten-password',
@@ -263,7 +263,7 @@ router.get('/forgotten_password', function(req, res) {
 });
 //
 //
-router.post('/reset_password1', function(req, res) {
+router.post('/reset_password1', (req, res) => {
     console.log('IN POST::reset_password1')
     console.log(req.body);
     //{ username: 'avoorhis', email: 'avoorhis@mbl.edu' }
@@ -285,7 +285,7 @@ router.post('/reset_password1', function(req, res) {
     }
     var query = "SELECT user_id from user where username='"+username+"' and email ='"+email+"'"
     console.log(query)
-    connection.query(query, function(err, rows, fields){
+    connection.query(query, (err, rows, fields) => {
         if (err)  {
                 req.flash('fail', 'We cannot find that username--email combination. Please contact us [vamps@mbl.edu] for assistance.');
                 res.redirect('/users/forgotten_password');
@@ -324,11 +324,11 @@ router.post('/reset_password1', function(req, res) {
                   html: "<p>To reset your VAMPS password follow the link below:<br><br><a href=\""+link+"\">"+link+"</a></p>"
                 };
                 //console.log(message)
-                fs.writeFile(file_path, JSON.stringify(file_text), {mode: 0775}, function(err) {
+                fs.writeFile(file_path, JSON.stringify(file_text), {mode: 0775}, err => {
                       if(err) {return console.log(err);}
                       else{
           
-                        transporter.verify(function(error, success) {
+                        transporter.verify( (error, success) => {
                             if (error) {
                                 console.log(error);
                                 req.flash('fail', 'Something went wrong with request. Please send an email to: vamps@mbl.edu');
@@ -365,7 +365,7 @@ router.post('/reset_password1', function(req, res) {
 //
 //
 //
-router.post('/reset_password2', function(req, res) {
+router.post('/reset_password2', (req, res) => {
     console.log('IN POST::reset_password2')
     console.log(req.body);
     const queries       = require('../routes/queries_admin');
@@ -396,12 +396,12 @@ router.post('/reset_password2', function(req, res) {
         return 
     }
     // validate existence of file -- then delete it
-    // file has been validated and deleted in router.get('/change_password/:id', function(req, res) {
+    // file has been validated and deleted in router.get('/change_password/:id', (req, res) => {
 
     var file_code_path = path.join(req.CONFIG.TMP_FILES,'resetPW-'+req.body.code+'.json')
 
     //read file and validate username & email
-    fs.readFile(file_code_path, function(err,data){
+    fs.readFile(file_code_path, (err,data) => {
         if(err){
             console.log('No file exists -- does not validate -2!!')
             res.redirect('/')
@@ -416,7 +416,7 @@ router.post('/reset_password2', function(req, res) {
         // now valid must enter new PW in database and return user to logon screen
     
         console.log('Trying: '+queries.reset_user_password_by_uid(new_password, req.body.uid))
-        connection.query(queries.reset_user_password_by_uid(new_password, req.body.uid), function(err, rows, fields){
+        connection.query(queries.reset_user_password_by_uid(new_password, req.body.uid), (err, rows, fields) => {
             if(err){ console.log(err);return }
             console.log('Success -- password Updated')
             req.flash('success', 'Password updated! Password updated! Password updated! Password updated! Password updated!');
@@ -426,7 +426,7 @@ router.post('/reset_password2', function(req, res) {
     }); 
     
 });
-router.get('/:id', helpers.isLoggedIn, function(req, res) {
+router.get('/:id', helpers.isLoggedIn, (req, res) => {
    
    var uid = req.params.id
    console.log(ALL_USERS_BY_UID[uid]);
@@ -442,7 +442,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
    }else{
            var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
            console.log(qSelect)
-           var collection = connection.query(qSelect, function (err, rows, fields){
+           var collection = connection.query(qSelect, (err, rows, fields) => {
             if (err)  {
               msg = 'ERROR Message '+err;
               helpers.render_error_page(req,res,msg);

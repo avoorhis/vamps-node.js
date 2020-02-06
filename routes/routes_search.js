@@ -7,7 +7,7 @@ const path  = require('path');
 const spawn = require('child_process').spawn;
 
 /* GET Search page. */
-router.get('/search_index', helpers.isLoggedIn, function(req, res) {
+router.get('/search_index', helpers.isLoggedIn, (req, res) => {
 
     //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
@@ -17,7 +17,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/users', helpers.isLoggedIn, function(req, res) {
+router.get('/users', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/users', { title: 'VAMPS:Search',
         user:                 req.user,hostname: req.CONFIG.hostname,
@@ -26,7 +26,7 @@ router.get('/users', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/names', helpers.isLoggedIn, function(req, res) {
+router.get('/names', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/names', { title: 'VAMPS:Search',
         user:                 req.user,hostname: req.CONFIG.hostname,
@@ -35,7 +35,7 @@ router.get('/names', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/blast', helpers.isLoggedIn, function(req, res) {
+router.get('/blast', helpers.isLoggedIn, (req, res) => {
     var blast_dbs = req.CONSTS.blast_dbs;
     //var misc_blast_dbs_test = path.join('public','blast', req.CONSTS.misc_blast_dbs+'.nhr')
     // check if blast database exists:
@@ -60,11 +60,11 @@ router.get('/blast', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
+router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
     var phyla = []
     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
-    var query = connection.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, (err, rows, fields) => {
         
         for(i in rows){
             //console.log(rows[i])
@@ -83,7 +83,7 @@ router.get('/geo_by_tax', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/geo', helpers.isLoggedIn, function(req, res) {
+router.get('/geo', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/geo_area', { title: 'VAMPS:Search',
         user:     req.user,hostname: req.CONFIG.hostname,
@@ -93,7 +93,7 @@ router.get('/geo', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
+router.post('/geo_by_meta_search', helpers.isLoggedIn, (req, res) => {
     console.log('in geo_by_meta_values');
     console.log('req.body-->>');
     console.log(req.body);
@@ -143,7 +143,7 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, function(req, res) {
 //
 //
 
-router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
+router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
     console.log('in geo_by_tax_search');
     console.log('req.body-->>');
     console.log(req.body);
@@ -155,7 +155,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
         var phyla = []
         var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
-        var query = connection.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, (err, rows, fields) => {
         
             for(i in rows){
                 //console.log(rows[i])
@@ -192,7 +192,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
     var latlon_datasets = {}
     latlon_datasets.points = {}
     taxa_collector = {}
-    var query = connection.query(qSelect, function (err, rows, fields){
+    var query = connection.query(qSelect, (err, rows, fields) => {
             if (err) return(err);
             console.log('Long Query Finished')
             if(rows.length == 0){
@@ -263,7 +263,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, function(req, res) {
             }
     }) 
 })
-router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
+router.post('/all_taxa_by_rank', helpers.isLoggedIn, (req, res) => {
 	console.log('in all_taxa_by_rank');
     console.log('req.body-->>');
     console.log(req.body);
@@ -284,14 +284,14 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
         var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
         console.log(qSelect)
        
-        var query = connection.query(qSelect, function (err, rows, fields){
+        var query = connection.query(qSelect, (err, rows, fields) => {
             if (err) return(err);
             for(i in rows){
                 if(rows[i][rank]){
                     result.push(rows[i][rank])
                 }
             }
-            result.sort(function (a, b) {
+            result.sort( (a, b) => {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
             finish(result)
@@ -299,7 +299,7 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, function(req, res) {
     }
     
 });
-router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
+router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
     console.log('in geo_search result');
     console.log('req.body-->>');
     console.log(req.body);
@@ -349,7 +349,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
 //
 
 //
-// router.get('/geo_by_meta_values', helpers.isLoggedIn, function(req, res) {
+// router.get('/geo_by_meta_values', helpers.isLoggedIn, (req, res) => {
 //     // var phyla = []
 // //     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
 // //     var qSelect = "select phylum from phylum order by phylum"
@@ -378,7 +378,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-// router.post('/all_md_vals_by_name', helpers.isLoggedIn, function(req, res) {
+// router.post('/all_md_vals_by_name', helpers.isLoggedIn, (req, res) => {
 // 	console.log('in search/all_md_vals_by_name');
 // 	// Find Geographic Range of Datasets by Metadata Values (not ready yet)
 //     console.log('req.body-->>');
@@ -396,7 +396,7 @@ router.post('/geo_search', helpers.isLoggedIn, function(req, res) {
 // });
 
 
-router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/accept_latlon_datasets', helpers.isLoggedIn, (req, res) => {
   console.log('in accept_latlon_datasets');
   console.log('req.body-->>');
   console.log(req.body);
@@ -405,7 +405,7 @@ router.post('/accept_latlon_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
+router.get('/taxonomy', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/taxonomy', { title: 'VAMPS:Search',
         user:                 req.user,hostname: req.CONFIG.hostname,
@@ -414,7 +414,7 @@ router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
+router.get('/metadata/:type', helpers.isLoggedIn, (req, res) => {
 
       console.log('in by '+req.params.type);
       let XX = get_metadata_values();
@@ -463,7 +463,7 @@ function get_metadata_values(){
           MD_items.metadata_fields[tmp_name] = {"min":min,"max":max};
         }
      }
-     MD_items.metadata_fields_array.sort(function (a, b) {
+     MD_items.metadata_fields_array.sort( (a, b) => {
         return a.toLowerCase().localeCompare(b.toLowerCase());
      });
       
@@ -472,7 +472,7 @@ function get_metadata_values(){
 //
 //  TAXONOMY SEARCH
 //
-router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
 	console.log('in tax search result');
     console.log('req.body-->>');
     console.log(req.body);
@@ -502,7 +502,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	}
 	qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 	console.log(qSelect);
-	var query = connection.query(qSelect, function (err, rows, fields){
+	var query = connection.query(qSelect, (err, rows, fields) => {
     if (err) {
         req.flash('fail', 'SQL Error: '+err);
         res.redirect('search_index#taxonomy');
@@ -542,7 +542,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 //
 //  METADATA SEARCH
 //
-router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
+router.post('/metadata_search_result', helpers.isLoggedIn, (req, res) => {
   console.log('IN POST::metadata_search_result');
   console.log('req.body-->>');
   console.log(req.body);
@@ -632,7 +632,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
 //
 //  SEARCH DATASETS
 //
-router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
+router.get('/gethint/:hint', helpers.isLoggedIn, (req, res) => {
 	//console.log('in gethint');
 	//console.log(req.params.hint);
 	var q = req.params.hint;
@@ -662,7 +662,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH TAX
 //
-router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, (req, res) => {
 	console.log('search:in livesearch taxonomy1');
 	var q = req.params.q.toLowerCase();
 	var hint = '';
@@ -726,7 +726,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH USER
 //
-router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_user/:q', helpers.isLoggedIn, (req, res) => {
 
   console.log('search:in livesearch user');
   var q = req.params.q.toLowerCase();
@@ -754,7 +754,7 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH PROJECT
 //
-router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_project/:q', helpers.isLoggedIn, (req, res) => {
   console.log('search:in livesearch project');
   var q = req.params.q.toLowerCase();
   var hint = 'Projects:<br>';
@@ -764,7 +764,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   var d_obj = {}
   if(q !== ''){
 
-    ALL_DATASETS.projects.forEach(function(prj) {
+    ALL_DATASETS.projects.forEach( prj => {
 
       pid = prj.pid
 
@@ -784,7 +784,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
         p_obj[pname].desc  = pdesc
       }
 
-      datasets.forEach(function(dset) {
+      datasets.forEach( dset => {
           did = dset.did
           dname = dset.dname;
           ddesc = dset.ddesc;
@@ -828,7 +828,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 //
 // LIVESEARCH TAX
 //
-router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, (req, res) => {
 	console.log('search:in livesearch_taxonomy2');
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
@@ -858,7 +858,7 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req
 //
 //  BLAST
 //
-router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
+router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
     console.log('search:in blast res');
     console.log(req.body);
     if(req.body.query === ''){
@@ -918,7 +918,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     if(req.body.query.length < 50){
         task = 'blastn-short'
     }
-    fs.writeFile(query_file_path,req.body.query+"\n",function(err){
+    fs.writeFile(query_file_path,req.body.query+"\n", err => {
       if(err){
         req.flash('fail', 'ERROR - Could not write query file');
         res.redirect('search_index');
@@ -958,49 +958,6 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     }
     });
 
-//sh -c "echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|/usr/local/ncbi/blast/bin//blastn -db \\"/Users/avoorhis/programming/vamps-node.js/public/blast/Bv6 /Users/avoorhis/programming/vamps-node.js/public/blast/Ev9\\" -outfmt 13 -out /Users/avoorhis/programming/vamps-node.js/tmp/avoorhis_1527702469368_blast_result.json"
-//     blast_process.stdout.on('data', function (data) {
-//         //console.log('stdout: ' + data);
-//         data = data.toString().replace(/^\s+|\s+$/g, '');
-//         var lines = data.split('\n');
-//         for(var n in lines){
-//             console.log('blastn line '+lines[n]);
-//         }
-//     });
-//     blast_process.stderr.on('data', function (data) {
-//         //console.log('stdout: ' + data);
-//         console.log('stderr: ' + data);
-//     });
-// 
-//     // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-//     blast_process.on('close', function (code) {
-//          console.log('blast_process process exited with code ' + code);
-//          if(code === 0){
-//            console.log('BLAST SUCCESS');
-//            // now read file
-//            fs.readFile(out_file_path1,'utf8', function(err, data){
-//               if(err){
-//                 req.flash('fail', 'ERROR - Could not read blast outfile');
-//                 res.redirect('search_index');
-//               }else{
-//                 var obj = JSON.parse(data);
-//                 console.log(out_file_path1);
-//                 console.log(data);
-//                 res.render('search/search_result_blast', {
-//                     title    : 'VAMPS: BLAST Result',
-//                     data     : data,
-//                     show     : 'blast_result',
-//                     user     : req.user,hostname: req.CONFIG.hostname,
-//                 });  //
-// 
-//               }
-//            });
-// 
-//          }else{
-//             req.flash('fail', 'ERROR - BLAST command exit code: '+code);
-//             res.redirect('search_index');
-//          }
-//     });
 
 });
 //
@@ -1010,7 +967,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
+router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, (req, res) => {
   console.log('in /seqs_hit/:seqid/:ds');
   console.log(req.params);
   var seqid = req.params.seqid;
@@ -1034,7 +991,7 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
     q += " AND seq_count > 0"
   
   console.log(q);
-  connection.query(q, function(err, rows, fields){
+  connection.query(q, (err, rows, fields) => {
     if(err){
       console.log(err);
     }else{
@@ -1072,7 +1029,7 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, function(req, res) {
 
 });
 
-router.get('/make_a_blast_db', helpers.isLoggedIn, function(req, res) {
+router.get('/make_a_blast_db', helpers.isLoggedIn, (req, res) => {
   var txt = "<br><br>";
   txt += "<li>Install local ncbi-blast from: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download<br>";
   txt += "<li>Make a fasta file of all seqs to be included in blast db using the db2fasta.py script in the public/scripts directory<br>";

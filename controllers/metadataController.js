@@ -769,7 +769,7 @@ class CreateDataObj {
           req.flash('fail', err);
           const met_obj  = new module.exports.CreateDataObj(req, res, 0, []);
           // console.log("AAALLL3 met_obj.all_field_names4");
-          // console.log(met_obj.all_field_names4.filter(function(item){return item === "conductivity"}));
+          // console.log(met_obj.all_field_names4.filter(item=>{return item === "conductivity"}));
 
           const show_new = new module.exports.ShowObj(req, res, met_obj.all_metadata, met_obj.all_field_names4, met_obj.all_field_units, met_obj.required_field_names_for_env);
           show_new.show_metadata_new_again(req, res);

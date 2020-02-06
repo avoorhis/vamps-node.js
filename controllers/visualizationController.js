@@ -155,8 +155,9 @@ class viewSelectionFactory {
       this.get_data.default_data();
     }
 
-    this.dataset_ids = this.get_data.dataset_ids;
+    this.dataset_ids = this.get_data.dataset_ids;    
     this.visual_post_items = this.get_data.visual_post_items;
+
   }
 }
 

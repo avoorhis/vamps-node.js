@@ -14,7 +14,7 @@ const ranks = CONSTS.RANKS;
 function make_dictMap_by_rank(tags) {
   const dictMap_by_rank = {};
   // let ranks = CONSTS.RANKS;
-  ranks.forEach(function(rank) {
+  ranks.forEach( rank => {
     dictMap_by_rank[rank] = [];
   });
   for (let i = 0; tags.length > i; i += 1) {
@@ -158,8 +158,7 @@ function TaxonomyTree(rows) {
   //console.log("HHH");
 }
 
-TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
-{
+TaxonomyTree.prototype.make_dict = (tree_obj, key_name) => {
   let new_dict = {};
   for (let i = 0; tree_obj.length > i; i += 1) {
     new_dict[tree_obj[i][key_name]] = tree_obj[i];

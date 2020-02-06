@@ -182,7 +182,7 @@ class Demultiplex:
         infile = os.path.join(self.project_path,sample+'.fa')
         sample_dir = os.path.join(analysis_dir,sample)
         out_fasta = os.path.join(sample_dir,'seqfile.unique.fa')
-        out_name = os.path.join(sample_dir,'seqfile.unique.name')
+        out_name = os.path.join(sample_dir,'seqfile.unique.names')
         fastaunique_cmd_list = [ self.fastaunique_cmd,'-o', out_fasta, '-n', out_name, infile]        
         result = subprocess.check_output(' '.join(fastaunique_cmd_list), shell=True)
         sum_unique_seq_count += int(result.strip())

@@ -9,10 +9,10 @@ const queries = require('./queries');
 
 METAGENOMIC_INFORMATION_BY_PID = {}  // GLOBAL
 
-router.get('/index', helpers.isLoggedIn, function (req, res) {
+router.get('/index', helpers.isLoggedIn, (req, res) => {
     console.log('In Metagenome index.html')
     project_list=[]
-    connection.query(queries.get_metagenomic_projects_query(), function (err, rows, fields) {
+    connection.query(queries.get_metagenomic_projects_query(), (err, rows, fields) => {
         for(n in rows){
             pid = rows[n].pid
             pname = rows[n].project

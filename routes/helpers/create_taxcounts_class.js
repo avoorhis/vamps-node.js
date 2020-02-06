@@ -39,17 +39,17 @@ function query_dataset_seq_tax()
     FROM taxa_counts_temp \
   ');
 
-  query.on('error', function(err) {
+  query.on('error', err => {
       throw err;
   });
 
-  query.on('result', function(row) {
+  query.on('result', row => {
       connection.db.pause();
       make_count_dict(row, dataset_seq_tax_dict);
       connection.db.resume();
   });
 
-  query.on('end', function(err) {
+  query.on('end', err => {
     if (err) throw err;
     // console.log("DDD6 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
     helpers.elapsed_time("This is the running time for query_dataset_seq_tax");

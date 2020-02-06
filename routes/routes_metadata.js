@@ -20,7 +20,7 @@ let upload               = multer({dest: config.TMP, limits: {fileSize: config.U
 const file_controller    = require(app_root + '/controllers/fileController');
 
 /* GET metadata page. */
-router.get('/metadata', function (req, res) {
+router.get('/metadata', (req, res) => {
   console.log('in metadata');
   res.render('metadata/metadata', {
     title: 'VAMPS:Metadata',
@@ -29,7 +29,7 @@ router.get('/metadata', function (req, res) {
   });
 });
 
-router.get('/metadata_list', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_list', helpers.isLoggedIn, (req, res) => {
   console.log('in metadata');
   let mdata_w_latlon = {};
   console.log(DatasetsWithLatLong);
@@ -69,7 +69,7 @@ router.get('/metadata_list', helpers.isLoggedIn, function (req, res) {
   });
 });
 
-router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
+router.get('/list_result/:mditem', helpers.isLoggedIn, (req, res) => {
   console.log('in metadatalist result');
   let md_selected = req.params.mditem;
   console.log(md_selected);
@@ -100,7 +100,7 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, function (req, res) {
   });
 });
 
-router.get('/geomap/:item', helpers.isLoggedIn, function (req, res) {
+router.get('/geomap/:item', helpers.isLoggedIn, (req, res) => {
   console.log('in metadata - geomap');
   let md_item = req.params.item;
   let shortened_metadata_name = md_item.slice(0, md_item.length - 3);
@@ -170,7 +170,7 @@ function get_metadata_hash(md_selected) {
 
 
 // function findByValueOfObject(arr, key, value) {
-//   return arr.filter(function(item) {
+//   return arr.filter( (item) => {
 //     return (item[key] === value);
 //   });
 // }
@@ -212,7 +212,7 @@ function get_metadata_hash(md_selected) {
 // <% for (let i = 0; i < Number(samples_number); i++) { %>
 
 // metadata_new_csv
-router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_new_csv_upload', helpers.isLoggedIn, (req, res) => {
   res.render('metadata/metadata_new_csv_upload', {
     title: 'VAMPS: New Metadata CSV Upload',
     user: req.user,
@@ -221,7 +221,7 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, function (req, res) {
   });
 });
 
-router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], function (req, res) {
+router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_csv')], (req, res) => {
 
     // console.time("TIME: in post /metadata_new_csv_upload");
     const full_file_name = req.file.path;
@@ -249,7 +249,7 @@ router.post('/metadata_new_csv_upload', [helpers.isLoggedIn, upload.single('new_
   }
 );
 
-router.get('/metadata_new', helpers.isLoggedIn, function (req, res) {
+router.get('/metadata_new', helpers.isLoggedIn, (req, res) => {
   const met_obj       = new metadata_controller.CreateDataObj(req, res, "", "");
   let pi_list         = met_obj.get_pi_list();
   req.session.pi_list = pi_list;
@@ -289,7 +289,7 @@ router.post('/metadata_new',
     form.field("submit_code", "Submit code").trim().entityEncode().array(),
     form.field("tube_label", "Tube label").trim().required().is(/^[a-zA-Z0-9_ -]+$/).entityEncode().array()
 ),
-  function (req, res) {
+   (req, res) => {
     // console.time("TIME: in post /metadata_new");
     // console.log("MMM1, req.body", req.body);
     // console.log("MMM2, req.form", req.form);
@@ -307,7 +307,7 @@ router.post('/metadata_new',
       new_project.make_project_obj_from_new_form_info(user_id);
       let project_obj = new_project.project_obj;
 
-      new_project.getProjectByName(project_obj.project, function(err, rows){
+      new_project.getProjectByName(project_obj.project, function (err, rows) {
         // console.log("RRR1 rows from getProjectByName", rows);
         if ((typeof rows[0] !== "undefined") && (typeof rows[0].project_id !== "undefined") && (rows[0].project_id > 0)) {
           const met_obj = new metadata_controller.CreateDataObj(req, res, rows[0].project_id, user_id);
@@ -327,7 +327,7 @@ router.post('/metadata_new',
 // render edit form
 router.post('/metadata_edit_form',
   [helpers.isLoggedIn],
-  function (req, res) {
+  (req, res) => {
 
     // console.time("TIME: 1) in post /metadata_edit_form");
     make_metadata_object_from_db(req, res);
@@ -454,7 +454,7 @@ router.post('/metadata_upload',
     form.field("trace_element_geochem", helpers.get_second("trace_element_geochem")).trim().entityEncode().array(),
     form.field("water_age", helpers.get_second("water_age")).trim().custom(helpers.numbers_n_period).entityEncode().array()
   ),
-  function (req, res) {
+  (req, res) =>{
     // console.time("TIME: post metadata_upload");
     if (!req.form.isValid) {
       console.log('in post /metadata_upload, !req.form.isValid');
@@ -598,7 +598,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
     ', institution: ' + project_obj.institution);
     res.redirect("/");
   } else {
-    cur_project.addProject(project_obj, function (err, rows) {
+    cur_project.addProject(project_obj, (err, rows) => {
       console.log('New project SAVED');
       // console.log('WWW rows', rows);
       let pid           = 0;
@@ -616,7 +616,7 @@ function new_csv(req, res, cur_project, project_name, transposed) {
       // if ((pid === 0) && (rows.affectedRows === 1)) {
       if (pid === 0) {
         // TODO: existing_project: as show_with_new_datasets
-        cur_project.getProjectByName(project_name, function (err, rows) {
+        cur_project.getProjectByName(project_name, (err, rows) => {
           // console.log("RRR1, rows from getProjectByName", rows);
           if (typeof rows !== "undefined") {
             cur_project.project_obj.pid = rows["0"].project_id;
@@ -778,7 +778,7 @@ function add_missing_info_to_AllMetadata_picked(met_obj, AllMetadata_picked_in, 
 // from a csv file to db
 
 // test: more -> metadata -> Manage Saved Metadata
-router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+router.get('/file_utils', helpers.isLoggedIn, (req, res) => {
   const file_util_obj = new file_controller.FileUtil(req, res);
   console.log("file from file_utils in routes_metadata: ");
   console.log(req.query.filename);
@@ -811,7 +811,7 @@ function saveMetadata(req, res) {
 }
 
 // if csv files: show a list and compare
-router.get('/metadata_file_list', function (req, res) {
+router.get('/metadata_file_list', (req, res) => {
   // console.time("TIME: get metadata_file_list");
   console.log('in metadata_file_list');
   const csv_files_obj         = new csv_files_controller.CsvFilesWrite(req, res);
@@ -835,7 +835,7 @@ router.get('/metadata_file_list', function (req, res) {
 
 router.post('/metadata_files',
   [helpers.isLoggedIn],
-  function (req, res) {
+  (req, res) => {
 
     // console.time("TIME: in post /metadata_files");
     let table_diff_html = "";

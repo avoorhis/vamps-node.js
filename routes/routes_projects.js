@@ -10,7 +10,7 @@ const config  = require(app_root + '/config/config');
 // These are all under /projects
 /* GET New User page. */
 
-router.get('/projects_index', function(req, res) {
+router.get('/projects_index', (req, res) => {
   let project_list = [];
 
   for (let pid in PROJECT_INFORMATION_BY_PID){
@@ -19,7 +19,7 @@ router.get('/projects_index', function(req, res) {
     }
   }
 
-  project_list.sort(function(a, b){
+  project_list.sort( (a, b) => {
     return helpers.compareStrings_alpha(a.project, b.project);
   });
 
@@ -52,7 +52,7 @@ function ProjectProfileFinishRequest (req, res, arg_obj) {
 
 function get_dscounts(dsinfo) {
 
-  // return dsinfo.filter(function(obj)
+  // return dsinfo.filter( (obj) =>
   // {return (obj.did.startsWith(file_name_template))});
   let dscounts = {};
 
@@ -151,7 +151,7 @@ function get_best_file(req) {
   return best_file;
 }
 
-router.get('/:id', helpers.isLoggedIn, function(req, res) {
+router.get('/:id', helpers.isLoggedIn, (req, res) => {
   console.time("in_PJ_id");
   console.log('in PJ:id');
   console.log(req.params.id);
@@ -226,7 +226,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
   console.timeEnd("in_PJ_id");
 });
 
-router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res) {
+router.post('/download_dco_metadata_file', helpers.isLoggedIn, (req, res) => {
   console.log('in POST download_dco_metadata_file');
   console.log(req.body);
   let file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
@@ -238,7 +238,7 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, function(req, res
 //   filestream.pipe(res);
   if (fs.existsSync(file_path)){
     console.log('Found file: '+file_path);
-    res.download(file_path, function(err){
+    res.download(file_path, err => {
       if (err) {
         // Handle error, but keep in mind the response may be partially-sent
         // so check res.headersSent
@@ -275,22 +275,22 @@ function filter_metadata_csv_files_by_project(file_names, project_name, username
 
   let file_name_template = "metadata-project_" + project_name + "_" + username;
 
-  let project_metadata_file_names = file_names.filter(function(obj)
-  {return (obj.filename.startsWith(file_name_template))});
+  let project_metadata_file_names = file_names.filter( obj => {
+    return (obj.filename.startsWith(file_name_template))
+  });
   console.timeEnd("TIME: filter_metadata_csv_files_by_project");
 
   return project_metadata_file_names;
 }
 
-// router.get('/:id', helpers.isLoggedIn, function(req, res) {
+// router.get('/:id', helpers.isLoggedIn, (req, res) => {
 
 // router.post('/import_choices/simple_fasta', [helpers.isLoggedIn, upload.array('upload_files', 12)],
 //   form(
 //     form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
 //     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s (no spaces)").maxLength(64).entityEncode()
 //   ),
-//   function (req, res)
-//   {
+//   (req, res) =>  {
 //     console.log("QQQ1 in router.post('import_choices/simple_fasta'");
 //     if (!req.form.isValid) {
 //       req.flash('fail', req.form.errors);
@@ -305,7 +305,7 @@ function filter_metadata_csv_files_by_project(file_names, project_name, username
 //   }
 // );
 
-// router.get('/update_metadata', helpers.isLoggedIn, function (req, res) {
+// router.get('/update_metadata', helpers.isLoggedIn, (req, res) => {
 //   console.log("IN Upload metadata");
 //   console.log("not Coded yet");
 //   res.render('/metadata', {

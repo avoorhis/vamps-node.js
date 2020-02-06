@@ -7,7 +7,7 @@ const helpers = require('../helpers/helpers');
 
 
 module.exports = {
-		write_metadata_file: function(post_items) {
+		write_metadata_file: (post_items) => {
 			console.log('in metadata: write_metadata_file')
 			console.log(post_items)
 			var metadata_names = post_items.metadata;
@@ -70,7 +70,7 @@ module.exports = {
 		//
 		//
 		//
-		write_mapping_file: function(post_items) {
+		write_mapping_file: (post_items) => {
 			console.log('in metadata: write_mapping_file');
 			var metadata_names = post_items.metadata;
 			
@@ -133,7 +133,7 @@ module.exports = {
 		//
 		//
 		//
-		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
+		create_metadata_table: (chosen_id_name_hash, visual_post_items) => {
 				console.log('in metadata: create_metadata_table')
 				var html = "<table border='1' id='metadata_table' class='single_border center_table'>";
 				html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";

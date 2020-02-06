@@ -11,10 +11,10 @@ const multer   = require('multer');
 const url       = require('url');
 
 var storage  = multer.diskStorage({
-  destination: function (req, file, callback) {
+  destination: (req, file, callback) => {
     callback(null, '/tmp');
   },
-  filename: function (req, file, callback) {
+  filename: (req, file, callback) => {
     callback(null, file.fieldname + '-' + Date.now());
   }
 });
@@ -22,7 +22,7 @@ const User     = require(app_root + '/models/user_model');
 var upload   = multer({storage: storage}).single('upload_metadata_file');
 const file_controller = require(app_root + '/controllers/fileController');
 
-router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in admin');
   res.render('admin/admin_index', {
@@ -35,7 +35,7 @@ router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function (req,
 //
 //
 //
-router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in assign_permissions');
   res.render('admin/assign_permissions', {
@@ -51,7 +51,7 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
 //
 //
 //
-router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in permissions');
 
@@ -69,7 +69,7 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function (req,
   });
 
 });
-router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in public_status');
   //console.log(ALL_USERS_BY_UID);
@@ -85,7 +85,7 @@ router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], function (re
 
 });
 
-router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in public_update');
   //console.log(ALL_USERS_BY_UID);
@@ -105,7 +105,7 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function (r
       PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [PROJECT_INFORMATION_BY_PID[selected_pid].oid];
       PROJECT_INFORMATION_BY_PID[selected_pid].public      = 0;
     }
-    connection.query(q, function (err, rows, fields) {
+    connection.query(q, (err, rows, fields) => {
       //console.log(qSequenceCounts)
       if (err) {
         console.log('Query error: ' + err);
@@ -119,7 +119,7 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function (r
     res.send('no change to public status');
   }
 });
-router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in admin_status');
 
@@ -134,7 +134,7 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], function (req
   });
 
 });
-router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in admin_update');
   //console.log(ALL_USERS_BY_UID);
@@ -155,7 +155,7 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function (re
     } else {
       ALL_USERS_BY_UID[selected_uid].status = 50; // Lowly User
     }
-    connection.query(q, function (err, rows, fields) {
+    connection.query(q, (err, rows, fields) => {
       if (err) {
         console.log('Query error: ' + err);
         response = 'Query error: ' + err;
@@ -168,7 +168,7 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], function (re
     res.send('no change to admin status');
   }
 });
-router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in show_user_info');
   var selected_uid = req.body.uid;
@@ -197,7 +197,7 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function (
 //
 //
 //
-router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in alter_datasets')
   var url_parts = url.parse(req.url, true);
@@ -210,7 +210,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function (r
     var pid = url_parts.query.pid;
   }
   var myjson;
-  ALL_DATASETS.projects.forEach(function (prj) {
+  ALL_DATASETS.projects.forEach( prj => {
     if (prj.pid == pid) {
       myjson = prj;
     }
@@ -230,7 +230,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function (r
 //
 //
 //
-router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in alter_project');
   var url_parts = url.parse(req.url, true);
@@ -258,7 +258,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function (re
 //
 //
 //
-router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in show_user_info');
   //console.log(PROJECT_INFORMATION_BY_PID);
@@ -364,7 +364,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
 //
 //
 //
-router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   //console.log(req.body)
   console.log('in update_dataset_info');
   var did      = req.body.did;
@@ -373,9 +373,9 @@ router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], funct
   var new_desc = req.body.desc;
 
   DATASET_NAME_BY_DID[did] = name;
-  ALL_DATASETS.projects.forEach(function (prj) {
+  ALL_DATASETS.projects.forEach( prj => {
     if (prj.pid == pid) {
-      prj.datasets.forEach(function (ds) {
+      prj.datasets.forEach( ds => {
         if (ds.did == did) {
           ds.dname = new_name;
           ds.ddesc = new_desc;
@@ -391,7 +391,7 @@ router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], funct
 //
 //
 //
-router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log(req.body);
 
@@ -412,7 +412,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
       PROJECT_INFORMATION_BY_PID[pid].project = new_project_name;
       delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
       PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
-      ALL_DATASETS.projects.forEach(function (prj) {
+      ALL_DATASETS.projects.forEach( prj => {
         if (prj.pid == pid) {
           prj.name = new_project_name;
         }
@@ -434,7 +434,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
     case 'ptitle':
       new_project_title                     = value;
       PROJECT_INFORMATION_BY_PID[pid].title = new_project_title;
-      ALL_DATASETS.projects.forEach(function (prj) {
+      ALL_DATASETS.projects.forEach( prj => {
         if (prj.pid == pid) {
           prj.title = new_project_title;
         }
@@ -455,7 +455,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
   }
 
   console.log(q);
-  connection.query(q, function (err, rows, fields) {
+  connection.query(q, (err, rows, fields) => {
     if (err) {
       console.log('Query error: ' + err);
       response = 'Query error: ' + err;
@@ -469,7 +469,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
 //
 //
 //
-router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in grant_access');
   var selected_uid = req.body.uid;
@@ -498,7 +498,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function (re
 
   // 2- add to table 'access'
   //q = "INSERT ignore into `access` (user_id, project_id) VALUES('"+selected_uid+"','"+selected_pid+"')"
-  connection.query(queries.insert_access_table(selected_uid, selected_pid), function (err, rows, fields) {
+  connection.query(queries.insert_access_table(selected_uid, selected_pid), (err, rows, fields) => {
     //console.log(qSequenceCounts)
     if (err) {
       console.log('Query error: ' + err);
@@ -515,7 +515,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function (re
 //
 //
 //
-router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in delete_user GET ADMIN')
   //console.log(JSON.stringify(ALL_USERS_BY_UID))
   // set active to 0 in user table
@@ -529,14 +529,14 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function (
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 });
-router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in delete_user POST ADMIN')
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
   // also delete from ALL_USERS_BY_UID
   var uid_to_delete = req.body.uid;
   var response;
-  // var finish = function(){
+  // var finish = () => {
 //       res.render('admin/inactivate_user', {
 //               title     :'VAMPS Inactivate User',
 //               user: req.user,
@@ -551,7 +551,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function 
     res.send('FAILED: You cannot inactivate yourself!');
   } else {
     delete ALL_USERS_BY_UID[uid_to_delete]
-    connection.query(queries.inactivate_user(uid_to_delete), function (err, rows) {
+    connection.query(queries.inactivate_user(uid_to_delete), (err, rows) => {
       if (err) {
         response = 'FAILED: sql error ' + err
       } else {
@@ -566,7 +566,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], function 
 //
 //
 //
-router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in update_metadata_object')
   var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   delete require.cache[require.resolve(meta_file)];  // THIS CLEARS THE REQUIRE CACHE
@@ -580,7 +580,7 @@ router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], fun
 
 });
 
-router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in new_user GET ADMIN')
 
   res.render('admin/new_user', {
@@ -593,7 +593,7 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, re
 //
 //
 //
-router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in new_user --POST');
 
   var this_user_obj    = new User();
@@ -615,7 +615,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
 
   } else {
 
-    connection.query(queries.get_user_by_name(new_user.username), function (err, rows) {
+    connection.query(queries.get_user_by_name(new_user.username), (err, rows) => {
       if (err) {
         console.log(err);
         req.flash('fail', err);
@@ -637,7 +637,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
         newUserMysql.security_level = 50;  //reg user
         var insertQuery             = queries.insert_new_user(newUserMysql)
 
-        connection.query(insertQuery, function (err, rows) {
+        connection.query(insertQuery, (err, rows) => {
           if (err) {
             console.log(insertQuery);
             console.log(err);
@@ -667,7 +667,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function (req, r
 //
 //
 //
-router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in reset_user_password');
   var user_order = get_name_ordered_users_list()
   res.render('admin/new_password', {
@@ -680,13 +680,13 @@ router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], functi
 //
 //
 //
-router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in reset_user_password --POST');
   console.log(req.body)
   var uid        = req.body.user_id;
   var password   = req.body.password;
   var user_order = get_name_ordered_users_list()
-  var finish     = function () {
+  var finish     = () => {
     res.render('admin/new_password', {
       title: 'VAMPS Reset User Password',
       user: req.user,
@@ -703,7 +703,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
 
     var updateQuery = queries.reset_user_password_by_uid(password, uid)
     console.log(updateQuery);
-    connection.query(updateQuery, function (err, rows) {
+    connection.query(updateQuery, (err, rows) => {
       if (err) {
         req.flash('fail', 'FAILED: sql error ' + err);
       } else {
@@ -718,7 +718,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], funct
   finish();
 });
 
-router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in GET validate_metadata');
   res.render('admin/validate_metadata', {
     title: 'VAMPS Validate Metadata',
@@ -730,7 +730,7 @@ router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
 //
 //
 //
-router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('In POST show_metadata');
   console.log(req.body)
   var pid = req.body.pid
@@ -800,7 +800,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (r
 //
 //
 //
-router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in apply_metadata')
   if (req.CONFIG.site == 'vamps') {
     console.log('VAMPS PRODUCTION -- no print to log');
@@ -893,7 +893,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
     console.log('stdout: ' + data);
     output += data;
   });
-  update_metadata_process.stderr.on('data', function (data) {
+  update_metadata_process.stderr.on('data', data => {
     console.log('stderr: ' + data);
     req.flash('fail', 'Metadata Update Failed');
   });
@@ -918,12 +918,12 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (
 //
 //
 // TEST: Admin / Validate & Upload Metadata / choose file / Go
-router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   let parse = require('csv-parse');
   console.log('In POST admin upload_metadata');
   let username  = req.user.username;
   let timestamp = +new Date();
-  upload(req, res, function (err) {
+  upload(req, res, err => {
     helpers.local_log(req, req.body);
     if (err) {
       console.log('Error uploading file: ' + err.toString());
@@ -1079,7 +1079,7 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
   // console.log("XXX export_dir");
   // console.log(export_dir);
 
-  helpers.walk(export_dir, function (err, files) {
+  helpers.walk(export_dir, (err, files) => {
     if (err) throw err;
     files.sort(function sortByTime(a, b) {
       //reverse sort: recent-->oldest
@@ -1098,7 +1098,7 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
   });
 });
 
-router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in create_dco_metadata_file')
   var timestamp    = +new Date();
   var out_file     = 'dco_all_' + timestamp + '.tsv'
@@ -1138,7 +1138,7 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
     console.log('stdout: ' + data);
     output += data;
   });
-  dco_metadata_process.stderr.on('data', function (data) {
+  dco_metadata_process.stderr.on('data', data => {
     console.log('stderr: ' + data);
     req.flash('fail', 'Metadata Update Failed');
   });
@@ -1433,7 +1433,7 @@ function get_name_ordered_projects_list() {
   return project_order;
 }
 
-router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
+router.get('/file_utils', helpers.isLoggedIn, (req, res) => {
   console.log('in file_utils');
   const file_util_obj = new file_controller.FileUtil(req, res);
 
@@ -1447,7 +1447,7 @@ router.get('/file_utils', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/users_index', helpers.isLoggedIn, function (req, res) {
+router.get('/users_index', helpers.isLoggedIn, (req, res) => {
 
   console.log('in indexusers')
   console.log(req.user)
@@ -1456,16 +1456,16 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
     // for(uid in ALL_USERS_BY_UID){
 // 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+ALL_USERS_BY_UID[uid].first_name,username:ALL_USERS_BY_UID[uid].username})
 // 	    }
-// 	    rows.sort(function(a, b){
+// 	    rows.sort( (a, b) => {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
 // 	    });
     var qSelect    = "SELECT * from user where active='1'";
-    var collection = connection.query(qSelect, function (err, rows, fields) {
+    var collection = connection.query(qSelect, (err, rows, fields) => {
       if (err) {
         msg = 'ERROR Message ' + err;
         helpers.render_error_page(req, res, msg);
       } else {
-        rows.sort(function (a, b) {
+        rows.sort( (a, b) => {
           // sort by last name
           return helpers.compareStrings_alpha(a.last_name, b.last_name);
         });
@@ -1493,7 +1493,7 @@ router.get('/users_index', helpers.isLoggedIn, function (req, res) {
 //
 //
 //
-router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
     console.log('IN GET cleanup_tmp_dirs')
 
     var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR,'tmp');
@@ -1504,18 +1504,18 @@ router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function 
     console.log(temp_dir_path1);
     console.log(temp_dir_path2);
     console.log(temp_dir_path3);
-    fs.readdir(temp_dir_path1, function (err, files) {
+    fs.readdir(temp_dir_path1, (err, files) => {
 
         for (var i = 0; i < files.length; i++) {
             var curPath = temp_dir_path1 + "/" + files[i];
             helpers.deleteFolderRecursive(curPath);
         }
-        fs.readdir(temp_dir_path2, function (err, files) {
+        fs.readdir(temp_dir_path2, (err, files) => {
           for (var i = 0; i < files.length; i++) {
               var curPath = temp_dir_path2 + "/" + files[i];
               helpers.deleteFolderRecursive(curPath);
           }
-          fs.readdir(temp_dir_path3, function (err, files) {
+          fs.readdir(temp_dir_path3, (err, files) => {
             for (var i = 0; i < files.length; i++) {
                 var curPath = temp_dir_path3 + "/" + files[i];
                 helpers.deleteFolderRecursive(curPath);
@@ -1538,7 +1538,7 @@ router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], function 
 //
 //
 //
-router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
     console.log('IN GET kill_cluster_jobs')
     res.render('admin/kill_cluster_jobs', {
       title: 'VAMPS:kill_cluster_jobs',
@@ -1549,7 +1549,7 @@ router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function
 //
 //
 //
-router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], function (req, res) {
+router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
     console.log('IN POST kill_cluster_jobs')
     console.log(req.body)
     var jid = req.body.jobid
@@ -1563,7 +1563,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], functio
     }
     console.log('Running Command: '+cmd)
     const exec = require('child_process').exec;
-    exec(cmd, {env: {'SGE_ROOT': req.CONFIG.SGE_ROOT}}, function(e, stdout, stderr) {
+    exec(cmd, {env: {'SGE_ROOT': req.CONFIG.SGE_ROOT}}, (e, stdout, stderr) => {
         if (e instanceof Error) {
             console.error(e);
             req.flash('fail', e.toString());

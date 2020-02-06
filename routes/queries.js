@@ -8,11 +8,11 @@ const helpers = require('./helpers/helpers');
 
 module.exports = {
 
-  get_project_permissions: function(){
+  get_project_permissions: () => {
     let qSelectAccess = "SELECT user_id, project_id from access";
     return qSelectAccess;
   },
-  get_select_datasets_query: function(){
+  get_select_datasets_query: () => {
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
     qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic,matrix,project.created_at,project.updated_at";
 
@@ -29,14 +29,14 @@ module.exports = {
 
 
   },
-  get_select_custom_units_query: function(){
+  get_select_custom_units_query: () => {
     var qSelectCustomUnits = "SELECT project_id, field_name, field_units FROM `custom_metadata_fields` WHERE field_units <> 'Alphanumeric' AND field_units <> 'unknown'";
     console.log("qSelectCustomUnits:");
     console.log(qSelectCustomUnits);
     return qSelectCustomUnits;
   },
 
-  get_select_datasets_queryPID: function(pid){
+  get_select_datasets_queryPID: (pid) => {
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
     qSelectDatasets += " first_name, last_name, owner_user_id,public, metagenomic,matrix,DATE(project.created_at),DATE(project.updated_at)";
     qSelectDatasets += " FROM dataset";
@@ -50,30 +50,30 @@ module.exports = {
     return qSelectDatasets;
   },
 
-  get_select_classifier_query: function(){
+  get_select_classifier_query: () => {
     var qSelectClassifiers = "SELECT classifier_id as cid, classifier, `database`";
     qSelectClassifiers += " FROM classifier";
     //console.log(qSelectClassifiers);
     return qSelectClassifiers;
 
   },
-  get_all_user_query: function(){
+  get_all_user_query: () => {
     var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name, security_level";
     qSelectUser += " FROM user WHERE active='1'";
     //console.log(qSelectClassifiers);
     return qSelectUser;
   },
-  get_all_user_groups: function(){
+  get_all_user_groups: () => {
     var qSelectUserGroup = "SELECT user_id as uid, `group` FROM user_group";
     return qSelectUserGroup;
   },
-  get_projects_queryUID: function( uid ) {
+  get_projects_queryUID: (uid) => {
     let q = "SELECT project, project_id from project where owner_user_id='" + uid + "'";
     q += " WHERE project.active = 1";
 
   return q;
 },
-get_select_seq_count_query: function(){
+get_select_seq_count_query: () => {
 
     var qSequenceCounts = "SELECT dataset_id, classifier_id, SUM(seq_count) as seq_count";
     qSequenceCounts += " FROM sequence_pdr_info USE INDEX FOR GROUP BY (dataset_id)";
@@ -83,7 +83,7 @@ get_select_seq_count_query: function(){
 
    
   },
-  get_select_seq_count_queryPID: function(pid){
+  get_select_seq_count_queryPID: (pid) => {
 
     var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count";
     qSequenceCounts += " FROM sequence_pdr_info";
@@ -98,7 +98,7 @@ get_select_seq_count_query: function(){
   //
   //
   //
-  get_sequences_perDID: function( sql_dids, classifier ) {
+  get_sequences_perDID: ( sql_dids, classifier ) => {
     //TODO: proper escape!!! See https://github.com/mysqljs/mysql
 
     //var sql_dids = dids.join(',')
@@ -129,7 +129,7 @@ get_select_seq_count_query: function(){
   //
   //
   //
-  get_sequences_perDID_and_taxa_query: function( did, taxa, classifier ) {
+  get_sequences_perDID_and_taxa_query: ( did, taxa, classifier ) => {
     var tax_items  = taxa.split(';');
     if(classifier.startsWith('tax_rdp')){
         distance = 'boot_score'
@@ -168,8 +168,7 @@ get_select_seq_count_query: function(){
   //
   //
 
-  MakeInsertProjectQ: function(req_form, owner_user_id, new_privacy)
-  {
+  MakeInsertProjectQ: (req_form, owner_user_id, new_privacy) => {
     var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
     var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
     var inserts = [project_columns, project_info];
@@ -179,8 +178,7 @@ get_select_seq_count_query: function(){
     return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
   },
 
-  MakeInsertStatusQ: function(status_params)
-  {
+  MakeInsertStatusQ: (status_params) => {
     // "SELECT user_id, project_id, status, message, NOW() ";
     var statQuery1 = "INSERT IGNORE INTO user_project_status (user_id, project_id, status, message, created_at)"
       + " SELECT "  + connection.escape(status_params.user_id)
@@ -208,7 +206,7 @@ get_select_seq_count_query: function(){
     return statQuery1;
   },
 
-  MakeDeleteStatusQ: function() {
+  MakeDeleteStatusQ: () => {
     console.log('in delete_status');
     if (status_params.type === 'delete') {
       var statQuery = "DELETE"
@@ -221,70 +219,70 @@ get_select_seq_count_query: function(){
     }
   },
 
-  get_select_env_term_query: function() {
+  get_select_env_term_query: () => {
     var q = "SELECT term_id, fullname as ont, term_name\n"
     q += " FROM `term`\n"
     q += " JOIN ontology using(ontology_id)"
     //console.log(q)
     return q;
   },
-  get_select_env_package_query: function() {
+  get_select_env_package_query: () => {
     var q = "SELECT env_package_id, env_package\n"
     q += " FROM `env_package`\n"
     //console.log(q)
     return q;
   },
-  get_select_domain_query: function() {
+  get_select_domain_query: () => {
     var q = "SELECT domain_id, domain\n";
     q += " FROM `domain`\n";
     q += "where domain in ('Archaea', 'Bacteria', 'Eukarya', 'Fungi', 'Organelle', 'Unknown', 'all')";
     //console.log(q)
     return q;
   },
-  get_select_dna_region_query: function() {
+  get_select_dna_region_query: () => {
     var q = "SELECT dna_region_id, dna_region\n";
     q += " FROM `dna_region`\n";
     //console.log(q)
     return q;
   },
-  get_select_target_gene_query: function() {
+  get_select_target_gene_query: () => {
     var q = "SELECT target_gene_id, target_gene\n"
     q += " FROM `target_gene`\n"
     //console.log(q)
     return q;
   },
-  get_select_sequencing_platform_query: function() {
+  get_select_sequencing_platform_query: () => {
     var q = "SELECT sequencing_platform_id, sequencing_platform\n";
     q += " FROM `sequencing_platform`\n";
     //console.log(q)
     return q;
   },
 
-  get_select_Illumina_3letter_adapter_query: function() {
+  get_select_Illumina_3letter_adapter_query: () => {
   var q = "SELECT illumina_adaptor_id, illumina_adaptor\n";
   q += " FROM `illumina_adaptor`\n";
   //console.log(q)
   return q;
 },
-  get_select_adapter_sequence_query: function() {
+  get_select_adapter_sequence_query: () => {
     var q = "SELECT run_key_id, run_key\n";
     q += " FROM `run_key`\n";
     //console.log(q)
     return q;
   },
-  get_select_illumina_index_query: function() {
+  get_select_illumina_index_query: () => {
     var q = "SELECT illumina_index_id, illumina_index\n"
     q += " FROM `illumina_index`\n"
     //console.log(q)
     return q;
   },
-  get_select_run_query: function() {
+  get_select_run_query: () => {
     let q = "SELECT run_id, run\n";
     q += " FROM `run`\n";
     //console.log(q)
     return q;
   },
-  get_select_primer_suite_query: function() {
+  get_select_primer_suite_query: () => {
 
     let q = "SELECT primer, primer_id, primer_suite, primer_suite_id,  direction, sequence, region, domain";
     q += " FROM ref_primer_suite_primer";
@@ -294,7 +292,7 @@ get_select_seq_count_query: function(){
     return q;
   },
 
-  get_metagenomic_projects_query: function() {
+  get_metagenomic_projects_query: () => {
 
     var qSelectProjects = "SELECT project, title, project_id as pid, project_description, ";
     qSelectProjects += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
@@ -306,7 +304,7 @@ get_select_seq_count_query: function(){
     //console.log(qSelectProjects);
     return qSelectProjects;
   },
-  get_metagenomic_datasets_query: function() {
+  get_metagenomic_datasets_query: () => {
 
     var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
     qSelectDatasets += " username, email, institution, first_name, last_name, owner_user_id, public, metagenomic";
@@ -319,7 +317,7 @@ get_select_seq_count_query: function(){
     //console.log(qSelectDatasets);
     return qSelectDatasets;
   },
-  get_project_notes_query: function(pid) {
+  get_project_notes_query: (pid) => {
 
     var qSelectNotes = "SELECT notes FROM project_notes";
     qSelectNotes += " WHERE project_id='"+pid+"'";

@@ -5,13 +5,13 @@ const path  = require('path');
 const helpers = require('./helpers/helpers');
 const ds = require('./load_all_datasets');
 
-var rs_ds = ds.get_datasets(function(ALL_DATASETS){
+var rs_ds = ds.get_datasets( ALL_DATASETS => {
   
   //GLOBAL.ALL_DATASETS = ALL_DATASETS;  // GLOBAL keyword is deprecated and not needed here
   
 
   /* GET home page. */
-  router.get('/', function(req, res) {
+  router.get('/', (req, res) => {
     res.render('index', {
             title: 'VAMPS:Home',
             user: req.user, 
@@ -23,7 +23,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 
   /* GET Saved Data page. */
-  router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
+  router.get('/saved_data', helpers.isLoggedIn, (req, res) => {
       res.render('saved_data', { title: 'VAMPS:Saved Data',
                 user: req.user, 
                 hostname: req.CONFIG.hostname
@@ -35,7 +35,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
  
 
-  router.get('/geodistribution', function(req, res) {
+  router.get('/geodistribution', (req, res) => {
 
 	  console.log(DatasetsWithLatLong)
 	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
@@ -49,10 +49,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   //
   //
   //
-  router.post('/contact', function(req, res) {
+  router.post('/contact', (req, res) => {
 
     //Validate captcha
-    sweetcaptcha.api('check', {sckey: req.body["sckey"], scvalue: req.body["scvalue"]}, function(err, response){
+    sweetcaptcha.api('check', {sckey: req.body["sckey"], scvalue: req.body["scvalue"]}, (err, response) => {
         if (err) return console.log(err);
 
         if (response === 'true') {

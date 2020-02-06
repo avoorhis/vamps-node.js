@@ -8,7 +8,7 @@ const config  = require(app_root + '/config/config');
 
 module.exports = {
 
-  start_visuals_html: function(visual) {
+  start_visuals_html: (visual) => {
     var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += this.get_selection_markup(visual, visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
@@ -17,7 +17,7 @@ module.exports = {
     return html;
   },
 
-  get_selection_markup: function( visual, obj ) {
+  get_selection_markup: ( visual, obj ) => {
 
     // obj is visual_post_items
     var html = "<div id='' class='selection_info'>";
@@ -41,7 +41,7 @@ module.exports = {
   //
   //
   //
-  get_choices_markup: function( visual, obj ) {
+  get_choices_markup: ( visual, obj ) => {
     var html = "<div id='' class='choices_info'>";
     //title: req.params.title   || 'default_title',
     //  timestamp: myurl.query.ts || 'default_timestamp',
@@ -127,7 +127,7 @@ module.exports = {
   //
   //
   //
-  default_post_items: function() {
+  default_post_items: () => {
     var post_hash = {
         unit_choice: 'tax_'+C.default_taxonomy.name+'_simple',
         no_of_datasets: undefined,
@@ -148,7 +148,7 @@ module.exports = {
     return post_hash;
   },
 
-  save_post_items: function(req) {
+  save_post_items: (req) => {
     // GLOBAL Variable
     var post_hash = {};
     if(config.site == 'vamps' ){
@@ -237,9 +237,9 @@ module.exports = {
   //
   // write file
   //
-  write_file: function(filename, txt) {
+  write_file: (filename, txt) => {
     console.log('filename:'+filename)
-    fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
+    fs.writeFile(path.resolve(__dirname, filename), txt, (err) => {
       if(err) {
         console.log('Could not write file: ' + filename + ' Here is the error: ' + err);
       } else {
@@ -254,7 +254,7 @@ module.exports = {
   //
   //  tax file for phyloseq
   //
-  output_tax_file: function(tax_file, biom_matrix, rank_num) {
+  output_tax_file: (tax_file, biom_matrix, rank_num) => {
     let tax;
     let txt = '';
     //console.log('rank '+rank)
@@ -284,7 +284,7 @@ module.exports = {
       txt += "\n";
     }
 
-    fs.writeFile(path.resolve(__dirname, tax_file), txt, function(err) {
+    fs.writeFile(path.resolve(__dirname, tax_file), txt, (err) => {
       if(err) {
         console.log('Could not write tax file: '+tax_file+' Here is the error: '+err);
       } else {
@@ -300,7 +300,7 @@ module.exports = {
   //
   // NORMALIZATION
   //
-  normalize_counts: function(norm_type, selection_obj, max_count) {
+  normalize_counts: (norm_type, selection_obj, max_count) => {
 
     // get max dataset count
     //var selection_obj = JSON.parse(obj);
@@ -333,7 +333,7 @@ module.exports = {
   //
   //  MAX DS COUNT
   //
-  get_max_dataset_count: function(obj) {
+  get_max_dataset_count: (obj) => {
     // Gets the maximum dataset count from the 'seq_freqs' in selection_obj
     var max_count = 0;
     for (var n=0; n < obj.seq_freqs.length; n++) {
@@ -354,7 +354,7 @@ module.exports = {
   //
   // STRING to COLOR CODE
   //
-  string_to_color_code2: function(str) {
+  string_to_color_code2: (str) => {
     // str to hash
     for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
     // int/hash to hex
@@ -362,7 +362,7 @@ module.exports = {
     for (var i1 = 0, colour = "#"; i1 < 3; colour += ("00" + ((hash >> i1++ * 8) & 0xFF).toString(16)).slice(-2));
     return colour;
   },
-  string_to_color_code: function (str){
+  string_to_color_code: (str) => {
     var hash = 0;
     for(var i=0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 3) - hash);
@@ -375,11 +375,11 @@ module.exports = {
 //
 //
 //
-run_script_cmd: function (req,res, ts, command, visual_name) {
+run_script_cmd: (req,res, ts, command, visual_name) => {
      const exec = require('child_process').exec;
 
     console.log(command);
-    exec(command, {maxBuffer:16000*1024}, function (err, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+    exec(command, {maxBuffer:16000*1024}, (err, stdout, stderr) => {  // currently 16000*1024 handles 232 datasets
         if(err) {
         	res.send('ERROR: '+err);
         }else{
@@ -402,7 +402,7 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 //
 //
-create_chosen_id_name_order: function(dataset_ids) {
+create_chosen_id_name_order: (dataset_ids) => {
   console.log('in common: create_chosen_id_name_order' );
   console.log('in common: WAS create_chosen_id_name_hash' );
   var id_name_order    = [];
@@ -415,7 +415,7 @@ create_chosen_id_name_order: function(dataset_ids) {
 
   return id_name_order;
 },
-create_new_chosen_id_name_hash: function(dataset_list, pjds_lookup) {
+create_new_chosen_id_name_hash: (dataset_list, pjds_lookup) => {
 
   if(config.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
@@ -440,7 +440,7 @@ create_new_chosen_id_name_hash: function(dataset_list, pjds_lookup) {
 //
 //
 
-get_metadata_selection: function(dataset_ids, type) {
+get_metadata_selection: (dataset_ids, type) => {
     req_metadata = C.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
@@ -505,7 +505,7 @@ get_metadata_selection: function(dataset_ids, type) {
 //
 //
 //
-check_initial_status: function(url) {
+check_initial_status: (url) => {
 
   var values_updated;
   var min,max,norm,dist;
@@ -541,7 +541,7 @@ check_initial_status: function(url) {
 //
 //
 //
-clean_custom_tax: function(custom_tax_ids){
+clean_custom_tax: (custom_tax_ids) => {
     console.log('cleaning custom tax')
     cleaned_id_list = []
     nodes_to_delete = []
