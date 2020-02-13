@@ -15,9 +15,9 @@ var pool      =    mysql.createPool({
     host     : db_config.host,
     user     : db_config.user,
     password : db_config.password,
-	  socketPath : db_config.socketPath,
+    socketPath : db_config.socketPath,
     database : NODE_DATABASE,
-	  debug    :  false
+    debug    :  false
 });
 
 

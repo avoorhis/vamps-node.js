@@ -1,9 +1,10 @@
+"use strict"
 // for newrelic: start in config.js
 const config = require('./config/config');
 const dbconn = require('./config/database').pool;
 // explicitly makes conn global
 global.connection = dbconn;
-const consts 		= require('./public/constants');
+const C		= require('./public/constants');
 
 
 // anna's
@@ -18,38 +19,7 @@ const consts 		= require('./public/constants');
 // }
 
 
-// //var H5Type = require('hdf5/lib/globals').H5Type;
-// //console.log(H5Type)
 
-// var group = file.createGroup('VAMPS-ds');
-// var buffer=new Buffer(8*10*8, "binary");
-// buffer.rank=2;
-// buffer.rows=8;
-// buffer.columns=10;
-// buffer.type = h5g.H5Type.H5T_NATIVE_DOUBLE;
-// //console.log(buffer.type)
-// for (j = 0; j < buffer.columns; j++) {
-//   for (i = 0; i < buffer.rows; i++){
-//     if (j< (buffer.columns/2)) {
-//       buffer.writeDoubleLE(1.0, 8*(i*buffer.columns+j));
-//     }
-//     else {
-//       buffer.writeDoubleLE(2.0, 8*(i*buffer.columns+j));
-//     }
-//   }
-// }
-
-// h5lt.makeDataset(group.id, 'Waldo', buffer);
-// group.close()
-// file.close();
-// module.exports.Access = {
-//   ACC_RDONLY : 0, /*absence of rdwr => rd-only */
-//   ACC_RDWR   : 1, /*open for read and write    */
-//   ACC_TRUNC  : 2, overwrite existing files
-//   ACC_EXCL   : 4, /*fail if file already exists*/
-//   ACC_DEBUG  : 8, /*print debug info      */
-//   ACC_CREAT  : 10 /*create non-existing files  */
-// };
 
 const compression = require('compression');
 const express = require('express');
@@ -62,7 +32,6 @@ const router = express.Router();
 const session = require('express-session');
 const path = require('path');
 global.app_root = path.resolve(__dirname);
-//var hdf5 = require('hdf5');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -112,7 +81,7 @@ app.use(logger('dev'));
 // app.use(bodyParser({uploadDir:'./uploads'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-	extended: true,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme
+    extended: true,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme
     limit: '50mb',          // size of body
     parameterLimit: 1000000 // number of parameters
 }));
@@ -150,7 +119,7 @@ app.use('/static_dnld',       express.static(config.PATH_TO_STATIC_DOWNLOADS)); 
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
 app.use(session({
-	secret: 'keyboard cat',
+    secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true
 })); // session secret
@@ -161,31 +130,17 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 
 app.use(function(req, res, next){
-	if (connection == null) {
-	   this.send('We cannot reach the database right now, please try again later.');
-	   return;
-	 }else{
-	    req.db = connection; // not needed because connection is global
-	    req.CONSTS = consts;
-	    req.CONFIG = config;
-	    return next();
-	}
+    if (connection == null) {
+        this.send('We cannot reach the database right now, please try again later.');
+        return;
+    }else{
+        req.db = connection; // not needed because connection is in global scope
+        req.CONSTS = C;     // doubtful if this is needed
+        req.CONFIG = config;
+        return next();
+    }
 });
-//var hdf5 = require('hdf5').hdf5;
-// example of roll-your-own middleware:
-// GET: localhost:3000/?id=324
-// app.use(function (req, res,next) {
-//     console.log('START ');
-//     if (req.query.id){
-//         console.log('got id '+req.query.id);
-//         next();
-//     }else if (req.query.name){
-//         console.log('got name '+req.query.name);
-//         next();
-//     }else{
-//         next();
-//     }
-// });
+
 
 // ROUTES:
 app.use('/', routes);
@@ -232,12 +187,12 @@ app.use(function(req, res, next) {
     err.status = 404;
     //next(err);
     res.render('error', {
-            message: err,
-            error: err,
-            title:'ERROR',
-            hostname        : req.CONFIG.hostname,
-            user: req.user,
-        });
+        message: err,
+        error: err,
+        title:'ERROR',
+        hostname        : req.CONFIG.hostname,
+        user: req.user,
+    });
 });
 
 /// error handlers <-- these middleware go after routes
@@ -267,23 +222,23 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(function(req, res, next){
-  res.status(404);
+    res.status(404);
 
-  // respond with html page
-  if (req.accepts('html')) {
-    res.render('404', { url: '/' });
-    // res.render('404', { url: req.url });
-    return;
-  }
+    // respond with html page
+    if (req.accepts('html')) {
+        res.render('404', { url: '/' });
+        // res.render('404', { url: req.url });
+        return;
+    }
 
-  // respond with json
-  if (req.accepts('json')) {
-    res.send({ error: 'Not found' });
-    return;
-  }
+    // respond with json
+    if (req.accepts('json')) {
+        res.send({ error: 'Not found' });
+        return;
+    }
 
-  // default to plain-text. send()
-  res.type('txt').send('Not found');
+    // default to plain-text. send()
+    res.type('txt').send('Not found');
 });
 
 
@@ -293,7 +248,7 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
     if(err) {console.log(err);} // => null
     else{
         if(config.site != 'vamps' && config.site != 'vampsdev'){
-            fs.chmod(config.USER_FILES_BASE, 0775, function (err) {
+            fs.chmod(config.USER_FILES_BASE, 0o775, function (err) {
                 if(err) {console.log(err);} // ug+rwx
             });
         }
@@ -304,19 +259,19 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
 });
 
 /**
-* Create global objects once upon server startup
-*/
+ * Create global objects once upon server startup
+ */
 
-var silvaTaxonomy = require('./models/silva_taxonomy');
-var all_silva_taxonomy = new silvaTaxonomy();
+const silvaTaxonomy = require('./models/silva_taxonomy');
+let all_silva_taxonomy = new silvaTaxonomy();
 
-var rdpTaxonomy = require('./models/rdp_taxonomy');
-var all_rdp_taxonomy = new rdpTaxonomy();
+const rdpTaxonomy = require('./models/rdp_taxonomy');
+let all_rdp_taxonomy = new rdpTaxonomy();
 
-var genericTaxonomy = require('./models/generic_taxonomy');
-var all_generic_taxonomy = new genericTaxonomy();
+const genericTaxonomy = require('./models/generic_taxonomy');
+let all_generic_taxonomy = new genericTaxonomy();
 
-var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
+const CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_json');   // for fancytree:  https://github.com/mar10/fancytree
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_dhtmlx');   // for dhtmlx:  http://dhtmlx.com/docs/products/dhtmlxTree/
 //var TreeModel = require('tree-model');;
@@ -340,217 +295,119 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // 	});
 
 ////////////////////////////////////////////////////////
-/////// hdf5 Code //////////////
-AllMetadata = {}
-hdf5_is_available = false;   // GLOBAL (no var)
-if(hdf5_is_available){
-    //var h5 = require('hdf5')
-    var hdf5 = require('hdf5').hdf5; // File; Filters
-    // var h5lt = require('hdf5').h5lt; // dataset
-    // var h5tb = require('hdf5').h5tb; // table
-    // var h5pt = require('hdf5').h5pt; // table
-    // var h5im = require('hdf5').h5im; // image
-    // var h5ds = require('hdf5').h5ds; // scale
-    var h5g  = require('hdf5/lib/globals');
-    // GLOBAL:
-    HDF5_MDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5XX' ),  h5g.Access.ACC_RDONLY);
-    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.h5XX' ), h5g.Access.ACC_RDONLY);
-    //var groupTest = HDF5test_data.openGroup('test');
-    //var group51 = HDF5_data.openGroup("86");
-    var did_list = HDF5_MDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
-    console.log('INITIALIZING HDF5')
-    //console.log(mdgroup86['temp'])
-    //console.log('group56',group56.id)
-    // var groupTargets=THE_TEST_FILE.createGroup('test/sodium-icosanoate');
-    // groupTargets['Computed Heat of Formation' ] = -221.78436098572274;
-    // groupTargets['Computed Ionization Potential' ] = 9.57689311885752;
-    // groupTargets['Computed Total Energy' ] = -3573.674399276322;
-    // groupTargets.Status = 256;
-    // groupTargets.Information = "\"There are no solutions; there are only trade-offs.\" -- Thomas Sowell";
-    // group56.flush();
-    // var group = THE_TEST_FILE.openGroup('test/sodium-icosanoate')
-    // var metadata = group56.getDatasetAttributes("metadata");
-    // console.log(metadata)
-    // var taxcounts = group56.getDatasetAttributes("taxcounts");
-    // console.log(HDF5_DATA.getMemberNamesByCreationOrder())
-    // att = testattr['temp']
-    // for(i in did_list){
-    //     var did = did_list[i]
-    //     AllMetadata[did] = {}
-    //     var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-    //     mdgroup.refresh()
-    //     Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-    //         if(mdname != 'id'){
-    //           //console.log(mdname, group[mdname])
-    //           //AllMetadata[did][mdname] = mdgroup[mdname]
-    //         }
-    //     });
-    // }
-    //console.log('aux_corrected_sample_depth',metadata['aux_corrected_sample_depth'])
-    //console.log(h5g)
-    // group.close()
-    // THE_TEST_FILE.close()
-    // var group88 = THE_FILE.openGroup('53')
-    // group88.refresh();
-    // for(n in hdf5){
-    //     console.log(n)
-    // }
 
-    // var tax_attrs = group88.getDatasetAttributes("taxcounts");
-    // var meta_attrs = group88.getDatasetAttributes("metadata");
-    // group88.refresh();
-    // attrText = '';
-    // console.log(group88['longitude'])
-    // Object.getOwnPropertyNames(tax_attrs).forEach(function(val, idx, array) {
-    //    console.log(val,tax_attrs[val])
-    //   if (val !=  'id') {
-    //     if (meta_attrs[val].constructor.name === Array) {
-    //       attrText += val + ' :  ';
-    //       for (var mIndex = 0; mIndex < attrs[val].Length(); mIndex++) {
-    //         attrText += meta_attrs[val][mIndex];
-    //         if (mIndex < meta_attrs[val].Length() - 1) {
-    //           attrText += ',';
-    //         }
-    //       }
-    //     }
-    //     else{
-    //       attrText += val + ' :  ' + meta_attrs[val] + '\n';
-    //     }
-    //   }
-    //   console.log(attrText)
-    // });
-    // var readAsBuffer = h5lt.readDatasetAsBuffer(  group88.id, 'metadata', {});
+C.AllMetadata = {}
 
-    // console.log(readAsBuffer)
-    // for(n in tax_attrs){
-    //     console.log(tax_attrs[n])
-    // }
-    // for(n in meta_attrs){
-    //     console.log("\n",n)
-    //     console.log(meta_attrs[n].toString())
-    // }
-    // console.log('g88',h5lt.get_num_attrs(group88.id))
-    // console.log('group88',group88['latitude'] )
-    ////////// END hdf5 Code ///////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////
-}else{
-    // If we're here we don't have HDF5
-    console.log('Not Running HDF5')
+//var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
+let meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
 
-    HDF5_MDATA  = ''
-    HDF5_TAXDATA = ''
-    //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
-    var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
-    AllTaxCounts = {}
-
-
-    try {
-        AllMetadata        = require(meta_file);
-    }
-    catch (e) {
-      console.log(e);
-      AllMetadata = {}
-    }
-    console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
+try {
+   C.AllMetadata        = require(meta_file);
 }
+catch (e) {
+   console.log(e);
+   C.AllMetadata = {}
+}
+console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
+
 
 try{
-    var sizeof = require('object-sizeof');
+    let sizeof = require('object-sizeof');
 }catch(e){
     console.log(e);
 }
 //see file models/silva_taxonomy.js
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
-  if (err)
-    throw err; // or return an error message, or something
-  else
-  {
-    //console.log("AAA all_silva_taxonomy from app = " + JSON.stringify(results));
+    if (err)
+        throw err; // or return an error message, or something
+    else
+    {
+        //console.log("AAA all_silva_taxonomy from app = " + JSON.stringify(results));
 
-    //TAXCOUNTS = JSON.parse(taxcounts);
-    //console.log('TAXCOUNTS2 '+JSON.stringify(TAXCOUNTS));
-    // var small_rows = [ {"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":33,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":52,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":58,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":2,"order_id":7,"family_id":8,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":73,"family_id":138,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":6,"genus_id":1,"species_id":1,"strain_id":1}];
-    // var new_taxonomy = new CustomTaxa(small_rows);
-    // uncomment when we want all data:
-    //SEE require('./routes/helpers/custom_taxa_class');
-    new_taxonomy = new CustomTaxa(results);
-    try{
-        console.log('SIZE (silva-taxonomy object):',sizeof(new_taxonomy));
-    }catch(e){
-        console.log('Could not get sizeof(new_taxonomy) in app.js; CONNECTION Problem')
+        //TAXCOUNTS = JSON.parse(taxcounts);
+        //console.log('TAXCOUNTS2 '+JSON.stringify(TAXCOUNTS));
+        // var small_rows = [ {"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":33,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":52,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":58,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":2,"order_id":7,"family_id":8,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":73,"family_id":138,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":6,"genus_id":1,"species_id":1,"strain_id":1}];
+        // var new_taxonomy = new CustomTaxa(small_rows);
+        // uncomment when we want all data:
+        //SEE require('./routes/helpers/custom_taxa_class');
+        C.new_taxonomy = new CustomTaxa(results);
+        try{
+            console.log('SIZE (silva-taxonomy object):',sizeof(C.new_taxonomy));
+        }catch(e){
+            console.log('Could not get sizeof(constants.new_taxonomy) in app.js; CONNECTION Problem')
+        }
+        // uncomment to print out the object:
+        //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+        //
+        /// CREATE CUSTOM TAXONOMY TREE:  NOT NEEDED if using dhtmlx tree
+        //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+        //new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+        //new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+        //
+        //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
+        //for(n in new_taxonomy.taxa_tree_dict){
+        //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
+        //}
+        //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
+        //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+        //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
+
+        //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
+        //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["2357955_family"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["2357955_family"]));
+        //console.log(new_taxonomy.taxa_tree_dict_map_by_rank['domain'])
+        //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
+        //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
+        //console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"] = ' + JSON.stringify(C.new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"]));
+        //console.log('taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"]));
+        //console.log('taxa_tree_dict_map_by_db_id_n_rank["3927_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3927_domain"]));
+
+        //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+        //console.log(PROJECT_INFORMATION_BY_PID)
+
+        //console.log(MD_PRIMER_SUITE[34])
+        //console.log(MD_SEQUENCING_PLATFORM)
+
+        //console.log(AllMetadata[88])
+        //var mode = 0777 & ~process.umask();
+        //console.log('mode',mode)
+        console.log('process.umask',process.umask())
+        //process.umask(022)
+        //console.log('process.umask',process.umask(0))
     }
-    // uncomment to print out the object:
-    //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-    //
-    /// CREATE CUSTOM TAXONOMY TREE:  NOT NEEDED if using dhtmlx tree
-    //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
-    //new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
-    //new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
-    //
-    //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
-    //for(n in new_taxonomy.taxa_tree_dict){
-    //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
-    //}
-    //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
-    //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
-
-    //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
-    //console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["2357955_family"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["2357955_family"]));
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_rank['domain'])
-    //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
-    //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
-    //console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"]));
-    //console.log('taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Bacteria_domain"]));
-    //console.log('taxa_tree_dict_map_by_db_id_n_rank["3927_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3927_domain"]));
-
-    //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    //console.log(PROJECT_INFORMATION_BY_PID)
-    
-    //console.log(MD_PRIMER_SUITE[34])
-    //console.log(MD_SEQUENCING_PLATFORM)
-    
-    //console.log(AllMetadata[88])
-		//var mode = 0777 & ~process.umask();
-		//console.log('mode',mode)
-		console.log('process.umask',process.umask())
-		//process.umask(022)
-		//console.log('process.umask',process.umask(0))
-  }
 });
 // THESE SHOULDN'T BE LOADED UNTILL NEEDED
 all_rdp_taxonomy.get_all_taxa(function(err, results) {
-  if (err)
-    console.log(err); // or return an error message, or something
-  else
-  {
-    new_rdp_taxonomy = new CustomTaxa(results);
-    if(typeof new_rdp_taxonomy === 'object'){
-        try{
-            console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
-        }catch(e){
-            new_rdp_taxonomy = {};
-            console.log('Could not get sizeof(new_rdp_taxonomy) in app.js')
+    if (err)
+        console.log(err); // or return an error message, or something
+    else
+    {
+        C.new_rdp_taxonomy = new CustomTaxa(results);
+        if(typeof C.new_rdp_taxonomy === 'object'){
+            try{
+                console.log('SIZE (rdp-taxonomy object):',sizeof(C.new_rdp_taxonomy));
+            }catch(e){
+                C.new_rdp_taxonomy = {};
+                console.log('Could not get sizeof(new_rdp_taxonomy) in app.js')
+            }
         }
     }
-  }
 });
 all_generic_taxonomy.get_all_taxa(function(err, results) {
-  if (err)
-    console.log(err); // or return an error message, or something
-  else
-  {
-    new_generic_taxonomy = new CustomTaxa(results);
-    if(typeof new_generic_taxonomy === 'object'){
-        try{
-            console.log('SIZE (generic-taxonomy object):',sizeof(new_generic_taxonomy));
-        }catch(e){
-            new_generic_taxonomy = {};
-            console.log('Could not get sizeof(new_generic_taxonomy) in app.js')
+    if (err)
+        console.log(err); // or return an error message, or something
+    else
+    {
+        C.new_generic_taxonomy = new CustomTaxa(results);
+        if(typeof C.new_generic_taxonomy === 'object'){
+            try{
+                console.log('SIZE (generic-taxonomy object):',sizeof(C.new_generic_taxonomy));
+            }catch(e){
+                C.new_generic_taxonomy = {};
+                console.log('Could not get sizeof(new_generic_taxonomy) in app.js')
+            }
         }
     }
-  }
 });
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();

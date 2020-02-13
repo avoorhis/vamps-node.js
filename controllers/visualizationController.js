@@ -1,9 +1,7 @@
-const COMMON = require(app_root + '/routes/visuals/routes_common');
+const COMMON  = require(app_root + '/routes/visuals/routes_common');
 const helpers = require(app_root + '/routes/helpers/helpers');
-// const path = require('path');
-const C = require(app_root + '/public/constants');
-// const fs   = require('fs-extra');
-const url  = require('url');
+const C       = require(app_root + '/public/constants');
+const url     = require('url');
 
 class viewSelectionGetData {
 
@@ -78,10 +76,10 @@ class viewSelectionGetData {
       this.dataset_ids = this.new_dataset_ids;
       this.req.session.chosen_id_order = this.visual_post_items.ds_order = this.dataset_ids;
     }
-    else if ( (this.req.body).hasOwnProperty('project') && PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(this.req.body.project) ){
+    else if ( (this.req.body).hasOwnProperty('project') && C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(this.req.body.project) ){
       console.log('Found api project ',this.req.body.project);
-      let pid = PROJECT_INFORMATION_BY_PNAME[this.req.body.project].pid;
-      this.new_dataset_ids = helpers.screen_dids_for_permissions(this.req, DATASET_IDS_BY_PID[pid.toString()]);
+      let pid = C.PROJECT_INFORMATION_BY_PNAME[this.req.body.project].pid;
+      this.new_dataset_ids = helpers.screen_dids_for_permissions(this.req, C.DATASET_IDS_BY_PID[pid.toString()]);
       this.visual_post_items.ds_order = this.new_dataset_ids;
       // console.log(PROJECT_INFORMATION_BY_PNAME[this.req.body.project]);
       // console.log(this.visual_post_items.ds_order);
@@ -172,7 +170,7 @@ class viewSelectionFactory {
 
 class visualizationFilters {
   constructor() {
-    this.md_env_package = MD_ENV_PACKAGE;
+    this.md_env_package = C.MD_ENV_PACKAGE;
   }
 
   check_if_empty_val(val) {
@@ -221,11 +219,11 @@ class visualizationFilters {
       //node = PROJECT_INFORMATION_BY_PID[pid];
       //console.log(obj[i])
       let pid = obj[i].pid;
-      let node = PROJECT_INFORMATION_BY_PID[pid];
+      let node = C.PROJECT_INFORMATION_BY_PID[pid];
       //console.log(node)
       let is_visible = this.test_project_visibility_permissions(req, node);
       if (is_visible) {
-        let not_metagenomic = parseInt(PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
+        let not_metagenomic = parseInt(C.PROJECT_INFORMATION_BY_PID[pid].metagenomic) === 0;
         if (not_metagenomic){
           new_project_tree_pids.push(pid);
         }
@@ -281,7 +279,7 @@ class visualizationFilters {
     }
     else {
       NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
-        const current_pr_env_package_id = parseInt(PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
+        const current_pr_env_package_id = parseInt(C.PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
         return filter_obj.env.includes(current_pr_env_package_id);
       });
     }
@@ -335,7 +333,7 @@ class visualizationFilters {
       NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
     } else {
       //console.log('Filtering for PRIVACY')
-      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4.filter(prj => PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
+      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4.filter(prj => C.PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
     }
     return NewPROJECT_TREE_OBJ5;
   }
@@ -348,8 +346,8 @@ class visualizationFilters {
     }
     else {
       res_NewPROJECT_TREE_OBJ = current_NewPROJECT_TREE_OBJ.filter(prj => {
-        let dids = DATASET_IDS_BY_PID[prj.pid];
-        return dids.some(did => (did in AllMetadata && AllMetadata[did].hasOwnProperty(filter_obj_metadata)));
+        let dids = C.DATASET_IDS_BY_PID[prj.pid];
+        return dids.some(did => (did in C.AllMetadata && C.AllMetadata[did].hasOwnProperty(filter_obj_metadata)));
       });
     }
     return res_NewPROJECT_TREE_OBJ;
@@ -427,7 +425,7 @@ class visualizationCommonVariables {
   }
 
   get_current_dataset_name_by_did(selected_did) {
-    return DATASET_NAME_BY_DID[selected_did];
+    return C.DATASET_NAME_BY_DID[selected_did];
   }
 
   get_current_project_dataset_obj_by_did() {
@@ -439,15 +437,15 @@ class visualizationCommonVariables {
   }
 
   get_current_pr_dataset_name_by_did(selected_did) {
-    return PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[selected_did]].project + '--' + DATASET_NAME_BY_DID[selected_did];
+    return C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[selected_did]].project + '--' + C.DATASET_NAME_BY_DID[selected_did];
   }
 
   get_current_project_dataset_obj_by_name() {
     let current_project_dataset_obj = {};
     for (const did of this.chosen_id_order){
-      const pid = PROJECT_ID_BY_DID[did];
-      const project_name = PROJECT_INFORMATION_BY_PID[pid].project;
-      const dataset_name = DATASET_NAME_BY_DID[did];
+      const pid = C.PROJECT_ID_BY_DID[did];
+      const project_name = C.PROJECT_INFORMATION_BY_PID[pid].project;
+      const dataset_name = C.DATASET_NAME_BY_DID[did];
       const project_dataset_name = project_name + '--' + dataset_name;
       current_project_dataset_obj[project_dataset_name] = did;
     }

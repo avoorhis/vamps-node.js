@@ -1,10 +1,11 @@
 const express = require('express');
 var router = express.Router();
 const passport = require('passport');
-const helpers = require('./helpers/helpers');
+const helpers = require(app_root +'/routes/helpers/helpers');
 const fs   = require('fs-extra');
 const path  = require('path');
 const spawn = require('child_process').spawn;
+const C		  = require(app_root + '/public/constants');
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, (req, res) => {
@@ -36,8 +37,8 @@ router.get('/names', helpers.isLoggedIn, (req, res) => {
 //
 //
 router.get('/blast', helpers.isLoggedIn, (req, res) => {
-    var blast_dbs = req.CONSTS.blast_dbs;
-    //var misc_blast_dbs_test = path.join('public','blast', req.CONSTS.misc_blast_dbs+'.nhr')
+    var blast_dbs = C.blast_dbs;
+    //var misc_blast_dbs_test = path.join('public','blast', C.misc_blast_dbs+'.nhr')
     // check if blast database exists:
     // separate dbs
     var db_collector = []
@@ -62,7 +63,7 @@ router.get('/blast', helpers.isLoggedIn, (req, res) => {
 //
 router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
     var phyla = []
-    var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
+    var ranks_without_domain = C.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
     var query = connection.query(qSelect, (err, rows, fields) => {
         
@@ -74,7 +75,7 @@ router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
         res.render('search/geo_by_tax', { title: 'VAMPS:Search',
             user  :     req.user,hostname: req.CONFIG.hostname,
             ranks :   JSON.stringify(ranks_without_domain),
-            //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+            //domains : JSON.stringify(C.DOMAINS.domains),
             phyla :  JSON.stringify(phyla),
         
         });
@@ -106,16 +107,16 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, (req, res) => {
     
     for(n in dataset_ids){
         var did = dataset_ids[n]
-        var project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
-        var pid     = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].pid
-        var ds      = DATASET_NAME_BY_DID[did]
+        var project = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].project
+        var pid     = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].pid
+        var ds      = C.DATASET_NAME_BY_DID[did]
         var pjds = project +'--'+ds
         if(did in DatasetsWithLatLong){
             latlon_datasets.points[did] = {}
             latlon_datasets.points[did].proj_dset = pjds
             latlon_datasets.points[did].pid = pid
-            latlon_datasets.points[did].latitude = DatasetsWithLatLong[did].latitude
-            latlon_datasets.points[did].longitude = DatasetsWithLatLong[did].longitude 
+            latlon_datasets.points[did].latitude = C.DatasetsWithLatLong[did].latitude
+            latlon_datasets.points[did].longitude = C.DatasetsWithLatLong[did].longitude
             latlon_datasets.points[did].tax = '' 
         }
     }
@@ -153,7 +154,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
     function finish_no_data(){
         
         var phyla = []
-        var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
+        var ranks_without_domain = C.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
         var query = connection.query(qSelect, (err, rows, fields) => {
         
@@ -165,7 +166,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
             res.render('search/geo_by_tax', { title: 'VAMPS:Search',
                 user  :     req.user,hostname: req.CONFIG.hostname,
                 ranks :   JSON.stringify(ranks_without_domain),
-                //domains : JSON.stringify(req.CONSTS.DOMAINS.domains),
+                //domains : JSON.stringify(C.DOMAINS.domains),
                 phyla :  JSON.stringify(phyla),
         
             });
@@ -275,8 +276,8 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, (req, res) => {
     var result = []
     if(rank == 'domain'){
         
-        for(i in req.CONSTS.DOMAINS.domains){
-            result.push(req.CONSTS.DOMAINS.domains[i].name)
+        for(i in C.DOMAINS.domains){
+            result.push(C.DOMAINS.domains[i].name)
         }
         
         finish(result)
@@ -329,16 +330,16 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
     dids_in_range.boundry.lon_max = lonmax
     // validate input numbers -- should be client side
 
-    for(did in DatasetsWithLatLong){
-      obj = DatasetsWithLatLong[did]
+    for(did in C.DatasetsWithLatLong){
+      obj = C.DatasetsWithLatLong[did]
       if(  +obj.latitude  >= +dids_in_range.boundry.lat_min
         && +obj.latitude  <= +dids_in_range.boundry.lat_max
         && +obj.longitude >= +dids_in_range.boundry.lon_min
         && +obj.longitude <= +dids_in_range.boundry.lon_max)
       {
         dids_in_range.points[did] = obj
-        dids_in_range.points[did].project = PROJECT_INFORMATION_BY_PID[obj.pid].project
-        dids_in_range.points[did].dataset = DATASET_NAME_BY_DID[did]
+        dids_in_range.points[did].project = C.PROJECT_INFORMATION_BY_PID[obj.pid].project
+        dids_in_range.points[did].dataset = C.DATASET_NAME_BY_DID[did]
       }
     }
 
@@ -351,18 +352,18 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
 //
 // router.get('/geo_by_meta_values', helpers.isLoggedIn, (req, res) => {
 //     // var phyla = []
-// //     var ranks_without_domain = req.CONSTS.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
+// //     var ranks_without_domain = C.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
 // //     var qSelect = "select phylum from phylum order by phylum"
 //        console.log('in search/geo_by_meta_values');
-//        var if_in = req.CONSTS.REQ_METADATA_FIELDS_wIDs
+//        var if_in = C.REQ_METADATA_FIELDS_wIDs
 //        var temp =[]
-//        for(i in AllMetadataNames){
+//        for(i in C.AllMetadataNames){
 //         
-//         if(req.CONSTS.REQ_METADATA_FIELDS_wIDs.indexOf(AllMetadataNames[i].slice(0,-3)) == -1){
-//             temp.push(AllMetadataNames[i])            
+//         if(C.REQ_METADATA_FIELDS_wIDs.indexOf(C.AllMetadataNames[i].slice(0,-3)) == -1){
+//             temp.push(C.AllMetadataNames[i])
 //         }else{
-//             temp.push(AllMetadataNames[i].slice(0,-3))
-//             console.log(AllMetadataNames[i].slice(0,-3))
+//             temp.push(C.AllMetadataNames[i].slice(0,-3))
+//             console.log(C.AllMetadataNames[i].slice(0,-3))
 //         }
 //        }
 //        
@@ -385,7 +386,7 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
 //     console.log(req.body);
 //     console.log(PROJECT_INFORMATION_BY_PID[44]);  // SPO
 //     console.log(MD_CUSTOM_UNITS[44]);
-//     console.log(AllMetadata[44]);
+//     console.log(C.AllMetadata[44]);
 //     console.log('<<--req.body');
 //     var search_name = req.body.name
 //     if(search_name == 'domain'){
@@ -436,9 +437,9 @@ function get_metadata_values(){
      MD_items.metadata_fields_array = []
      MD_items.metadata_fields       = {}
       
-     for (var did in AllMetadata){
-        for (var name in AllMetadata[did]){
-            val = AllMetadata[did][name];
+     for (var did in C.AllMetadata){
+        for (var name in C.AllMetadata[did]){
+            val = C.AllMetadata[did][name];
             if(name in tmp_metadata_fields){
               tmp_metadata_fields[name].push(val);
             }else{
@@ -496,7 +497,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
 	qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
 	add_where = ' WHERE ';
 	for(var n in tax_items){
-		rank = req.CONSTS.RANKS[n];
+		rank = C.RANKS[n];
 		qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n';
 		add_where += '`'+rank+"`='"+tax_items[n]+"' and " ;
 	}
@@ -513,10 +514,10 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
       for(var n in rows){
         did = rows[n]['did'];
         try{
-          pid = PROJECT_ID_BY_DID[did];
-          pname = PROJECT_INFORMATION_BY_PID[pid].project;
+          pid = C.PROJECT_ID_BY_DID[did];
+          pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
           datasets.ids.push(did);
-          datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did]);
+          datasets.names.push(pname+'--'+C.DATASET_NAME_BY_DID[did]);
         }catch(e){
           console.log('Skipping did:'+did+'; No project found')
         }
@@ -640,8 +641,8 @@ router.get('/gethint/:hint', helpers.isLoggedIn, (req, res) => {
 	if (q !== "") {
 	    q = q.toLowerCase();
 	    len=q.length;
-		for(var n in AllMetadataNames){
-			var name = AllMetadataNames[n];
+		for(var n in C.AllMetadataNames){
+			var name = C.AllMetadataNames[n];
 
 				if(name.substring(0,len) === q){
                 //console.log('name= '+name);
@@ -666,7 +667,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, (req, res) => {
 	console.log('search:in livesearch taxonomy1');
 	var q = req.params.q.toLowerCase();
 	var hint = '';
-	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
+	var obj = C.new_taxonomy.taxa_tree_dict_map_by_rank;
 	var taxon;
 
 	if(q !== ''){
@@ -731,7 +732,7 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, (req, res) => {
   console.log('search:in livesearch user');
   var q = req.params.q.toLowerCase();
   var hint = '';
-  var obj = ALL_USERS_BY_UID;
+  var obj = C.ALL_USERS_BY_UID;
   var taxon;
   if(q !== ''){
     for(var uid in obj){
@@ -764,13 +765,13 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, (req, res) => {
   var d_obj = {}
   if(q !== ''){
 
-    ALL_DATASETS.projects.forEach( prj => {
+      C.ALL_DATASETS.projects.forEach( prj => {
 
       pid = prj.pid
 
       pname = prj.name;
-      ptitle = PROJECT_INFORMATION_BY_PID[pid].title;
-      pdesc  = PROJECT_INFORMATION_BY_PID[pid].description;
+      ptitle = C.PROJECT_INFORMATION_BY_PID[pid].title;
+      pdesc  = C.PROJECT_INFORMATION_BY_PID[pid].description;
       datasets = prj.datasets;
 
       if(      pname.toLowerCase().indexOf(q) != -1
@@ -832,14 +833,14 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, (req, res) =
 	console.log('search:in livesearch_taxonomy2');
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
-    var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
-	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
+    var rank_number = C.RANKS.indexOf(selected_rank);
+	var this_item = C.new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
 	var item = this_item;
 
   // goes up the tree to get taxon parents:
   while(item.parent_id !== 0){
-		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
+		item  = C.new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
 		tax_str = item.taxon +';'+tax_str;
 		//console.log(item);
 	}
@@ -879,11 +880,11 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
     }
     var db_collector = []
     var db_collector_short = []
-    for(n in req.CONSTS.blast_dbs){
-        if(req.CONSTS.blast_dbs[n] in req.body){
-            var db_path = path.join(req.CONFIG.PATH_TO_BLAST_DBS, req.CONSTS.blast_dbs[n], req.CONSTS.blast_dbs[n])
+    for(n in C.blast_dbs){
+        if(C.blast_dbs[n] in req.body){
+            var db_path = path.join(req.CONFIG.PATH_TO_BLAST_DBS, C.blast_dbs[n], C.blast_dbs[n])
             db_collector.push(db_path)
-            db_collector_short.push(req.CONSTS.blast_dbs[n])
+            db_collector_short.push(C.blast_dbs[n])
         }
     }
     if(db_collector.length == 0){
@@ -1053,18 +1054,18 @@ function get_search_datasets(user, search){
     //var datasets_plus = [];
     var datasets1 = [];
     //var tmp_metadata = {};
-   //console.log(AllMetadata)
+   //console.log(C.AllMetadata)
 
-    for (var did in AllMetadata){
+    for (var did in C.AllMetadata){
       // search only if did allowed by permissions
-      var pid = PROJECT_ID_BY_DID[did];
+      var pid = C.PROJECT_ID_BY_DID[did];
 
       try{
 
-          if(user.security_level <= 10 || PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
-            for (var mdname in AllMetadata[did]){
+          if(user.security_level <= 10 || C.PROJECT_INFORMATION_BY_PID[pid].permissions.length === 0 || C.PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(user.user_id) !=-1 ){
+            for (var mdname in C.AllMetadata[did]){
               if(mdname === search['metadata-item']){
-                mdvalue = AllMetadata[did][mdname];
+                mdvalue = C.AllMetadata[did][mdname];
                 get_search_datasets_did(datasets1, search, did, mdname, mdvalue)
                 //console.log('res')
                 //console.log(res)
@@ -1154,21 +1155,14 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
       var ds_plus = [];
       for(var i in ds){
         var did = ds[i];
-        var dname = DATASET_NAME_BY_DID[did];
-        var pid = PROJECT_ID_BY_DID[did];
-        var pname = PROJECT_INFORMATION_BY_PID[pid].project;
+        var dname = C.DATASET_NAME_BY_DID[did];
+        var pid = C.PROJECT_ID_BY_DID[did];
+        var pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
         //var ds_req = did+'--'+pname+'--'+dname;
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
         }else{
-          if(HDF5_MDATA == ''){
-            ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:AllMetadata[did][search["metadata-item"]] });
-          }else{
-            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-            mdgroup.refresh()
-            ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:mdgroup[search["metadata-item"]] });
-          }
-
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:C.AllMetadata[did][search["metadata-item"]] });
         }
       }
       return ds_plus;

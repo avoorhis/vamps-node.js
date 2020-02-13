@@ -204,7 +204,9 @@ module.exports.elapsed_time = note => {
 
 // todo: use in file instead of those in the class
 module.exports.check_if_rank = (field_name) => {
+
   let ranks = C.RANKS;
+
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
   return ranks.includes(field_name);
 };
@@ -317,10 +319,10 @@ module.exports.assignment_finish_request = (res, rows1, rows2, status_params) =>
     if (err)
       throw err; // or return an error message, or something
     else
-      new_taxonomy = new CustomTaxa(results);
+      C.new_taxonomy = new CustomTaxa(results);
     //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
   });
-  console.log(' UPDATED new_taxonomy');
+  console.log(' UPDATED C.new_taxonomy');
 };
 
 module.exports.reverse                   = str => {
@@ -351,7 +353,7 @@ module.exports.write_metadata_to_files = did => {
     if (err) throw err;
     //Do your processing, MD5, send a satellite to the moon, etc.
     //console.log('predata',data)
-    data.metadata = AllMetadata[did];
+    data.metadata = C.AllMetadata[did];
     //console.log('postdata',data)
     fs.writeFile(dataset_file, data, err => {
       if (err) throw err;
@@ -462,12 +464,13 @@ module.exports.get_portal_projects = (req, portal) => {
   let projects = [];
   let cnsts_basis = C.PORTALS[portal];
 
-  ALL_DATASETS.projects.forEach( prj => {
-    let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+  C.ALL_DATASETS.projects.forEach( prj => {
+    let pinfo = C.PROJECT_INFORMATION_BY_PID[prj.pid];
     let split = prj.name.split('_');
 
     if (cnsts_basis.projects.includes(prj.name)) {
       projects.push(pinfo);
+
     }
     if (cnsts_basis.prefixes.includes(split[0])) {
       projects.push(pinfo);
@@ -484,8 +487,8 @@ module.exports.get_portal_projects = (req, portal) => {
 
 // module.exports.get_public_projects  = () => {
 //   let projects = [];
-//   ALL_DATASETS.projects.forEach( (prj) => {
-//     let pinfo = PROJECT_INFORMATION_BY_PID[prj.pid];
+//   C.ALL_DATASETS.projects.forEach( (prj) => {
+//     let pinfo = C.PROJECT_INFORMATION_BY_PID[prj.pid];
 //     projects.push(pinfo);
 //   });
 //   return projects;
@@ -544,8 +547,8 @@ module.exports.make_color_seq = seq => {
 //   console.log('Creating new PROJECT_INFORMATION_BY_PID[pid]');
 //   var ca                                              = module.exports.convertJSDateToString(rows[i].created_at)
 //   var ua                                              = module.exports.convertJSDateToString(rows[i].updated_at)
-//   PROJECT_INFORMATION_BY_PID[pid]                     = {};
-//   PROJECT_INFORMATION_BY_PID[pid]                     = {
+//   C.PROJECT_INFORMATION_BY_PID[pid]                     = {};
+//   C.PROJECT_INFORMATION_BY_PID[pid]                     = {
 //     "last": user_obj.last_name,
 //     "first": user_obj.first_name,
 //     "username": user_obj.username,
@@ -1034,11 +1037,11 @@ module.exports.run_external_command             = script_path => {
 };
 
 function get_geo_loc_name(id) {
-  if (MD_ENV_CNTRY.hasOwnProperty(id)) {
-    return MD_ENV_CNTRY[id];
+  if (C.MD_ENV_CNTRY.hasOwnProperty(id)) {
+    return C.MD_ENV_CNTRY[id];
   }
   else {
-    return MD_ENV_LZC[id];
+    return C.MD_ENV_LZC[id];
   }
 }
 
@@ -1049,19 +1052,19 @@ module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
   switch (mdname) {
     case 'env_package':
       idname = 'env_package_id';
-      value  = MD_ENV_PACKAGE[selection_obj[idname]];
+      value  = C.MD_ENV_PACKAGE[selection_obj[idname]];
       break;
     case 'env_biome':
       idname = 'env_biome_id';
-      value  = MD_ENV_ENVO[selection_obj[idname]];
+      value  = C.MD_ENV_ENVO[selection_obj[idname]];
       break;
     case 'env_feature':
       idname = 'env_feature_id';
-      value  = MD_ENV_ENVO[selection_obj[idname]];
+      value  = C.MD_ENV_ENVO[selection_obj[idname]];
       break;
     case 'env_material':
       idname = 'env_material_id';
-      value  = MD_ENV_ENVO[selection_obj[idname]];
+      value  = C.MD_ENV_ENVO[selection_obj[idname]];
       break;
     case 'geo_loc_name':
       idname = 'geo_loc_name_id';
@@ -1069,31 +1072,31 @@ module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
       break;
     case 'sequencing_platform':
       idname = 'sequencing_platform_id';
-      value  = MD_SEQUENCING_PLATFORM[selection_obj[idname]];
+      value  = C.MD_SEQUENCING_PLATFORM[selection_obj[idname]];
       break;
     case 'dna_region':
       idname = 'dna_region_id';
-      value  = MD_DNA_REGION[selection_obj[idname]];
+      value  = C.MD_DNA_REGION[selection_obj[idname]];
       break;
     case 'target_gene':
       idname = 'target_gene_id';
-      value  = MD_TARGET_GENE[selection_obj[idname]];
+      value  = C.MD_TARGET_GENE[selection_obj[idname]];
       break;
     case 'domain':
       idname = 'domain_id';
-      value  = MD_DOMAIN[selection_obj[idname]];
+      value  = C.MD_DOMAIN[selection_obj[idname]];
       break;
     case 'adapter_sequence':
       idname = 'adapter_sequence_id';
-      value  = MD_ADAPTER_SEQUENCE[selection_obj[idname]];
+      value  = C.MD_ADAPTER_SEQUENCE[selection_obj[idname]];
       break;
     case 'illumina_index':
       idname = 'illumina_index_id';
-      value  = MD_ILLUMINA_INDEX[selection_obj[idname]];
+      value  = C.MD_ILLUMINA_INDEX[selection_obj[idname]];
       break;
     case 'run':
       idname = 'run_id';
-      value  = MD_RUN[selection_obj[idname]];
+      value  = C.MD_RUN[selection_obj[idname]];
       break;
     case 'primer_suite':
       idname = 'primer_suite_id';
@@ -1112,8 +1115,8 @@ module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
 };
 
 function get_current_primer_suite(id) {
-  if (MD_PRIMER_SUITE.hasOwnProperty(id) && MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
-    return MD_PRIMER_SUITE[id].name;
+  if (C.MD_PRIMER_SUITE.hasOwnProperty(id) && C.MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
+    return C.MD_PRIMER_SUITE[id].name;
   }
   else {
     return 'unknown';
@@ -1122,7 +1125,7 @@ function get_current_primer_suite(id) {
 
 function get_current_primers(id) {
   let val = [];
-  let current_primers = MD_PRIMER_SUITE[id].primer;
+  let current_primers = C.MD_PRIMER_SUITE[id].primer;
   for (let primer of current_primers) {
     val.push(primer.sequence);
   }
@@ -1135,15 +1138,15 @@ module.exports.required_metadata_names_from_ids = (selection_obj, name_id) => {
   switch(name_id) {
     case 'env_package_id':
       real_name = 'env_package';
-      value     = MD_ENV_PACKAGE[id];
+      value     = C.MD_ENV_PACKAGE[id];
       break;
     case 'target_gene_id':
       real_name = 'target_gene';
-      value     = MD_TARGET_GENE[id];
+      value     = C.MD_TARGET_GENE[id];
       break;
     case 'domain_id':
       real_name = 'domain';
-      value     = MD_DOMAIN[id];
+      value     = C.MD_DOMAIN[id];
       break;
     case 'geo_loc_name_id':
       real_name = 'geo_loc_name';
@@ -1151,35 +1154,35 @@ module.exports.required_metadata_names_from_ids = (selection_obj, name_id) => {
       break;
     case 'sequencing_platform_id':
       real_name = 'sequencing_platform';
-      value     = MD_SEQUENCING_PLATFORM[id];
+      value     = C.MD_SEQUENCING_PLATFORM[id];
       break;
     case 'dna_region_id':
       real_name = 'dna_region';
-      value     = MD_DNA_REGION[id];
+      value     = C.MD_DNA_REGION[id];
       break;
     case 'env_material_id':
       real_name = 'env_material';
-      value     = MD_ENV_ENVO[id];
+      value     = C.MD_ENV_ENVO[id];
       break;
     case 'env_biome_id':
       real_name = 'env_biome';
-      value     = MD_ENV_ENVO[id];
+      value     = C.MD_ENV_ENVO[id];
       break;
     case 'env_feature_id':
       real_name = 'env_feature';
-      value     = MD_ENV_ENVO[id];
+      value     = C.MD_ENV_ENVO[id];
       break;
     case 'adapter_sequence_id':
       real_name = 'adapter_sequence';
-      value     = MD_ADAPTER_SEQUENCE[id];
+      value     = C.MD_ADAPTER_SEQUENCE[id];
       break;
     case 'illumina_index_id':
       real_name = 'illumina_index';
-      value     = MD_ILLUMINA_INDEX[id];
+      value     = C.MD_ILLUMINA_INDEX[id];
       break;
     case 'run_id':
       real_name = 'run';
-      value     = MD_RUN[id];
+      value     = C.MD_RUN[id];
       break;
     case 'primer_suite_id':
       real_name = 'primer_suite';
@@ -1204,7 +1207,7 @@ module.exports.get_metadata_obj_from_dids = dids => {
   let mdobj;
   for (let n in dids) {
     metadata[dids[n]] = {};
-    mdobj             = AllMetadata[dids[n].toString()];
+    mdobj             = C.AllMetadata[dids[n].toString()];
     for (let key in mdobj) {
       md = module.exports.required_metadata_names_from_ids(mdobj, key);
       metadata[dids[n]][md.name] = md.value;
@@ -1240,8 +1243,8 @@ module.exports.screen_dids_for_permissions = (req, dids) => {
   // permissions are in PROJECT_INFORMATION_BY_PID
   var new_did_list = [];
   for (var i in dids) {
-    if (PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && PROJECT_INFORMATION_BY_PID.hasOwnProperty(PROJECT_ID_BY_DID[dids[i]])) {
-      pinfo = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[dids[i]]];
+    if (C.PROJECT_ID_BY_DID.hasOwnProperty(dids[i]) && C.PROJECT_INFORMATION_BY_PID.hasOwnProperty(C.PROJECT_ID_BY_DID[dids[i]])) {
+      pinfo = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[dids[i]]];
       if (user_has_project_permissions(req, pinfo)) {
         new_did_list.push(parseInt(dids[i]));
       }
@@ -1257,7 +1260,7 @@ module.exports.screen_pids_for_permissions = (req, pids) => {
   // permissions are in PROJECT_INFORMATION_BY_PID
   var new_pid_list = [];
   for (var i in pids) {
-    pinfo = PROJECT_INFORMATION_BY_PID[pids[i]];
+    pinfo = C.PROJECT_INFORMATION_BY_PID[pids[i]];
     if (user_has_project_permissions(req, pinfo)) {
       new_pid_list.push(pids[i]);
     }
@@ -1318,7 +1321,7 @@ module.exports.ensure_dir_exists = (dir) => {
     } // => null
     else {
       //Octal literals with prefix '0' are not allowed. Use '0o' prefix instead
-      fs.chmod(dir, 0777, (err) => {
+      fs.chmod(dir, 0o777, (err) => {
         if (err) {
           console.log(err);
         } // ug+rwx

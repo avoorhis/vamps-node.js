@@ -1,12 +1,13 @@
 const express = require('express');
 var router = express.Router();
 const passport = require('passport');
-const helpers = require('./helpers/helpers');
+const helpers = require(app_root +'/routes/helpers/helpers');
 const fs = require('fs-extra');
 const async = require('async');
 const validator = require('validator');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const C		  = require(app_root + '/public/constants');
 
 new_user = {}
 /* GET User List (index) page. */
@@ -43,25 +44,25 @@ router.post('/login',  passport.authenticate('local-login', {
     }
     
     
-   //  console.log(PROJECT_INFORMATION_BY_PID[283])
+   //  console.log(C.PROJECT_INFORMATION_BY_PID[283])
 //     console.log('USER_GROUPS3')
-//     console.log(USER_GROUPS)
+//     console.log(C.USER_GROUPS)
 //     console.log('ALL_USERS_BY_UID')
-//     console.log(ALL_USERS_BY_UID)
-    for(uid in ALL_USERS_BY_UID){
-        if( ALL_USERS_BY_UID[uid].hasOwnProperty('groups') && (ALL_USERS_BY_UID[uid].groups).length > 0){
-            for(i in ALL_USERS_BY_UID[uid].groups){
-                var gp = ALL_USERS_BY_UID[uid].groups[i];
-                pid_list = USER_GROUPS[gp]
+//     console.log(C.ALL_USERS_BY_UID)
+    for(uid in C.ALL_USERS_BY_UID){
+        if( C.ALL_USERS_BY_UID[uid].hasOwnProperty('groups') && (C.ALL_USERS_BY_UID[uid].groups).length > 0){
+            for(i in C.ALL_USERS_BY_UID[uid].groups){
+                var gp = C.ALL_USERS_BY_UID[uid].groups[i];
+                pid_list = C.USER_GROUPS[gp]
                 for(j in pid_list){
                     var pid = pid_list[j]
                     
                     //console.log('pushing uid '+uid+' to pid '+pid)
-                    //console.log(PROJECT_INFORMATION_BY_PID[pid].permissions)
+                    //console.log(C.PROJECT_INFORMATION_BY_PID[pid].permissions)
                     //console.log('pushing uid2')
-                    if(PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) && PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
+                    if(C.PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid) && C.PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(parseInt(uid)) == -1){
                         //console.log('2pushing uid '+uid+' to pid '+pid)
-                        PROJECT_INFORMATION_BY_PID[pid].permissions.push(parseInt(uid))
+                        C.PROJECT_INFORMATION_BY_PID[pid].permissions.push(parseInt(uid))
                     }
                     
                     
@@ -210,7 +211,7 @@ router.post('/update_account', helpers.isLoggedIn, (req, res) => {
     console.log('In POST::update_account');
     console.log(req.body)
     
-    //console.log(ALL_USERS_BY_UID[req.body.uid])
+    //console.log(C.ALL_USERS_BY_UID[req.body.uid])
     var inst  = req.body.new_institution
     var email = req.body.new_email
     
@@ -230,7 +231,7 @@ router.post('/update_account', helpers.isLoggedIn, (req, res) => {
         res.redirect('/users/update_account');
         return;
     }
-    if(email == ALL_USERS_BY_UID[req.body.uid].email && inst == ALL_USERS_BY_UID[req.body.uid].institution){
+    if(email == C.ALL_USERS_BY_UID[req.body.uid].email && inst == C.ALL_USERS_BY_UID[req.body.uid].institution){
         console.log('No Update Needed')
         req.flash('success', 'No Update Needed - Exiting');
         res.redirect('/users/update_account');
@@ -243,8 +244,8 @@ router.post('/update_account', helpers.isLoggedIn, (req, res) => {
                 return;
             }else{
                 req.flash('success', 'Update Success');
-                ALL_USERS_BY_UID[req.body.uid].email        = email
-                ALL_USERS_BY_UID[req.body.uid].institution  = inst
+                C.ALL_USERS_BY_UID[req.body.uid].email        = email
+                C.ALL_USERS_BY_UID[req.body.uid].institution  = inst
                 res.redirect('/users/update_account');
             }
         })
@@ -429,10 +430,10 @@ router.post('/reset_password2', (req, res) => {
 router.get('/:id', helpers.isLoggedIn, (req, res) => {
    
    var uid = req.params.id
-   console.log(ALL_USERS_BY_UID[uid]);
+   console.log(C.ALL_USERS_BY_UID[uid]);
    console.log('in indexusers:id')
    //console.log(req.user)
-   if(ALL_USERS_BY_UID[uid] == undefined ){
+   if(C.ALL_USERS_BY_UID[uid] == undefined ){
     res.render('index', {
         title: 'VAMPS:Home',
         user: req.user, 
@@ -450,7 +451,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
                 res.render('users/profile', {
                   title     :'VAMPS:profile',
                   projects  : rows,
-                  user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
+                  user_info : JSON.stringify(C.ALL_USERS_BY_UID[uid]),
                   user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
                 });  
      

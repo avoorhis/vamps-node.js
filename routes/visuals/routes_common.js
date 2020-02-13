@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const extend = require('util')._extend;
-const C = require('../../public/constants');
+const C = require(app_root + '/public/constants');
 const config  = require(app_root + '/config/config');
 
 
@@ -244,7 +244,7 @@ module.exports = {
         console.log('Could not write file: ' + filename + ' Here is the error: ' + err);
       } else {
         console.log("The file (" + filename + ") was saved!");
-        fs.chmod(path.resolve(__dirname, filename), 0664, (error) => {
+        fs.chmod(path.resolve(__dirname, filename), 0o664, (error) => {
             console.log('Changed file permissions');
         });
       }
@@ -289,7 +289,7 @@ module.exports = {
         console.log('Could not write tax file: '+tax_file+' Here is the error: '+err);
       } else {
         console.log("The file ("+tax_file+") was saved!");
-        fs.chmod(path.resolve(__dirname, tax_file), 0664, (error) => {
+        fs.chmod(path.resolve(__dirname, tax_file), 0o664, (error) => {
             console.log('Changed file permissions');
         });
       }
@@ -409,7 +409,7 @@ create_chosen_id_name_order: (dataset_ids) => {
   
   for (var i in dataset_ids){
       var did   = dataset_ids[i];
-      var name = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project+'--'+DATASET_NAME_BY_DID[did]
+      var name = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].project+'--'+C.DATASET_NAME_BY_DID[did]
   	  id_name_order.push({did:did,name:name})
   }
 
@@ -447,8 +447,8 @@ get_metadata_selection: (dataset_ids, type) => {
     for (var i in dataset_ids) {
       var did = dataset_ids[i];
       //console.log('id '+ id)
-      if (did in AllMetadata) {        
-        for (var field in AllMetadata[did]) {
+      if (did in C.AllMetadata) {
+        for (var field in C.AllMetadata[did]) {
 
           //console.log('field_name '+field)
           // keep *_id in metadata file(s) and show name on GUI
@@ -551,7 +551,7 @@ clean_custom_tax: (custom_tax_ids) => {
       node_id = custom_tax_ids[index]
       //console.log('node_id')
       //console.log(node_id)
-      node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+      node = C.new_taxonomy.taxa_tree_dict_map_by_id[node_id]
       //console.log('nodes ',node)
       parent_id = node.parent_id.toString()
       //console.log('parent_id ',parent_id)

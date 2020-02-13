@@ -397,7 +397,7 @@ class TaxaCounts {
     } else if (this.units === 'tax_generic_simple') {
       taxonomy_object = new_generic_taxonomy;
     } else {
-      taxonomy_object = new_taxonomy;
+      taxonomy_object = C.new_taxonomy;
     }
     return taxonomy_object;
   }

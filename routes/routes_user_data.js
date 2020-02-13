@@ -22,7 +22,7 @@ const spawn     = require('child_process').spawn;
 const helpers = require(app_root + '/routes/helpers/helpers');
 const queries = require(app_root + '/routes/queries');
 const config  = require(app_root + '/config/config');
-const CONSTS  = require(app_root + '/public/constants');
+const C       = require(app_root + '/public/constants');
 const COMMON  = require(app_root + '/routes/visuals/routes_common');
 const META    = require('./visuals/routes_visuals_metadata');
 
@@ -145,7 +145,7 @@ router.post('/export_confirm', helpers.isLoggedIn, (req, res) => {
   console.log(req.body);
   //console.log(req.session);
   console.log('req.body: <<--export_confirm');
-  let needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export');
+  let needed_constants = helpers.retrieve_needed_constants(C,'export');
   let id_name_order = COMMON.create_chosen_id_name_order(req.session.chosen_id_order);
   if (   req.body.fasta === undefined
       && req.body.fastaMED === undefined
@@ -219,8 +219,8 @@ router.get('/get_projects_only_tree', helpers.isLoggedIn, (req, res) => {
     var html = '';
 
     html += '<ul>';
-    for (var id in PROJECT_INFORMATION_BY_PID) {
-      name = PROJECT_INFORMATION_BY_PID[id].project;
+    for (var id in C.PROJECT_INFORMATION_BY_PID) {
+      name = C.PROJECT_INFORMATION_BY_PID[id].project;
       html += "<li><input type='checkbox' name='project_ids' value='"+id+"'> "+name+"</li>";
 
     }
@@ -254,14 +254,14 @@ router.post('/export_selection', helpers.isLoggedIn, (req, res) => {
   } else {
    // GLOBAL Variable
   var id_name_order           = COMMON.create_chosen_id_name_order(dataset_ids);
-  var needed_constants = helpers.retrieve_needed_constants(req.CONSTS,'export')
+  var needed_constants = helpers.retrieve_needed_constants(C,'export')
     res.render('user_data/export_selection', {
       title: 'VAMPS: Export Choices',
       referer: 'export_data',
       constants: JSON.stringify(needed_constants),
       chosen_id_name_hash: JSON.stringify(id_name_order),
       selected_rank:'phylum', // initial condition
-      selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
+      selected_domains:JSON.stringify(C.DOMAINS.domains), // initial condition
       user: req.user,
       hostname: req.CONFIG.hostname
     });
@@ -274,12 +274,12 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, (req, res) 
     console.log('in GET import_choices/add_metadata_to_pr');
     //console.log(req.query)
     var project = req.query.project || ''
-    //console.log(PROJECT_INFORMATION_BY_PID)
+    //console.log(C.PROJECT_INFORMATION_BY_PID)
     owned_projects = [] 
     if(! project){
-        for(pid in PROJECT_INFORMATION_BY_PID){
-            if(PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
-                owned_projects.push(PROJECT_INFORMATION_BY_PID[pid].project)
+        for(pid in C.PROJECT_INFORMATION_BY_PID){
+            if(C.PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
+                owned_projects.push(C.PROJECT_INFORMATION_BY_PID[pid].project)
             }
         }
     }
@@ -289,11 +289,11 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, (req, res) 
     //console.log('MD_ENV_ENVO size',Object.keys(MD_ENV_ENVO).length)
     //console.log('MD_ENV_ENVO')
     var loc_array = []
-    for(id in MD_ENV_CNTRY){
-        loc_array.push({"name":MD_ENV_CNTRY[id],"id":id})
+    for(id in C.MD_ENV_CNTRY){
+        loc_array.push({"name":C.MD_ENV_CNTRY[id],"id":id})
     }
-    for(id in MD_ENV_LZC){
-        loc_array.push({"name":MD_ENV_LZC[id],"id":id})
+    for(id in C.MD_ENV_LZC){
+        loc_array.push({"name":C.MD_ENV_LZC[id],"id":id})
     }
     loc_array.sort(function sortByName(a, b) {
                 return helpers.compareStrings_alpha(a.name, b.name);
@@ -303,20 +303,20 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, (req, res) 
       title: 'VAMPS:Add Metadata To Project',
       project: project,
       owned_projects : owned_projects,
-      target_gene : JSON.stringify(MD_TARGET_GENE),
-      domain : JSON.stringify(MD_DOMAIN),
-      feature : JSON.stringify(req.CONSTS.FEATURE_PRIMARY),
-      material : JSON.stringify(req.CONSTS.MATERIAL_PRIMARY),
-      biome : JSON.stringify(req.CONSTS.BIOME_PRIMARY),
+      target_gene : JSON.stringify(C.MD_TARGET_GENE),
+      domain : JSON.stringify(C.MD_DOMAIN),
+      feature : JSON.stringify(C.FEATURE_PRIMARY),
+      material : JSON.stringify(C.MATERIAL_PRIMARY),
+      biome : JSON.stringify(C.BIOME_PRIMARY),
       location : JSON.stringify(loc_array),
-      env_package : JSON.stringify(MD_ENV_PACKAGE),
-      adapter_sequence : JSON.stringify(MD_ADAPTER_SEQUENCE),
-      sequencing_platform : JSON.stringify(MD_SEQUENCING_PLATFORM),
-      dna_region : JSON.stringify(MD_DNA_REGION),
-      run : JSON.stringify(MD_RUN),
-      primer_suite : JSON.stringify(MD_PRIMER_SUITE),
-      illumina_index : JSON.stringify(MD_ILLUMINA_INDEX),
-      req_md_fields : JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS),
+      env_package : JSON.stringify(C.MD_ENV_PACKAGE),
+      adapter_sequence : JSON.stringify(C.MD_ADAPTER_SEQUENCE),
+      sequencing_platform : JSON.stringify(C.MD_SEQUENCING_PLATFORM),
+      dna_region : JSON.stringify(C.MD_DNA_REGION),
+      run : JSON.stringify(C.MD_RUN),
+      primer_suite : JSON.stringify(C.MD_PRIMER_SUITE),
+      illumina_index : JSON.stringify(C.MD_ILLUMINA_INDEX),
+      req_md_fields : JSON.stringify(C.REQ_METADATA_FIELDS),
       user: req.user,
       hostname: req.CONFIG.hostname
     });
@@ -328,36 +328,36 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, (req, res) => {
     console.log(req.body)
     var project = req.body.project;
     //console.log(project)
-    var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+    var pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
     //console.log('pid',pid)
     var metadata = {}   // metadata[dname][mditem] = value
     metadata.by_mditem = {}   // metadata[mditem][dname] = value
-    var dids = DATASET_IDS_BY_PID[pid]
+    var dids = C.DATASET_IDS_BY_PID[pid]
     metadata.did_lookup = {}
     metadata.dname_lookup = {}
     //console.log('dids',dids)
     for(n in dids){
-        dname = DATASET_NAME_BY_DID[dids[n]]
+        dname = C.DATASET_NAME_BY_DID[dids[n]]
         //metadata[dname] = AllMetadata[dids[n]]
         metadata.did_lookup[dname] = dids[n]
         metadata.dname_lookup[dids[n]] = dname
     }
     
-    for(i in req.CONSTS.REQ_METADATA_FIELDS){
-        reqmdname = req.CONSTS.REQ_METADATA_FIELDS[i]    // ie "target_gene"
+    for(i in C.REQ_METADATA_FIELDS){
+        reqmdname = C.REQ_METADATA_FIELDS[i]    // ie "target_gene"
         metadata.by_mditem[reqmdname] = {}
         for(n in dids){
             did = dids[n]
             //console.log('did',did)
-            dname = DATASET_NAME_BY_DID[did]
+            dname = C.DATASET_NAME_BY_DID[did]
             
-            if(AllMetadata.hasOwnProperty(did)){
+            if(C.AllMetadata.hasOwnProperty(did)){
                 //console.log('Got ONE')
-                if(AllMetadata[did].hasOwnProperty(reqmdname+'_id')){
-                    return_obj = helpers.required_metadata_names_from_ids(AllMetadata[did],reqmdname+'_id')
+                if(C.AllMetadata[did].hasOwnProperty(reqmdname+'_id')){
+                    return_obj = helpers.required_metadata_names_from_ids(C.AllMetadata[did],reqmdname+'_id')
                     metadata.by_mditem[return_obj.name][did] = return_obj.value
-                }else if(AllMetadata[did].hasOwnProperty(reqmdname)){
-                    metadata.by_mditem[reqmdname][did] = AllMetadata[did][reqmdname]
+                }else if(C.AllMetadata[did].hasOwnProperty(reqmdname)){
+                    metadata.by_mditem[reqmdname][did] = C.AllMetadata[did][reqmdname]
                 }else{
                     metadata.by_mditem[reqmdname][did] = 'unknown'
                 }
@@ -373,8 +373,8 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, (req, res) => {
     //console.log(Object.keys(metadata.by_mditem))
     for(n in dids){
         did = dids[n]
-        dname = DATASET_NAME_BY_DID[did]
-        for(mdname in AllMetadata[did]){
+        dname = C.DATASET_NAME_BY_DID[did]
+        for(mdname in C.AllMetadata[did]){
             if( ! metadata.by_mditem.hasOwnProperty(mdname) && ! metadata.by_mditem.hasOwnProperty(mdname.substring(0,mdname.length-3))){
                 metadata.by_mditem[mdname] = {}                
             }
@@ -386,9 +386,9 @@ router.post('/retrieve_metadata', helpers.isLoggedIn, (req, res) => {
     for(mdname in metadata.by_mditem){
         for(n in dids){
             did = dids[n]
-            dname = DATASET_NAME_BY_DID[did]
-            if( AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty(mdname) ){
-                metadata.by_mditem[mdname][did] = AllMetadata[did][mdname]
+            dname = C.DATASET_NAME_BY_DID[did]
+            if( C.AllMetadata.hasOwnProperty(did) && C.AllMetadata[did].hasOwnProperty(mdname) ){
+                metadata.by_mditem[mdname][did] = C.AllMetadata[did][mdname]
             }else{
             
             }
@@ -418,20 +418,20 @@ router.post('/save_metadata', helpers.isLoggedIn, (req, res) => {
     GLOBAL_EDIT_METADATA = {}
     GLOBAL_EDIT_METADATA.project = req.body.project
     GLOBAL_EDIT_METADATA.by_mditem = req.body.data
-    var pid = PROJECT_INFORMATION_BY_PNAME[GLOBAL_EDIT_METADATA.project].pid
-    var dids = DATASET_IDS_BY_PID[pid]
+    var pid = C.PROJECT_INFORMATION_BY_PNAME[GLOBAL_EDIT_METADATA.project].pid
+    var dids = C.DATASET_IDS_BY_PID[pid]
     GLOBAL_EDIT_METADATA.did_lookup = {}
     GLOBAL_EDIT_METADATA.dname_lookup = {}
     //console.log('dids',dids)
     for(n in dids){
-        dname = DATASET_NAME_BY_DID[dids[n]]
+        dname = C.DATASET_NAME_BY_DID[dids[n]]
         GLOBAL_EDIT_METADATA.did_lookup[dname] = dids[n]
         GLOBAL_EDIT_METADATA.dname_lookup[dids[n]] = dname
     }
     
     var reqmditems_w_ids = ['env_package','env_biome','env_feature','env_material','target_gene','run','primer_suite','adapter_sequence','dna_region','domain','geo_loc_name','illumina_index','sequencing_platform']
     var reqmditems_wo_ids = ['latitude','longitude','collection_date']
-    var pid = PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
+    var pid = C.PROJECT_INFORMATION_BY_PNAME[req.body.project].pid
     //to_save_metadata = {}
     var obj = {}
     // want obj[did][mditem] = val
@@ -439,7 +439,7 @@ router.post('/save_metadata', helpers.isLoggedIn, (req, res) => {
         obj[dids[i]] = {}
     }
     // validate_metadata()
-    // save to AllMetadata[did]
+    // save to C.AllMetadata[did]
     req_data = {}
     cust_data= {}
     for(i in dids){
@@ -451,11 +451,11 @@ router.post('/save_metadata', helpers.isLoggedIn, (req, res) => {
             val = GLOBAL_EDIT_METADATA.by_mditem[mdname][did]
             ret = save_av_metadata('id', mdname, val )
             obj[did][ret.name] = ret.value
-            if(AllMetadata.hasOwnProperty(did)){
-                AllMetadata[did][ret.name] = ret.value
+            if(C.AllMetadata.hasOwnProperty(did)){
+                C.AllMetadata[did][ret.name] = ret.value
             }else{
-                AllMetadata[did] = {}
-                AllMetadata[did][ret.name] = ret.value
+                C.AllMetadata[did] = {}
+                C.AllMetadata[did][ret.name] = ret.value
             }
             if( reqmditems_w_ids.indexOf(mdname) != -1 || reqmditems_wo_ids.indexOf(mdname) != -1){
                 req_data[did][ret.name] = ret.value
@@ -519,51 +519,51 @@ function save_av_metadata(type, mdname, data){
     if(mdname == 'adapter_sequence'){
         // get id asoc w/ env_package 
         idname = mdname+'_id'               
-        value = helpers.get_key_from_value(MD_ADAPTER_SEQUENCE, data)                
+        value = helpers.get_key_from_value(C.MD_ADAPTER_SEQUENCE, data)
     }else if(mdname == 'dna_region'){  
         idname = mdname+'_id'            
-        value = helpers.get_key_from_value(MD_DNA_REGION, data)                
+        value = helpers.get_key_from_value(C.MD_DNA_REGION, data)
     }else if(mdname == 'domain'){     
         idname = mdname+'_id'         
-        value = helpers.get_key_from_value(MD_DOMAIN, data)                
+        value = helpers.get_key_from_value(C.MD_DOMAIN, data)
     }else if(mdname == 'env_biome'){  
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_ENV_ENVO, data)
+        value = helpers.get_key_from_value(C.MD_ENV_ENVO, data)
                  
     }else if(mdname == 'env_feature'){
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+        value = helpers.get_key_from_value(C.MD_ENV_ENVO, data)
     }else if(mdname == 'env_material'){
         idname = mdname+'_id'             
-        value = helpers.get_key_from_value(MD_ENV_ENVO, data)                
+        value = helpers.get_key_from_value(C.MD_ENV_ENVO, data)
     }else if(mdname == 'env_package'){
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_ENV_PACKAGE, data)                
+        value = helpers.get_key_from_value(C.MD_ENV_PACKAGE, data)
     }else if(mdname == 'geo_loc_name'){
         idname = mdname+'_id'             
-        value = helpers.get_key_from_value(MD_ENV_CNTRY, data) 
+        value = helpers.get_key_from_value(C.MD_ENV_CNTRY, data)
         if(! value ){
-            value = helpers.get_key_from_value(MD_ENV_LZC, data) 
+            value = helpers.get_key_from_value(C.MD_ENV_LZC, data)
         }               
     }else if(mdname == 'primer_suite'){
         idname = mdname+'_id' 
         var p_obj = {}
-        for(id in MD_PRIMER_SUITE){
-            p_obj[id] = MD_PRIMER_SUITE[id].name
+        for(id in C.MD_PRIMER_SUITE){
+            p_obj[id] = C.MD_PRIMER_SUITE[id].name
         }          
         value = helpers.get_key_from_value(p_obj, data)                
     }else if(mdname == 'run'){        
         idname = mdname+'_id'      
-        value = helpers.get_key_from_value(MD_RUN, data)                
+        value = helpers.get_key_from_value(C.MD_RUN, data)
     }else if(mdname == 'target_gene'){
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_TARGET_GENE, data)                
+        value = helpers.get_key_from_value(C.MD_TARGET_GENE, data)
     }else if(mdname == 'illumina_index'){
         idname = mdname+'_id'              
-        value = helpers.get_key_from_value(MD_ILLUMINA_INDEX, data)                
+        value = helpers.get_key_from_value(C.MD_ILLUMINA_INDEX, data)
     }else if(mdname == 'sequencing_platform'){ 
         idname = mdname+'_id'             
-        value = helpers.get_key_from_value(MD_SEQUENCING_PLATFORM, data)                
+        value = helpers.get_key_from_value(C.MD_SEQUENCING_PLATFORM, data)
     }else{ 
         idname =  mdname          
         value = data              
@@ -680,8 +680,8 @@ router.get('/import_choices/metadata', [helpers.isLoggedIn], (req, res) => {
     console.log(req.user)
     //var my_projects = []
     var my_projects = {}
-    for( i in PROJECT_INFORMATION_BY_PID ){
-        var pj = PROJECT_INFORMATION_BY_PID[i]
+    for( i in C.PROJECT_INFORMATION_BY_PID ){
+        var pj = C.PROJECT_INFORMATION_BY_PID[i]
         //console.log(PROJECT_INFORMATION_BY_PID[i])
         if(pj.oid == req.user.user_id){
             //my_projects.push(pj)
@@ -691,7 +691,7 @@ router.get('/import_choices/metadata', [helpers.isLoggedIn], (req, res) => {
     console.log(my_projects)
     res.render('user_data/import_choices/metadata', {
           title: 'VAMPS:Import Data:metadata',
-          ENV : JSON.stringify(MD_ENV_PACKAGE),
+          ENV : JSON.stringify(C.MD_ENV_PACKAGE),
           pjs  : JSON.stringify(my_projects),
           user: req.user, hostname: req.CONFIG.hostname
     });
@@ -722,7 +722,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], (req, res
         
     }
     
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+    if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
         error_fxn(req, res, 'That project name is not availible.')
         return
     }
@@ -737,7 +737,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], (req, res
     // TODO: let user_file_base_path = file_path_obj.get_user_file_base_path(req);
     info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+info.project_name);
     
-    var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE);
+    var new_info_filename_path = path.join(info.project_dir, C.CONFIG_FILE);
     var analysis_dir = path.join(info.project_dir, 'analysis')
     if(file_type == 'fasta'){
         var new_file_name = 'original_fasta.fna'
@@ -785,7 +785,7 @@ router.post('/loadDB_from_metadata_fileAV', helpers.isLoggedIn, (req, res) => {
     // filename = req.body.metadata_file
     
     var info = {}
-    info.project_name = PROJECT_INFORMATION_BY_PID[pid].project
+    info.project_name = C.PROJECT_INFORMATION_BY_PID[pid].project
     info.pid = pid
     info.total_seq_count = 0
     info.owner = req.user.username
@@ -807,7 +807,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], (req,
     
     // project name validation/replace is in import.js
     var pid = req.body.pid_select
-    var project = PROJECT_INFORMATION_BY_PID[pid].project
+    var project = C.PROJECT_INFORMATION_BY_PID[pid].project
     var file_type = 'metadata'
     var timestamp = +new Date();  // millisecs since the epoch!
     console.log('1a')
@@ -836,7 +836,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], (req,
 
   info.metadata_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
     
-    var new_info_filename_path = path.join(info.metadata_dir, req.CONSTS.CONFIG_FILE);
+    var new_info_filename_path = path.join(info.metadata_dir, C.CONFIG_FILE);
     
     if(file_type == 'metadata'){
         var new_file_name = 'original_metadata.csv'
@@ -944,11 +944,11 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
     var data_obj = {}  // data_obj[ds][md] = val
     var headers = list_obj.shift()  // first row
     
-    var dids = DATASET_IDS_BY_PID[pid]
+    var dids = C.DATASET_IDS_BY_PID[pid]
     all_dataset_names = []
     
     for(i in dids){
-        all_dataset_names.push(DATASET_NAME_BY_DID[dids[i]])  // ALL dataset names in project
+        all_dataset_names.push(C.DATASET_NAME_BY_DID[dids[i]])  // ALL dataset names in project
     }
     // check for duplicate headers
     var unique = helpers.unique_array(headers)
@@ -1041,11 +1041,11 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
             if(we_have_geo_loc && mdname == 'geo_loc_name' && val != ''){
                 // need array of values for  MD_ENV_CNTRY and MD_ENV_LZC
                 geo_values = []
-                for( key in MD_ENV_CNTRY){
-                    geo_values.push(MD_ENV_CNTRY[key].toLowerCase())
+                for( key in C.MD_ENV_CNTRY){
+                    geo_values.push(C.MD_ENV_CNTRY[key].toLowerCase())
                 }
-                for( key in MD_ENV_LZC){
-                    geo_values.push(MD_ENV_LZC[key].toLowerCase())
+                for( key in C.MD_ENV_LZC){
+                    geo_values.push(C.MD_ENV_LZC[key].toLowerCase())
                 }                
                 // validate date (javascript date??)
                 if( geo_values.indexOf(val.toLowerCase()) == -1 ){
@@ -1057,8 +1057,8 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
             // env_package values
             if(we_have_env && mdname == 'env_package' && val != ''){
                 pkg_values = []
-                for( key in MD_ENV_PACKAGE){
-                    pkg_values.push(MD_ENV_PACKAGE[key].toLowerCase())
+                for( key in C.MD_ENV_PACKAGE){
+                    pkg_values.push(C.MD_ENV_PACKAGE[key].toLowerCase())
                 }
                 if( pkg_values.indexOf(val.toLowerCase()) == -1 ){
                     return_msg_array.push("Row "+(parseInt(i)+2).toString()+" -env_package: "+val+" is not valid.")  
@@ -1088,7 +1088,7 @@ function validate_metadataAV(list_obj, pid){  // Comes as a list of lists
         
     }
     
-    console.log(MD_ENV_PACKAGE)
+    //console.log(C.MD_ENV_PACKAGE)
     //console.log(data_obj)
     return {'error_return':error_return,'msgs':return_msg_array,'data':data_obj}
     
@@ -1302,7 +1302,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
         
     }
     
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+    if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
         error_fxn(req, res, 'That project name is not availible.')
         return
     }
@@ -1317,7 +1317,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
     info.dataset = {}
     // TODO:  use file_path_obj;
     info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
-    var new_info_filename_path = path.join(info.project_dir, req.CONSTS.CONFIG_FILE)
+    var new_info_filename_path = path.join(info.project_dir, C.CONFIG_FILE)
     var analysis_dir = path.join(info.project_dir, 'analysis')
     if(file_type == 'fasta'){
         var new_file_name = 'original_fasta.fna'
@@ -1760,7 +1760,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, (req, res) => {
   console.log(req.params.id);
   var project = req.params.id;
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
 
   var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'));
   
@@ -1783,7 +1783,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
   console.log(req.params.id);
   var project = req.params.id;
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
 
   stats = fs.statSync(config_file);
   if (stats.isFile()) {
@@ -1839,7 +1839,7 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, (req, res) => {
         // check config variables
         // grep Traceback project-*/cluster.log
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
         var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
 
         stats = fs.statSync(config_file);
@@ -1863,8 +1863,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
   var timestamp = +new Date();  // millisecs since the epoch!
   console.log('in delete_project1: ' + project + ' - ' + delete_kind);
 
-  if (project in PROJECT_INFORMATION_BY_PNAME) {
-    var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
+  if (project in C.PROJECT_INFORMATION_BY_PNAME) {
+    var pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid;
     global_vars.update_global_variables(pid, 'del');
   } else {
     // project not in db?
@@ -1978,13 +1978,13 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, (req, res) => {
         // need to change config file of new project to include new name:
         console.log('duplicate copy success!');
         // TODO:  use file_path_obj;
-        var config_file = path.join(new_data_dir, req.CONSTS.CONFIG_FILE);
+        var config_file = path.join(new_data_dir, C.CONFIG_FILE);
         var project_info = {};
         project_info.config = iniparser.parseSync(config_file);
         var config_info = project_info.config.GENERAL;
         config_info.project = project+'_dupe';
         config_info.baseoutputdir = new_data_dir;
-        config_info.configPath = path.join(new_data_dir, req.CONSTS.CONFIG_FILE);
+        config_info.configPath = path.join(new_data_dir, C.CONFIG_FILE);
         config_info.fasta_file = path.join(new_data_dir, infile_fa);
         config_info.datasets = [];
         for (var ds in project_info.config.DATASETS) {
@@ -2002,11 +2002,11 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, (req, res) => {
     var project = req.params.project;
   // TODO:  use file_path_obj;
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
-    var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
+    var config_file = path.join(data_dir, C.CONFIG_FILE);
     res.render('user_data/assign_taxonomy', {
       project : project,
       title   : project,
-      tax_choices : JSON.stringify(req.CONSTS.UNIT_ASSIGNMENT_CHOICES),
+      tax_choices : JSON.stringify(C.UNIT_ASSIGNMENT_CHOICES),
       user: req.user, hostname: req.CONFIG.hostname
      });
 
@@ -2034,14 +2034,14 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   // /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
   // /RDP/ITS1"
 
-  //var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
+  //var classifier = C.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
-  //var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
+  //var ref_db_dir = C.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: Project: ' + project + ' - Classifier: ' + classifier + ' - RefDatabase: ' + ref_db);
   var status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   // TODO:  use file_path_obj;
   var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
-  var config_file = path.join(data_dir, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(data_dir, C.CONFIG_FILE);
   try
   {
     var project_config = iniparser.parseSync(config_file);
@@ -2126,7 +2126,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
   // console.log('XXX0 writeFile from start_assignment after gasttax, ok_code_options  ');
   
-  var mode = 0775;
+  var mode = 0o775;
   var oldmask = process.umask(0);
   console.log("script_path2 = " + script_path);
   fs.writeFile(script_path, 
@@ -2174,7 +2174,7 @@ function checkPid(check_pid_options, last_line)
   var ll = last_line.split('=');
   var pid = ll[1];
   console.log('checkPID NEW PID=: ' + pid);
-  //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
+  //console.log('ALL_DATASETS: ' + JSON.stringify(C.ALL_DATASETS));
   if (Number.isInteger(pid))
   {
 
@@ -2197,9 +2197,9 @@ function checkPid(check_pid_options, last_line)
           status_params.status = status_params.statusOK;
           status_params.msg = status_params.msgOK;
           helpers.update_status(status_params);
-          ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
-          console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
-          console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
+            C.ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
+          console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + C.ALL_CLASSIFIERS_BY_PID);
+          console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + C.ALL_CLASSIFIERS_BY_PID[pid]);
 
         }
 
@@ -2222,8 +2222,8 @@ function matrixTax(req, info)
     var units = 'matrix'
     var new_file_path = path.join(info.project_dir, 'original_matrix.csv')
     var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
-    //var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    //var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')
     //var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
     //var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
@@ -2247,10 +2247,10 @@ function rdpTax(req, project_config, ref_db)
     var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
     var units = 'rdp'
     var classifier = 'RDP'
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',req.CONSTS.CONFIG_FILE]    
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
-    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',C.CONFIG_FILE]
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     
     var rdp_cmd1 = script_path + '/vamps_script_rdp_run.py'                         + ' '+cmd1_opts.join(' ')
     var rdp_cmd2 = script_path + '/vamps_script_database_loader.py'                 + ' '+cmd2_opts.join(' ')
@@ -2275,10 +2275,10 @@ function spingoTax(req, project_config, ref_db)
     var units = 'generic'
     var classifier = 'SPINGO'
     
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_spingo',path2spingo,'--config',req.CONSTS.CONFIG_FILE,'-db',ref_db_path]    
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',req.CONSTS.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',req.CONSTS.CONFIG_FILE ]
-    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',req.CONSTS.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_spingo',path2spingo,'--config',C.CONFIG_FILE,'-db',ref_db_path]
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     var spingo_cmd1 = script_path + '/vamps_script_spingo_run.py'                   + ' '+cmd1_opts.join(' ')
     var spingo_cmd2 = script_path + '/vamps_script_database_loader.py'              + ' '+cmd2_opts.join(' ')
     //var spingo_cmd3 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd3_opts.join(' ')
@@ -2369,7 +2369,7 @@ function gastTax(req, project_config, ref_db)
   //is_local = helpers.isLocal(req);
   // for tests: is_local = false;
   // TODO:  use file_path_obj;
-  var new_info_filename_path = path.join(data_dir, req.CONSTS.CONFIG_FILE)
+  var new_info_filename_path = path.join(data_dir, C.CONFIG_FILE)
   var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
   var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
   
@@ -2411,14 +2411,14 @@ function gastTax(req, project_config, ref_db)
 
 function getSuffix(dna_region)
 {
-  if (CONSTS.REF_SUFFIX["unique.nonchimeric.fa"].indexOf(project_config.GENERAL.dna_region) >= 0) 
+  if (C.REF_SUFFIX["unique.nonchimeric.fa"].indexOf(project_config.GENERAL.dna_region) >= 0)
   {
-    console.log('dna_region in CONSTS.REF_SUFFIX["unique.nonchimeric.fa"]');  
+    console.log('dna_region in C.REF_SUFFIX["unique.nonchimeric.fa"]');
     return ".unique.nonchimeric.fa";  
   }
-  else if (CONSTS.REF_SUFFIX.unique.indexOf(project_config.GENERAL.dna_region) >= 0) 
+  else if (C.REF_SUFFIX.unique.indexOf(project_config.GENERAL.dna_region) >= 0)
   {
-    console.log('dna_region in CONSTS.REF_SUFFIX.unique'); 
+    console.log('dna_region in C.REF_SUFFIX.unique');
     return ".unique";  
   }
   else 
@@ -2429,12 +2429,12 @@ function getSuffix(dna_region)
 
 function chooseRefFile(classifier_id)
 {
-  return CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].ref_db; 
+  return C.UNIT_ASSIGNMENT_CHOICES[classifier_id].ref_db;
 }
 
 function getFullOption(classifier_id)
 {
-  if (CONSTS.REF_FULL_OPTION.indexOf(classifier_id) >= 0)
+  if (C.REF_FULL_OPTION.indexOf(classifier_id) >= 0)
   {
     return "-full";
   }
@@ -2477,28 +2477,28 @@ router.get('/your_projects', helpers.isLoggedIn, (req, res) => {
   
   
   // get user projects in database
-  for(pid in PROJECT_INFORMATION_BY_PID){
-    if(PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
+  for(pid in C.PROJECT_INFORMATION_BY_PID){
+    if(C.PROJECT_INFORMATION_BY_PID[pid].oid == req.user.user_id){
         // this data trumps directory_data.config
-        p = PROJECT_INFORMATION_BY_PID[pid].project
+        p = C.PROJECT_INFORMATION_BY_PID[pid].project
         project_info[p] = {}; 
         project_info[p].pid = pid; 
         project_info[p].validation = {};
-        project_info[p].public = PROJECT_INFORMATION_BY_PID[pid].public;
+        project_info[p].public = C.PROJECT_INFORMATION_BY_PID[pid].public;
         
-        project_info[p].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[p].pid];
+        project_info[p].classified_by = C.ALL_CLASSIFIERS_BY_PID[C.PROJECT_INFORMATION_BY_PNAME[p].pid];
         
-        project_info[p].env_source_id = PROJECT_INFORMATION_BY_PID[pid].env_source_id;
+        project_info[p].env_source_id = C.PROJECT_INFORMATION_BY_PID[pid].env_source_id;
         project_info[p].in_global_obj = true
         //project_info[p].empty_dir = 'unknown'
         project_info[p].vamps_status = 'ON_VAMPS'
-        project_info[p].num_of_datasets = DATASET_IDS_BY_PID[pid].length 
-        if(DATASET_IDS_BY_PID[pid].length == 0){
+        project_info[p].num_of_datasets = C.DATASET_IDS_BY_PID[pid].length
+        if(C.DATASET_IDS_BY_PID[pid].length == 0){
             project_info[p].taxonomy = 'No Datasets (NOT on VAMPS)'
             project_info[p].seq_count = 0
         }else{
             project_info[p].taxonomy = 'Taxonomic Data Available (project on VAMPS)'
-            project_info[p].seq_count = ALL_PCOUNTS_BY_PID[pid]
+            project_info[p].seq_count = C.ALL_PCOUNTS_BY_PID[pid]
         }
         pnames.push(p);
     }
@@ -2544,7 +2544,7 @@ router.get('/your_projects', helpers.isLoggedIn, (req, res) => {
             // TODO:  use file_path_obj;
             // need to read config file
             // check status?? dir strcture: analisis/gast/<ds>
-            var config_file = path.join(user_projects_base_dir, items[d], req.CONSTS.CONFIG_FILE);
+            var config_file = path.join(user_projects_base_dir, items[d], C.CONFIG_FILE);
             //console.log(config_file)
             var cfg_data = {}
             try {  // to read config file
@@ -2608,21 +2608,21 @@ router.get('/edit_project/:project', helpers.isLoggedIn, (req, res) => {
   // TODO:  use file_path_obj;
   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
-  var config_file = path.join(user_projects_base_dir, 'project-'+project_name, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(user_projects_base_dir, 'project-'+project_name, C.CONFIG_FILE);
 
   var project_info = {};
     //var stat_config = fs.statSync(config_file);
    project_info.config = iniparser.parseSync(config_file);
 
-  if (project_name in PROJECT_INFORMATION_BY_PNAME) {   // these projects have tax assignments
+  if (project_name in C.PROJECT_INFORMATION_BY_PNAME) {   // these projects have tax assignments
     //console.log("PROJECT_INFORMATION_BY_PNAME[project_name]: ");
     //console.log(PROJECT_INFORMATION_BY_PNAME[project_name]);
-    project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+    project_info.pid = C.PROJECT_INFORMATION_BY_PNAME[project_name].pid;
     project_info.status = 'Taxonomic Data Available';
     project_info.tax = 'GAST';
-    project_info.title = PROJECT_INFORMATION_BY_PNAME[project_name].title;
-    project_info.pdesc = PROJECT_INFORMATION_BY_PNAME[project_name].description;
-    project_info.public = PROJECT_INFORMATION_BY_PNAME[project_name].public;
+    project_info.title = C.PROJECT_INFORMATION_BY_PNAME[project_name].title;
+    project_info.pdesc = C.PROJECT_INFORMATION_BY_PNAME[project_name].description;
+    project_info.public = C.PROJECT_INFORMATION_BY_PNAME[project_name].public;
 
 
     //console.log('datasets with dids')
@@ -2631,12 +2631,12 @@ router.get('/edit_project/:project', helpers.isLoggedIn, (req, res) => {
     //console.log(DATASET_IDS_BY_PID[project_info.pid]);
 
     project_info.dsets = [];
-    for (var i = 0; i < ALL_DATASETS.projects.length; i++) {
-      if (ALL_DATASETS.projects[i].pid == project_info.pid) {
-        for (var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
-          var did = ALL_DATASETS.projects[i].datasets[d].did;
-          var ds  = ALL_DATASETS.projects[i].datasets[d].dname;
-          var ddesc = ALL_DATASETS.projects[i].datasets[d].ddesc;
+    for (var i = 0; i < C.ALL_DATASETS.projects.length; i++) {
+      if (C.ALL_DATASETS.projects[i].pid == project_info.pid) {
+        for (var d = 0; d < C.ALL_DATASETS.projects[i].datasets.length; d++) {
+          var did = C.ALL_DATASETS.projects[i].datasets[d].did;
+          var ds  = C.ALL_DATASETS.projects[i].datasets[d].dname;
+          var ddesc = C.ALL_DATASETS.projects[i].datasets[d].ddesc;
 
           project_info.dsets.push({ "did":did, "name":ds, "ddesc":ddesc });
         }
@@ -2681,7 +2681,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
 
 
   if (req.body.new_project_name && req.body.new_project_name != req.body.old_project_name) {
-    if (req.body.new_project_name in PROJECT_INFORMATION_BY_PNAME) {
+    if (req.body.new_project_name in C.PROJECT_INFORMATION_BY_PNAME) {
       console.log('ERROR');
       req.flash('fail', 'That project name is taken -- choose another.');
       res.redirect('/user_data/edit_project/'+req.body.old_project_name);
@@ -2716,22 +2716,22 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
     // TODO  needed updates to data objects:
     //1- PROJECT_INFORMATION_BY_PNAME
     //console.log('PROJECT_INFORMATION_BY_PNAME')
-    var tmp = PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
-    delete PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
-    PROJECT_INFORMATION_BY_PNAME[req.body.new_project_name] = tmp;
+    var tmp = C.PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
+    delete C.PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
+      C.PROJECT_INFORMATION_BY_PNAME[req.body.new_project_name] = tmp;
 
     //2- PROJECT_INFORMATION_BY_PID
     //console.log('PROJECT_INFORMATION_BY_PID')
     //console.log(req.body.project_pid);
 
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].project        = req.body.new_project_name;
+      C.PROJECT_INFORMATION_BY_PID[req.body.project_pid].project        = req.body.new_project_name;
     //PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_package_id  = '';
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].title          = req.body.new_project_title;
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].description    = req.body.new_project_description;
+      C.PROJECT_INFORMATION_BY_PID[req.body.project_pid].title          = req.body.new_project_title;
+      C.PROJECT_INFORMATION_BY_PID[req.body.project_pid].description    = req.body.new_project_description;
     if (req.body.new_privacy == 'False') {
-      PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 0;
+        C.PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 0;
     } else {
-      PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 1;
+        C.PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 1;
     }
 
     //TODO: proper escape and move to queries 
@@ -2754,7 +2754,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
           //3- DATASET_NAME_BY_DID
           //console.log('DATASET_NAME_BY_DID')
           //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
-          DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
+          C.DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
           //console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
       }
     }
@@ -2764,16 +2764,16 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
     //4- ALL_DATASETS
     //console.log('ALL_DATASETS')
     //console.log(ALL_DATASETS.projects[0]);
-    for (var i = 0; i < ALL_DATASETS.projects.length; i++) {
-      if (ALL_DATASETS.projects[i].pid == req.body.project_pid) {
-        ALL_DATASETS.projects[i].name = req.body.new_project_name;
-        ALL_DATASETS.projects[i].title = req.body.new_project_title;
+    for (var i = 0; i < C.ALL_DATASETS.projects.length; i++) {
+      if (C.ALL_DATASETS.projects[i].pid == req.body.project_pid) {
+          C.ALL_DATASETS.projects[i].name = req.body.new_project_name;
+          C.ALL_DATASETS.projects[i].title = req.body.new_project_title;
 
-        for (var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
-          var did = ALL_DATASETS.projects[i].datasets[d].did;
+        for (var d = 0; d < C.ALL_DATASETS.projects[i].datasets.length; d++) {
+          var did = C.ALL_DATASETS.projects[i].datasets[d].did;
           var idx = req.body.dataset_ids.indexOf(did.toString());
-          ALL_DATASETS.projects[i].datasets[d].dname = req.body.new_dataset_names[idx];
-          ALL_DATASETS.projects[i].datasets[d].ddesc = req.body.new_dataset_descriptions[idx];
+            C.ALL_DATASETS.projects[i].datasets[d].dname = req.body.new_dataset_names[idx];
+            C.ALL_DATASETS.projects[i].datasets[d].ddesc = req.body.new_dataset_descriptions[idx];
 
         }
       }
@@ -2788,7 +2788,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
   var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
 
   var project_dir = path.join(user_projects_base_dir, 'project-'+project_name);
-  var config_file = path.join(project_dir, req.CONSTS.CONFIG_FILE);
+  var config_file = path.join(project_dir, C.CONFIG_FILE);
   var timestamp = +new Date();  // millisecs since the epoch!
   var config_file_bu = path.join(project_dir, 'config'+timestamp+'.ini');
   fs.copy(config_file, config_file_bu, function copyConfigFile(err) {
@@ -2819,7 +2819,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
     config_info.project = new_project_name;
     project_info.config.GENERAL.project=new_project_name;
     new_base_dir = path.join(user_projects_base_dir, 'project-'+new_project_name);
-    new_config_file = path.join(new_base_dir, req.CONSTS.CONFIG_FILE);
+    new_config_file = path.join(new_base_dir, C.CONFIG_FILE);
     new_fasta_file = path.join(new_base_dir, infile_fa);
     config_info.baseoutputdir = new_base_dir;
     config_info.configPath = new_config_file;
@@ -2897,8 +2897,8 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
   }
 
 
-  if (project_name in PROJECT_INFORMATION_BY_PNAME) {
-    project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+  if (project_name in C.PROJECT_INFORMATION_BY_PNAME) {
+    project_info.pid = C.PROJECT_INFORMATION_BY_PNAME[project_name].pid;
     project_info.status = 'Taxonomic Data Available';
     project_info.tax = 'GAST';
   } else {
@@ -2932,7 +2932,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   console.log(req.file);
   console.log('2-req.body upload_metadata');
   var has_tax = false;
-  if (project in PROJECT_INFORMATION_BY_PNAME) {
+  if (project in C.PROJECT_INFORMATION_BY_PNAME) {
     has_tax = true;
 
   }
@@ -2981,8 +2981,8 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                 // possible multiple pids
                 if(has_tax){
                   console.log("PROJECT_INFORMATION_BY_PNAME[project]: ");
-                  console.log(PROJECT_INFORMATION_BY_PNAME[project]);
-                  pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
+                  console.log(C.PROJECT_INFORMATION_BY_PNAME[project]);
+                  pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid;
                   connection.query(queries.get_select_datasets_queryPID(pid), function mysqlGetDatasetsByPID(err, rows1, fields){
                     if (err)  {
                       console.log('1-Upload METADATA-Query error: ' + err);                   
@@ -3030,12 +3030,12 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 
 function ProjectNameExists(project, req, res)
 {
-  console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
-  console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  console.log('BBB: ProjectNameExists: C.PROJECT_INFORMATION_BY_PNAME ');
+  console.log(util.inspect(C.PROJECT_INFORMATION_BY_PNAME, false, null));
   //
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
-  if (project in PROJECT_INFORMATION_BY_PNAME) {
+  if (project in C.PROJECT_INFORMATION_BY_PNAME) {
       req.flash('fail', 'That project name is already taken.');
       res.redirect(path.join("/user_data", req.url));
       console.log('This project name is already taken');
@@ -3137,7 +3137,7 @@ function ProjectValidation(req, project, data_repository, res)
   // routes/routes_admin.js:372:          delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
   // routes/routes_admin.js:373:          PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
   //
-  if (!(project in PROJECT_INFORMATION_BY_PNAME)) {
+  if (!(project in C.PROJECT_INFORMATION_BY_PNAME)) {
     console.log("running1 ProjectExistsInDB");
     project_exists_in_db = ProjectExistsInDB(project, req, res);
     console.log("project_exists_in_db = " + project_exists_in_db);
@@ -3491,21 +3491,21 @@ function writeAndRunScript(req, res, project, options, data_repository)
     else
     {
       // TODO: name this function, what is it doing?:
-      fs.chmod(data_repository, 0777, function chmodDataRepo(err) {
+      fs.chmod(data_repository, 0o777, function chmodDataRepo(err) {
         if (err) {
           console.log('chmod err:', err);
           return;
         }
         var cmd_list = CreateCmdList(req, options, data_repository);
         script_name     = 'load_script.sh';
-        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a', 0664);
+        var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a', 0o664);
         var script_vars = GetScriptVars(req, data_repository, cmd_list, 'vampsupld',{});
         var scriptlog   = script_vars[0];
         var script_text = script_vars[1];
         var script_path = path.join(data_repository, script_name);
         var ok_code_options = [req, res, project];
 
-        var mode = 0775;
+        var mode = 0o775;
         var oldmask = process.umask(0);
         console.log("script_path1 = " + script_path);
         fs.writeFile(script_path, 
@@ -3566,7 +3566,7 @@ function validate_metadata(req, res, options)
       html_json = {};
       console.log("mdata: ");
       console.log(mdata);
-      req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+      req_metadata = C.REQ_METADATA_FIELDS
       console.log('req_metadata')
       console.log(req_metadata)
       dataset_field_names = ['sample_name','#SampleID','dataset','Dataset']
@@ -3719,7 +3719,7 @@ function saveToDb(req, res){
           // TODO: Do something with your error...
       } else {
           owner_user_id = content.user_id;
-          var new_privacy = 1;
+          let new_privacy = 1;
           new_privacy = getPrivacyCode(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
@@ -3792,7 +3792,7 @@ router.post('/add_project',
       //console.log('FORM INFOx')
       //console.log(req)
       // TODO:  use file_path_obj;
-      var project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
+      let project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
       helpers.mkdirSync(project_dir)
       res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
     }
@@ -3898,7 +3898,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
     req.flash('fail', 'A project name is required.');
     res.redirect(render_url);
     return;
-  } else if (project in PROJECT_INFORMATION_BY_PNAME) {
+  } else if (project in C.PROJECT_INFORMATION_BY_PNAME) {
     req.flash('fail', 'That project name is already taken.');
     res.redirect(render_url);
     return;
@@ -4037,7 +4037,7 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 
                                   helpers.assignment_finish_request(res, rows1, rows2, status_params);
                                   helpers.update_status(status_params);
-                                  ALL_CLASSIFIERS_BY_PID[pid] = 'unknown';
+                                     C.ALL_CLASSIFIERS_BY_PID[pid] = 'unknown';
 
 
                                 }
@@ -4154,7 +4154,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, (req, res) => {
       qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
       add_where = ' WHERE ';
       for (var n in tax_items) {
-        rank = req.CONSTS.RANKS[n];
+        rank = C.RANKS[n];
         qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n';
         add_where += '`'+rank+"`='"+tax_items[n]+"' and ";
       }
@@ -4225,18 +4225,18 @@ router.get('/required_metadata_options', (req, res) => {
     res.render('user_data/required_metadata_options', {
               title     :'VAMPS Validate Metadata',
               user: req.user,
-              md_env_pkg:           JSON.stringify(MD_ENV_PACKAGE),
-            md_env_term:            JSON.stringify(MD_ENV_ENVO),
-            md_env_cntry:           JSON.stringify(MD_ENV_CNTRY),   
-            md_env_lzc:             JSON.stringify(MD_ENV_LZC),     
-            md_sequencing_platform: JSON.stringify(MD_SEQUENCING_PLATFORM),
-            md_target_gene:         JSON.stringify(MD_TARGET_GENE),
-            md_domain:              JSON.stringify(MD_DOMAIN),
-            md_dna_region:          JSON.stringify(MD_DNA_REGION),
-            md_adapter_sequence:    JSON.stringify(MD_ADAPTER_SEQUENCE),	
-            md_illumina_index:      JSON.stringify(MD_ILLUMINA_INDEX),
-            md_primer_suite:        JSON.stringify(MD_PRIMER_SUITE),
-            md_run:					JSON.stringify(MD_RUN),
+              md_env_pkg:           JSON.stringify(C.MD_ENV_PACKAGE),
+            md_env_term:            JSON.stringify(C.MD_ENV_ENVO),
+            md_env_cntry:           JSON.stringify(C.MD_ENV_CNTRY),
+            md_env_lzc:             JSON.stringify(C.MD_ENV_LZC),
+            md_sequencing_platform: JSON.stringify(C.MD_SEQUENCING_PLATFORM),
+            md_target_gene:         JSON.stringify(C.MD_TARGET_GENE),
+            md_domain:              JSON.stringify(C.MD_DOMAIN),
+            md_dna_region:          JSON.stringify(C.MD_DNA_REGION),
+            md_adapter_sequence:    JSON.stringify(C.MD_ADAPTER_SEQUENCE),
+            md_illumina_index:      JSON.stringify(C.MD_ILLUMINA_INDEX),
+            md_primer_suite:        JSON.stringify(C.MD_PRIMER_SUITE),
+            md_run:					JSON.stringify(C.MD_RUN),
             
             hostname: req.CONFIG.hostname,
     });
@@ -4267,15 +4267,15 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
   if (req.body.download_type == 'whole_project') {
         var pid  = req.body.pid;
         var file_tag = []
-        dids = DATASET_IDS_BY_PID[pid];
+        dids = C.DATASET_IDS_BY_PID[pid];
         if(req.body.hasOwnProperty('project')){
           project = req.body.project;
         }else{
-          project = PROJECT_INFORMATION_BY_PID[pid].project
+          project = C.PROJECT_INFORMATION_BY_PID[pid].project
         }
-        console.log(PROJECT_INFORMATION_BY_PID[pid])
-        if(PROJECT_INFORMATION_BY_PID[pid].hasOwnProperty('metagenomic')){
-            if((PROJECT_INFORMATION_BY_PID[pid].metagenomic).toString() == '1'){
+        console.log(C.PROJECT_INFORMATION_BY_PID[pid])
+        if(C.PROJECT_INFORMATION_BY_PID[pid].hasOwnProperty('metagenomic')){
+            if((C.PROJECT_INFORMATION_BY_PID[pid].metagenomic).toString() == '1'){
                 file_tag.push('--include_metagenomic')
             }
         }
@@ -4346,10 +4346,10 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         } 
         today = yyyy +'-'+ mm + '-' + dd;
         var dids = new Array()
-        for(pid in PROJECT_INFORMATION_BY_PID){
-            project = PROJECT_INFORMATION_BY_PID[pid].project
+        for(pid in C.PROJECT_INFORMATION_BY_PID){
+            project = C.PROJECT_INFORMATION_BY_PID[pid].project
             if(project.substring(0,3)=='DCO'){
-                //console.log(PROJECT_INFORMATION_BY_PID[pid])
+                //console.log(C.PROJECT_INFORMATION_BY_PID[pid])
                 dids_list = DATASET_IDS_BY_PID[pid]
                 dids = dids.concat(dids_list)
             } 
@@ -4385,15 +4385,15 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 	var dataset_name_list = []
     for (var i in dids) {
         did = dids[i];
-        dname = DATASET_NAME_BY_DID[did];     
+        dname = C.DATASET_NAME_BY_DID[did];
         //console.log('dname '+dname)   
-        pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+        pname = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].project;
         pjds = pname+'--'+dname
         dataset_name_list.push(pjds)
         
-        for (var mdname in AllMetadata[did]){
+        for (var mdname in C.AllMetadata[did]){
           //console.log(mdname)
-          var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+          var data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], mdname)
            
           if( mditems_list.indexOf(data.name) == -1){
             mditems_list.push(data.name)
@@ -4536,7 +4536,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //         for (var mdname in AllMetadata[did]){
 //           
 //           //console.log(mdname)
-//             var data = helpers.required_metadata_names_from_ids(AllMetadata[did], mdname)
+//             var data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], mdname)
 //             
 //             name_collector[data.name] = 1
 //             myrows[did][data.name] = data.value;
@@ -4737,7 +4737,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, (req, res) => {
                 }else{
                     var id = 'dheatmap/'+x_dname+'/'+y_dname+'/'+dist;
                     var svalue = Math.round( distance_matrix[x_dname][y_dname] * 15 );
-                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+req.CONSTS.HEATMAP_COLORS[svalue]+"'>";
+                    html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>";
                     html += "&nbsp;&nbsp;&nbsp;";
                     html += "</td>";
                 }

@@ -2,6 +2,7 @@ const helpers = require(app_root + '/routes/helpers/helpers');
 const config  = require(app_root + '/config/config');
 const fs      = require("fs");
 const path    = require("path");
+const C = require(app_root + '/public/constants');
 
 class CsvFileRead {
   constructor(req, res, full_file_name) {
@@ -253,7 +254,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
     let data_arr = helpers.array_from_object(data_copy);
 
-    let matrix_length   = DATASET_IDS_BY_PID[project_id].length + 1;
+    let matrix_length   = C.DATASET_IDS_BY_PID[project_id].length + 1;
     let transposed_data_arr = helpers.transpose_2d_arr_and_fill(data_arr, matrix_length);
 
     let quoted_result = this.make_quoted_result(transposed_data_arr, args);
@@ -291,8 +292,8 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
     const time_stamp = new Date().getTime();
     let file_name_project_part = "";
 
-    if (typeof PROJECT_INFORMATION_BY_PID[req.body.project_id] !== 'undefined') {
-      file_name_project_part = PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
+    if (typeof C.PROJECT_INFORMATION_BY_PID[req.body.project_id] !== 'undefined') {
+      file_name_project_part = C.PROJECT_INFORMATION_BY_PID[req.body.project_id].project;
     }
 
     let project_name_is_good = this.test_project_name(file_name_project_part);

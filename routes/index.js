@@ -1,9 +1,11 @@
+"use strict"
 const express = require('express');
 var router = express.Router();
 const fs   = require('fs-extra');
 const path  = require('path');
 const helpers = require('./helpers/helpers');
 const ds = require('./load_all_datasets');
+const C		  = require(app_root + '/public/constants');
 
 var rs_ds = ds.get_datasets( ALL_DATASETS => {
   
@@ -37,11 +39,11 @@ var rs_ds = ds.get_datasets( ALL_DATASETS => {
 
   router.get('/geodistribution', (req, res) => {
 
-	  console.log(DatasetsWithLatLong)
+	  console.log(C.DatasetsWithLatLong)
 	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
             user: req.user, 
             hostname: req.CONFIG.hostname,
-	        geodata: JSON.stringify(DatasetsWithLatLong),
+	        geodata: JSON.stringify(C.DatasetsWithLatLong),
 	        token : req.CONFIG.MAPBOX_TOKEN
            
         });

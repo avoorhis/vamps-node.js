@@ -1,4 +1,4 @@
-
+const C = require(app_root + '/public/constants');
 const path = require('path');
 const fs = require('fs-extra');
 const spawn = require('child_process').spawn;
@@ -84,7 +84,7 @@ module.exports = {
           if(t==2){
             html += "<th class='' valign='bottom'><small>Class</small></th>";
           }else{
-            html += "<th class='' valign='bottom'><small>"+req.CONSTS.RANKS[t].toUpperCase().charAt(0)+req.CONSTS.RANKS[t].slice(1)+"</small></th>";
+            html += "<th class='' valign='bottom'><small>"+C.RANKS[t].toUpperCase().charAt(0)+C.RANKS[t].slice(1)+"</small></th>";
           }
         }
 
@@ -478,6 +478,8 @@ module.exports = {
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
         let svgContainer = make_svgContainer(props.width, props.height, props.margin.left, props.margin.top, body);
+        console.log('bars-svgContainer')
+        console.log(svgContainer)
         // axis legends -- would like to rotate dataset names
         props.y.domain(matrix.columns.map(c => c.id));
         props.x.domain([0, 100]);
@@ -515,7 +517,7 @@ module.exports = {
     var sep = '\t'
     for(var i = 0; i < ds_order.length; i++){
       did = ds_order[i].toString()
-      dname = DATASET_NAME_BY_DID[did]
+      dname = C.DATASET_NAME_BY_DID[did]
       html += sep + dname
       //console.log('did',did)
       //console.log(AllMetadata[did])
@@ -855,8 +857,8 @@ module.exports = {
     for(n in ds_order){
       var did =req.session.chosen_id_order[n]
       var pjds = ds_order[n].split('--')
-      var pid = PROJECT_INFORMATION_BY_PNAME[pjds[0]].pid
-      if(pjds[1] != DATASET_NAME_BY_DID[did]){
+      var pid = C.PROJECT_INFORMATION_BY_PNAME[pjds[0]].pid
+      if(pjds[1] != C.DATASET_NAME_BY_DID[did]){
         //errors
         console.log('ERROR1 in create_hm_table_from_csv')
         return
@@ -877,7 +879,7 @@ module.exports = {
       var row_items = row.split('\t') // ds c1 c2 c3 c4 c5
 
       var xdid = req.session.chosen_id_order[n]
-      var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+      var xpjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[xdid]].project +'--'+C.DATASET_NAME_BY_DID[xdid]
       var row_pjds = row_items.shift() // leaves only the counts
 
       if(row_pjds != xpjds){
@@ -897,7 +899,7 @@ module.exports = {
       for(var m in ds_order) { //cols
 
         var ydid = req.session.chosen_id_order[m]
-        var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+        var ypjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[ydid]].project +'--'+C.DATASET_NAME_BY_DID[ydid]
 
         var d = parseFloat(row_items[m]).toFixed(5)
         var sv = Math.round( d * 15 );
@@ -930,7 +932,7 @@ module.exports = {
           }
 
         }else{
-          var colors   = req.CONSTS.HEATMAP_COLORS
+          var colors   = C.HEATMAP_COLORS
           if(xdid === ydid){
             html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
           }else{
@@ -1036,7 +1038,7 @@ module.exports = {
     k=1
     for(var n in id_order) { // rows
       var xdid = id_order[n]
-      var xpjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[xdid]].project +'--'+DATASET_NAME_BY_DID[xdid]
+      var xpjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[xdid]].project +'--'+C.DATASET_NAME_BY_DID[xdid]
       //var x = id_order[n]
       if(req.body.source == 'website'){
         html += "<tr id='"+xpjds+"'>"
@@ -1048,7 +1050,7 @@ module.exports = {
       for(var m in id_order) {  // cols
 
         var ydid = id_order[m]
-        var ypjds = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[ydid]].project +'--'+DATASET_NAME_BY_DID[ydid]
+        var ypjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[ydid]].project +'--'+C.DATASET_NAME_BY_DID[ydid]
 
         if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
           var d = dm[xpjds][ypjds].toFixed(5);
@@ -1080,7 +1082,7 @@ module.exports = {
           }
 
         }else{
-          var colors   = req.CONSTS.HEATMAP_COLORS
+          var colors   = C.HEATMAP_COLORS
           if(xdid === ydid){
             html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
           }else{
@@ -1117,7 +1119,8 @@ module.exports = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function create_bars_svg_object(req, svg, props, data, ts) {
-
+  console.log('req.body')
+  console.log(req.body)
   console.log('In create_svg_object')
   svg.append("g")
     .attr("class", "x axis")
@@ -1475,12 +1478,15 @@ function get_image_hight(matrix, pie_rows, pies_per_row) {
 function get_unit_list(matrix) {
   return matrix.rows.map(row => row.id);
 }
-
+function get_ds_total(i) {
+  return matrix.column_totals[i];
+}
 function pies_factory(req, matrix, mtxdata, imagetype, ts) {
   const jsdom = require('jsdom');
   const { JSDOM } = jsdom;
   const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
   let body = d3.select(fakeDom.window.document).select('body');
+
 
   const image_options_obj = image_options(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
@@ -1533,7 +1539,8 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
         return matrix.columns[i].id;
       }
     });
-
+  console.log('mtx')
+  console.log(matrix)
   if (req.body.source === 'website'){
     pies.selectAll("path")
       .data(d3.pie().sort(null))
@@ -1544,9 +1551,14 @@ function pies_factory(req, matrix, mtxdata, imagetype, ts) {
       .attr("id", (current_cnts, i) => {
         let cnt = current_cnts.value;
         let total = 0;
-        for (let k in this.parentNode.__data__){
-          total += this.parentNode.__data__[k];
+        //console.log('current_cnts')
+        //console.log(current_cnts)
+        for (let k=0;k< matrix.columns.length;k++){
+          //console.log('k')
+          //console.log(k)
+          //total += this.parentNode.__data__[k];  // dataset total
         }
+        //total =
         // let ds = ''; // PLACEHOLDER for TT
         let pct = (cnt * 100 / total).toFixed(2);
         let id = 'pc/' + unit_list[i] + '/' + cnt.toString() + '/' + pct;

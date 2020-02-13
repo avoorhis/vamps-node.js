@@ -6,6 +6,7 @@ const helpers = require('./helpers/helpers');
 const queries = require(app_root + '/routes/queries');
 const path = require('path');
 const config  = require(app_root + '/config/config');
+const C		  = require(app_root + '/public/constants');
 
 // These are all under /projects
 /* GET New User page. */
@@ -13,9 +14,9 @@ const config  = require(app_root + '/config/config');
 router.get('/projects_index', (req, res) => {
   let project_list = [];
 
-  for (let pid in PROJECT_INFORMATION_BY_PID){
-    if(DATASET_IDS_BY_PID[pid].length > 0){
-      project_list.push(PROJECT_INFORMATION_BY_PID[pid]);
+  for (let pid in C.PROJECT_INFORMATION_BY_PID){
+    if(C.DATASET_IDS_BY_PID[pid].length > 0){
+      project_list.push(C.PROJECT_INFORMATION_BY_PID[pid]);
     }
   }
 
@@ -59,13 +60,13 @@ function get_dscounts(dsinfo) {
   for (let n in dsinfo) {
     let did = dsinfo[n].did;
 
-    dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+    dscounts[did] = C.ALL_DCOUNTS_BY_DID[did];
   }
   return dscounts;
 }
 
 function get_dsinfo(req) {
-  let all_pinfo = ALL_DATASETS.projects.find(project_obj => {
+  let all_pinfo = C.ALL_DATASETS.projects.find(project_obj => {
     return (project_obj.pid.toString() === req.params.id.toString());
   });
   return all_pinfo.datasets;
@@ -79,12 +80,12 @@ function get_mdata(dsinfo){
     let metadata_name = d_inf.dname;
     mdata[metadata_name] = {};
 
-    for (let name in AllMetadata[did]){
+    for (let name in C.AllMetadata[did]){
       let data;
-      data = helpers.required_metadata_names_from_ids(AllMetadata[did], name);
+      data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], name);
       mdata[metadata_name][data.name] = data.value;
       if (name === 'primer_suite_id'){
-        data = helpers.required_metadata_names_from_ids(AllMetadata[did], 'primer_ids');
+        data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], 'primer_ids');
         mdata[metadata_name][data.name] = data.value;
       }
     }
@@ -96,7 +97,7 @@ function get_member_of_portal(req, info) {
   let project_parts = info.project.split('_');
   let project_prefix = project_parts[0]; // i.e. "DCO"
   let region_part = project_parts[project_parts.length - 1]; // i.e. "Av6"
-  let portals_obj = req.CONSTS.PORTALS;
+  let portals_obj = C.PORTALS;
 
   let member_of_portal = {};
 
@@ -168,14 +169,14 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
   //  MD_ENV_CNTRY   country
   //  MD_ENV_LZC     longhurst zone code
     
-  if (req.params.id in PROJECT_INFORMATION_BY_PID) {
-    let project_count = ALL_PCOUNTS_BY_PID[req.params.id];
+  if (req.params.id in C.PROJECT_INFORMATION_BY_PID) {
+    let project_count = C.ALL_PCOUNTS_BY_PID[req.params.id];
 
     let dsinfo = get_dsinfo(req);
     let dscounts = get_dscounts(dsinfo);
     let mdata = get_mdata(dsinfo);
 
-    let info = PROJECT_INFORMATION_BY_PID[req.params.id];
+    let info = C.PROJECT_INFORMATION_BY_PID[req.params.id];
     let member_of_portal = get_member_of_portal(req, info);
 
     let best_file = '';

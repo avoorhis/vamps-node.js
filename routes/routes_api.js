@@ -4,6 +4,7 @@ const helpers = require('./helpers/helpers');
 const path = require('path');
 const fs   = require('fs-extra');
 const IMAGES  = require('./routes_images');
+const C		  = require(app_root + '/public/constants');
 //
 // API LOGIN
 //  {'username':conn['user'], 'password':conn['passwd']}
@@ -43,9 +44,9 @@ router.post('/get_dids_from_project', (req, res) =>{
         var dids = req.body.ds_order
     }else if(req.body.hasOwnProperty("project")){
         var project = req.body.project
-        if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-            var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-            var dids = DATASET_IDS_BY_PID[pid]
+        if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+            var pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
+            var dids = C.DATASET_IDS_BY_PID[pid]
         }else{
             res.send(JSON.stringify('Project Not Found'))
             return
@@ -77,10 +78,10 @@ router.post('/get_dids_from_project', (req, res) =>{
             var txt = ''
             for(n in new_dataset_ids){
                 did = new_dataset_ids[n]
-                dataset_name = DATASET_NAME_BY_DID[did]
-                project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project
+                dataset_name = C.DATASET_NAME_BY_DID[did]
+                project = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].project
                 
-                txt += project +','+ dataset_name +','+ALL_DCOUNTS_BY_DID[did].toString()+"\n"              
+                txt += project +','+ dataset_name +','+C.ALL_DCOUNTS_BY_DID[did].toString()+"\n"
             }
             res.send(JSON.stringify(txt))
           }else if(return_type == 'json_list'){
@@ -88,10 +89,10 @@ router.post('/get_dids_from_project', (req, res) =>{
             for(n in new_dataset_ids){
                 var obj = {}
                 obj.dataset_id = new_dataset_ids[n]
-                obj.dataset_name = DATASET_NAME_BY_DID[obj.dataset_id]
-                obj.project = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[obj.dataset_id]].project               
-                obj.project_id = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[obj.dataset_id]].pid
-                obj.seq_count    = ALL_DCOUNTS_BY_DID[obj.dataset_id]
+                obj.dataset_name = C.DATASET_NAME_BY_DID[obj.dataset_id]
+                obj.project = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[obj.dataset_id]].project
+                obj.project_id = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[obj.dataset_id]].pid
+                obj.seq_count    = C.ALL_DCOUNTS_BY_DID[obj.dataset_id]
                 json_list.push(obj)
             }
             res.send(JSON.stringify(json_list))
@@ -168,9 +169,9 @@ router.post('/get_metadata_from_project', (req, res) =>{
 //     }else{
 //         var rtype = 'csv'
 //     }
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      var dids = DATASET_IDS_BY_PID[pid]
+    if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+      var pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
+      var dids = C.DATASET_IDS_BY_PID[pid]
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
@@ -179,7 +180,7 @@ router.post('/get_metadata_from_project', (req, res) =>{
           mdobj = helpers.get_metadata_obj_from_dids(new_dataset_ids)          
           var item_obj = {}
           for(did in mdobj){
-            var ds = DATASET_NAME_BY_DID[did]
+            var ds = C.DATASET_NAME_BY_DID[did]
             //console.log(ds)            
             item_obj[ds] = mdobj[did]
           }
@@ -203,17 +204,17 @@ router.post('/get_project_information', (req, res) =>{
     //console.log(req.body)
     var project = req.body.project
     
-    if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-      var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-      var dids = DATASET_IDS_BY_PID[pid]
+    if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+      var pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
+      var dids = C.DATASET_IDS_BY_PID[pid]
       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
         console.log('No Datasets Found')
         res.send(JSON.stringify('No Datasets Found - (do you have permissions to access this data?)'))
       }else{
-          pjobj = PROJECT_INFORMATION_BY_PNAME[project]
-          pjobj.env_package = MD_ENV_PACKAGE[pjobj.env_package_id]  
-          pjobj.owner = ALL_USERS_BY_UID[pjobj.oid]        
+          pjobj = C.PROJECT_INFORMATION_BY_PNAME[project]
+          pjobj.env_package = C.MD_ENV_PACKAGE[pjobj.env_package_id]
+          pjobj.owner = C.ALL_USERS_BY_UID[pjobj.oid]
           res.send(JSON.stringify(pjobj))
       }
     }else{
@@ -335,24 +336,24 @@ router.post('/find_user_projects',  (req, res) =>{
     }
     var availible_projects = {}
     // all pid list == 
-    //console.log(PROJECT_INFORMATION_BY_PID)
-    var all_pids = Object.keys(PROJECT_INFORMATION_BY_PID)
+    //console.log(C.PROJECT_INFORMATION_BY_PID)
+    var all_pids = Object.keys(C.PROJECT_INFORMATION_BY_PID)
     var new_pid_list = helpers.screen_pids_for_permissions(req, all_pids)
     for(n in new_pid_list){
-        pname = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].project
-        title = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].title
-        desc = PROJECT_INFORMATION_BY_PID[new_pid_list[n]].description
+        pname = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]].project
+        title = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]].title
+        desc = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]].description
         if(str == ''){
-            availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+            availible_projects[pname] = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
         }else{
             if((pname.toUpperCase()).indexOf(str) !== -1){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+                availible_projects[pname] = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
             }
             if((title.toUpperCase()).indexOf(str) !== -1){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+                availible_projects[pname] = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
             }
             if((desc.toUpperCase()).indexOf(str) !== -1){
-                availible_projects[pname] = PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
+                availible_projects[pname] = C.PROJECT_INFORMATION_BY_PID[new_pid_list[n]]
             }
         }
     }
@@ -411,15 +412,15 @@ router.post('/find_projects_in_geo_area',  (req, res) =>{
     }
     var dids = []
     var project_list = {}
-    //console.log(DatasetsWithLatLong)
+    //console.log(C.DatasetsWithLatLong)
     //console.log(parseInt(nw_lat),parseInt(nw_lon),parseInt(se_lat),parseInt(se_lon))
     console.log(nw_lat,nw_lon,se_lat,se_lon)
-    for(did in DatasetsWithLatLong){
+    for(did in C.DatasetsWithLatLong){
     // helpers.screen_dids_for_permissions(req, dids)
-        if(DatasetsWithLatLong[did].latitude <= nw_lat
-            &&  DatasetsWithLatLong[did].latitude >= se_lat
-            &&  DatasetsWithLatLong[did].longitude >= nw_lon
-            &&  DatasetsWithLatLong[did].longitude <= se_lon
+        if(C.DatasetsWithLatLong[did].latitude <= nw_lat
+            &&  C.DatasetsWithLatLong[did].latitude >= se_lat
+            &&  C.DatasetsWithLatLong[did].longitude >= nw_lon
+            &&  C.DatasetsWithLatLong[did].longitude <= se_lon
         )
         {
             dids.push(did)
@@ -430,13 +431,13 @@ router.post('/find_projects_in_geo_area',  (req, res) =>{
     //console.log('new dids',new_did_list)
     for(n in new_did_list){
         var did = new_did_list[n]
-        var pid = PROJECT_ID_BY_DID[did]
+        var pid = C.PROJECT_ID_BY_DID[did]
         //console.log('pid',pid)
-        var pname = PROJECT_INFORMATION_BY_PID[pid].project
+        var pname = C.PROJECT_INFORMATION_BY_PID[pid].project
         //console.log('pname',pname)
         //console.log('pname2',DatasetsWithLatLong[did].latitude)
         
-        project_list[pname] = {"latitude":DatasetsWithLatLong[did].latitude, "longitude":DatasetsWithLatLong[did].longitude}
+        project_list[pname] = {"latitude":C.DatasetsWithLatLong[did].latitude, "longitude":C.DatasetsWithLatLong[did].longitude}
     
     }
     //console.log('project_list')
@@ -463,13 +464,13 @@ router.post('/find_projects_by_metadata_str',  (req, res) =>{
     var str = req.body.substring
     var return_projects = {};
     var new_dids = {}
-    for(pid in PROJECT_INFORMATION_BY_PID){
+    for(pid in C.PROJECT_INFORMATION_BY_PID){
       
-      var dids = DATASET_IDS_BY_PID[pid]
+      var dids = C.DATASET_IDS_BY_PID[pid]
       //console.log('dids',dids)
       for(n in dids){
         var did = dids[n]
-        var mdobj = AllMetadata[did]
+        var mdobj = C.AllMetadata[did]
         for(mditem in mdobj){
            console.log('mditem',mditem,str)
            if(mditem.includes(str)){
@@ -487,8 +488,8 @@ router.post('/find_projects_by_metadata_str',  (req, res) =>{
          return
     }else{
         for(n in new_dataset_ids){
-            var pid = PROJECT_ID_BY_DID[new_dataset_ids[n]]
-            var p = PROJECT_INFORMATION_BY_PID[pid].project
+            var pid = C.PROJECT_ID_BY_DID[new_dataset_ids[n]]
+            var p = C.PROJECT_INFORMATION_BY_PID[pid].project
             return_projects[p] = 1
         }
     }

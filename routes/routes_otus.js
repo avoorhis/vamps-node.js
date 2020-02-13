@@ -1,6 +1,4 @@
 /*jslint node: true */
-// "use strict" ;
-
 const express = require('express');
 var router = express.Router();
 const passport = require('passport');
@@ -16,7 +14,7 @@ const COMMON = require('./visuals/routes_common');
 const Readable = require('readable-stream').Readable;
 const spawn = require('child_process').spawn;
 const extend = require('util')._extend;
-
+const C = require(app_root + '/public/constants');
 
 //
 // POST ENTROPY
@@ -47,10 +45,10 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
     res.render('otus/otus_index', {
                                   title       : 'Select OTUs',
                                   subtitle    : 'OTU Selection Page',
-                                  proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                  constants   : JSON.stringify(req.CONSTS),
-                                  md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-                                  md_names    : AllMetadataNames,
+                                  proj_info   : JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
+                                  constants   : JSON.stringify(C),
+                                  md_env_package : JSON.stringify(C.MD_ENV_PACKAGE),
+                                  md_names    : C.AllMetadataNames,
                                   filtering   : 0,
                                   portal_to_show : '',
                                   data_to_open: JSON.stringify(DATA_TO_OPEN),
@@ -197,7 +195,7 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
                     pid             : opid,  
                     post_items      : JSON.stringify(visual_post_items), 
                     chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
-                    constants       : JSON.stringify(req.CONSTS),                                
+                    constants       : JSON.stringify(C),
                     user            : req.user,
                     hostname        : req.CONFIG.hostname 
             });
@@ -279,7 +277,7 @@ router.post('/view_selection2', helpers.isLoggedIn, (req, res) => {
                                 pid             : opid,  
                                 post_items      : JSON.stringify(visual_post_items), 
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
-                                constants       : JSON.stringify(req.CONSTS),                                
+                                constants       : JSON.stringify(C),
                                 user            : req.user,
                                 hostname        : req.CONFIG.hostname 
             });
@@ -653,7 +651,7 @@ router.get('/load_otu_list', helpers.isLoggedIn, (req, res) => {
                     otu_project_list[file].size = parseInt(file_items[4],10) // base 10   
                  }
                  if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-                    otu_project_list[file].pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+                    otu_project_list[file].pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
                  }else{
                     otu_project_list[file].pid = ''
                  }         
