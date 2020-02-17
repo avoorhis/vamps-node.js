@@ -1,6 +1,7 @@
 /* jshint multistr: true */
 
-const C = require('../public/constants');
+const C = require(app_root + '/public/constants');
+
 //let domains = ["Archaea","Bacteria","Eukarya","Organelle","Unknown"]
 let taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain, \
  domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id \

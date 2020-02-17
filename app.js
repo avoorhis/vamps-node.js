@@ -2,8 +2,10 @@
 // for newrelic: start in config.js
 const config = require('./config/config');
 const dbconn = require('./config/database').pool;
+const path = require('path');
 // explicitly makes conn global
 global.connection = dbconn;
+global.app_root = path.resolve(__dirname);
 const C		= require('./public/constants');
 
 
@@ -30,8 +32,8 @@ const expressSanitizer = require('express-sanitizer');
 //var expose = require('express-expose');
 const router = express.Router();
 const session = require('express-session');
-const path = require('path');
-global.app_root = path.resolve(__dirname);
+
+
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -40,24 +42,24 @@ const passport = require('passport');
 const favicon = require('serve-favicon');
 const fs = require('fs-extra');
 const zlib = require('zlib');
+const sizeof = require('object-sizeof');
 
-
-const routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
-const users     = require('./routes/routes_users');
-const tmp       = require('./routes/routes_tmp');
-const user_data = require('./routes/routes_user_data');
-const search    = require('./routes/routes_search');
-const projects  = require('./routes/routes_projects');
-const datasets  = require('./routes/routes_datasets');
-const help      = require('./routes/routes_help');
-const resources = require('./routes/routes_resources');
-const admin     = require('./routes/routes_admin');
+const routes      = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
+const users       = require('./routes/routes_users');
+const tmp         = require('./routes/routes_tmp');
+const user_data   = require('./routes/routes_user_data');
+const search      = require('./routes/routes_search');
+const projects    = require('./routes/routes_projects');
+const datasets    = require('./routes/routes_datasets');
+const help        = require('./routes/routes_help');
+const resources   = require('./routes/routes_resources');
+const admin       = require('./routes/routes_admin');
 const oligotyping = require('./routes/routes_oligotyping');
 const otus        = require('./routes/routes_otus');
-const api        = require('./routes/routes_api');
-const portals    = require('./routes/routes_portals');
-const metadata   = require('./routes/routes_metadata');
-const metagenome = require('./routes/routes_metagenome');
+const api         = require('./routes/routes_api');
+const portals     = require('./routes/routes_portals');
+const metadata    = require('./routes/routes_metadata');
+const metagenome  = require('./routes/routes_metagenome');
 //console.log('test')
 const visuals = require('./routes/visuals/routes_visualization');
 //console.log('test2')
@@ -296,8 +298,6 @@ const CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 
 ////////////////////////////////////////////////////////
 
-C.AllMetadata = {}
-
 //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
 let meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
 
@@ -305,17 +305,16 @@ try {
    C.AllMetadata        = require(meta_file);
 }
 catch (e) {
-   console.log(e);
+   if(app.get('env') === 'production'){
+     console.log('Could not get AllMetadata in app.js; Exiting' + e.toString())
+     process.exit()
+   }
    C.AllMetadata = {}
 }
 console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
 
 
-try{
-    let sizeof = require('object-sizeof');
-}catch(e){
-    console.log(e);
-}
+
 //see file models/silva_taxonomy.js
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
@@ -335,7 +334,8 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
         try{
             console.log('SIZE (silva-taxonomy object):',sizeof(C.new_taxonomy));
         }catch(e){
-            console.log('Could not get sizeof(constants.new_taxonomy) in app.js; CONNECTION Problem')
+            console.log('Could not get sizeof(constants.new_taxonomy) in app.js; Exiting')
+            process.exit()
         }
         // uncomment to print out the object:
         //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
@@ -388,7 +388,7 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (rdp-taxonomy object):',sizeof(C.new_rdp_taxonomy));
             }catch(e){
                 C.new_rdp_taxonomy = {};
-                console.log('Could not get sizeof(new_rdp_taxonomy) in app.js')
+                console.log('Could not get sizeof(new_rdp_taxonomy) in app.js; Connection Problem?')
             }
         }
     }
@@ -404,7 +404,7 @@ all_generic_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (generic-taxonomy object):',sizeof(C.new_generic_taxonomy));
             }catch(e){
                 C.new_generic_taxonomy = {};
-                console.log('Could not get sizeof(new_generic_taxonomy) in app.js')
+                console.log('Could not get sizeof(new_generic_taxonomy) in app.js; Connection Problem?')
             }
         }
     }
