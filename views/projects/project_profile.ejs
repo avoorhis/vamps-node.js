@@ -4,17 +4,23 @@
 
 <% publish_data  = JSON.parse(publish_info) %>
 <% //pnotes  = JSON.parse(pnotes) %>
-<% var project_parts = data.project.split('_'); %>
-<% var project_prefix = data.project; %>
-
+<% let project_parts = data.project.split('_'); %>
+<% let project_prefix = data.project; %>
+<% let project_middle = ''; %>
 <% if(project_parts.length >= 2 ){ %>
-<%    project_prefix = project_parts[0]+'_'+project_parts[1]; %>
+<%      project_prefix = project_parts[0]+'_'+project_parts[1]; %>
+<%      project_middle = project_parts[1] %>
 <% } %>
-<% var reveal_all = false %>  <!-- This is for private vs public projects -->
-<% var edit_metadata = false %>
-<% var DCO_project = false %>
+<% let reveal_all = false %>  <!-- This is for private vs public projects -->
+<% let edit_metadata = false %>
+<% let DCO_project = false %>
+<% let ICM_project = false; %>
+<% let protocol_file = ''  %>
 <% if((data.project).substring(0,3) == 'DCO'){ %>
 <%      DCO_project = true %>
+<% }else if((data.project).substring(0,3) == 'ICM') { %>
+    <%  protocol_file = JSON.parse(protocol) %>
+    <%  ICM_project = true %>
 <% } %>
 <!-- Public OR User Permission OR Admin OR MBL Power User -->
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10 || (user.security_level == 45 && DCO_project)  ){ %>
@@ -182,8 +188,12 @@
                 <% } %>
                 <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
                 <tr><td>Institution:</td><td> <%= data.institution %></li>
+
                 <tr><td>Date Created:</td><td><%= data.created_at %></td></tr>
                 <tr><td>Date Last Updated:</td><td><%= data.updated_at %></td></tr>
+                <% if((data.project).substring(0,3) == 'ICM') { %>
+                    <tr><td>Extraction Protocol:</td><td><a href="/static_dnld/protocols/<%= protocol_file %>" target="_blank"><%= protocol_file %></td></a></td></tr>
+                <% } %>
                 <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
                     <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
                     <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->

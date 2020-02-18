@@ -45,6 +45,7 @@ function ProjectProfileFinishRequest (req, res, arg_obj) {
     pnotes: arg_obj.pnotes,
     dco_file: arg_obj.best_file,
     finfo: JSON.stringify(arg_obj.project_file_names),
+    protocol: JSON.stringify(arg_obj.protocol),
     user: req.user,
     hostname: req.CONFIG.hostname
   });
@@ -150,6 +151,16 @@ function get_best_file(req) {
     });
   return best_file;
 }
+function get_protocol_file(req, prefix) {
+  let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
+  let found = false
+  let found_file = fs.readdirSync(path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'protocols')).filter(file => file.startsWith(prefix))[0]
+    if(found_file){
+      return found_file
+    }else{
+      return ''
+    }
+}
 
 router.get('/:id', helpers.isLoggedIn, (req, res) => {
   console.time("in_PJ_id");
@@ -182,7 +193,11 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
     if (info.project.startsWith('DCO')) {
       best_file = get_best_file(req);
     }
-
+    let protocol_file = '';
+    if (info.project.startsWith('ICM')) {
+      let file_middle = info.project.split('_')[1]
+      protocol_file = get_protocol_file(req, file_middle);
+    }
     let publish_data = get_publish_data(req, info.project);
 
     let user_metadata_csv_files = get_csv_files(req);
@@ -205,8 +220,8 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       pnotes: pnotes,
       best_file: best_file,
       project_file_names: project_file_names,
+      protocol: protocol_file
     };
-
     connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
       if (err) {
         console.log('Getting Project Notes Error: ' + err);

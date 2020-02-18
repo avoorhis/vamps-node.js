@@ -1,0 +1,31 @@
+<% include ../../add_ins/begin.ejs %>
+<% let protocol_list = JSON.parse(p_list) %>
+
+<% if (messages.success) { %>
+  	<div class="alert_flash_message_success"><%= messages.success %></div>
+<% }else if(messages.fail){ %>
+    <div class="alert_flash_message_fail"><%= messages.fail %></div>
+<% } %>
+	
+	
+<div class="container">
+<br>
+	<div class="hero-unit">
+	       <h3>ICoMM Extraction Protocol PDFs</h3>
+	</div>
+    <br><br>
+    <ul>
+	<% for(n in protocol_list){ %>
+
+        <li><a href="/static_dnld/<%- protocol_list[n].file_w_path %>" target="_blank"><%- protocol_list[n].file_name %></a></li>
+    <% } %>
+    </ul>
+
+
+</div>
+
+	
+<% include ../../add_ins/end.ejs %>
+   
+ </body>
+ </html>

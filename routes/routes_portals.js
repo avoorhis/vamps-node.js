@@ -1,6 +1,7 @@
 const express = require('express');
 var router = express.Router();
-const helpers = require('./helpers/helpers');
+const helpers = require(app_root + '/routes/helpers/helpers');
+const C = require(app_root + '/public/constants');
 const path  = require('path');
 const fs   = require('fs-extra');
 
@@ -8,7 +9,7 @@ const fs   = require('fs-extra');
 router.get('/portals_index', (req, res) => {
     res.render('portals/portals_index', { 
             title: 'VAMPS:Portals',
-            portals : JSON.stringify(req.CONSTS.PORTALS),
+            portals : JSON.stringify(C.PORTALS),
             user: req.user,hostname: req.CONFIG.hostname,
         });
 });
@@ -31,7 +32,7 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
             title     : 'VAMPS:Portals:Dataset Selection',
             subtitle  : "Dataset Selection Page",
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            constants : JSON.stringify(req.CONSTS),
+            constants : JSON.stringify(C),
             md_env_package : JSON.stringify(MD_ENV_PACKAGE),
             md_names    : AllMetadataNames,
             filtering : 0,
@@ -65,7 +66,7 @@ router.get('/projects/:portal',  (req, res) => {
         res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
-            pagetitle : req.CONSTS.PORTALS[portal].pagetitle,
+            pagetitle : C.PORTALS[portal].pagetitle,
             portal_code    : portal,
             projects  : JSON.stringify(project_list),
             alter_dco_code: alter_dco_list
@@ -289,7 +290,7 @@ router.get('/abstracts/CMP', (req, res) => {
         res.render('portals/coral_microbiome/abstracts', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
-            portal    : req.CONSTS.PORTALS[portal].pagetitle,
+            portal    : C.PORTALS[portal].pagetitle,
             projects  : JSON.stringify(project_list),
             info      : JSON.stringify(info_data),
         });
@@ -364,7 +365,7 @@ router.get('/:portal', (req, res) => {
     //console.log(project_list)
     //console.log('info')
     //console.log(info_data)
-    var pi = req.CONSTS.PORTALS[portal]
+    var pi = C.PORTALS[portal]
     
     res.render('portals/home', { 
             title       : pi.pagetitle,
@@ -382,7 +383,7 @@ router.get('/geomap/:portal', (req, res) => {
     var portal = req.params.portal;
 
     var portal_info = get_portal_metadata(req, portal)
-    portal_info[portal].zoom = req.CONSTS.PORTALS[portal].zoom
+    portal_info[portal].zoom = C.PORTALS[portal].zoom
     //console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
@@ -394,20 +395,36 @@ router.get('/geomap/:portal', (req, res) => {
 
 });
 
-// router.get('/coral_microbiome/background', (req, res) => {
-//     console.log('in /coral_microbiome/background')
-//     // var portal = req.params.portal;
-// // 
-// //     var portal_info = get_portal_metadata(req, portal)
-// //     portal_info[portal].zoom = req.CONSTS.PORTALS[portal].zoom
-// //     //console.log('FOUND '+JSON.stringify(portal_info))
-//     res.render('portals/coral_microbiome/background', { 
-//             title       : 'VAMPS: Background',
-//             user: req.user,hostname: req.CONFIG.hostname,
-//             
-//         });
-// 
-// });
+router.get('/protocol_list/:portal', (req, res) => {
+    console.log('in /protocol_list/:portal')
+    let portal = req.params.portal;
+    console.log(portal)
+    if(portal == 'ICOMM') {
+        let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
+        let protocol_list = []
+        console.log(protocol_dir)
+        fs.readdir(protocol_dir, (err, files) => {
+            files.forEach(file => {
+                console.log(file);
+                let file_w_dnld_path = path.join('protocols',file)
+                protocol_list.push({file_w_path:file_w_dnld_path, file_name:file})
+            });
+
+            res.render('portals/census_of_marine_microbes/protocol_list', {
+                title       : 'VAMPS: ICoMM Protocols',
+                user: req.user,hostname: req.CONFIG.hostname,
+                p_list: JSON.stringify(protocol_list)
+            });
+        });
+
+    }
+//
+//     var portal_info = get_portal_metadata(req, portal)
+//     portal_info[portal].zoom = C.PORTALS[portal].zoom
+//     //console.log('FOUND '+JSON.stringify(portal_info))
+//
+
+});
 
 module.exports = router;
 
@@ -421,7 +438,7 @@ function get_portal_metadata(req, portal){
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
     var project_list = helpers.get_portal_projects(req, portal)
-    var pi = req.CONSTS.PORTALS[portal]
+    var pi = C.PORTALS[portal]
   
     
     
