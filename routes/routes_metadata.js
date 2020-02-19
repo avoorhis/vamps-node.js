@@ -4,7 +4,7 @@ const helpers = require("./helpers/helpers");
 const form    = require("express-form");
 const constants_metadata = require(app_root + '/public/constants_metadata');
 const constants = require(app_root + '/public/constants');
-const CONSTS = Object.assign(constants, constants_metadata);
+const C       = Object.assign(constants, constants_metadata);
 const path    = require("path");
 const config  = require(app_root + '/config/config');
 // const validator           = require('validator');
@@ -32,24 +32,24 @@ router.get('/metadata', (req, res) => {
 router.get('/metadata_list', helpers.isLoggedIn, (req, res) => {
   console.log('in metadata');
   let mdata_w_latlon = {};
-  console.log(DatasetsWithLatLong);
-  //console.log(DatasetsWithLatLong)  // json
-  //console.log(AllMetadataNames)  // list (req w _ids)
-  for (let n in AllMetadataNames) {
-    md_selected                 = AllMetadataNames[n];
+  console.log(C.DatasetsWithLatLong);
+  //console.log(C.DatasetsWithLatLong)  // json
+  //console.log(C.AllMetadataNames)  // list (req w _ids)
+  for (let n in C.AllMetadataNames) {
+    md_selected                 = C.AllMetadataNames[n];
     mdata_w_latlon[md_selected] = 0;
 
     //console.log(md_selected)
-    for (let did in DatasetsWithLatLong) {
+    for (let did in C.DatasetsWithLatLong) {
       //console.log(AllMetadata[did])
       //if(AllMetadata.hasOwnProperty(did)){
       //console.log('found1',did)
       //let mdata = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected)
-      mdata = AllMetadata[did];   // has ids
+      mdata = C.AllMetadata[did];   // has ids
 
-      pid   = PROJECT_ID_BY_DID[did];
+      pid   = C.PROJECT_ID_BY_DID[did];
       //console.log('pid',pid)
-      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
 
       if (mdata.hasOwnProperty(md_selected)) {
         mdata_w_latlon[md_selected] = 1;
@@ -60,12 +60,12 @@ router.get('/metadata_list', helpers.isLoggedIn, (req, res) => {
   res.render("metadata/metadata_list", {
     title: "VAMPS:Metadata List",
     user: req.user, hostname: req.CONFIG.hostname,
-    metadata: AllMetadataNames,
-    req_mdata_names: JSON.stringify(req.CONSTS.REQ_METADATA_FIELDS_wIDs),
+    metadata: C.AllMetadataNames,
+    req_mdata_names: JSON.stringify(C.REQ_METADATA_FIELDS_wIDs),
     mdata_latlon: JSON.stringify(mdata_w_latlon),
-    names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
-    pid_by_did: JSON.stringify(PROJECT_ID_BY_DID),
-    pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID)
+    names_by_did: JSON.stringify(C.DATASET_NAME_BY_DID),
+    pid_by_did: JSON.stringify(C.PROJECT_ID_BY_DID),
+    pinfo_by_pid: JSON.stringify(C.PROJECT_INFORMATION_BY_PID)
   });
 });
 
@@ -74,16 +74,16 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, (req, res) => {
   let md_selected = req.params.mditem;
   console.log(md_selected);
   let mdvalues = {};
-  for (let did in DATASET_NAME_BY_DID) {
-    if (did in AllMetadata) {
+  for (let did in C.DATASET_NAME_BY_DID) {
+    if (did in C.AllMetadata) {
       let shortened_metadata_name = md_selected.slice(0, md_selected.length - 3);
-      if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
-        let data         = helpers.required_metadata_names_from_ids(AllMetadata[did], md_selected);  // send _id
+      if (C.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
+        let data         = helpers.required_metadata_names_from_ids(C.AllMetadata[did], md_selected);  // send _id
         mdvalues[did]    = data.value;
         md_selected_show = data.name;
       }
-      else if (AllMetadata[did].hasOwnProperty(md_selected)) {
-        mdvalues[did]    = AllMetadata[did][md_selected];
+      else if (C.AllMetadata[did].hasOwnProperty(md_selected)) {
+        mdvalues[did]    = C.AllMetadata[did][md_selected];
         md_selected_show = md_selected;
 
       }
@@ -93,9 +93,9 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, (req, res) => {
     title: 'VAMPS:Metadata List Result',
     user: req.user, hostname: req.CONFIG.hostname,
     vals: JSON.stringify(mdvalues),
-    names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
-    pid_by_did: JSON.stringify(PROJECT_ID_BY_DID),
-    pinfo_by_pid: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    names_by_did: JSON.stringify(C.DATASET_NAME_BY_DID),
+    pid_by_did: JSON.stringify(C.PROJECT_ID_BY_DID),
+    pinfo_by_pid: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
     item: md_selected_show
   });
 });
@@ -104,7 +104,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, (req, res) => {
   console.log('in metadata - geomap');
   let md_item = req.params.item;
   let shortened_metadata_name = md_item.slice(0, md_item.length - 3);
-  if (req.CONSTS.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
+  if (C.REQ_METADATA_FIELDS_wIDs.includes(shortened_metadata_name)) {
     md_item_show = md_item.slice(0, md_item.length - 3);
   } else {
     md_item_show = md_item;
@@ -132,18 +132,18 @@ function get_metadata_hash(md_selected) {
   //console.log('PROJECT_ID_BY_DID.length')
   //console.log(PROJECT_ID_BY_DID)
   //console.log(Object.keys(PROJECT_ID_BY_DID).length)
-  for (let did in PROJECT_ID_BY_DID) {
+  for (let did in C.PROJECT_ID_BY_DID) {
 
-    if (AllMetadata.hasOwnProperty(did)) {
+    if (C.AllMetadata.hasOwnProperty(did)) {
       //console.log('found1',did)
-      let mdata = AllMetadata[did];
-      let pid   = PROJECT_ID_BY_DID[did];
+      let mdata = C.AllMetadata[did];
+      let pid   = C.PROJECT_ID_BY_DID[did];
       //console.log('pid',pid)
-      pname     = PROJECT_INFORMATION_BY_PID[pid].project;
+      pname     = C.PROJECT_INFORMATION_BY_PID[pid].project;
       if (mdata.hasOwnProperty(md_selected) && mdata.hasOwnProperty('latitude') && mdata.hasOwnProperty('longitude')) {
         if (mdata['latitude'] !== 'None' && mdata['longitude'] !== 'None') {
           //console.log('found2',md_selected)
-          let pjds                         = pname + '--' + DATASET_NAME_BY_DID[did];
+          let pjds                         = pname + '--' + C.DATASET_NAME_BY_DID[did];
           md_info.metadata[pjds]           = {};
           md_info.metadata[pjds].pid       = pid;
           md_info.metadata[pjds].did       = did;
@@ -259,10 +259,10 @@ router.get('/metadata_new', helpers.isLoggedIn, (req, res) => {
     user: req.user,
     hostname: req.CONFIG.hostname,
     button_name: "Validate",
-    domain_regions: CONSTS.DOMAIN_REGIONS,
+    domain_regions: C.DOMAIN_REGIONS,
     samples_number: "",
     pi_list: pi_list,
-    packages_and_portals: Object.keys(CONSTS.PACKAGES_AND_PORTALS),
+    packages_and_portals: Object.keys(C.PACKAGES_AND_PORTALS),
     metadata_new_form_values: clean_metadata_new_form,
   });
 });
@@ -501,7 +501,7 @@ function make_metadata_object_from_form(req, res) {
   let has_new_datasets = (data['dataset_id'].includes(""));
   if (has_new_project)
   {
-    let user_id           = PROJECT_INFORMATION_BY_PID[pid].oid;
+    let user_id           = C.PROJECT_INFORMATION_BY_PID[pid].oid;
     const new_cur_project = new Project(req, res, pid, user_id);
     new_cur_project.make_project_obj_with_existing_project_info_by_pid(pid);
 
@@ -560,7 +560,7 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
 
     req.body.project_id = pid;
 
-    let all_field_units = MD_CUSTOM_UNITS[pid];
+    let all_field_units = C.MD_CUSTOM_UNITS[pid];
 
     const show_new      = new metadata_controller.ShowObj(req, res, all_metadata, all_field_names4, all_field_units, {});
     const csv_file_write = new csv_files_controller.CsvFilesWrite(req, res);
@@ -640,7 +640,7 @@ function make_metadata_object_from_db(req, res) {
   // console.time("TIME: make_metadata_object_from_db");
   let pid         = req.body.project_id;
   //repeated!
-  let dataset_ids = DATASET_IDS_BY_PID[pid];
+  let dataset_ids = C.DATASET_IDS_BY_PID[pid];
   // let project     = PROJECT_INFORMATION_BY_PID[pid].project;
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, dataset_ids);
 
@@ -651,7 +651,7 @@ function make_metadata_object_from_db(req, res) {
 function create_AllMetadata_picked(dataset_ids) {
 
   // // console.time("TIME: slice_object_by_keys");
-  let AllMetadata_picked = helpers.slice_object_by_keys(AllMetadata, dataset_ids);
+  let AllMetadata_picked = helpers.slice_object_by_keys(C.AllMetadata, dataset_ids);
   // // console.timeEnd("TIME: slice_object_by_keys");
 
   const all_metadata_picked_is_empty = helpers.is_empty(AllMetadata_picked);
@@ -672,8 +672,8 @@ function get_dataset_info(met_obj)
 
   // console.time("TIME: dataset_info"); // the fastest
   let dataset_info = [];
-  for (let i in ALL_DATASETS.projects) {
-    let item = ALL_DATASETS.projects[i];
+  for (let i in C.ALL_DATASETS.projects) {
+    let item = C.ALL_DATASETS.projects[i];
     if (String(item.pid) === String(pid)) {
       dataset_info = item.datasets;
       break;
@@ -724,7 +724,7 @@ function get_db_data (req, res, met_obj) { // move to met_obj?
 }
 
 function add_abstract_data(req, res, met_obj) {
-  const user_id = PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
+  const user_id = C.PROJECT_INFORMATION_BY_PID[met_obj.pid].oid;
   const this_project = new Project(req, res, met_obj.pid, user_id);
   this_project.make_project_obj_with_existing_project_info_by_pid(met_obj.pid);
   const project_obj = this_project.project_obj;

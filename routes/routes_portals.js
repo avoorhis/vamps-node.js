@@ -31,10 +31,11 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
             subtitle  : "Dataset Selection Page",
-            proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+
+            proj_info : JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(C),
-            md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-            md_names    : AllMetadataNames,
+            md_env_package : JSON.stringify(C.MD_ENV_PACKAGE),
+            md_names    : C.AllMetadataNames,
             filtering : 0,
             portal_to_show : portal,
             data_to_open : JSON.stringify({}),
@@ -98,15 +99,15 @@ router.post('/dco_project_list',  (req, res) => {
     // start with all DCO projects COMPLETE
     // then, if find empty did, convert to PARTIAL
     // Count datasets with
-    pids_with_latlon = {}
+    let pids_with_latlon = {}
     for(did in DatasetsWithLatLong){
-        if(DatasetsWithLatLong[did].latitude != '' || DatasetsWithLatLong[did].longitude != ''){
-            pids_with_latlon[DatasetsWithLatLong[did].pid] = 1
+        if(C.DatasetsWithLatLong[did].latitude != '' || C.DatasetsWithLatLong[did].longitude != ''){
+            pids_with_latlon[C.DatasetsWithLatLong[did].pid] = 1
         }    
     }
     
      //console.log(pids_with_latlon)
-    new_dco_list_latlon = {}
+    let new_dco_list_latlon = {}
     project_list.forEach( prj => {
         if(list_type=='ampl'){ 
             if(prj.metagenomic == 0){
@@ -434,7 +435,7 @@ module.exports = router;
 function get_portal_metadata(req, portal){
     // all_metadata is by did
     
-    portal_info = {}
+    let portal_info = {}
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
     var project_list = helpers.get_portal_projects(req, portal)
@@ -442,13 +443,13 @@ function get_portal_metadata(req, portal){
   
     
     
-    for(did in DATASET_NAME_BY_DID){   // too big
+    for(did in C.DATASET_NAME_BY_DID){   // too big
         //did = all_metadata[i]
-        pid = PROJECT_ID_BY_DID[did]
+        pid = C.PROJECT_ID_BY_DID[did]
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
-        pname = PROJECT_INFORMATION_BY_PID[pid].project
+        pname = C.PROJECT_INFORMATION_BY_PID[pid].project
         
-        dataset_metadata = AllMetadata[did] || {}
+        dataset_metadata = C.AllMetadata[did] || {}
             
         
         if(pi.prefixes.length > 0){
@@ -457,7 +458,7 @@ function get_portal_metadata(req, portal){
               //console.log('p1',p,prefixes[p])
               if( pname.substring(0, pi.prefixes[p].length) === pi.prefixes[p] ){
                   
-                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  pjds = pname+'--'+ C.DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   
                   portal_info[portal].metadata[pjds].pid = pid
@@ -491,7 +492,7 @@ function get_portal_metadata(req, portal){
               //console.log('p2',p,prefixes[p])
               if( pname === pi.projects[p] ){
                   //console.log('FOUND in projects '+pname)
-                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  pjds = pname+'--'+C.DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
                   portal_info[portal].metadata[pjds].did = did
@@ -518,7 +519,7 @@ function get_portal_metadata(req, portal){
               //console.log('p3',p,pi.suffixes[p])
               if( pname.substring(pname.length - pi.suffixes[p].length) === pi.suffixes[p] ){
                  // console.log('FOUND in suffixes '+pname)
-                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  pjds = pname+'--'+C.DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
                   portal_info[portal].metadata[pjds].pid = pid
                   portal_info[portal].metadata[pjds].did = did

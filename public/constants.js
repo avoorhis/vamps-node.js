@@ -1,7 +1,7 @@
-var path = require("path");
+const path = require("path");
+const config = require('../config/config');
 
-
-var constants = {};
+let constants = {};
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 //// DO NOT CHANGE ANYTHING BELOW HERE ////
@@ -681,6 +681,12 @@ constants.VISUAL_THUMBNAILS = {
   ]
 };
 
+//constants.ORDERED_METADATA_NAMES_OBJ = {}
 constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Request Project Permanency", "Other"];
+//
+//
+//
+
+
 
 module.exports = constants;

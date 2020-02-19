@@ -1360,7 +1360,7 @@ function create_piecharts_group(new_window) {
     document.getElementById('piecharts_title').style['font-size'] = 'small';
     piecharts_div.innerHTML = '';
     piecharts_div.style.display = 'block';
-
+    piecharts_div.style.text_align = 'center'
     document.getElementById('pre_piecharts_div').style.display = 'block';
     
     var xmlhttp = new XMLHttpRequest();
@@ -1378,6 +1378,7 @@ function create_piecharts_group(new_window) {
                 clearInterval(myWaitVar);
                data = JSON.parse(xmlhttp.response)    
                piecharts_div.innerHTML = data.html;
+
                 document.getElementById('piecharts_dnld_btn').disabled = false          
             }
          }

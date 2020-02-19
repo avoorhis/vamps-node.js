@@ -1,9 +1,9 @@
 const path = require('path');
 const fs = require('fs-extra');
-const COMMON  = require('./routes_common');
+const COMMON  = require(app_root + '/routes/visuals/routes_common');
 const CONFIG  = require(app_root + '/config/config');
-const helpers = require('../helpers/helpers');
-
+const helpers = require(app_root + '/routes/helpers/helpers');
+const C		  = require(app_root + '/public/constants');
 
 
 module.exports = {
@@ -98,8 +98,8 @@ module.exports = {
 					var mdname = metadata_names[mdname_idx];
 					//console.log(METADATA[did])
 					//console.log(mdname)
-					if (did in AllMetadata) {
-						let data = helpers.required_metadata_ids_from_names(AllMetadata[did], mdname);
+					if (did in C.AllMetadata) {
+						let data = helpers.required_metadata_ids_from_names(C.AllMetadata[did], mdname);
 
 						ds_row[mdname] = data.value;
 						metadata2[pjds][mdname] = data.value;

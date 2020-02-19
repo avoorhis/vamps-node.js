@@ -1,3 +1,4 @@
+
 // LOAD_ALL_DATASETS.js
 const express = require('express');
 let router = express.Router();
@@ -7,7 +8,7 @@ const config  = require('../config/config');
 const async = require('async');
 const global_vars_controller = require(app_root + '/controllers/globalVarsController');
 const global_vars = new global_vars_controller.GlobalVars();
-
+const C		  = require(app_root + '/public/constants');
 //
 //
 //
@@ -15,39 +16,39 @@ const global_vars = new global_vars_controller.GlobalVars();
 //console.log(queries.qSequenceCounts)
 // This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
 module.exports.get_datasets = callback => {
-  PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
-  ALL_CLASSIFIERS_BY_CID      = {};
-  ALL_DATASETS                = {};  // GLOBAL
-  DATASET_NAME_BY_DID         = {};  // GLOBAL
-  PROJECT_ID_BY_DID           = {};
-  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
-  DATASET_IDS_BY_PID          = {};
-  ALL_CLASSIFIERS_BY_PID      = {};
-  DatasetsWithLatLong         = {};
-  AllMetadataNames            = [];
-  ALL_DATASETS.projects       = [];
-  ALL_USERS_BY_UID            = {};
-  ALL_USERS_BY_UnK            = {};
-  ALL_DCOUNTS_BY_DID          = {};    // GLOBAL  
-  ALL_PCOUNTS_BY_PID          = {};    // GLOBAL 
-  ALL_CLASSIFIERS_BY_PID      = {};
-  USER_GROUPS                 = {};
+    C.PROJECT_INFORMATION_BY_PID  = {};
+    C.ALL_CLASSIFIERS_BY_CID      = {};
+    C.ALL_DATASETS                = {};
+    C.DATASET_NAME_BY_DID         = {};
+    C.PROJECT_ID_BY_DID           = {};
+    C.PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
+    C.DATASET_IDS_BY_PID          = {};
+    C.ALL_CLASSIFIERS_BY_PID      = {};
+    C.DatasetsWithLatLong         = {};
+    C.AllMetadataNames            = [];
+    C.ALL_DATASETS.projects       = [];
+    C.ALL_USERS_BY_UID            = {};
+    C.ALL_USERS_BY_UnK            = {};
+    C.ALL_DCOUNTS_BY_DID          = {};
+    C.ALL_PCOUNTS_BY_PID          = {};
+    C.ALL_CLASSIFIERS_BY_PID      = {};
+    C.USER_GROUPS                 = {};
   // Metadata ids and values lookups
-  MD_ENV_ENVO                 = {};
-  MD_ENV_CNTRY                = {};
-  MD_ENV_LZC                  = {};
-  MD_ENV_PACKAGE              = {};
-  MD_DOMAIN                   = {};
-  MD_DNA_REGION               = {};
-  MD_TARGET_GENE              = {};
-  MD_SEQUENCING_PLATFORM      = {};
-  MD_3LETTER_ADAPTER          = {};
-  MD_ADAPTER_SEQUENCE         = {};
-  MD_ILLUMINA_INDEX           = {};
-  MD_PRIMER_SUITE             = {};
-  MD_RUN                      = {};
-  MD_CUSTOM_UNITS             = {};
-  MD_CUSTOM_FIELDS_UNITS      = {};
+    C.MD_ENV_ENVO                 = {};
+    C.MD_ENV_CNTRY                = {};
+    C.MD_ENV_LZC                  = {};
+    C.MD_ENV_PACKAGE              = {};
+    C.MD_DOMAIN                   = {};
+    C.MD_DNA_REGION               = {};
+    C.MD_TARGET_GENE              = {};
+    C.MD_SEQUENCING_PLATFORM      = {};
+    C.MD_3LETTER_ADAPTER          = {};
+    C.MD_ADAPTER_SEQUENCE         = {};
+    C.MD_ILLUMINA_INDEX           = {};
+    C.MD_PRIMER_SUITE             = {};
+    C.MD_RUN                      = {};
+    C.MD_CUSTOM_UNITS             = {};
+    C.MD_CUSTOM_FIELDS_UNITS      = {};
 
 
   connection.query(queries.get_select_datasets_query(), (err, rows, fields) => {
@@ -72,7 +73,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING AllMetadataNames');
       console.log(' INITIALIZING DatasetsWithLatLong');
 
-      callback(ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
+      callback(C.ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
   });
 
   connection.query(queries.get_all_user_query(), (err, rows, fields) => {
@@ -84,25 +85,25 @@ module.exports.get_datasets = callback => {
 
         for (var i=0; i < rows.length; i++) {
           var uid = rows[i].uid;
-          ALL_USERS_BY_UID[uid] = {};
-          ALL_USERS_BY_UID[uid].email       = rows[i].email;
-          ALL_USERS_BY_UID[uid].username    = rows[i].username;
-          ALL_USERS_BY_UID[uid].last_name   = rows[i].last_name;
-          ALL_USERS_BY_UID[uid].first_name  = rows[i].first_name;
-          ALL_USERS_BY_UID[uid].institution = rows[i].institution;
-          ALL_USERS_BY_UID[uid].status      = rows[i].security_level;
-          ALL_USERS_BY_UID[uid].groups = [];
+            C.ALL_USERS_BY_UID[uid] = {};
+            C.ALL_USERS_BY_UID[uid].email       = rows[i].email;
+            C.ALL_USERS_BY_UID[uid].username    = rows[i].username;
+            C.ALL_USERS_BY_UID[uid].last_name   = rows[i].last_name;
+            C.ALL_USERS_BY_UID[uid].first_name  = rows[i].first_name;
+            C.ALL_USERS_BY_UID[uid].institution = rows[i].institution;
+            C.ALL_USERS_BY_UID[uid].status      = rows[i].security_level;
+            C.ALL_USERS_BY_UID[uid].groups = [];
 
           var uniq_key = rows[i].first_name + "#" + rows[i].last_name + "#" + rows[i].email + "#" + rows[i].institution;
-          ALL_USERS_BY_UnK[uniq_key] = {};
-          ALL_USERS_BY_UnK[uniq_key].user_id     = rows[i].uid;
-          ALL_USERS_BY_UnK[uniq_key].email       = rows[i].email;
-          ALL_USERS_BY_UnK[uniq_key].username    = rows[i].username;
-          ALL_USERS_BY_UnK[uniq_key].last_name   = rows[i].last_name;
-          ALL_USERS_BY_UnK[uniq_key].first_name  = rows[i].first_name;
-          ALL_USERS_BY_UnK[uniq_key].institution = rows[i].institution;
-          ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
-          ALL_USERS_BY_UnK[uniq_key].groups = [];
+            C.ALL_USERS_BY_UnK[uniq_key] = {};
+            C.ALL_USERS_BY_UnK[uniq_key].user_id     = rows[i].uid;
+            C.ALL_USERS_BY_UnK[uniq_key].email       = rows[i].email;
+            C.ALL_USERS_BY_UnK[uniq_key].username    = rows[i].username;
+            C.ALL_USERS_BY_UnK[uniq_key].last_name   = rows[i].last_name;
+            C.ALL_USERS_BY_UnK[uniq_key].first_name  = rows[i].first_name;
+            C.ALL_USERS_BY_UnK[uniq_key].institution = rows[i].institution;
+            C.ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
+            C.ALL_USERS_BY_UnK[uniq_key].groups = [];
         }
         connection.query(queries.get_all_user_groups(), (err, rows, fields) => {
           if (err)  {
@@ -114,8 +115,8 @@ module.exports.get_datasets = callback => {
                 var uid = rows[i].uid
                 var group = rows[i].group;
 
-                if(typeof ALL_USERS_BY_UID[uid] !== 'undefined' && ALL_USERS_BY_UID[uid].groups.indexOf(group) === -1 ){
-                    ALL_USERS_BY_UID[uid].groups.push(group);
+                if(typeof C.ALL_USERS_BY_UID[uid] !== 'undefined' && C.ALL_USERS_BY_UID[uid].groups.indexOf(group) === -1 ){
+                    C.ALL_USERS_BY_UID[uid].groups.push(group);
                 }
             }
           }
@@ -135,7 +136,7 @@ module.exports.get_datasets = callback => {
       } else {
 
         for (var i=0; i < rows.length; i++) {
-      	  ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier+'_'+rows[i].database;
+      	  C.ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier+'_'+rows[i].database;
         }
       }
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');
@@ -157,8 +158,8 @@ module.exports.get_datasets = callback => {
 
   var ug_array = []
   for(var gp in config.user_groups){
-    //console.log('gp',gp)
-    USER_GROUPS[gp] = []
+      //console.log('gp',gp)
+      C.USER_GROUPS[gp] = []
     //ug_array.push(config.user_groups[gp])
     // console.log(config.user_groups[gp])
 //     if(Array.isArray(config.user_groups[gp])){
@@ -342,7 +343,7 @@ var fakeAsyncApi = (thing, callback) => {
               }
 //              console.log(rows)
               for(n in rows){
-                USER_GROUPS[gp].push(rows[n].project_id)
+                  C.USER_GROUPS[gp].push(rows[n].project_id)
               }
             });
       //console.log("'"+thing.gp + "' processed");

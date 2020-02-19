@@ -1,14 +1,15 @@
 const express  = require('express');
 var router   = express.Router();
 const passport = require('passport');
-const helpers  = require('./helpers/helpers');
-const queries  = require('./queries_admin');
+const helpers  = require(app_root + '/routes/helpers/helpers');
+const queries  = require(app_root + '/routes/queries_admin');
 const config   = require(app_root + '/config/config');
 const fs       = require('fs-extra');
 const path     = require('path');
 const spawn    = require('child_process').spawn;
 const multer   = require('multer');
 const url       = require('url');
+const C		  = require(app_root + '/public/constants');
 
 var storage  = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -41,8 +42,8 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, r
   res.render('admin/assign_permissions', {
     title: 'VAMPS Site Administration',
     user: req.user,
-    project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -57,14 +58,14 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => 
 
   let user_order    = get_name_ordered_users_list();
   let project_order = get_name_ordered_projects_list();
-  //console.log(JSON.stringify(ALL_USERS_BY_UID))
+  //console.log(JSON.stringify(C.ALL_USERS_BY_UID))
   res.render('admin/permissions', {
     title: 'VAMPS Site Administration',
     user: req.user,
     project_order: JSON.stringify(project_order),
     user_order: JSON.stringify(user_order),
-    //project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    //project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -78,8 +79,8 @@ router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
   res.render('admin/public_status', {
     title: 'VAMPS Site Administration',
     user: req.user,
-    project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -94,16 +95,16 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
   new_public   = parseInt(req.body.public);
   //console.log(selected_pid,' ',new_public)
   response     = 'no'
-  if (new_public !== PROJECT_INFORMATION_BY_PID[selected_pid].public) {
+  if (new_public !== C.PROJECT_INFORMATION_BY_PID[selected_pid].public) {
     //q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'";
     q = queries.alter_project_public(new_public, selected_pid)
     if (new_public === 1) {
-      PROJECT_INFORMATION_BY_PID[selected_pid].public      = 1;
-      PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
+      C.PROJECT_INFORMATION_BY_PID[selected_pid].public      = 1;
+      C.PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
     } else {
       // give owner sole permissions
-      PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [PROJECT_INFORMATION_BY_PID[selected_pid].oid];
-      PROJECT_INFORMATION_BY_PID[selected_pid].public      = 0;
+      C.PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [C.PROJECT_INFORMATION_BY_PID[selected_pid].oid];
+      C.PROJECT_INFORMATION_BY_PID[selected_pid].public      = 0;
     }
     connection.query(q, (err, rows, fields) => {
       //console.log(qSequenceCounts)
@@ -143,17 +144,17 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
   new_status       = parseInt(req.body.status);
   //console.log(selected_pid,' ',new_public)
   var response     = 'no'
-  if (new_status !== ALL_USERS_BY_UID[selected_uid].status) {
+  if (new_status !== C.ALL_USERS_BY_UID[selected_uid].status) {
     q = queries.alter_security_level(new_status, selected_uid)  //"UPDATE user set security_level='"+new_status+"' WHERE user_id='"+selected_uid+"'";
 
     if (new_status === 1) {
-      ALL_USERS_BY_UID[selected_uid].status = 1;  // Admin
+      C.ALL_USERS_BY_UID[selected_uid].status = 1;  // Admin
     } else if (new_status === 10) {
-      ALL_USERS_BY_UID[selected_uid].status = 10;  // MBL user
+      C.ALL_USERS_BY_UID[selected_uid].status = 10;  // MBL user
     } else if (new_status === 45) {
-      ALL_USERS_BY_UID[selected_uid].status = 45;  // DCO Editor
+      C.ALL_USERS_BY_UID[selected_uid].status = 45;  // DCO Editor
     } else {
-      ALL_USERS_BY_UID[selected_uid].status = 50; // Lowly User
+      C.ALL_USERS_BY_UID[selected_uid].status = 50; // Lowly User
     }
     connection.query(q, (err, rows, fields) => {
       if (err) {
@@ -172,8 +173,8 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
 
   console.log('in show_user_info');
   var selected_uid = req.body.uid;
-  if (selected_uid in ALL_USERS_BY_UID) {
-    info = ALL_USERS_BY_UID[selected_uid];
+  if (selected_uid in C.ALL_USERS_BY_UID) {
+    info = C.ALL_USERS_BY_UID[selected_uid];
   } else {
 
   }
@@ -210,7 +211,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
     var pid = url_parts.query.pid;
   }
   var myjson;
-  ALL_DATASETS.projects.forEach( prj => {
+  C.ALL_DATASETS.projects.forEach( prj => {
     if (prj.pid == pid) {
       myjson = prj;
     }
@@ -222,7 +223,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
     user: req.user,
     pid: pid,
     project_info: JSON.stringify(myjson),
-    project: PROJECT_INFORMATION_BY_PID[pid].project,
+    project: C.PROJECT_INFORMATION_BY_PID[pid].project,
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -240,10 +241,10 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
   if (url_parts.query.pid === undefined) {
     var proj_to_open = 0;
   } else {
-    var proj_to_open = PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
+    var proj_to_open = C.PROJECT_INFORMATION_BY_PID[url_parts.query.pid];
   }
-  //console.log(PROJECT_INFORMATION_BY_PID);
-  //console.log(ALL_USERS_BY_UID);
+  //console.log(C.PROJECT_INFORMATION_BY_PID);
+  //console.log(C.ALL_USERS_BY_UID);
   let project_list = get_name_ordered_projects_list();
   res.render('admin/alter_project', {
     title: 'VAMPS Site Administration',
@@ -261,11 +262,11 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
 router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   console.log('in show_user_info');
-  //console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(C.PROJECT_INFORMATION_BY_PID);
 
   var selected_pid = req.body.pid;
-  if (selected_pid in PROJECT_INFORMATION_BY_PID) {
-    info = PROJECT_INFORMATION_BY_PID[selected_pid];
+  if (selected_pid in C.PROJECT_INFORMATION_BY_PID) {
+    info = C.PROJECT_INFORMATION_BY_PID[selected_pid];
   } else {
 
   }
@@ -290,13 +291,13 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req, r
   html += ' <td>';
   html += " <select id='new_oid' name='new_oid' width='200' style='width: 200px'>";
   for (uid in ALL_USERS_BY_UID) {
-    if (ALL_USERS_BY_UID[uid].username !== 'guest') {
-      if (ALL_USERS_BY_UID[uid].username === info.username) {
-        html += "    <option selected value='" + uid + "'>" + ALL_USERS_BY_UID[uid].last_name + "," + ALL_USERS_BY_UID[uid].first_name;
-        html += "     <small>(" + ALL_USERS_BY_UID[uid].username + ")</small></option>";
+    if (C.ALL_USERS_BY_UID[uid].username !== 'guest') {
+      if (C.ALL_USERS_BY_UID[uid].username === info.username) {
+        html += "    <option selected value='" + uid + "'>" + C.ALL_USERS_BY_UID[uid].last_name + "," + C.ALL_USERS_BY_UID[uid].first_name;
+        html += "     <small>(" + C.ALL_USERS_BY_UID[uid].username + ")</small></option>";
       } else {
-        html += "    <option value='" + uid + "'>" + ALL_USERS_BY_UID[uid].last_name + "," + ALL_USERS_BY_UID[uid].first_name;
-        html += "     <small>(" + ALL_USERS_BY_UID[uid].username + ")</small></option>";
+        html += "    <option value='" + uid + "'>" + ALL_USERS_BY_UID[uid].last_name + "," + C.ALL_USERS_BY_UID[uid].first_name;
+        html += "     <small>(" + C.ALL_USERS_BY_UID[uid].username + ")</small></option>";
       }
     }
   }
@@ -372,8 +373,8 @@ router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], (req,
   var new_name = req.body.name;
   var new_desc = req.body.desc;
 
-  DATASET_NAME_BY_DID[did] = name;
-  ALL_DATASETS.projects.forEach( prj => {
+  C.DATASET_NAME_BY_DID[did] = name;
+  C.ALL_DATASETS.projects.forEach( prj => {
     if (prj.pid == pid) {
       prj.datasets.forEach( ds => {
         if (ds.did == did) {
@@ -401,18 +402,18 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req,
   var pid            = req.body.pid;
   var q;
 
-  //console.log(ALL_DATASETS);
-  //console.log(typeof ALL_DATASETS);
+  //console.log(C.ALL_DATASETS);
+  //console.log(typeof C.ALL_DATASETS);
 
   switch (item_to_update) {
     case 'pname':
       new_project_name                        = value;
       var rev_pname                           = helpers.reverse(new_project_name);
-      var old_project_name                    = PROJECT_INFORMATION_BY_PID[pid].project;
-      PROJECT_INFORMATION_BY_PID[pid].project = new_project_name;
-      delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
-      PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
-      ALL_DATASETS.projects.forEach( prj => {
+      var old_project_name                    = C.PROJECT_INFORMATION_BY_PID[pid].project;
+      C.PROJECT_INFORMATION_BY_PID[pid].project = new_project_name;
+      delete C.PROJECT_INFORMATION_BY_PNAME[old_project_name];
+      C.PROJECT_INFORMATION_BY_PNAME[new_project_name] = C.PROJECT_INFORMATION_BY_PID[pid];
+      C.ALL_DATASETS.projects.forEach( prj => {
         if (prj.pid == pid) {
           prj.name = new_project_name;
         }
@@ -422,19 +423,19 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req,
 
     case 'powner':
       new_owner_id                                = value;
-      PROJECT_INFORMATION_BY_PID[pid].last        = ALL_USERS_BY_UID[new_owner_id].last_name;
-      PROJECT_INFORMATION_BY_PID[pid].first       = ALL_USERS_BY_UID[new_owner_id].first_name;
-      PROJECT_INFORMATION_BY_PID[pid].username    = ALL_USERS_BY_UID[new_owner_id].username;
-      PROJECT_INFORMATION_BY_PID[pid].email       = ALL_USERS_BY_UID[new_owner_id].email;
-      PROJECT_INFORMATION_BY_PID[pid].institution = ALL_USERS_BY_UID[new_owner_id].institution;
-      PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
+      C.PROJECT_INFORMATION_BY_PID[pid].last        = C.ALL_USERS_BY_UID[new_owner_id].last_name;
+      C.PROJECT_INFORMATION_BY_PID[pid].first       = C.ALL_USERS_BY_UID[new_owner_id].first_name;
+      C.PROJECT_INFORMATION_BY_PID[pid].username    = C.ALL_USERS_BY_UID[new_owner_id].username;
+      C.PROJECT_INFORMATION_BY_PID[pid].email       = C.ALL_USERS_BY_UID[new_owner_id].email;
+      C.PROJECT_INFORMATION_BY_PID[pid].institution = C.ALL_USERS_BY_UID[new_owner_id].institution;
+      C.PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
       q                                           = queries.update_project_info(item_to_update, new_owner_id, pid)
       break;
 
     case 'ptitle':
       new_project_title                     = value;
-      PROJECT_INFORMATION_BY_PID[pid].title = new_project_title;
-      ALL_DATASETS.projects.forEach( prj => {
+      C.PROJECT_INFORMATION_BY_PID[pid].title = new_project_title;
+      C.ALL_DATASETS.projects.forEach( prj => {
         if (prj.pid == pid) {
           prj.title = new_project_title;
         }
@@ -444,7 +445,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req,
 
     case 'pdesc':
       new_project_desc                            = value;
-      PROJECT_INFORMATION_BY_PID[pid].description = new_project_desc;
+      C.PROJECT_INFORMATION_BY_PID[pid].description = new_project_desc;
       q += " project_description='" + new_project_desc + "'";
       q                                           = queries.update_project_info(item_to_update, new_project_desc, pid)
       break;
@@ -477,9 +478,9 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
   var html         = 'Successfully Updated';
   // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
 
-  if (selected_pid in PROJECT_INFORMATION_BY_PID) {
-    if (PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1) {
-      PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
+  if (selected_pid in C.PROJECT_INFORMATION_BY_PID) {
+    if (C.PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1) {
+      C.PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
       //console.log('11111')
 
     } else {
@@ -517,7 +518,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
 //
 router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in delete_user GET ADMIN')
-  //console.log(JSON.stringify(ALL_USERS_BY_UID))
+  //console.log(JSON.stringify(C.ALL_USERS_BY_UID))
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
   // also delete from ALL_USERS_BY_UID
@@ -571,8 +572,8 @@ router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], (re
   var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   delete require.cache[require.resolve(meta_file)];  // THIS CLEARS THE REQUIRE CACHE
   //console.log(require.cache)
-  //AllMetadata  = {}
-  AllMetadata = require(meta_file);
+  //C.AllMetadata  = {}
+  C.AllMetadata = require(meta_file);
   //console.log(AllMetadata['52'])
   var backURL = '/admin/admin_index'
   req.flash('success', 'Done');
@@ -723,7 +724,7 @@ router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   res.render('admin/validate_metadata', {
     title: 'VAMPS Validate Metadata',
     user: req.user,
-    project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+    project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
     hostname: req.CONFIG.hostname // get the user out of session and pass to template
   });
 });
@@ -735,15 +736,15 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
   console.log(req.body)
   var pid = req.body.pid
   //console.log(pid)
-  //console.log(PROJECT_INFORMATION_BY_PID[pid].project)
+  //console.log(C.PROJECT_INFORMATION_BY_PID[pid].project)
   var html_json    = {};
   html_json.data   = {};
-  var req_metadata = req.CONSTS.REQ_METADATA_FIELDS
+  var req_metadata = C.REQ_METADATA_FIELDS
 
   var mdata = {}
-  var dids  = DATASET_IDS_BY_PID[pid]
+  var dids  = C.DATASET_IDS_BY_PID[pid]
   for (n in dids) {
-    mdata[dids[n]] = AllMetadata[dids[n]]
+    mdata[dids[n]] = C.AllMetadata[dids[n]]
   }
   //console.log(mdata)  // has ids need to convert
   mdata                = convert_ids_to_names_for_display(mdata)
@@ -766,7 +767,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
   //console.log('sorted_cust_header_names')
   //console.log(html_json.sorted_cust_header_names)
   for (did in mdata) { // each item is a dataset_id
-    ds                           = DATASET_NAME_BY_DID[did]
+    ds                           = C.DATASET_NAME_BY_DID[did]
     html_json.data[ds]           = {}
     html_json.data[ds].req_data  = []
     html_json.data[ds].cust_data = []
@@ -811,7 +812,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   var selected_pid          = req.body.pid
   var filename              = req.body.filename
   var file_path             = path.join(req.CONFIG.TMP_FILES, filename)
-  var dids                  = DATASET_IDS_BY_PID[selected_pid]
+  var dids                  = C.DATASET_IDS_BY_PID[selected_pid]
   var new_required_metadata = {}
   var new_custom_metadata   = {}
   mdata                     = {}
@@ -824,7 +825,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
       // get did
       did   = 0
       for (i in dids) {
-        if (DATASET_NAME_BY_DID[dids[i]] == dset) {
+        if (C.DATASET_NAME_BY_DID[dids[i]] == dset) {
           did = dids[i]
         }
       }
@@ -855,16 +856,16 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
     new_custom_metadata[did]   = {}
     for (mdname in mdata[did]) {
       var val = mdata[did][mdname]
-      if (req.CONSTS.REQ_METADATA_FIELDS.indexOf(mdname) == -1) {
+      if (C.REQ_METADATA_FIELDS.indexOf(mdname) == -1) {
         new_custom_metadata[did][mdname] = val
       } else {
         new_required_metadata[did][mdname] = val
       }
-      if (AllMetadata.hasOwnProperty(did)) {
-        AllMetadata[did][mdname] = val
+      if (C.AllMetadata.hasOwnProperty(did)) {
+        C.AllMetadata[did][mdname] = val
       } else {
-        AllMetadata[did]         = {}
-        AllMetadata[did][mdname] = val
+        C.AllMetadata[did]         = {}
+        C.AllMetadata[did][mdname] = val
       }
 
     }
@@ -908,7 +909,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
     res.render('admin/validate_metadata', {
       title: 'VAMPS Validate Metadata',
       user: req.user,
-      project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+      project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
       hostname: req.CONFIG.hostname, // get the user out of session and pass to template
     });
   });
@@ -929,7 +930,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
       console.log('Error uploading file: ' + err.toString());
       return res.end("Error uploading file.");
     }
-    let req_metadata  = req.CONSTS.REQ_METADATA_FIELDS;
+    let req_metadata  = C.REQ_METADATA_FIELDS;
     let html_json = {};
     if (!req.hasOwnProperty('file')) {
       res.end("Error uploading file: project selected? file to upload selected?");
@@ -937,8 +938,8 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
     }
 
     let selected_pid  = req.body.pid;
-    let dataset_ids   = DATASET_IDS_BY_PID[selected_pid];
-    let project_name  = PROJECT_INFORMATION_BY_PID[selected_pid].project;
+    let dataset_ids   = C.DATASET_IDS_BY_PID[selected_pid];
+    let project_name  = C.PROJECT_INFORMATION_BY_PID[selected_pid].project;
     let metadata_file = req.file.path;
 
     // TODO: JSHint: This function's cyclomatic complexity is too high. (17)(W074)
@@ -974,7 +975,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
         for (let i in dataset_ids) {
           // only show datasets that are known:
           did = dataset_ids[i];
-          if (dset === DATASET_NAME_BY_DID[did]) {
+          if (dset === C.DATASET_NAME_BY_DID[did]) {
             newmd[did] = {};
             for (idx in title_row) {
               let val = mdata[n][idx];
@@ -1001,7 +1002,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
 
       for (let did in newmd) {
         // only show datasets that are known:
-        ds = DATASET_NAME_BY_DID[did];
+        ds = C.DATASET_NAME_BY_DID[did];
 
         html_json.data[ds]              = {};
         html_json.data[ds]['req_data']  = [];
@@ -1104,8 +1105,8 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
   var out_file     = 'dco_all_' + timestamp + '.tsv'
   var outfile_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, out_file)
   var pids_list    = []
-  for (pid in PROJECT_INFORMATION_BY_PID) {
-    project = PROJECT_INFORMATION_BY_PID[pid].project
+  for (pid in C.PROJECT_INFORMATION_BY_PID) {
+    project = C.PROJECT_INFORMATION_BY_PID[pid].project
     if (project.substring(0, 3) == 'DCO') {
       pids_list.push(pid)
     }
@@ -1153,7 +1154,7 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
     res.render('admin/validate_metadata', {
       title: 'VAMPS Validate Metadata',
       user: req.user,
-      project_info: JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+      project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
       hostname: req.CONFIG.hostname, // get the user out of session and pass to template
     });
   });
@@ -1163,8 +1164,8 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
 //
 function get_env_package_index(val) {
   var idx = -1
-  for (key in MD_ENV_PACKAGE) {
-    if (val != '' && MD_ENV_PACKAGE[key] == val.toLowerCase()) {
+  for (key in C.MD_ENV_PACKAGE) {
+    if (val != '' && C.MD_ENV_PACKAGE[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1173,8 +1174,8 @@ function get_env_package_index(val) {
 
 function get_target_gene_index(val) {
   var idx = -1
-  for (key in MD_TARGET_GENE) {
-    if (val != '' && MD_TARGET_GENE[key] == val.toLowerCase()) {
+  for (key in C.MD_TARGET_GENE) {
+    if (val != '' && C.MD_TARGET_GENE[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1183,8 +1184,8 @@ function get_target_gene_index(val) {
 
 function get_domain_index(val) {
   var idx = -1
-  for (key in MD_DOMAIN) {
-    if (val != '' && MD_DOMAIN[key] == val.toLowerCase()) {
+  for (key in C.MD_DOMAIN) {
+    if (val != '' && C.MD_DOMAIN[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1193,14 +1194,14 @@ function get_domain_index(val) {
 
 function get_geo_loc_name_index(val) {
   var idx = -1
-  for (key in MD_ENV_CNTRY) {
-    if (val != '' && MD_ENV_CNTRY[key] == val.toLowerCase()) {
+  for (key in C.MD_ENV_CNTRY) {
+    if (val != '' && C.MD_ENV_CNTRY[key] == val.toLowerCase()) {
       idx = key;
     }
   }
   if (idx == -1) {
-    for (key in MD_ENV_LZC) {
-      if (val != '' && MD_ENV_LZC[key] == val.toLowerCase()) {
+    for (key in C.MD_ENV_LZC) {
+      if (val != '' && C.MD_ENV_LZC[key] == val.toLowerCase()) {
         idx = key;
       }
     }
@@ -1210,8 +1211,8 @@ function get_geo_loc_name_index(val) {
 
 function get_sequencing_platform_index(val) {
   var idx = -1
-  for (key in MD_SEQUENCING_PLATFORM) {
-    if (val != '' && MD_SEQUENCING_PLATFORM[key] == val.toLowerCase()) {
+  for (key in C.MD_SEQUENCING_PLATFORM) {
+    if (val != '' && C.MD_SEQUENCING_PLATFORM[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1220,8 +1221,8 @@ function get_sequencing_platform_index(val) {
 
 function get_dna_region_index(val) {
   var idx = -1
-  for (key in MD_DNA_REGION) {
-    if (val != '' && MD_DNA_REGION[key] == val.toLowerCase()) {
+  for (key in C.MD_DNA_REGION) {
+    if (val != '' && C.MD_DNA_REGION[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1230,8 +1231,8 @@ function get_dna_region_index(val) {
 
 function get_env_term_index(val) {
   var idx = -1
-  for (key in MD_ENV_ENVO) {
-    if (val != '' && MD_ENV_ENVO[key] == val.toLowerCase()) {
+  for (key in C.MD_ENV_ENVO) {
+    if (val != '' && C.MD_ENV_ENVO[key] == val.toLowerCase()) {
       idx = key;
     }
   }
@@ -1240,8 +1241,8 @@ function get_env_term_index(val) {
 
 function get_adapter_sequence_index(val) {
   var idx = -1
-  for (key in MD_ADAPTER_SEQUENCE) {
-    if (val != '' && MD_ADAPTER_SEQUENCE[key] == val) {
+  for (key in C.MD_ADAPTER_SEQUENCE) {
+    if (val != '' && C.MD_ADAPTER_SEQUENCE[key] == val) {
       idx = key;
     }
   }
@@ -1250,8 +1251,8 @@ function get_adapter_sequence_index(val) {
 
 function get_illumina_index_index(val) {
   var idx = -1
-  for (key in MD_ILLUMINA_INDEX) {
-    if (val != '' && MD_ILLUMINA_INDEX[key] == val) {
+  for (key in C.MD_ILLUMINA_INDEX) {
+    if (val != '' && C.MD_ILLUMINA_INDEX[key] == val) {
       idx = key;
     }
   }
@@ -1260,8 +1261,8 @@ function get_illumina_index_index(val) {
 
 function get_run_index(val) {
   var idx = -1
-  for (key in MD_RUN) {
-    if (val != '' && MD_RUN[key] == val) {
+  for (key in C.MD_RUN) {
+    if (val != '' && C.MD_RUN[key] == val) {
       idx = key;
     }
   }
@@ -1270,8 +1271,8 @@ function get_run_index(val) {
 
 function get_primer_suite_index(val) {
   var idx = -1
-  for (key in MD_PRIMER_SUITE) {
-    if (val != '' && MD_PRIMER_SUITE[key] == val) {
+  for (key in C.MD_PRIMER_SUITE) {
+    if (val != '' && C.MD_PRIMER_SUITE[key] == val) {
       idx = key;
     }
   }
@@ -1296,8 +1297,8 @@ function validate_metadata(req, obj) {
   }
   //unique_field_list = Object.keys(field_collector)
 
-  for (i in req.CONSTS.REQ_METADATA_FIELDS) {
-    req_name = req.CONSTS.REQ_METADATA_FIELDS[i]
+  for (i in C.REQ_METADATA_FIELDS) {
+    req_name = C.REQ_METADATA_FIELDS[i]
     if (field_collector.hasOwnProperty(req_name)) {
       console.log('got ' + req_name)
     } else {
@@ -1309,9 +1310,9 @@ function validate_metadata(req, obj) {
 
   for (did in obj) {
     for (mdname in obj[did]) {
-      ds      = DATASET_NAME_BY_DID[did]
+      ds      = C.DATASET_NAME_BY_DID[did]
       var val = obj[did][mdname]
-      if ((val == undefined || val == '') && req.CONSTS.REQ_METADATA_FIELDS.indexOf(mdname) != -1) {   // and mdname in required_metadata_fields
+      if ((val == undefined || val == '') && C.REQ_METADATA_FIELDS.indexOf(mdname) != -1) {   // and mdname in required_metadata_fields
 
         validation.empty_values = true
         validation.error        = true
@@ -1412,8 +1413,8 @@ function convert_names_to_ids_for_storage(obj) {
 
 function get_name_ordered_users_list() {
   user_order = []
-  for (uid in  ALL_USERS_BY_UID) {
-    obj     = ALL_USERS_BY_UID[uid]
+  for (uid in  C.ALL_USERS_BY_UID) {
+    obj     = C.ALL_USERS_BY_UID[uid]
     obj.uid = uid
     user_order.push(obj)
   }
@@ -1425,7 +1426,7 @@ function get_name_ordered_users_list() {
 
 function get_name_ordered_projects_list() {
   let project_order = [];
-  Object.keys(PROJECT_INFORMATION_BY_PID).forEach(pid => project_order.push(PROJECT_INFORMATION_BY_PID[pid]));
+  Object.keys(C.PROJECT_INFORMATION_BY_PID).forEach(pid => project_order.push(C.PROJECT_INFORMATION_BY_PID[pid]));
 
   project_order.sort(function sortByAlpha(a, b) {
     return helpers.compareStrings_alpha(a.project, b.project);
@@ -1454,7 +1455,7 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
   var rows = []
   if (req.user.security_level <= 10) {
     // for(uid in ALL_USERS_BY_UID){
-// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+ALL_USERS_BY_UID[uid].first_name,username:ALL_USERS_BY_UID[uid].username})
+// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
 // 	    }
 // 	    rows.sort( (a, b) => {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);

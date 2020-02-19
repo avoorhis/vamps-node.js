@@ -1,18 +1,19 @@
 const helpers = require(app_root + '/routes/helpers/helpers');
 const queries = require(app_root + '/routes/queries');
+const C       = require(app_root + '/public/constants');
 
 class GlobalVars {
   constructor() {
   }
 
   sort_AllMetadataNames() {
-    AllMetadataNames.sort((a, b) => {
+    C.AllMetadataNames.sort((a, b) => {
       return helpers.compareStrings_alpha(a, b);
     });
   }
 
   make_all_datasets(datasetsByProject, pids, titles) {
-    ALL_DATASETS.projects = Object.keys(datasetsByProject).reduce((prjs, p) => {
+    C.ALL_DATASETS.projects = Object.keys(datasetsByProject).reduce((prjs, p) => {
       let tmp = {};
       tmp.name = p;
       tmp.pid = pids[p];
@@ -31,39 +32,39 @@ class GlobalVars {
 
   // This function's cyclomatic complexity is too high. (6)(W074)
   get_DatasetsWithLatLong(mdname, did) {
-    let isLatitude = (mdname === 'latitude' && !isNaN(AllMetadata[did].latitude));
-    let isLongitude = (mdname === 'longitude' && !isNaN(AllMetadata[did].longitude));
+    let isLatitude = (mdname === 'latitude' && !isNaN(C.AllMetadata[did].latitude));
+    let isLongitude = (mdname === 'longitude' && !isNaN(C.AllMetadata[did].longitude));
 
     if (isLatitude || isLongitude) {
-      if (!(did in DatasetsWithLatLong)) {
-        DatasetsWithLatLong[did] = {};
-        let pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        DatasetsWithLatLong[did].proj_dset = pname + '--' + DATASET_NAME_BY_DID[did];
-        DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did];
+      if (!(did in C.DatasetsWithLatLong)) {
+        C.DatasetsWithLatLong[did] = {};
+        let pname = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].project;
+        C.DatasetsWithLatLong[did].proj_dset = pname + '--' + C.DATASET_NAME_BY_DID[did];
+        C.DatasetsWithLatLong[did].pid = C.PROJECT_ID_BY_DID[did];
       }
       switch (mdname) {
         case 'latitude':
-          DatasetsWithLatLong[did].latitude = +AllMetadata[did].latitude;
+          C.DatasetsWithLatLong[did].latitude = +C.AllMetadata[did].latitude;
           break;
         case 'longitude':
-          DatasetsWithLatLong[did].longitude = +AllMetadata[did].longitude;
+          C.DatasetsWithLatLong[did].longitude = +C.AllMetadata[did].longitude;
           break;
       }
     }
   }
 
   make_AllMetadataNames(mdname) {
-    if (!AllMetadataNames.includes(mdname)) {
-      AllMetadataNames.push(mdname);
+    if (!C.AllMetadataNames.includes(mdname)) {
+      C.AllMetadataNames.push(mdname);
     }
   }
 
   get_AllMetadataNames_n_clean_metadata() {
     let clean_metadata = {};
-    for (let did in AllMetadata) {
-      if (did in DATASET_NAME_BY_DID) {
-        clean_metadata[did] = AllMetadata[did];
-        for (let mdname in AllMetadata[did]) {
+    for (let did in C.AllMetadata) {
+      if (did in C.DATASET_NAME_BY_DID) {
+        clean_metadata[did] = C.AllMetadata[did];
+        for (let mdname in C.AllMetadata[did]) {
           this.make_AllMetadataNames(mdname);
           this.get_DatasetsWithLatLong(mdname, did);
         }
@@ -72,8 +73,8 @@ class GlobalVars {
   }
 
   init_dataset_ids_by_pid(pid) {
-    if (!DATASET_IDS_BY_PID.hasOwnProperty(pid)) {
-      DATASET_IDS_BY_PID[pid] = [];
+    if (!C.DATASET_IDS_BY_PID.hasOwnProperty(pid)) {
+      C.DATASET_IDS_BY_PID[pid] = [];
     }
   }
 
@@ -88,8 +89,8 @@ class GlobalVars {
 
   get_envpkgid(did) {
     let envpkgid = '1';
-    if (AllMetadata.hasOwnProperty(did) && AllMetadata[did].hasOwnProperty('env_package_id')) {
-      envpkgid = AllMetadata[did].env_package_id;
+    if (C.AllMetadata.hasOwnProperty(did) && C.AllMetadata[did].hasOwnProperty('env_package_id')) {
+      envpkgid = C.AllMetadata[did].env_package_id;
     }
     return envpkgid;
   }
@@ -105,7 +106,7 @@ class GlobalVars {
     let ua = helpers.convertJSDateToString(current_row.updated_at);
 
     let owner_id = current_row.owner_user_id;
-    PROJECT_INFORMATION_BY_PID[pid] = {
+    C.PROJECT_INFORMATION_BY_PID[pid] = {
       "last": current_row.last_name,
       "first": current_row.first_name,
       "username": current_row.username,
@@ -125,9 +126,9 @@ class GlobalVars {
       "updated_at": ua
     };
     if (current_row.public || current_row.username === 'guest') {
-      PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+      C.PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
     } else {
-      PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
+      C.PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
     }
   }
 
@@ -139,15 +140,15 @@ class GlobalVars {
       let pid = current_row.project_id;
       let uid = current_row.user_id;
 
-      if (pid in PROJECT_INFORMATION_BY_PID) {
-        let project                           = PROJECT_INFORMATION_BY_PID[pid].project;
-        PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
-        if (PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
-          PROJECT_INFORMATION_BY_PID[pid].permissions = [];
+      if (pid in C.PROJECT_INFORMATION_BY_PID) {
+        let project                           = C.PROJECT_INFORMATION_BY_PID[pid].project;
+        C.PROJECT_INFORMATION_BY_PNAME[project] = C.PROJECT_INFORMATION_BY_PID[pid];
+        if (C.PROJECT_INFORMATION_BY_PID[pid].username === 'guest') {
+          C.PROJECT_INFORMATION_BY_PID[pid].permissions = [];
         }
         else {
-          if (!PROJECT_INFORMATION_BY_PID[pid].permissions.includes(uid)) {
-            PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
+          if (!C.PROJECT_INFORMATION_BY_PID[pid].permissions.includes(uid)) {
+            C.PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
           }
         }
       }
@@ -173,16 +174,16 @@ class GlobalVars {
       if (!no_did.includes(did)) {
         let dataset = current_row.dataset;
         let dataset_description = current_row.dataset_description;
-        PROJECT_ID_BY_DID[did] = pid;
-        DATASET_NAME_BY_DID[did] = dataset;
+        C.PROJECT_ID_BY_DID[did] = pid;
+        C.DATASET_NAME_BY_DID[did] = dataset;
         let dataset_options = {did: did, dname: dataset, ddesc: dataset_description};
         datasetsByProject = this.add_to_datasetsByProject(datasetsByProject, project, dataset_options);
-        DATASET_IDS_BY_PID[pid].push(did);
+        C.DATASET_IDS_BY_PID[pid].push(did);
       }
 
-      if (!PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
+      if (!C.PROJECT_INFORMATION_BY_PID.hasOwnProperty(pid)) {
         this.get_project_information_by_pid(current_row);
-        PROJECT_INFORMATION_BY_PNAME[project] = PROJECT_INFORMATION_BY_PID[pid];
+        C.PROJECT_INFORMATION_BY_PNAME[project] = C.PROJECT_INFORMATION_BY_PID[pid];
 
         pids[project] = pid;
         titles[project] = current_row.title;
@@ -225,8 +226,8 @@ class GlobalVars {
       // console.time("TIME: make_pid_by_did_dict");
       //instead it's better to use PROJECT_ID_BY_DID after it's initialized
       let pid_by_did_dict = [];
-      if (Object.keys(PROJECT_ID_BY_DID).length > 0) {
-        pid_by_did_dict = PROJECT_ID_BY_DID;
+      if (Object.keys(C.PROJECT_ID_BY_DID).length > 0) {
+        pid_by_did_dict = C.PROJECT_ID_BY_DID;
       } else {
         pid_by_did_dict = this.make_pid_by_did_dict(rows2);
       }
@@ -239,18 +240,18 @@ class GlobalVars {
         // let pid                 = rows[i].project_id;
         let count = rows[i].seq_count;
         let cid = rows[i].classifier_id;
-        ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-        if (ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
-          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+        C.ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+        if (C.ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)) {
+          C.ALL_CLASSIFIERS_BY_PID[pid] = C.ALL_CLASSIFIERS_BY_CID[cid];
         }
-        if (pid in ALL_PCOUNTS_BY_PID) {
-          ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
+        if (pid in C.ALL_PCOUNTS_BY_PID) {
+          C.ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
         } else {
-          ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
+          C.ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
         }
       }
       // console.log("ALL_PCOUNTS_BY_PID: ");
-      // console.log(ALL_PCOUNTS_BY_PID);
+      // console.log(C.ALL_PCOUNTS_BY_PID);
       // make_counts_globals(rows, pid_by_did_dict);
 
     });
@@ -265,15 +266,15 @@ class GlobalVars {
       let field_name  = rows[i]["field_name"];
       let field_units = rows[i]["field_units"];
 
-      if (!MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
-        MD_CUSTOM_UNITS[project_id] = {};
+      if (!C.MD_CUSTOM_UNITS.hasOwnProperty(project_id)) {
+        C.MD_CUSTOM_UNITS[project_id] = {};
       }
-      MD_CUSTOM_UNITS[project_id][field_name] = field_units;
+      C.MD_CUSTOM_UNITS[project_id][field_name] = field_units;
 
-      if (!MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
-        MD_CUSTOM_FIELDS_UNITS[field_name] = {};
+      if (!C.MD_CUSTOM_FIELDS_UNITS.hasOwnProperty(field_name)) {
+        C.MD_CUSTOM_FIELDS_UNITS[field_name] = {};
       }
-      MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
+      C.MD_CUSTOM_FIELDS_UNITS[field_name] = field_units;
     }
     // console.timeEnd("TIME: get_select_custom_units_query");
   }
@@ -282,18 +283,18 @@ class GlobalVars {
   // TODO: how to test?
   update_global_variables(pid, type) {
     if (type === 'del') {
-      let dids  = DATASET_IDS_BY_PID[pid];
-      let pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      let dids  = C.DATASET_IDS_BY_PID[pid];
+      let pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
       console.log('RE-INTIALIZING ALL_DATASETS');
       let dataset_objs = [];
-      for (let i in ALL_DATASETS.projects) {
-        let item = ALL_DATASETS.projects[i];
+      for (let i in C.ALL_DATASETS.projects) {
+        let item = C.ALL_DATASETS.projects[i];
         //console.log('item'+item);
         // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
         if (item.pid === pid) {
           dataset_objs = item.datasets;
           //console.log('SPLICING '+pid);
-          ALL_DATASETS.projects.splice(i, 1);
+          C.ALL_DATASETS.projects.splice(i, 1);
           break;
         }
       }
@@ -301,10 +302,10 @@ class GlobalVars {
       console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
       console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
       for (let d in dids) {
-        delete PROJECT_ID_BY_DID[dids[d]];
-        delete DATASET_NAME_BY_DID[dids[d]];
-        delete ALL_DCOUNTS_BY_DID[dids[d]];
-        delete DatasetsWithLatLong[dids[d]];
+        delete C.PROJECT_ID_BY_DID[dids[d]];
+        delete C.DATASET_NAME_BY_DID[dids[d]];
+        delete C.ALL_DCOUNTS_BY_DID[dids[d]];
+        delete C.DatasetsWithLatLong[dids[d]];
       }
       console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
       console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
@@ -313,11 +314,11 @@ class GlobalVars {
       console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
       console.log('RE-INTIALIZING DatasetsWithLatLong');
 
-      delete PROJECT_INFORMATION_BY_PID[pid];
-      delete DATASET_IDS_BY_PID[pid];
-      delete ALL_PCOUNTS_BY_PID[pid];
-      delete ALL_CLASSIFIERS_BY_PID[pid];
-      delete PROJECT_INFORMATION_BY_PNAME[pname];
+      delete C.PROJECT_INFORMATION_BY_PID[pid];
+      delete C.DATASET_IDS_BY_PID[pid];
+      delete C.ALL_PCOUNTS_BY_PID[pid];
+      delete C.ALL_CLASSIFIERS_BY_PID[pid];
+      delete C.PROJECT_INFORMATION_BY_PNAME[pname];
 
     }
     // else if (type === 'add') {
@@ -333,13 +334,13 @@ class GlobalVars {
       let ont = rows[i].ont;
       switch (ont) {
         case 'ENVO':
-          MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
+          C.MD_ENV_ENVO[rows[i].term_id] = rows[i].term_name;
           break;
         case 'CTY':
-          MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
+          C.MD_ENV_CNTRY[rows[i].term_id] = rows[i].term_name;
           break;
         case 'LZC':
-          MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
+          C.MD_ENV_LZC[rows[i].term_id] = rows[i].term_name;
           break;
       }
     }
@@ -347,65 +348,65 @@ class GlobalVars {
 
   get_select_env_package_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
+      C.MD_ENV_PACKAGE[rows[i].env_package_id] = rows[i].env_package;
     }
   }
 
   
   get_select_domain_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
+      C.MD_DOMAIN[rows[i].domain_id] = rows[i].domain;
     }
   }
 
   get_select_dna_region_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
+      C.MD_DNA_REGION[rows[i].dna_region_id] = rows[i].dna_region.toLowerCase();
     }
   }
 
   get_select_target_gene_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
+      C.MD_TARGET_GENE[rows[i].target_gene_id] = rows[i].target_gene.toLowerCase();
     }
   }
 
   get_select_sequencing_platform_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
+      C.MD_SEQUENCING_PLATFORM[rows[i].sequencing_platform_id] = rows[i].sequencing_platform;
     }
   }
 
   get_select_Illumina_3letter_adapter_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
+      C.MD_3LETTER_ADAPTER[rows[i].illumina_adaptor_id] = rows[i].illumina_adaptor;
     }
   }
 
   get_select_adapter_sequence_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
+      C.MD_ADAPTER_SEQUENCE[rows[i].run_key_id] = rows[i].run_key;
     }
   }
 
   get_select_illumina_index_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
+      C.MD_ILLUMINA_INDEX[rows[i].illumina_index_id] = rows[i].illumina_index;
     }
   }
 
   get_select_primer_suite_query(rows) {
     for (let i = 0; i < rows.length; i++) {
 
-      if (!MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
-        MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
-        MD_PRIMER_SUITE[rows[i].primer_suite_id].id     = rows[i].primer_suite_id;
-        MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
-        MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
-        MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
-        MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
+      if (!C.MD_PRIMER_SUITE.hasOwnProperty(rows[i].primer_suite_id)) {
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id]        = {};
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id].id     = rows[i].primer_suite_id;
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id].name   = rows[i].primer_suite;
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id].region = rows[i].region;
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id].domain = rows[i].domain;
+        C.MD_PRIMER_SUITE[rows[i].primer_suite_id].primer = [];
       }
-      MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
+      C.MD_PRIMER_SUITE[rows[i].primer_suite_id].primer.push({
         "primer": rows[i].primer,
         "primer_id": rows[i].primer_id,
         "direction": rows[i].direction,
@@ -416,7 +417,7 @@ class GlobalVars {
 
   get_select_run_query(rows) {
     for (let i = 0; i < rows.length; i++) {
-      MD_RUN[rows[i].run_id] = rows[i].run;
+      C.MD_RUN[rows[i].run_id] = rows[i].run;
     }
   }
 }

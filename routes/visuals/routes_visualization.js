@@ -9,13 +9,13 @@ const fs   = require('fs-extra');
 const multer    = require('multer');
 const config  = require(app_root + '/config/config');
 const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
-const helpers = require('../helpers/helpers');
-const QUERY = require('../queries');
+const helpers = require(app_root + '/routes/helpers/helpers');
+const QUERY = require(app_root + '/routes/queries');
 
-const COMMON  = require('./routes_common');
-const C = require('../../public/constants');
-const META    = require('./routes_visuals_metadata');
-const IMAGES = require('../routes_images');
+const COMMON  = require(app_root +'/routes/visuals/routes_common');
+const C		  = require(app_root + '/public/constants');
+const META    = require(app_root + '/routes/visuals/routes_visuals_metadata');
+const IMAGES  = require(app_root + '/routes/routes_images');
 const biom_matrix_controller = require(app_root + '/controllers/biomMatrixController');
 const visualization_controller = require(app_root + '/controllers/visualizationController');
 const file_controller = require(app_root + '/controllers/fileController');
@@ -233,7 +233,7 @@ function get_data_to_open(req) {
     // open many projects
     let obj = JSON.parse(req.body.data_to_open);
     for (let pj in obj){
-      let pid = PROJECT_INFORMATION_BY_PNAME[pj].pid;
+      let pid = C.PROJECT_INFORMATION_BY_PNAME[pj].pid;
       DATA_TO_OPEN[pid] = obj[pj];
     }
     //console.log('got data to open '+data_to_open)
@@ -250,10 +250,10 @@ function render_visuals_index(res, req, needed_constants = C) {
   res.render('visuals/visuals_index', {
     title       : 'VAMPS: Select Datasets',
     subtitle    : 'Dataset Selection Page',
-    proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+    proj_info   : JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
     constants   : JSON.stringify(needed_constants),
-    md_env_package : JSON.stringify(MD_ENV_PACKAGE),
-    md_names    : AllMetadataNames,
+    md_env_package : JSON.stringify(C.MD_ENV_PACKAGE),
+    md_names    : C.AllMetadataNames,
     filtering   : 0,
     portal_to_show : '',
     data_to_open: JSON.stringify(DATA_TO_OPEN),
@@ -281,7 +281,7 @@ router.get('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = ALL_DATASETS;
+  SHOW_DATA = C.ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   // GLOBAL
@@ -309,7 +309,7 @@ router.post('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = ALL_DATASETS;
+  SHOW_DATA = C.ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   // GLOBAL
@@ -1027,7 +1027,7 @@ function filter_data_by_last_taxon(search_tax, clean_data) {
   const last_taxon = search_tax_arr[last_element_number];
   const curr_rank = C.RANKS[last_element_number];
   const rank_name_id = curr_rank + "_id";
-  const db_id = new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
+  const db_id = C.new_taxonomy.taxa_tree_dict_map_by_rank[curr_rank].filter(i => i.taxon === last_taxon).map(e => e.db_id);
   
   let filtered_data = clean_data;
   //console.log('FILTERdb_id')
@@ -1057,7 +1057,7 @@ function get_long_tax_name(curr_ob) {
       let curr_rank_name = key.substring(0, key.length - 3);
       let curr_name = "";
       try {
-        curr_name = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
+        curr_name = C.new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id + "_" + curr_rank_name].taxon;
       }
       catch(e) {
         curr_name = curr_rank_name + "_NA";
@@ -1637,7 +1637,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
   let portal = req.params.portal;
 
   console.log('in load_portal: ' + portal);
-  SHOW_DATA = ALL_DATASETS;
+  SHOW_DATA = C.ALL_DATASETS;
   PROJECT_TREE_OBJ = [];
 
   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
@@ -1881,7 +1881,7 @@ router.get('/tax_custom_dhtmlx', (req, res) => {
             }
     */
 
-    new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
+    C.new_taxonomy.taxa_tree_dict_map_by_rank["domain"].map(node => {
         let options_obj = get_options_by_node(node);
         options_obj.checked = true;
         json.item.push(options_obj);
@@ -1889,7 +1889,7 @@ router.get('/tax_custom_dhtmlx', (req, res) => {
     );
   }
   else {
-    const objects_w_this_parent_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
+    const objects_w_this_parent_id = C.new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids.map(n_id => C.new_taxonomy.taxa_tree_dict_map_by_id[n_id]);
     objects_w_this_parent_id.map(node => {
       let options_obj = get_options_by_node(node);
       options_obj.checked = false;
@@ -1917,7 +1917,7 @@ function get_tt_pj_id(node) {
 }
 
 function get_itemtext(pid) {
-  let node = PROJECT_INFORMATION_BY_PID[pid];
+  let node = C.PROJECT_INFORMATION_BY_PID[pid];
   //console.log('node',node)
   let tt_pj_id = get_tt_pj_id(node);
 
@@ -1945,6 +1945,7 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
   json.item = [];
   console.log('DATA_TO_OPEN');
   console.log(DATA_TO_OPEN);
+
   //PROJECT_TREE_OBJ = []
   //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
   let itemtext;
@@ -1982,7 +1983,7 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
   else { //parseInt(id) !== 0
     //console.log(JSON.stringify(ALL_DATASETS))
     id = id.substring(1);  // id = pxx
-    let this_project = ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
+    let this_project = C.ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
 
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
@@ -2085,5 +2086,5 @@ module.exports = router;
  * F U N C T I O N S
  **/
 
-// Generally put fucntion in global.js or helpers.js
+// Generally put fucntion in helpers.js
 //

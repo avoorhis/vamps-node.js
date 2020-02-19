@@ -7,6 +7,7 @@ const helpers = require('./helpers/helpers');
 const path = require('path');
 const fs = require('fs-extra');
 const queries = require('./queries');
+const C = require(app_root + '/public/constants');
 const config = require('../config/config');
 const mysql = require('mysql2');
 const iniparser = require('iniparser');
@@ -28,7 +29,7 @@ router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, (req, res) => {
   console.log('oligo in livesearch taxonomy-1');
   q = q.toLowerCase();
   var hint = '';
-  var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
+  var obj = C.new_taxonomy.taxa_tree_dict_map_by_rank;
   var taxon;
   
   if(q !== ''){
@@ -60,14 +61,14 @@ router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, (req, res) =
   var selected_rank = req.params.rank;
   var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
   console.log(req.params);
-  var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
+  var this_item = C.new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
   var tax_str = selected_taxon;
 
   var item = this_item;
 
   // goes up the tree to get taxon parents:
   while(item.parent_id !== 0){
-    var item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
+    var item  = C.new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
     var tax_str = item.taxon +';'+tax_str;
     //console.log(item);
   }
@@ -178,7 +179,7 @@ router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
           console.log(config_file_path)
           fs.ensureDir(data_repo_path, err => {
             if(err){ return console.log(err) } // => null
-            fs.chmod(data_repo_path, '0777', function chmodFile(err) {
+            fs.chmod(data_repo_path, '0o777', function chmodFile(err) {
                 if(err){ return console.log(err) } // => null
                 var wstream = fs.createWriteStream(fasta_file_path);
                 var rs = new Readable();
@@ -237,13 +238,13 @@ router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
                       config_text += pjds+"\n";
                     }
                     fs.closeSync(fs.openSync(FASTA_SUCCESS_FILE, 'w'));
-                    fs.writeFile(config_file_path, config_text, { mode: 0666 }, function writeConfigFile(err) {
+                    fs.writeFile(config_file_path, config_text, { mode: 0o666 }, function writeConfigFile(err) {
                         if(err) { return console.log(err); }
                         console.log("The Config file was saved!");
-                        fs.chmod(config_file_path, '0666', function chmodFile(err) {
+                        fs.chmod(config_file_path, 0o666, function chmodFile(err) {
                         
                         })
-                        fs.chmod(fasta_file_path, '0666', function chmodFile(err) {
+                        fs.chmod(fasta_file_path, 0o666, function chmodFile(err) {
                         
                         })
                         return

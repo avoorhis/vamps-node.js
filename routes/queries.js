@@ -131,6 +131,7 @@ get_select_seq_count_query: () => {
   //
   get_sequences_perDID_and_taxa_query: ( did, taxa, classifier ) => {
     var tax_items  = taxa.split(';');
+    let distance = '';
     if(classifier.startsWith('tax_rdp')){
         distance = 'boot_score'
     }else{
@@ -156,7 +157,7 @@ get_select_seq_count_query: () => {
       var name = tax_items[t]
       var val = name+'_'+C.RANKS[t];
       //console.log(val)
-      var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
+      var id = C.new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
       seqQuery += " and "+C.RANKS[t]+"_id = " + connection.escape(id);
     }
     seqQuery += "\nORDER BY seq_count DESC";

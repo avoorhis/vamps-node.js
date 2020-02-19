@@ -89,8 +89,8 @@ class FileUtil {
 
   get_pid_lookup(dids){
     let pid_lookup = [];
-    Object.keys(PROJECT_ID_BY_DID).forEach(did => {
-      let pid = PROJECT_ID_BY_DID[did];
+    Object.keys(C.PROJECT_ID_BY_DID).forEach(did => {
+      let pid = C.PROJECT_ID_BY_DID[did];
       if (dids.includes(did) && !pid_lookup.includes(pid)) {
         pid_lookup.push(pid);
       }
@@ -102,9 +102,9 @@ class FileUtil {
     let pids_str = "";
     if (file_tags[0] === '--dco_metadata_file') {
       let pid_list = [];
-      for (let pname in PROJECT_INFORMATION_BY_PNAME) {
+      for (let pname in C.PROJECT_INFORMATION_BY_PNAME) {
         if (pname.substring(0, 3) === 'DCO') {
-          pid_list.push(PROJECT_INFORMATION_BY_PNAME[pname].pid);
+          pid_list.push(C.PROJECT_INFORMATION_BY_PNAME[pname].pid);
         }
       }
       pids_str = JSON.stringify(pid_list.join(','));
