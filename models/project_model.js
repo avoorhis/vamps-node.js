@@ -4,6 +4,7 @@ var User    = require(app_root + '/models/user_model');
 var fs      = require('fs');
 var path    = require('path');
 var config  = require(app_root + '/config/config');
+const C		  = require(app_root + '/public/constants');
 
 class Project {
 
@@ -69,8 +70,8 @@ class Project {
 
   get_pid(project_name) {
     var pid = this.pid;
-    if (typeof PROJECT_INFORMATION_BY_PNAME[project_name] !== 'undefined') {
-      pid = PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
+    if (typeof C.PROJECT_INFORMATION_BY_PNAME[project_name] !== 'undefined') {
+      pid = C.PROJECT_INFORMATION_BY_PNAME[project_name]["pid"];
     }
     return pid;
   }
@@ -125,14 +126,14 @@ class Project {
     this.user_obj = this.this_user.User_obj;
 
     //renaming
-    this.project_obj.project_description = PROJECT_INFORMATION_BY_PID[pid].description;
-    this.project_obj.pi_email            = PROJECT_INFORMATION_BY_PID[pid].email;
-    this.project_obj.pi_name             = PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
-    this.project_obj.first_name          = PROJECT_INFORMATION_BY_PID[pid].first;
-    this.project_obj.last_name           = PROJECT_INFORMATION_BY_PID[pid].last;
-    this.project_obj.project_id          = PROJECT_INFORMATION_BY_PID[pid].pid;
-    this.project_obj.rev_project_name    = helpers.reverseString(PROJECT_INFORMATION_BY_PID[pid].project);
-    this.project_obj.project_title       = PROJECT_INFORMATION_BY_PID[pid].title;
+    this.project_obj.project_description = C.PROJECT_INFORMATION_BY_PID[pid].description;
+    this.project_obj.pi_email            = C.PROJECT_INFORMATION_BY_PID[pid].email;
+    this.project_obj.pi_name             = C.PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
+    this.project_obj.first_name          = C.PROJECT_INFORMATION_BY_PID[pid].first;
+    this.project_obj.last_name           = C.PROJECT_INFORMATION_BY_PID[pid].last;
+    this.project_obj.project_id          = C.PROJECT_INFORMATION_BY_PID[pid].pid;
+    this.project_obj.rev_project_name    = helpers.reverseString(C.PROJECT_INFORMATION_BY_PID[pid].project);
+    this.project_obj.project_title       = C.PROJECT_INFORMATION_BY_PID[pid].title;
     this.project_obj.abstract_data       = this.get_current_project_abstract_data(this.project_obj.project);
     this.project_obj.permissions         = [this.user_obj.user_id]; // initially has only project owner_id
 
@@ -276,13 +277,13 @@ class Project {
 
     //undefined: env_package_id
     if (typeof PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
-      PROJECT_INFORMATION_BY_PID[pid]            = Object.assign(object_to_add);
-      PROJECT_INFORMATION_BY_PID[pid].pid        = pid;
-      PROJECT_INFORMATION_BY_PID[pid].project_id = pid;
+      C.PROJECT_INFORMATION_BY_PID[pid]            = Object.assign(object_to_add);
+      C.PROJECT_INFORMATION_BY_PID[pid].pid        = pid;
+      C.PROJECT_INFORMATION_BY_PID[pid].project_id = pid;
     }
 
     if (typeof PROJECT_INFORMATION_BY_PNAME[object_to_add.project] === 'undefined') {
-      PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+      C.PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(C.PROJECT_INFORMATION_BY_PID[pid]);
     }
   }
 

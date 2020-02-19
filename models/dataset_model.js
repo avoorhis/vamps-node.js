@@ -1,4 +1,5 @@
-var helpers = require(app_root + '/routes/helpers/helpers');
+const helpers = require(app_root + '/routes/helpers/helpers');
+const C		  = require(app_root + '/public/constants');
 
 class Dataset {
 
@@ -158,7 +159,7 @@ class Dataset {
 
   add_info_to_dataset_globals() {
     const pid          = this.pid.toString();
-    const project_info = PROJECT_INFORMATION_BY_PID[pid];
+    const project_info = C.PROJECT_INFORMATION_BY_PID[pid];
     var temp_obj       = {};
     temp_obj.name      = project_info.project;
     temp_obj.pid       = this.pid;
@@ -167,8 +168,8 @@ class Dataset {
     // temp_obj.ddesc = "C6 Consortia Inoculum";
     // temp_obj.did = 9347;
     // temp_obj.dname = "23";
-    ALL_DATASETS.projects.push(temp_obj);
-    DATASET_IDS_BY_PID[pid]     = [];
+    C.ALL_DATASETS.projects.push(temp_obj);
+    C.DATASET_IDS_BY_PID[pid]     = [];
     this.DatasetInfo.dataset_id = [];
 
     for (let i = 0; i < this.datasets_length; i++) {
@@ -182,18 +183,18 @@ class Dataset {
       var myArray_dataset = this.DatasetInfo.dataset;
       this.add_obj_to_arr(dataset_info.dataset, myArray_dataset);
 
-      DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
-      DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
+      C.DATASET_IDS_BY_PID[pid].push(dataset_info.dataset_id);
+      C.DATASET_NAME_BY_DID[dataset_info.dataset_id] = dataset_info.dataset;
 
       var tt_obj      = {};
       tt_obj["did"]   = dataset_info.dataset_id;
       tt_obj["dname"] = dataset_info.dataset;
       tt_obj["ddesc"] = dataset_info.dataset_description;
 
-      var myArray1 = ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
+      var myArray1 = C.ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
       this.add_obj_to_arr(tt_obj, myArray1);
 
-      PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
+      C.PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
       // AllMetadata
     }
   }

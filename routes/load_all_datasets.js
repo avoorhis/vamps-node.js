@@ -59,19 +59,20 @@ module.exports.get_datasets = callback => {
       }
       else {
         console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and global_vars.run_select_datasets_query):');
+        console.log('ALL GLOBAL Variables are now members of the CONSTANTS space -AV');
         //datasetsByProject.projects = []
         global_vars.run_select_datasets_query(rows);
 
       }
-      console.log(' INITIALIZING ALL_DATASETS');
+      console.log(' INITIALIZING C.ALL_DATASETS');
       //console.log(JSON.stringify(ALL_DATASETS));
-      console.log(' INITIALIZING PROJECT_ID_BY_DID');
-      console.log(' INITIALIZING PROJECT_INFORMATION_BY_PID');
-      console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
-      console.log(' INITIALIZING DATASET_IDS_BY_PID');
-      console.log(' INITIALIZING DATASET_NAME_BY_DID');
-      console.log(' INITIALIZING AllMetadataNames');
-      console.log(' INITIALIZING DatasetsWithLatLong');
+      console.log(' INITIALIZING C.PROJECT_ID_BY_DID');
+      console.log(' INITIALIZING C.PROJECT_INFORMATION_BY_PID');
+      console.log(' INITIALIZING C.PROJECT_INFORMATION_BY_PNAME');
+      console.log(' INITIALIZING C.DATASET_IDS_BY_PID');
+      console.log(' INITIALIZING C.DATASET_NAME_BY_DID');
+      console.log(' INITIALIZING C.AllMetadataNames');
+      console.log(' INITIALIZING C.DatasetsWithLatLong');
 
       callback(C.ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
   });
@@ -123,7 +124,7 @@ module.exports.get_datasets = callback => {
         })
 
       }
-      console.log(' INITIALIZING ALL_USERS_BY_UID and ALL_USERS_BY_UnK');
+      console.log(' INITIALIZING C.ALL_USERS_BY_UID and C.ALL_USERS_BY_UnK');
   });
 
   connection.query(queries.get_select_classifier_query(), (err, rows, fields) => {
@@ -139,7 +140,7 @@ module.exports.get_datasets = callback => {
       	  C.ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier+'_'+rows[i].database;
         }
       }
-      console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');
+      console.log(' INITIALIZING C.ALL_CLASSIFIERS_BY_CID');
   });
 
   connection.query(queries.get_select_env_term_query(), (err, rows, fields) => {
@@ -150,9 +151,9 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_env_term_query(rows);
       }
-      console.log(' INITIALIZING MD_ENV_ENVO');
-      console.log(' INITIALIZING MD_ENV_CNTRY');
-      console.log(' INITIALIZING MD_ENV_LZC');
+      console.log(' INITIALIZING C.MD_ENV_ENVO');
+      console.log(' INITIALIZING C.MD_ENV_CNTRY');
+      console.log(' INITIALIZING C.MD_ENV_LZC');
   });
  ///////////////////////////////////////////
 
@@ -180,7 +181,7 @@ module.exports.get_datasets = callback => {
           console.log(err);
           return;
         }
-        console.log('INITIALIZING USER_GROUPS');
+        console.log('INITIALIZING C.USER_GROUPS');
 
       }
   );
@@ -196,7 +197,7 @@ module.exports.get_datasets = callback => {
       else {
         global_vars.get_select_env_package_query(rows);
       }
-      console.log(' INITIALIZING MD_ENV_PACKAGE');
+      console.log(' INITIALIZING C.MD_ENV_PACKAGE');
   });
   connection.query(queries.get_select_domain_query(), (err, rows, fields) => {
       if (err)  {
@@ -206,7 +207,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_domain_query(rows);
       }
-      console.log(' INITIALIZING MD_DOMAIN');
+      console.log(' INITIALIZING C.MD_DOMAIN');
   });
   connection.query(queries.get_select_dna_region_query(), (err, rows, fields) => {
       if (err)  {
@@ -216,7 +217,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_dna_region_query(rows);
       }
-      console.log(' INITIALIZING MD_DNA_REGION');
+      console.log(' INITIALIZING C.MD_DNA_REGION');
   });
 
   connection.query(queries.get_select_target_gene_query(),  (err, rows, fields) => {
@@ -227,7 +228,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_target_gene_query(rows);
       }
-      console.log(' INITIALIZING MD_TARGET_GENE');
+      console.log(' INITIALIZING C.MD_TARGET_GENE');
   });
 
   connection.query(queries.get_select_sequencing_platform_query(), (err, rows, fields) => {
@@ -238,7 +239,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_sequencing_platform_query(rows);
       }
-      console.log(' INITIALIZING MD_SEQUENCING_PLATFORM');
+      console.log(' INITIALIZING C.MD_SEQUENCING_PLATFORM');
   });
 
   connection.query(queries.get_select_Illumina_3letter_adapter_query(), (err, rows, fields) => {
@@ -249,7 +250,7 @@ module.exports.get_datasets = callback => {
     } else {
       global_vars.get_select_Illumina_3letter_adapter_query(rows);
     }
-    console.log(' INITIALIZING MD_3LETTER_ADAPTER');
+    console.log(' INITIALIZING C.MD_3LETTER_ADAPTER');
   });
 
     connection.query(queries.get_select_adapter_sequence_query(), (err, rows, fields) => {
@@ -260,7 +261,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_adapter_sequence_query(rows);
       }
-      console.log(' INITIALIZING MD_ADAPTER_SEQUENCE');
+      console.log(' INITIALIZING C.MD_ADAPTER_SEQUENCE');
   });
   connection.query(queries.get_select_illumina_index_query(), (err, rows, fields) => {
       if (err)  {
@@ -270,7 +271,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_illumina_index_query(rows);
       }
-      console.log(' INITIALIZING MD_ILLUMINA_INDEX');
+      console.log(' INITIALIZING C.MD_ILLUMINA_INDEX');
   });
 
   connection.query(queries.get_select_primer_suite_query(), (err, rows, fields) => {
@@ -281,7 +282,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_primer_suite_query(rows);
       }
-      console.log(' INITIALIZING MD_PRIMER_SUITE');
+      console.log(' INITIALIZING C.MD_PRIMER_SUITE');
 
 
   });
@@ -293,7 +294,7 @@ module.exports.get_datasets = callback => {
       } else {
         global_vars.get_select_run_query(rows);
       }
-      console.log(' INITIALIZING MD_RUN');
+      console.log(' INITIALIZING C.MD_RUN');
   });
 
   // slow query
@@ -310,9 +311,9 @@ module.exports.get_datasets = callback => {
 
       }
 
-      console.log(' INITIALIZING ALL_DCOUNTS_BY_DID');
-      console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
-      console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
+      console.log(' INITIALIZING C.ALL_DCOUNTS_BY_DID');
+      console.log(' INITIALIZING C.ALL_PCOUNTS_BY_PID');
+      console.log(' INITIALIZING C.ALL_CLASSIFIERS_BY_PID');
   });
 
   connection.query(queries.get_select_custom_units_query(), (err, rows, fields) => {
@@ -324,7 +325,7 @@ module.exports.get_datasets = callback => {
     } else {
       global_vars.get_select_custom_units_query(rows);
     }
-    console.log(' INITIALIZING MD_CUSTOM_UNITS');
+    console.log(' INITIALIZING C.MD_CUSTOM_UNITS');
     // console.timeEnd("TIME: connection queries.get_select_custom_units_query");
   });
 

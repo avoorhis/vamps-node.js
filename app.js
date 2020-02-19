@@ -311,7 +311,7 @@ catch (e) {
    }
    C.AllMetadata = {}
 }
-console.log('Loading METADATA as AllMetadata from:\n\t'+meta_file);
+console.log('Loading METADATA as C.AllMetadata from:\n\t'+meta_file);
 
 
 

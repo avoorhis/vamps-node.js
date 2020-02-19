@@ -1,4 +1,5 @@
-var validator = require('validator');
+const validator = require('validator');
+const C		  = require(app_root + '/public/constants');
 
 class User {
 
@@ -33,14 +34,14 @@ class User {
     var uniq_key = first_name + "#" + last_name + "#" + email + "#" + institution;
 
     if (typeof ALL_USERS_BY_UnK[uniq_key] !== 'undefined') {
-      this.User_obj.user_id        = ALL_USERS_BY_UnK[uniq_key].user_id;
-      this.User_obj.username       = ALL_USERS_BY_UnK[uniq_key].username;
-      this.User_obj.email          = ALL_USERS_BY_UnK[uniq_key].email;
-      this.User_obj.institution    = ALL_USERS_BY_UnK[uniq_key].institution;
-      this.User_obj.first_name     = ALL_USERS_BY_UnK[uniq_key].first_name;
-      this.User_obj.last_name      = ALL_USERS_BY_UnK[uniq_key].last_name;
-      this.User_obj.security_level = ALL_USERS_BY_UnK[uniq_key].status;
-      this.User_obj.groups         = ALL_USERS_BY_UnK[uniq_key].groups;
+      this.User_obj.user_id        = C.ALL_USERS_BY_UnK[uniq_key].user_id;
+      this.User_obj.username       = C.ALL_USERS_BY_UnK[uniq_key].username;
+      this.User_obj.email          = C.ALL_USERS_BY_UnK[uniq_key].email;
+      this.User_obj.institution    = C.ALL_USERS_BY_UnK[uniq_key].institution;
+      this.User_obj.first_name     = C.ALL_USERS_BY_UnK[uniq_key].first_name;
+      this.User_obj.last_name      = C.ALL_USERS_BY_UnK[uniq_key].last_name;
+      this.User_obj.security_level = C.ALL_USERS_BY_UnK[uniq_key].status;
+      this.User_obj.groups         = C.ALL_USERS_BY_UnK[uniq_key].groups;
     }
     else {
       console.log("ERR from getUserInfoFromGlobalbyUniqKey. No such user: ALL_USERS_BY_UnK[uniq_key]", uniq_key);
@@ -60,14 +61,14 @@ class User {
 
     this.User_obj.user_id = user_id;
     if (typeof ALL_USERS_BY_UID[user_id] !== 'undefined') {
-      this.User_obj.username           = ALL_USERS_BY_UID[user_id].username;
-      this.User_obj.email              = ALL_USERS_BY_UID[user_id].email;
-      this.User_obj.institution        = ALL_USERS_BY_UID[user_id].institution;
-      this.User_obj.first_name         = ALL_USERS_BY_UID[user_id].first_name;
-      this.User_obj.last_name          = ALL_USERS_BY_UID[user_id].last_name;
-      this.User_obj.security_level     = ALL_USERS_BY_UID[user_id].status;
-      this.User_obj.encrypted_password = ALL_USERS_BY_UID[user_id].encrypted_password;
-      this.User_obj.groups             = ALL_USERS_BY_UID[user_id].groups;
+      this.User_obj.username           = C.ALL_USERS_BY_UID[user_id].username;
+      this.User_obj.email              = C.ALL_USERS_BY_UID[user_id].email;
+      this.User_obj.institution        = C.ALL_USERS_BY_UID[user_id].institution;
+      this.User_obj.first_name         = C.ALL_USERS_BY_UID[user_id].first_name;
+      this.User_obj.last_name          = C.ALL_USERS_BY_UID[user_id].last_name;
+      this.User_obj.security_level     = C.ALL_USERS_BY_UID[user_id].status;
+      this.User_obj.encrypted_password = C.ALL_USERS_BY_UID[user_id].encrypted_password;
+      this.User_obj.groups             = C.ALL_USERS_BY_UID[user_id].groups;
     }
   }
 

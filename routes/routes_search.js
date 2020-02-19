@@ -111,7 +111,7 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, (req, res) => {
         var pid     = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[did]].pid
         var ds      = C.DATASET_NAME_BY_DID[did]
         var pjds = project +'--'+ds
-        if(did in DatasetsWithLatLong){
+        if(did in C.DatasetsWithLatLong){
             latlon_datasets.points[did] = {}
             latlon_datasets.points[did].proj_dset = pjds
             latlon_datasets.points[did].pid = pid

@@ -85,7 +85,7 @@ router.post('/dco_project_list',  (req, res) => {
     var direction = req.body.dir;
     var projects        = [];
     var project_list = helpers.get_portal_projects(req, 'CODL')
-    //console.log(DatasetsWithLatLong)
+    //console.log(C.DatasetsWithLatLong)
     
     let publish_data = {}
     try{
@@ -100,7 +100,7 @@ router.post('/dco_project_list',  (req, res) => {
     // then, if find empty did, convert to PARTIAL
     // Count datasets with
     let pids_with_latlon = {}
-    for(did in DatasetsWithLatLong){
+    for(did in C.DatasetsWithLatLong){
         if(C.DatasetsWithLatLong[did].latitude != '' || C.DatasetsWithLatLong[did].longitude != ''){
             pids_with_latlon[C.DatasetsWithLatLong[did].pid] = 1
         }    
@@ -126,14 +126,14 @@ router.post('/dco_project_list',  (req, res) => {
     
     //}
     
-    for(did in DatasetsWithLatLong){
-        //console.log(DatasetsWithLatLong[did].pid)
-        //console.log(DatasetsWithLatLong[did])
-        if(new_dco_list_latlon.hasOwnProperty(DatasetsWithLatLong[did].pid) == true){
-            if(new_dco_list_latlon[DatasetsWithLatLong[did].pid] == 'EMPTY'){
-                new_dco_list_latlon[DatasetsWithLatLong[did].pid] = 1
+    for(did in C.DatasetsWithLatLong){
+        //console.log(C.DatasetsWithLatLong[did].pid)
+        //console.log(C.DatasetsWithLatLong[did])
+        if(new_dco_list_latlon.hasOwnProperty(C.DatasetsWithLatLong[did].pid) == true){
+            if(new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] == 'EMPTY'){
+                new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] = 1
             }else{
-                new_dco_list_latlon[DatasetsWithLatLong[did].pid] += 1
+                new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] += 1
             }            
         }     
     }
