@@ -399,9 +399,8 @@ dheatmap: (req, res) =>{
 //
 //   PIE CHARTS
 //
-piecharts: (req, res) => {
+  piecharts: (req, res) => {
     console.log('In routes_images/function: images/piecharts');
-    // https://gist.github.com/mbostock/1305111
     let ts = req.session.ts;
     let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
     fs.readFile(matrix_file_path, 'utf8', (err, data) => {
@@ -420,26 +419,16 @@ piecharts: (req, res) => {
         let total = 0;
         let imagetype = 'group';
 
-        // if (imagetype === 'single') {
-//           total = if_imagetype_single(matrix, total);
-//         }
+        if (imagetype === 'single') {
+          total = if_imagetype_single(matrix, total);
+        }
 
-        let mtxdata = make_pie_mtxdata(matrix);
-		const image_options_obj = image_options(imagetype, matrix, d3);
-		const unit_list = get_unit_list(matrix);
-		let pies_per_row = image_options_obj.pies_per_row;
-		let pie_rows = image_options_obj.pie_rows;
-		
-        //let body = pies_factory(req, matrix, mtxdata, imagetype, ts);
-		const jsdom = require('jsdom');
-  		const { JSDOM } = jsdom;
-  		const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-  		let body = d3.select(fakeDom.window.document).select('body');
-		let svg = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
-		console.log('pies-svgContainer')
-        console.log(svgContainer)
-  		
-        let html = body.select('.container').html();
+        let d3pie_data  = make_pie_mtxdata(matrix);
+
+        //console.log(mtxdata)
+        let body = pies_factory(req, matrix, d3pie_data, imagetype, ts);
+
+        let html = '<center>'+body.select('.container').html()+'</center>';
         let outfile_name = ts + '-piecharts-api.svg';
         let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         console.log('outfile_path:', outfile_path);
@@ -452,7 +441,8 @@ piecharts: (req, res) => {
       } // end else
     }); // end readFile matrix
 
-},  // end piecharts
+  },  // end piecharts
+
 //
 //   BAR CHARTS
 //
@@ -465,7 +455,6 @@ barcharts: (req, res) =>{
 
     let matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom');
     fs.readFile(matrix_file_path, 'utf8', (err, data) => {
-      
 
       if (err) {
         let msg = 'ERROR Message ' + err;
@@ -480,36 +469,34 @@ barcharts: (req, res) =>{
         }
 
         let ds_count = matrix.shape[1];
-        let props = get_image_properties(imagetype, ds_count);
+        let props = get_image_properties_bars(imagetype, ds_count);
 
-        
-        let mtxdata = add_unitObj(matrix);
-        
-
+        let mtxdata = make_bar_mtxdata(matrix);
         
         const jsdom = require('jsdom');  // NEED version <10 for jsdom.env
         const { JSDOM } = jsdom;
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
         let svg = make_svgContainer(props.width, props.height, props.margin.left, props.margin.top, body);
-        console.log('bars-svgContainer')
-        console.log(svgContainer)
+        console.log('bars-svg')
+        console.log(svg)
         // axis legends -- would like to rotate dataset names
         props.y.domain(matrix.columns.map(c => c.id));
         props.x.domain([0, 100]);
-        
-        create_svg_obj({imagetype, req, svg, props, mtxdata, ts});
-        
+
+        create_bars_svg_object(req, svg, props, mtxdata, ts);
 
         let html = body.select('.container').html();
+        let outfile_name = ts + '-barcharts-api.svg';
+        let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
+        save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
 
-        let outfile_name = save_file_to_user_location(req, ts, html);
         data = {};
         data.html = html;
         data.filename = outfile_name;
         res.json(data);
       } // end else
-      console.timeEnd("TIME: readFile(matrix_file_path");
+
     }); // end fs.readFile
 },  // end barcharts
 //
@@ -1245,7 +1232,7 @@ function string_to_color_code(str){
 //
 //
 //
-function get_image_properties(imagetype, ds_count) {
+function get_image_properties_bars(imagetype, ds_count) {
   var props = {};
   var gap = 2;  // gap on each side of bar
   if(imagetype=='single'){
@@ -1320,7 +1307,7 @@ function save_file(data, file_path){
 
   })
 }
-function thin_out_data_for_display(mtx){
+function thin_out_data_for_display_otus(mtx){
   console.log('in thin_out_data_for_display- OTUs only')
   var new_mtx = {}
   new_mtx.columns = mtx.columns
@@ -1365,34 +1352,20 @@ function thin_out_data_for_display(mtx){
 
 function charts_otus(req, biom_data) {
   console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
-  return thin_out_data_for_display(biom_data);
+  return thin_out_data_for_display_otus(biom_data);
 }
 
-function get_scaler(mtxdata, matrix) {
-  let scaler = d3.scaleOrdinal()
-    .range( matrix.rows );
-  scaler.domain(d3.keys(mtxdata[0])
-    .filter( (key) =>  {
-      return key !== "pjds" && key !== "did";
-    }));
-  return scaler;
-}
+// function get_scaler(mtxdata, matrix) {
+//   let scaler = d3.scaleOrdinal()
+//     .range( matrix.rows );
+//   scaler.domain(d3.keys(mtxdata[0])
+//     .filter( (key) =>  {
+//       return key !== "pjds" && key !== "did";
+//     }));
+//   return scaler;
+// }
 
-function add_unitObj(matrix) {
-  let mtxdata = [];
-  matrix.columns.forEach((column, p_ind) => {
-    let tmp = {};
-    tmp.pjds = column.id;
-    tmp.did = column.did;
-    tmp.total = matrix.column_totals[p_ind];
-    tmp = add_data_from_rows(matrix, tmp, column, p_ind);
-    
-    tmp = normalize_to_100_prc(tmp);
 
-    mtxdata.push(tmp);
-  });
-  return mtxdata;
-}
 
 function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
   let x0 = 0;
@@ -1422,7 +1395,25 @@ function normalize_to_100_prc(tmp_obj) {
   });
   return tmp_obj;
 }
+function make_svgContainer_pies(data, width, height, margin_left, margin_top, body) {
+  // both pies and bars
+  var m = 10,
+      r = 100;
+  var svg = body.selectAll("svg")
+      .data(data)
+      .enter().append("svg")
+      .attr("xmlns", 'http://www.w3.org/2000/svg')
+      .attr("xmlns:xlink", 'http://www.w3.org/2000/xlink')
+      .attr("width", width)
+      .attr("height", height)
+      //.attr("width", (r + m) * 2)
+      //.attr("height", (r + m) * 2)
+      .append("g")
+      //.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")")
+      .attr("transform", "translate(" + margin_left + "," + margin_top + ")");
 
+  return svg
+}
 function make_svgContainer(width, height, margin_left, margin_top, body) {
   // both pies and bars
   let svgContainer = body.append('div').attr('class', 'container')
@@ -1436,64 +1427,34 @@ function make_svgContainer(width, height, margin_left, margin_top, body) {
   return svgContainer;
 }
 
-function create_svg_obj({imagetype, req, svgContainer, props, mtxdata, ts}) {
-  console.log('In create_svg_obj')
-  // switch (imagetype) {
-//     case 'single':
-//       // Where is this?
-//       create_singlebar_svg_object(req, svgContainer, props, mtxdata, ts);
-//       break;
-//     case 'double':
-//       create_doublebar_svg_object(req, svgContainer, props, mtxdata, ts);
-//       break;
-//     default:
-      try {
-        create_bars_svg_object(req, svgContainer, props, mtxdata, ts);
-      }
-      catch (err) {
-        console.log('Error in create_bars_svg_object() ' + err.toString());
-      }
-//       break;
-//   }
-}
 
-function save_file_to_user_location(req, ts, html) {
-  let outfile_name = ts + '-barcharts-api.svg';
-  let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
-  console.log('outfile_path:', outfile_path);
-  save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
-  return outfile_name;
-}
-
-function image_options(imagetype, matrix, d3) {
-  const image_options = {};
-  image_options.pies_per_row = 4;
-  image_options.margin = 15;
-  image_options.pie_rows = 320 / image_options.pies_per_row; // four pies per row
+function image_options_pies(imagetype, matrix, d3) {
+  const io_obj = {};
+  io_obj.pies_per_row = 4;
+  io_obj.margin = 15;
+  io_obj.pie_rows = 320 / io_obj.pies_per_row; // four pies per row
 
   if (imagetype === 'single') {
-    image_options.pies_per_row = 1;
-    image_options.margin = 20;
-    image_options.pie_rows = 120; // five pies per row
+    io_obj.pies_per_row = 1;
+    io_obj.margin = 20;
+    io_obj.pie_rows = 120; // five pies per row
   }
 
   // image start in upper left corner
-  image_options.image_w = 1200;
-  image_options.image_h = get_image_hight(matrix, image_options.pie_rows, image_options.pies_per_row);
-  image_options.arc = d3.arc()
-    .innerRadius(0)
-    .outerRadius(image_options.pie_rows);
-  image_options.margin_left = 0;
-  image_options.margin_top = 0;
+  io_obj.image_w = 1200;
+  io_obj.image_h = get_image_hight(matrix, io_obj.pie_rows, io_obj.pies_per_row);
 
-  return image_options;
+  io_obj.margin_left = 0;
+  io_obj.margin_top = 0;
+
+  return io_obj;
 }
 
 function get_image_hight(matrix, pie_rows, pies_per_row) {
   let ds_count = matrix.shape[1];
   let no_of_rows = Math.ceil(ds_count / pies_per_row);
   let image_h = no_of_rows * ((pie_rows * 2) + 40);
-  console.log('image_h', image_h);
+  //console.log('image_h', image_h);
   return image_h;
 }
 
@@ -1509,127 +1470,95 @@ function get_ds_total(matrix) {
   }
   return ds_totals;
 }
-function pies_factory(req, matrix, mtxdata, imagetype, ts) {
+
+function pies_factory(req, matrix, d3pie_data, imagetype, ts) {
   const jsdom = require('jsdom');
   const { JSDOM } = jsdom;
-  const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+  const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html></html>');
   let body = d3.select(fakeDom.window.document).select('body');
 
-  const image_options_obj = image_options(imagetype, matrix, d3);
+  const io = image_options_pies(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
-  //const ds_totals = get_ds_total(matrix);
-  //console.log('ds_totals')
-  //console.log(ds_totals)
-  let pies_per_row = image_options_obj.pies_per_row;
-  let pie_rows = image_options_obj.pie_rows;
-  let svg = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
 
-  let margin = image_options_obj.margin;
-  let arc = image_options_obj.arc;
-  
-  
-}
-function pies_factoryXX(req, matrix, mtxdata, imagetype, ts) {
-  const jsdom = require('jsdom');
-  const { JSDOM } = jsdom;
-  const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-  let body = d3.select(fakeDom.window.document).select('body');
+  let svg = make_svgContainer(io.image_w, io.image_h, io.margin_left, io.margin_top, body);
 
-  const image_options_obj = image_options(imagetype, matrix, d3);
-  const unit_list = get_unit_list(matrix);
-  //const ds_totals = get_ds_total(matrix);
-  //console.log('ds_totals')
-  //console.log(ds_totals)
-  let pies_per_row = image_options_obj.pies_per_row;
-  let pie_rows = image_options_obj.pie_rows;
-  let svg = make_svgContainer(image_options_obj.image_w, image_options_obj.image_h, image_options_obj.margin_left, image_options_obj.margin_top, body);
+  let arc = d3.arc().innerRadius(0).outerRadius(io.pie_rows);
 
-  let margin = image_options_obj.margin;
-  let arc = image_options_obj.arc;
-  
-  
+  if (req.body.source === 'website'){
     pies = svg.selectAll("svg")
-      .data(mtxdata.values)
-      .enter()
-      .append("g")
-      .attr("transform", (current_cnts, i) => {
-      // console.log('current_cnts')
-//       console.log(current_cnts)
-//       console.log('i')
-//       console.log(i)
-        let diam = (pie_rows) + margin;
-        let h_spacer = diam * 2 * (i % pies_per_row);
-        let v_spacer = diam * 2 * Math.floor(i / pies_per_row);
-        return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
-      })
-      .append("a")
-      .attr("xlink:xlink:href", (current_cnts, i) => {
-        //total = matrix.column_totals[i]
-        return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
-      })
-      .attr("target", '_blank' );
+        .data(d3pie_data)   // d3pie_data is an array of arrays with objects being members of internal arrays
+        .enter()
+        .append("g")//.style('text-anchor', 'middle')
+        .attr("transform", (ds_objects, i) => {
+          let diam = (io.pie_rows) + io.margin;
+          let h_spacer = diam * 2 * (i % io.pies_per_row);
+          let v_spacer = diam * 2 * Math.floor(i / io.pies_per_row);
+          return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+        })
 
+        .append("a")
+        .attr("xlink:xlink:href", (ds_objects, i) => {
+          return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+        })
+        .attr("target", '_blank' );
+  }
 
   pies.append("text")
-    .attr("dx", -(pie_rows + margin))
-    .attr("dy", pie_rows + margin)
-    .attr("text-anchor", "center")
-    .attr("font-size","10px")
-    .text( (current_cnts, i) => {
-        return matrix.columns[i].id;
-    });
-    console.log('mtx')
-  console.log(matrix)
-  console.log('mtxdata')
-  console.log(mtxdata)
-  let total = 0;
+      .attr("dx", -(io.pie_rows + io.margin))
+      .attr("dy", io.pie_rows + io.margin)
+      .attr("text-anchor", "center")
+      .attr("font-size","10px")
+      .text( (ds_objects, i) => {
+        if (imagetype === 'single') {
+          return 'SumCount: ' + total.toString();
+        }
+        else {
+          return matrix.columns[i].id;
+        }
+      });
   if (req.body.source === 'website'){
-    pies
-    .selectAll("path")
-      .data(d3.pie().sort(null))
-      .enter()
-      .append("path")
-      .attr("class", "arc")
-      .attr("d", arc)
-      // .attr("tot", function (d,i) { 
-//     	total = mtxdata.column_totals[i]
-//     	console.log(total)
-//     	return total
-//     })
-      .attr("id", (wedge_obj, i) => {
-        let cnt = wedge_obj.value;
-        //let total = 0;
-        console.log('wedge_obj')
-         console.log(wedge_obj)
-//         console.log('i')
-//         console.log(i)
-     
-        // let ds = ''; // PLACEHOLDER for TT
-        let pct = (cnt * 100 / total).toFixed(2);
-        let id = 'pc/' + unit_list[i] + '/' + cnt.toString() + '/' + pct;
-        //let id = 'pc/' + unit_list[i] + '/' + total.toString()
-        //let id = 'pc/total: '+total.toString()
-        return id;
-      })
-      .attr("class","tooltip_viz")
-      .attr("fill", (d, i) => {
-        return string_to_color_code(unit_list[i]);
-      });
-  }
-  else {
     pies.selectAll("path")
-      .data(d3.pie().sort(null))
-      .enter()
-      .append("path")
-      .attr("class", "arc")
-      .attr("d", arc)
-      .attr("fill", (d, i) => {
-        return string_to_color_code(unit_list[i]);
-      })
-      .append("title")
-      .text( (d, i) => {
-        return unit_list[i] + ' -- ' + d.value;
-      });
+        .data(d3.pie()
+            .value(function(d) {
+              return d.value;  // 'value' here is from mtxdata2.value
+            }).sort(null)
+        )
+        .enter()
+        .append("path")
+        .attr("class", "arc")
+        .attr("d", arc)
+        .attr("id", (current_obj, i) => {
+          //console.log('current_obj')
+          //console.log(current_obj)
+          let cnt = current_obj.value;
+          let total = current_obj.data.tot;
+
+          let pct = (cnt * 100 / total).toFixed(2);
+          let id = 'pc/' + unit_list[i] + '/' + cnt.toString() + '/' + pct;
+          return id;
+        })
+        .attr("class","tooltip_viz")
+        .attr("fill", (d, i) => {
+          return string_to_color_code(unit_list[i]);
+        });
+  }else {
+    pies.selectAll("path")
+        .data(d3.pie()
+            .value(function(d) {
+              return d.value;  // 'value' here is from mtxdata2.value
+            }).sort(null)
+        )
+        .enter()
+        .append("path")
+        .attr("class", "arc")
+        .attr("d", arc)
+        .attr("fill", (d, i) => {
+          return string_to_color_code(unit_list[i]);
+        })
+        .append("title")
+        .text( (d, i) => {
+          return unit_list[i] + ' -- ' + d.value;
+        });
   }
   return body;
 }
@@ -1643,23 +1572,52 @@ function if_imagetype_single(matrix, total) {
   return total;
 }
 
-function make_pie_mtxdata(matrix) {
-  let mtxdata = {};
-  mtxdata.names = [];
-  mtxdata.values = [];
-  mtxdata.column_totals = matrix.column_totals;
+function make_bar_mtxdata(matrix) {
+  let mtxdata = [];
   matrix.columns.forEach((column, p_ind) => {
-    mtxdata.names.push(column.id);
-    
-    let col_values = [];
-    matrix.rows.forEach((row, t_ind) => {
-      col_values.push(matrix.data[t_ind][p_ind]);
-    });
-    
-    mtxdata.values.push(col_values);
+    let tmp = {};
+    tmp.pjds = column.id;
+    tmp.did = column.did;
+    tmp.total = matrix.column_totals[p_ind];
+    tmp = add_data_from_rows(matrix, tmp, column, p_ind);
+
+    tmp = normalize_to_100_prc(tmp);
+
+    mtxdata.push(tmp);
   });
-	
   return mtxdata;
 }
+//
+//
+//
+function make_pie_mtxdata(matrix) {
 
+  let mtxdata = [];
+
+  matrix.columns.forEach((column, p_ind) => {  // per ds
+    tmp_obj1 = []
+
+    dscount = matrix.column_totals[p_ind]
+    dsname = column.id
+
+    let col_values = [];
+    matrix.rows.forEach((row, t_ind) => {
+      //col_values.push(matrix.data[t_ind][p_ind]);
+      tmp_obj2 = {}
+      tmp_obj2.id = dsname
+      tmp_obj2.tot = dscount
+      tmp_obj2.value = matrix.data[t_ind][p_ind]
+      tmp_obj1.push(tmp_obj2)
+    });
+    //tmp_obj.values = col_values
+    mtxdata.push(tmp_obj1)
+
+  });
+
+  //console.log('mtxdata')
+  //console.log(mtxdata)
+
+  return mtxdata
+  //return mtxdata;
+}
 
