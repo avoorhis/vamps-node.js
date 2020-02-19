@@ -140,7 +140,7 @@ router.post('/dco_project_list',  (req, res) => {
     for(pid in new_dco_list_latlon){
         //console.log(DATASET_IDS_BY_PID[pid].length)
         //console.log(new_dco_list_latlon[pid])
-        if(DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
+        if(C.DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
             new_dco_list_latlon[pid] = 'COMPLETE'
         }
         if(new_dco_list_latlon[pid] != 'EMPTY' && new_dco_list_latlon[pid] != 'COMPLETE'){

@@ -239,7 +239,7 @@ function get_data_to_open(req) {
     //console.log('got data to open '+data_to_open)
   } else if (req.body.project){
     // open whole project
-    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+    DATA_TO_OPEN[req.body.project_id] = C.DATASET_IDS_BY_PID[req.body.project_id];
   }
   console.log('DATA_TO_OPEN');
   console.log(DATA_TO_OPEN);
