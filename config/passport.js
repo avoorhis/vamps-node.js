@@ -284,7 +284,7 @@ function signup_user(req, username, password, done, db) {
           return done(null, false, req.flash('fail', 'There was an error. Please contact us at vamps@mbl.edu to request an account'));
         } else {
           new_user.user_id                   = insert_rows.insertId;
-          ALL_USERS_BY_UID[new_user.user_id] = {
+          C.ALL_USERS_BY_UID[new_user.user_id] = {
             email: new_user.email,
             username: new_user.username,
             last_name: new_user.lastname,

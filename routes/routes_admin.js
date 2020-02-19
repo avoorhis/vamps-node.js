@@ -251,7 +251,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     user: req.user,
     proj_to_open: proj_to_open,
     project_list: JSON.stringify(project_list),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 

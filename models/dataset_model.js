@@ -191,7 +191,7 @@ class Dataset {
       tt_obj["dname"] = dataset_info.dataset;
       tt_obj["ddesc"] = dataset_info.dataset_description;
 
-      var myArray1 = C.ALL_DATASETS.projects[ALL_DATASETS.projects.length - 1].datasets;
+      var myArray1 = C.ALL_DATASETS.projects[C.ALL_DATASETS.projects.length - 1].datasets;
       this.add_obj_to_arr(tt_obj, myArray1);
 
       C.PROJECT_ID_BY_DID[dataset_info.dataset_id] = this.pid;
