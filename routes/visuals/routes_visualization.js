@@ -857,13 +857,14 @@ function get_new_order_by_button(order) {
   let new_order = {};
   switch (order.orderby) {
     case "alpha":
+      new_order.count_value = '';
       if (order.value === 'a') {
         new_order.alpha_value = 'z';
       }
       else {
         new_order.alpha_value = 'a';
       }
-      new_order.count_value = '';
+      
       break;
     case "count":
       if (order.value === 'min') {
@@ -876,6 +877,14 @@ function get_new_order_by_button(order) {
     default:
       break;
   }
+  //works
+  // { count_value: 'max', alpha_value: '' }
+  // { count_value: 'min', alpha_value: '' }
+  // { count_value: '',    alpha_value: 'a' }
+  // { count_value: '',    alpha_value: 'z' }
+  // returns to
+  // router.get('/bar_single'  and
+  // router.get('/bar_double'
   return new_order;
 }
 
@@ -899,7 +908,6 @@ router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
   let pi = make_pi([selected_did], req, pd_vars);
   let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
   let new_order = get_new_order_by_button(order);
-
   if (pi.unit_choice !== 'OTUs') {
     write_seq_file_async(req, res, selected_did);
     const bar_type = 'single';

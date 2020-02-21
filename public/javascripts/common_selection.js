@@ -218,7 +218,7 @@ function create_piecharts(imagetype, ts, mtx) {
 //
 function create_barcharts(imagetype, ts, mtx, new_order) {
         //alert(imagetype)
-        //alert(ts)
+        //alert(JSON.stringify(new_order))
 
         var barcharts_div = document.getElementById('barcharts_div');
         barcharts_div.innerHTML = ""

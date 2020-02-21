@@ -54,7 +54,7 @@ if (download_fasta_btn !== null) {
 
 
 function get_single_bar_html(obj, ts){
-  console.log('in get_single_bar_html')
+  //console.log('in get_single_bar_html')
   var total = 0;
   var html ='';
   var tax_col_count = 0;
@@ -301,7 +301,7 @@ function hide_seqs(ds, taxa, fname){
   
 }
 function show_single_sequence(divid, seq){
-    console.log('showing')
+    //console.log('showing')
     //document.getElementById(divid).innerHTML = "<div onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\" style=\"font-family: monospace;\">"  +seq+ '</div>'
     document.getElementById(divid).innerHTML = "<input type='checkbox' onclick=\"hide_single_sequence('"+divid+"','"+seq+"')\" > <span  style=\"font-family: monospace;\">"  +seq+ '</span>'
     

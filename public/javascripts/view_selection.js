@@ -453,7 +453,7 @@ function create_viz(visual, ts, new_window, cts_local) {
     }else if(visual === 'cytoscape'){
       create_cytoscape(ts);
     }else if(visual === 'oligotyping'){
-      create_oligotyping(ts);
+      //create_oligotyping(ts);
     }else{
 
     }
@@ -966,60 +966,34 @@ function create_pcoa(ts, image_type, new_window) {
 
 }
 //
-//  CREATE DBROWSER
 //
-// function create_dbrowser(ts) {
-
-//          dbrowser_created = true;
-//          var info_line = create_header('dbrowser', pi_local);
-//          var dbrowser_div = document.getElementById('dbrowser_div');
-//          document.getElementById('dbrowser_title').innerHTML = info_line;
-//          document.getElementById('dbrowser_title').style.color = 'white';
-//         document.getElementById('dbrowser_title').style['font-size'] = 'small';
-//          dbrowser_div.style.display = 'block';
-
-//          document.getElementById('pre_dbrowser_div').style.display = 'block';
-//          var args =  "ts="+ts;
-//          var xmlhttp = new XMLHttpRequest();
-//          xmlhttp.open("POST", '/visuals/dbrowser', true);
-//          xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//          showDots='';
-//          var myWaitVar = setInterval(myWaitFunction,1000,dbrowser_div);
-//          xmlhttp.onreadystatechange = function() {
+//
+// function create_oligotyping(ts) {
+// 
+//         oligotyping_created = true;
+//         var info_line = create_header('oligotyping', pi_local);
+//         var oligotyping_div = document.getElementById('oligotyping_div');
+//         document.getElementById('oligotyping_title').innerHTML = info_line;
+//         document.getElementById('oligotyping_title').style.color = 'white';
+//         document.getElementById('oligotyping_title').style['font-size'] = 'small';
+//         oligotyping_div.style.display = 'block';
+// 
+//         document.getElementById('pre_oligotyping_div').style.display = 'block';
+//         var args =  "ts="+ts;
+//         var xmlhttp = new XMLHttpRequest();
+//         xmlhttp.open("POST", '/visuals/oligotyping', true);
+//         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//         showDots='';
+//         var myWaitVar = setInterval(myWaitFunction,1000,oligotyping_div);
+//         xmlhttp.onreadystatechange = function() {
 //            if (xmlhttp.readyState == 4 ) {
 //               clearInterval(myWaitVar);
 //               var response = xmlhttp.responseText;
-//               dbrowser_div.innerHTML = response;
+//               oligotyping_div.innerHTML = response;
 //            }
-//          };
-//          xmlhttp.send(args);
+//         };
+//         xmlhttp.send(args);
 // }
-function create_oligotyping(ts) {
-
-        oligotyping_created = true;
-        var info_line = create_header('oligotyping', pi_local);
-        var oligotyping_div = document.getElementById('oligotyping_div');
-        document.getElementById('oligotyping_title').innerHTML = info_line;
-        document.getElementById('oligotyping_title').style.color = 'white';
-        document.getElementById('oligotyping_title').style['font-size'] = 'small';
-        oligotyping_div.style.display = 'block';
-
-        document.getElementById('pre_oligotyping_div').style.display = 'block';
-        var args =  "ts="+ts;
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST", '/visuals/oligotyping', true);
-        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        showDots='';
-        var myWaitVar = setInterval(myWaitFunction,1000,oligotyping_div);
-        xmlhttp.onreadystatechange = function() {
-           if (xmlhttp.readyState == 4 ) {
-              clearInterval(myWaitVar);
-              var response = xmlhttp.responseText;
-              oligotyping_div.innerHTML = response;
-           }
-        };
-        xmlhttp.send(args);
-}
 //
 //
 //
@@ -1446,33 +1420,7 @@ function create_barcharts_group(new_window) {
 //
 //
 //
-// function heatmap_click_fxn(did1,ds1,did2,ds2){
-//       //alert(did1)
-//       var args =  "did1="+did1;
-//       args += "&ds1="+ds1;
-//       args += "&did2="+did2;
-//       args += "&ds2="+ds2;
-//       //args += "&ts="+ts;
-//       //document.getElementById('pre_adiversity_div').style.display = 'block';
-//        // get distance matrix via AJAX
-//       var xmlhttp = new XMLHttpRequest();
-//       xmlhttp.open("POST", '/visuals/bar_double', true);
-//       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//       //showDots='';
-//       //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-//       xmlhttp.onreadystatechange = function() {
-//         if (xmlhttp.readyState == 4 ) {
-// 
-// 
-//            //clearInterval(myWaitVar);
-//             var retstring = xmlhttp.responseText;
-//         alert(retstring)
-//         window.open(retstring,"_blank")
-//         
-//         }
-//       };
-//       xmlhttp.send(args);
-// }
+
 
 //
 //
@@ -1872,26 +1820,6 @@ function download_data(type, download_type, ts) {
 //
 //
 //
-// function save_configuration(ds_local, user){
-// 
-//   if(user=='guest'){
-//       alert("The 'guest' user is not permitted to save datasets.");
-//       return;
-//     }
-//   args=''
-//   var xmlhttp = new XMLHttpRequest();
-//   xmlhttp.open("POST", '/visuals/save_config', true);
-//     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//     xmlhttp.onreadystatechange = function() {
-//       if (xmlhttp.readyState == 4 ) {
-//          var response = xmlhttp.responseText;
-//          document.getElementById('save_config_confirmation').innerHTML = response
-// 
-//       }
-//     };
-//     xmlhttp.send(args);
-// }
-
 function reload_view_form(){
 
   form = document.getElementById('reload_form_id');
