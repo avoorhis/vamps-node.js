@@ -298,19 +298,19 @@ module.exports.assignment_finish_request = (res, rows1, rows2, status_params) =>
   const global_vars = new global_vars_controller.GlobalVars();
 
   global_vars.run_select_datasets_query(rows1);
-  console.log(' UPDATING ALL_DATASETS');
-  console.log(' UPDATING PROJECT_ID_BY_DID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
-  console.log(' UPDATING DATASET_IDS_BY_PID');
-  console.log(' UPDATING DATASET_NAME_BY_DID');
-  console.log(' UPDATING AllMetadataNames');
-  console.log(' UPDATING DatasetsWithLatLong');
+  console.log(' UPDATING C.ALL_DATASETS');
+  console.log(' UPDATING C.PROJECT_ID_BY_DID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PNAME');
+  console.log(' UPDATING C.DATASET_IDS_BY_PID');
+  console.log(' UPDATING C.DATASET_NAME_BY_DID');
+  console.log(' UPDATING C.AllMetadataNames');
+  console.log(' UPDATING C.DatasetsWithLatLong');
   // This function needs to be (re)written
   //this.run_select_sequences_query(rows2);
-  console.log(' UPDATING ALL_DCOUNTS_BY_DID');
-  console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
-  console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
+  console.log(' UPDATING C.ALL_DCOUNTS_BY_DID');
+  console.log(' UPDATING C.ALL_PCOUNTS_BY_PID ');
+  console.log(' UPDATING C.ALL_CLASSIFIERS_BY_PID');
   // re-run re-create new_taxonomy (see app.js)
   const silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
   var all_silva_taxonomy = new silvaTaxonomy();
@@ -1537,7 +1537,7 @@ exports.transpose_2d_arr_and_fill = (data_arr, matrix_length) => {
   // console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
-  // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  // var matrix_length = C.DATASET_IDS_BY_PID[project_id].length + 1;
   let length_array = data_arr[0];
   if (data_arr[0].length < matrix_length) {
     length_array = module.exports.fill_out_arr_doubles('', matrix_length);

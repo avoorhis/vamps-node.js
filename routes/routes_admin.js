@@ -251,7 +251,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     user: req.user,
     proj_to_open: proj_to_open,
     project_list: JSON.stringify(project_list),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -290,13 +290,13 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req, r
   html += ' <td>Owner (username-uid)</td><td>' + info.last + ', ' + info.first + ' <small>(' + info.username + "-" + info.oid + ')</small></td>';
   html += ' <td>';
   html += " <select id='new_oid' name='new_oid' width='200' style='width: 200px'>";
-  for (uid in ALL_USERS_BY_UID) {
+  for (uid in C.ALL_USERS_BY_UID) {
     if (C.ALL_USERS_BY_UID[uid].username !== 'guest') {
       if (C.ALL_USERS_BY_UID[uid].username === info.username) {
         html += "    <option selected value='" + uid + "'>" + C.ALL_USERS_BY_UID[uid].last_name + "," + C.ALL_USERS_BY_UID[uid].first_name;
         html += "     <small>(" + C.ALL_USERS_BY_UID[uid].username + ")</small></option>";
       } else {
-        html += "    <option value='" + uid + "'>" + ALL_USERS_BY_UID[uid].last_name + "," + C.ALL_USERS_BY_UID[uid].first_name;
+        html += "    <option value='" + uid + "'>" + C.ALL_USERS_BY_UID[uid].last_name + "," + C.ALL_USERS_BY_UID[uid].first_name;
         html += "     <small>(" + C.ALL_USERS_BY_UID[uid].username + ")</small></option>";
       }
     }
@@ -521,7 +521,7 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   //console.log(JSON.stringify(C.ALL_USERS_BY_UID))
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var user_order = get_name_ordered_users_list()
   res.render('admin/inactivate_user', {
     title: 'VAMPS Inactivate User',
@@ -534,7 +534,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
   console.log('in delete_user POST ADMIN')
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var uid_to_delete = req.body.uid;
   var response;
   // var finish = () => {
@@ -551,7 +551,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
   } else if (uid_to_delete == req.user.user_id) {
     res.send('FAILED: You cannot inactivate yourself!');
   } else {
-    delete ALL_USERS_BY_UID[uid_to_delete]
+    delete C.ALL_USERS_BY_UID[uid_to_delete]
     connection.query(queries.inactivate_user(uid_to_delete), (err, rows) => {
       if (err) {
         response = 'FAILED: sql error ' + err
@@ -648,7 +648,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
             var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, new_user.username);
             console.log('Admin:Validating/Creating User Data Directory: ' + user_data_dir);
             helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
-            ALL_USERS_BY_UID[new_user.user_id] = {
+            C.ALL_USERS_BY_UID[new_user.user_id] = {
               email: new_user.email,
               username: new_user.username,
               last_name: new_user.lastname,
@@ -1454,8 +1454,8 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
   console.log(req.user)
   var rows = []
   if (req.user.security_level <= 10) {
-    // for(uid in ALL_USERS_BY_UID){
-// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
+    // for(uid in C.ALL_USERS_BY_UID){
+// 	        rows.push({uid:uid,fullname:C.ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
 // 	    }
 // 	    rows.sort( (a, b) => {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);

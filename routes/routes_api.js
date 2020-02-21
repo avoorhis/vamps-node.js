@@ -1,8 +1,8 @@
 const express = require('express');
-var router = express.Router();
+var router 	= express.Router();
 const helpers = require('./helpers/helpers');
-const path = require('path');
-const fs   = require('fs-extra');
+const path 	= require('path');
+const fs   	= require('fs-extra');
 const IMAGES  = require('./routes_images');
 const C		  = require(app_root + '/public/constants');
 //
@@ -109,50 +109,7 @@ router.post('/get_dids_from_project', (req, res) =>{
 //          Must be logged in through API!
 //      'project': Gets dataset IDs from the projects that the user has permissions to access.
 //
-// router.post('/get_datasets_and_counts', (req, res) =>{
-//     console.log('HERE in routes_api.js --> get_datasets_and_counts ')
-//     if( ! req.isAuthenticated() ){
-//         res.send(JSON.stringify('Failed Authentication -- Please login first'))
-//         return
-//     }
-//     console.log(req.body)
-//     var project = req.body.project
-//     
-//     if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
-//       var pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-//       var dids = DATASET_IDS_BY_PID[pid]
-//       var new_dataset_ids = helpers.screen_dids_for_permissions(req, dids)
-//       if (new_dataset_ids === undefined || new_dataset_ids.length === 0){
-//         console.log('No Datasets Found')
-//         res.send(JSON.stringify('No Datasets Found - (do you have the correct access permissions?)'))
-//         return;
-//       }else{
-//           //console.log(new_dataset_ids)
-//           outfile_name = ts+'_counts.txt'
-//           
-//           outfile_path = path.join(req.CONFIG.TMP_FILES, outfile_name);  // file name save to user_location
-//           var txt = ''
-//           for(n in new_dataset_ids){
-//             did = new_dataset_ids[n]
-//             dname = DATASET_NAME_BY_DID[did]
-//             tot_dcount = ALL_DCOUNTS_BY_DID[did]
-//             console.log('dataset= '+dname+' (count='+tot_dcount.toString()+')')
-//             txt += dname+' = '+tot_dcount.toString()+"\n"
-//             console.log('txt-'+txt)
-//             
-//           }
-//     
-//           result = save_file(txt, outfile_path) // this saved file should now be downloadable from jupyter notebook
-//           console.log(result)
-//           res.send(JSON.stringify({'filename':outfile_name}))
-//           
-//           
-//           
-//       }
-//     }else{
-//       res.send(JSON.stringify('Project Not Found'))
-//     }
-// });
+
 //
 // API: GET METADATA FROM PROJECT NAME
 //

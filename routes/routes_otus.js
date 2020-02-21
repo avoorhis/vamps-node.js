@@ -650,7 +650,7 @@ router.get('/load_otu_list', helpers.isLoggedIn, (req, res) => {
                  }else{
                     otu_project_list[file].size = parseInt(file_items[4],10) // base 10   
                  }
-                 if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+                 if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
                     otu_project_list[file].pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
                  }else{
                     otu_project_list[file].pid = ''
@@ -878,13 +878,13 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
   }else{
     var script_text = helpers.get_qsub_script_text(req, log, pwd, 'vmps_otus', script_commands)
   }
-  var mode = 0775;
+
   var oldmask = process.umask(0);
   console.log("script_path2 = " + script_path);
   fs.writeFile(script_path,
     script_text,
     {
-      mode: mode
+      mode: '0o775'
     },
     err => {
       if(err) {
@@ -910,7 +910,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
 // YOUR PROJECTS
 //
 router.get('/project_list', helpers.isLoggedIn, (req, res) => {
-    //console.log(PROJECT_INFORMATION_BY_PNAME);
+    //console.log(C.PROJECT_INFORMATION_BY_PNAME);
 
     var pwd = req.CONFIG.PROCESS_DIR;
     var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
@@ -1039,7 +1039,7 @@ router.get('/otus_method_selection', helpers.isLoggedIn, (req, res) => {
 //
 //
 router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
-    //SHOW_DATA = ALL_DATASETS;
+    //SHOW_DATA = C.ALL_DATASETS;
     console.log('GET OTUs: in clear filters')
 
     

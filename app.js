@@ -388,7 +388,7 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (rdp-taxonomy object):',sizeof(C.new_rdp_taxonomy));
             }catch(e){
                 C.new_rdp_taxonomy = {};
-                console.log('Could not get sizeof(new_rdp_taxonomy) in app.js; Connection Problem?')
+                console.log('Could not get sizeof(C.new_rdp_taxonomy) in app.js; Connection Problem?')
             }
         }
     }
@@ -404,7 +404,7 @@ all_generic_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (generic-taxonomy object):',sizeof(C.new_generic_taxonomy));
             }catch(e){
                 C.new_generic_taxonomy = {};
-                console.log('Could not get sizeof(new_generic_taxonomy) in app.js; Connection Problem?')
+                console.log('Could not get sizeof(C.new_generic_taxonomy) in app.js; Connection Problem?')
             }
         }
     }

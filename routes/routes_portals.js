@@ -84,7 +84,7 @@ router.post('/dco_project_list',  (req, res) => {
     var direction = req.body.dir;
     var projects        = [];
     var project_list = helpers.get_portal_projects(req, 'CODL')
-    //console.log(DatasetsWithLatLong)
+    //console.log(C.DatasetsWithLatLong)
     
     let publish_data = {}
     try{
@@ -99,7 +99,7 @@ router.post('/dco_project_list',  (req, res) => {
     // then, if find empty did, convert to PARTIAL
     // Count datasets with
     let pids_with_latlon = {}
-    for(did in DatasetsWithLatLong){
+    for(did in C.DatasetsWithLatLong){
         if(C.DatasetsWithLatLong[did].latitude != '' || C.DatasetsWithLatLong[did].longitude != ''){
             pids_with_latlon[C.DatasetsWithLatLong[did].pid] = 1
         }    
@@ -125,21 +125,21 @@ router.post('/dco_project_list',  (req, res) => {
     
     //}
     
-    for(did in DatasetsWithLatLong){
-        //console.log(DatasetsWithLatLong[did].pid)
-        //console.log(DatasetsWithLatLong[did])
-        if(new_dco_list_latlon.hasOwnProperty(DatasetsWithLatLong[did].pid) == true){
-            if(new_dco_list_latlon[DatasetsWithLatLong[did].pid] == 'EMPTY'){
-                new_dco_list_latlon[DatasetsWithLatLong[did].pid] = 1
+    for(did in C.DatasetsWithLatLong){
+        //console.log(C.DatasetsWithLatLong[did].pid)
+        //console.log(C.DatasetsWithLatLong[did])
+        if(new_dco_list_latlon.hasOwnProperty(C.DatasetsWithLatLong[did].pid) == true){
+            if(new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] == 'EMPTY'){
+                new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] = 1
             }else{
-                new_dco_list_latlon[DatasetsWithLatLong[did].pid] += 1
+                new_dco_list_latlon[C.DatasetsWithLatLong[did].pid] += 1
             }            
         }     
     }
     for(pid in new_dco_list_latlon){
-        //console.log(DATASET_IDS_BY_PID[pid].length)
+        //console.log(C.DATASET_IDS_BY_PID[pid].length)
         //console.log(new_dco_list_latlon[pid])
-        if(DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
+        if(C.DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
             new_dco_list_latlon[pid] = 'COMPLETE'
         }
         if(new_dco_list_latlon[pid] != 'EMPTY' && new_dco_list_latlon[pid] != 'COMPLETE'){
@@ -307,13 +307,13 @@ router.get('/abstracts/CMP', (req, res) => {
 //     var md = {}
 //     for(n in project_list){
 //         var pid = project_list[n].pid
-//         var dids = DATASET_IDS_BY_PID[pid]
+//         var dids = C.DATASET_IDS_BY_PID[pid]
 //        
 //         
 //         md_order = []
 //         md_lookup = {}
 //         for(m in dids){
-//             var pjds = project_list[n].project+'--'+DATASET_NAME_BY_DID[dids[m]]
+//             var pjds = project_list[n].project+'--'+ C.DATASET_NAME_BY_DID[dids[m]]
 //             
 //             md[pjds] = {}
 //             headers = {}
@@ -400,7 +400,7 @@ router.get('/geomap/:portal', (req, res) => {
 //     // var portal = req.params.portal;
 // // 
 // //     var portal_info = get_portal_metadata(req, portal)
-// //     portal_info[portal].zoom = req.CONSTS.PORTALS[portal].zoom
+// //     portal_info[portal].zoom = C.PORTALS[portal].zoom
 // //     //console.log('FOUND '+JSON.stringify(portal_info))
 //     res.render('portals/coral_microbiome/background', { 
 //             title       : 'VAMPS: Background',
@@ -429,7 +429,7 @@ function get_portal_metadata(req, portal){
     for(did in C.DATASET_NAME_BY_DID){   // too big
         //did = all_metadata[i]
         pid = C.PROJECT_ID_BY_DID[did]
-        //console.log(PROJECT_INFORMATION_BY_PID[pid])
+        //console.log(C.PROJECT_INFORMATION_BY_PID[pid])
         pname = C.PROJECT_INFORMATION_BY_PID[pid].project
         
         dataset_metadata = C.AllMetadata[did] || {}
