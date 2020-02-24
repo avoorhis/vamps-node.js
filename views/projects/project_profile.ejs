@@ -1,41 +1,46 @@
-
 <% dscounts = JSON.parse(dscounts)  %>
 <% metadata  = JSON.parse(mdata)    %>
 
 <% publish_data  = JSON.parse(publish_info) %>
 <% //pnotes  = JSON.parse(pnotes) %>
-<% var project_parts = data.project.split('_'); %>
-<% var project_prefix = data.project; %>
-
+<% let project_parts = data.project.split('_'); %>
+<% let project_prefix = data.project; %>
+<% let project_middle = ''; %>
 <% if(project_parts.length >= 2 ){ %>
-<%    project_prefix = project_parts[0]+'_'+project_parts[1]; %>
+    <%      project_prefix = project_parts[0]+'_'+project_parts[1]; %>
+    <%      project_middle = project_parts[1] %>
 <% } %>
-<% var reveal_all = false %>  <!-- This is for private vs public projects -->
-<% var edit_metadata = false %>
-<% var DCO_project = false %>
+<% let reveal_all = false %>  <!-- This is for private vs public projects -->
+<% let edit_metadata = false %>
+<% let DCO_project = false %>
+<% let ICM_project = false; %>
+<% let protocol_file = ''  %>
 <% if((data.project).substring(0,3) == 'DCO'){ %>
-<%      DCO_project = true %>
+    <%      DCO_project = true %>
+<% }else if((data.project).substring(0,3) == 'ICM') { %>
+    <%  protocol_file = JSON.parse(protocol) %>
+    <%  ICM_project = true %>
 <% } %>
 <!-- Public OR User Permission OR Admin OR MBL Power User -->
 <% if(data.public || data.permissions.indexOf(user.user_id) != -1 || user.security_level <= 10 || (user.security_level == 45 && DCO_project)  ){ %>
-<%  reveal_all = true %>
+    <%  reveal_all = true %>
 <% } %>
 
 <!-- if user == owner or if admin or DCO-Editor(only if dco project) (NOT MBL Power User)( How to allow Mitch? Made security_level ==1 for him)   -->
-<% 
-    if(user.user_id == data.oid                                               
-         || user.security_level == 1                                             
-         || (user.security_level == 45 && DCO_project)                                 
-         || ( (data.permissions.indexOf(user.user_id) != -1) && DCO_project) )   
-    {                                                                            
-      edit_metadata = true 
-    } 
+<%
+if(user.user_id == data.oid
+        || user.security_level == 1
+        || (user.security_level == 45 && DCO_project)
+        || ( (data.permissions.indexOf(user.user_id) != -1) && DCO_project) )
+{
+    edit_metadata = true
+}
 %>
 
 <% if (typeof(finfo) !== 'undefined') { %>
-<% var file_info = JSON.parse(finfo) %>
+    <% var file_info = JSON.parse(finfo) %>
 <% } else { %>
-<% var file_info = {} %>
+    <% var file_info = {} %>
 <% } %>
 
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' />
@@ -62,92 +67,92 @@
         <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
         <% if(reveal_all) { %>
 
-        <li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
+            <li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
 
-        <li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
+            <li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
 
-        <li role="presentation" class="dropdown" >
-            <a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                
-                <% if(data.metagenomic !== 1){ %>
-                <li>
-                    <form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
-                        <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                    </form>
-                </li>
-                <li>
-                    <form id='download_project_fasta_form_id' method='POST' action=''>
-                        <!-- This form should run in the background and place the seqs file
-                                    in a 'downloads' directory where it can be retrieved.
-                                    The user should get an email when its ready.
-                         -->
-                        <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Create Fasta File</button>
-                        <input type='hidden' name='download_type' value='whole_project' />
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                        <input type='hidden' name='referer' value='/projects/project_profile' />
-                    </form>
-                </li>
-                <% }%>
-                <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
-                <li>
-                    <form id='download_project_metadata_form1' method='POST' action=''>
-                        <!-- This form should run in the background and place the seqs file
-                                    in a 'downloads' directory where it can be retrieved.
-                                    The user should get an email when its ready.
-                         -->
-                        <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn1' >Create Metadata File (Samples as columns)</button>
-                        <input type='hidden' name='download_type' value='whole_project' />
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='sample_orientation' value='cols' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                        <input type='hidden' name='referer' value='/projects/project_profile' />
-                    </form>
-                    <form id='download_project_metadata_form2' method='POST' action=''>
-                        <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn2' >Create Metadata File (Samples as rows)</button>
-                        <input type='hidden' name='download_type' value='whole_project' />
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='sample_orientation' value='rows' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                        <input type='hidden' name='referer' value='/projects/project_profile' />
-                    </form>
-                </li>
-                <% } %>
-                <% if(edit_metadata == true) { %>
-                <li>
+            <li role="presentation" class="dropdown" >
+                <a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
+                <ul class="dropdown-menu">
 
-                    <form id='metadata_edit_form' method='POST' action='/metadata/metadata_edit_form'>
-                        <button id='metadata_edit_form_btn' class='btn btn-sm btn-link' >Edit metadata currently in VAMPS</button>
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                    </form>
-                </li>
-                <% if (typeof(finfo) !== 'undefined' && file_info.length > 0) { %>
+                    <% if(data.metagenomic !== 1){ %>
+                        <li>
+                            <form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
+                                <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Open in Dataset Selection</button>
+                                <input type='hidden' name='project_id' value='<%= pid %>' />
+                                <input type='hidden' name='project' value='<%= data.project %>' />
+                            </form>
+                        </li>
+                        <li>
+                            <form id='download_project_fasta_form_id' method='POST' action=''>
+                                <!-- This form should run in the background and place the seqs file
+                                            in a 'downloads' directory where it can be retrieved.
+                                            The user should get an email when its ready.
+                                 -->
+                                <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Create Fasta File</button>
+                                <input type='hidden' name='download_type' value='whole_project' />
+                                <input type='hidden' name='project_id' value='<%= pid %>' />
+                                <input type='hidden' name='project' value='<%= data.project %>' />
+                                <input type='hidden' name='referer' value='/projects/project_profile' />
+                            </form>
+                        </li>
+                    <% }%>
+                    <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>
+                        <li>
+                            <form id='download_project_metadata_form1' method='POST' action=''>
+                                <!-- This form should run in the background and place the seqs file
+                                            in a 'downloads' directory where it can be retrieved.
+                                            The user should get an email when its ready.
+                                 -->
+                                <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn1' >Create Metadata File (Samples as columns)</button>
+                                <input type='hidden' name='download_type' value='whole_project' />
+                                <input type='hidden' name='project_id' value='<%= pid %>' />
+                                <input type='hidden' name='sample_orientation' value='cols' />
+                                <input type='hidden' name='project' value='<%= data.project %>' />
+                                <input type='hidden' name='referer' value='/projects/project_profile' />
+                            </form>
+                            <form id='download_project_metadata_form2' method='POST' action=''>
+                                <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_btn2' >Create Metadata File (Samples as rows)</button>
+                                <input type='hidden' name='download_type' value='whole_project' />
+                                <input type='hidden' name='project_id' value='<%= pid %>' />
+                                <input type='hidden' name='sample_orientation' value='rows' />
+                                <input type='hidden' name='project' value='<%= data.project %>' />
+                                <input type='hidden' name='referer' value='/projects/project_profile' />
+                            </form>
+                        </li>
+                    <% } %>
+                    <% if(edit_metadata == true) { %>
+                        <li>
 
-                <li>
-                    <p class='btn btn-sm'> Edit metadata from a previous user file: </p>
-                    <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
-                        <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
-                            <ol>
-                                <% for(var t in file_info){ %>
-                                <button type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %> > File from <%= file_info[t].mtime_format %> </button>
-                                <% } %>
-                            </ol>
-                        </div>
-                        <input type='hidden' name='project_id' value='<%= pid %>' />
-                        <input type='hidden' name='project' value='<%= data.project %>' />
-                        <input type='hidden' name='file_info' id='file_info' value='<%= finfo %>' />
-                    </form>
+                            <form id='metadata_edit_form' method='POST' action='/metadata/metadata_edit_form'>
+                                <button id='metadata_edit_form_btn' class='btn btn-sm btn-link' >Edit metadata currently in VAMPS</button>
+                                <input type='hidden' name='project_id' value='<%= pid %>' />
+                                <input type='hidden' name='project' value='<%= data.project %>' />
+                            </form>
+                        </li>
+                        <% if (typeof(finfo) !== 'undefined' && file_info.length > 0) { %>
 
-                </li>
-                <% } %>
-                <% } %>
+                            <li>
+                                <p class='btn btn-sm'> Edit metadata from a previous user file: </p>
+                                <form id='metadata_files_form' method='POST' action='/metadata/metadata_files'>
+                                    <div role="tabpanel" class="tab-pane" id="users_metadata_csv">
+                                        <ol>
+                                            <% for(var t in file_info){ %>
+                                                <button type="submit" class='btn btn-sm btn-link' name="edit_metadata_file" value="<%= file_info[t].filename %>" id='metadata_files_form_btn'+<%= parseInt(t)+1 %> > File from <%= file_info[t].mtime_format %> </button>
+                                            <% } %>
+                                        </ol>
+                                    </div>
+                                    <input type='hidden' name='project_id' value='<%= pid %>' />
+                                    <input type='hidden' name='project' value='<%= data.project %>' />
+                                    <input type='hidden' name='file_info' id='file_info' value='<%= finfo %>' />
+                                </form>
 
-            </ul>
-        </li> <!-- End dropdown -->
+                            </li>
+                        <% } %>
+                    <% } %>
+
+                </ul>
+            </li> <!-- End dropdown -->
         <% } %>
         <div id='download_confirm_id'></div>
         <li><span  class='alert_flash_message' id='download_metadata_response' ></span><span  class='alert_flash_message' id='download_fasta_response' style='' ></span></li>
@@ -161,17 +166,17 @@
             <table class="table table-striped">
                 <tr><td>Project Name: </td><td><%= data.project %></td></tr>
                 <tr><td>Project_id:</td><td> <%= pid %></td></tr>
-                
+
                 <% if(project_prefix.substring(0,3) == 'DCO' ){ %>
-                
+
                     <% if ((publish_data[project_prefix]) && (publish_data[project_prefix].dcoid != '')) { %>
                         <tr><td>DCO ID:</td>
                             <td><a href='<%= publish_data[project_prefix].url %><%= publish_data[project_prefix].dcoid %>' target='_blank'> <%= publish_data[project_prefix].dcoid %></td>
                         </tr>
                     <% } %>
-                <% } %>          
-                
-                
+                <% } %>
+
+
                 <tr><td>Title:</td><td> <%= data.title %></td></tr>
                 <tr><td>Description:</td><td> <%= data.description %></td></tr>
 
@@ -182,84 +187,88 @@
                 <% } %>
                 <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
                 <tr><td>Institution:</td><td> <%= data.institution %></li>
+
                 <tr><td>Date Created:</td><td><%= data.created_at %></td></tr>
                 <tr><td>Date Last Updated:</td><td><%= data.updated_at %></td></tr>
+                <% if((data.project).substring(0,3) == 'ICM') { %>
+                    <tr><td>Extraction Protocol:</td><td><a href="/static_dnld/protocols/<%= protocol_file %>" target="_blank"><%= protocol_file %></td></a></td></tr>
+                <% } %>
                 <% if(data.public || data.permissions.indexOf(user.user_id) != -1) { %>
                     <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
                     <!-- <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr> -->
                     <tr><td>Number of Datasets (samples):</td><td> <%= dsinfo.length %></td></tr>
                 <% } %>
-                
+
                 <!-- ABSTRACT -->
-                <% var key = false %>   
+                <% var key = false %>
                 <% if(publish_data.hasOwnProperty(project_prefix)){ %>   <!-- // DCO -->
-                    <% key = project_prefix %>
+                <% key = project_prefix %>
                 <% }else if(publish_data.hasOwnProperty(data.project)){ %>  <!-- // CMP (others?) -->
-                    <% key = data.project %>
+                <% key = data.project %>
                 <% } %>
                 <% if(key){ %>
                     <tr><td>Abstract(s)</td><td>
-                        <% for(n in publish_data[key].pdfs){ %>
-                            <a href='/static_dnld/abstracts/<%= publish_data[key].pdfs[n] %>' target='_blank'>
-                            <%= publish_data[key].pdfs[n] %></a>
-                        <br>
-                        <% } %>
-                    </td></tr>
+                            <% for(n in publish_data[key].pdfs){ %>
+                                <a href='/static_dnld/abstracts/<%= publish_data[key].pdfs[n] %>' target='_blank'>
+                                    <%= publish_data[key].pdfs[n] %></a>
+                                <br>
+                            <% } %>
+                        </td></tr>
                 <% } %>
-                 <!-- DCO ID -->
-                 
-                  <!-- SRA Accessions -->
+                <!-- DCO ID -->
+
+                <!-- SRA Accessions -->
                 <% if(key && data.public){ %>
                     <tr><td>SRA Accession(s)</td><td>
-                        <% for(n in publish_data[key].sra_accessions){ %>                            
-                            <% bp = publish_data[key].sra_accessions[n].bioproject %>
-                            <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>' target='_blank'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
-                        <br>
-                        <% } %>
-                    </td></tr>
+                            <% for(n in publish_data[key].sra_accessions){ %>
+                                <% bp = publish_data[key].sra_accessions[n].bioproject %>
+                                <strong>Study</strong>: <%= publish_data[key].sra_accessions[n].study %>; <strong>BioProject</strong>: <a href='https://www.ncbi.nlm.nih.gov/bioproject?term=<%= bp %>' target='_blank'><%= bp %></a>; <strong>Title</strong>: <%= publish_data[key].sra_accessions[n].title %>
+                                <br>
+                            <% } %>
+                        </td></tr>
                 <% } %>
-                
-                
-                
+
+
+
                 <!-- NOTES -->
                 <% if(pnotes.length > 0){ %>
                     <tr><td>Notes:</td>
-                    <td><textarea readonly rows='4' cols='100'><%= pnotes %></textarea></td></tr>
-                    
+                        <td><textarea readonly rows='4' cols='100'><%= pnotes %></textarea></td></tr>
+
                 <% } %>
             </table>
         </div> <!-- End project div -->
         <% if(reveal_all) { %>
 
-        <!-- DATASETS -->
-        <div role="tabpanel" class="tab-pane" id="datasets">
-            <div id='profile_dataset_list' >
-                <ol>
-                    <% for(n in dsinfo){ %>
-                    <% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
-                    <li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
-                    <% }else{ %>
-                    <li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
-                    <% } %>
-                    <% } %>
-                </ol>
-            </div>
-        </div> <!-- End datasets div -->
+            <!-- DATASETS -->
+            <div role="tabpanel" class="tab-pane" id="datasets">
+                <div id='profile_dataset_list' >
+                    <ol>
+                        <% for(n in dsinfo){ %>
+                            <% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
+                                <li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
+                            <% }else{ %>
+                                <li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
+                            <% } %>
+                        <% } %>
+                    </ol>
+                </div>
+            </div> <!-- End datasets div -->
 
-        <!-- METADATA -->
+            <!-- METADATA -->
         <div role="tabpanel" class="tab-pane" id="metadata">
 
             <table class='table sortable'>
                 <thead><tr><th>dataset</th><th>name</th><th>value</th></tr></thead>
                 <tbody>
                 <% if(Object.getOwnPropertyNames(metadata).length == 0){ %>
-                <tr><td>None Found</td></tr>
+                    <tr><td>None Found</td></tr>
                 <% } else { %>
-                <% for(n in metadata){ %>
-                <% for(i in metadata[n]){ %>
-                <tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
-                <% } %>
-                <% } %>
+                    <% for(n in metadata){ %>
+                        <% for(i in metadata[n]){ %>
+                            <tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
+                        <% } %>
+                    <% } %>
                 <% } %>
                 </tbody>
             </table>

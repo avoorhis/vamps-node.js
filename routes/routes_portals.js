@@ -395,20 +395,30 @@ router.get('/geomap/:portal', (req, res) => {
 
 });
 
-// router.get('/coral_microbiome/background', (req, res) => {
-//     console.log('in /coral_microbiome/background')
-//     // var portal = req.params.portal;
-// // 
-// //     var portal_info = get_portal_metadata(req, portal)
-// //     portal_info[portal].zoom = C.PORTALS[portal].zoom
-// //     //console.log('FOUND '+JSON.stringify(portal_info))
-//     res.render('portals/coral_microbiome/background', { 
-//             title       : 'VAMPS: Background',
-//             user: req.user,hostname: req.CONFIG.hostname,
-//             
-//         });
-// 
-// });
+router.get('/protocol_list/:portal', (req, res) => {
+    console.log('in /protocol_list/:portal')
+    let portal = req.params.portal;
+    console.log(portal)
+    if (portal == 'ICOMM') {
+        let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
+        let protocol_list = []
+        console.log(protocol_dir)
+        fs.readdir(protocol_dir, (err, files) => {
+            files.forEach(file => {
+                console.log(file);
+                let file_w_dnld_path = path.join('protocols', file)
+                protocol_list.push({file_w_path: file_w_dnld_path, file_name: file})
+            });
+
+            res.render('portals/census_of_marine_microbes/protocol_list', {
+                title: 'VAMPS: ICoMM Protocols',
+                user: req.user, hostname: req.CONFIG.hostname,
+                p_list: JSON.stringify(protocol_list)
+            });
+        });
+
+    }
+});
 
 module.exports = router;
 
