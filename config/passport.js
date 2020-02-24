@@ -5,17 +5,7 @@ var queries       = require('../routes/queries_admin');
 var LocalStrategy = require('passport-local').Strategy;
 var path          = require('path');
 var User          = require(app_root + '/models/user_model');
-
-//var bcrypt        = require('bcrypt-nodejs');
-
-
-//var crypto = require('crypto')
-
-//var mysql = require('mysql');
-
-//var connection = require('./database-dev');
-
-//connection.query('USE vidyawxx_build2');
+const C       = require(app_root + '/public/constants');
 
 // expose this function to our app using module.exports
 module.exports = function (passport, db) {
@@ -263,7 +253,7 @@ function signup_user(req, username, password, done, db) {
 
       // if there is no user with that username
       // create the user
-      var newUserMysql            = {};
+      let newUserMysql            = {};
       newUserMysql.username       = new_user.username;
       newUserMysql.password       = new_user.password;  /// Password is HASHed in queries_admin
       newUserMysql.firstname      = new_user.firstname;
@@ -275,7 +265,7 @@ function signup_user(req, username, password, done, db) {
       // todo: why this is in two places? See routes/routes_admin.js:552
 
       //var insertQuery = queries.insert_new_user(username, password, first, last, email, inst)
-      var insertQuery = queries.insert_new_user(newUserMysql);
+      let insertQuery = queries.insert_new_user(newUserMysql);
 
       db.query(insertQuery, function (err, insert_rows) {
         if (err) {  // error usually if contact-email-inst index is not unique
@@ -284,14 +274,14 @@ function signup_user(req, username, password, done, db) {
           return done(null, false, req.flash('fail', 'There was an error. Please contact us at vamps@mbl.edu to request an account'));
         } else {
           new_user.user_id                   = insert_rows.insertId;
-          ALL_USERS_BY_UID[new_user.user_id] = {
+          C.ALL_USERS_BY_UID[new_user.user_id] = {
             email: new_user.email,
             username: new_user.username,
             last_name: new_user.lastname,
             first_name: new_user.firstname,
             institution: new_user.institution,
           };
-          var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, username);
+          let user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, username);
           console.log('Validating/Creating User Data Directory: ' + user_data_dir);
           helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
           return done(null, new_user);
@@ -308,13 +298,13 @@ function signup_user(req, username, password, done, db) {
 //
 var delete_previous_tmp_files = function (req, username) {
 
-  var fs             = require('fs-extra');
+  let fs             = require('fs-extra');
   // ALL 3 dirs should be present and writable however only dir3 is used
-  var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
+  let temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR, 'tmp');
   helpers.ensure_dir_exists(temp_dir_path1);  // also chmod to 0777 (ug+rwx)
-  var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
+  let temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
   helpers.ensure_dir_exists(temp_dir_path2);  // also chmod to 0777 (ug+rwx)
-  var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+  let temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
   helpers.ensure_dir_exists(temp_dir_path3);  // also chmod to 0777 (ug+rwx)
 
   console.log("temp_dir_path1: ", temp_dir_path1);
