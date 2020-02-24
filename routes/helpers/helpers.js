@@ -1,6 +1,6 @@
 const C       = require(app_root + '/public/constants');
 const queries = require(app_root + '/routes/queries');
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 const express     = require('express');
 const fs          = require('fs-extra');
 const nodemailer  = require('nodemailer');
@@ -335,7 +335,7 @@ module.exports.clean_string              = str => {
 };
 
 module.exports.get_metadata_from_file = () => {
-  let meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
+  let meta_file = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   try {
     AllMetadataFromFile = require(meta_file);
   }
@@ -347,7 +347,7 @@ module.exports.get_metadata_from_file = () => {
 };
 
 module.exports.write_metadata_to_files = did => {
-  let dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
+  let dataset_file = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
 
   fs.readFile(dataset_file, 'utf8', (err, data) => {
     if (err) throw err;
@@ -534,7 +534,7 @@ module.exports.make_color_seq = seq => {
 // TODO: to globVar, not used
 // module.exports.update_project_information_global_object = (pid, form, user_obj) => {
 //   console.log('Updating PROJECT_INFORMATION_BY_PID');
-//   if (config.site == 'vamps') {
+//   if (CFG.site == 'vamps') {
 //     console.log('VAMPS PRODUCTION -- no print to log');
 //   } else {
 //     console.log(pid);
@@ -655,8 +655,8 @@ module.exports.get_local_script_text = (cmd_list) => {
   script_text += "hostname\n";
   script_text += 'echo -n "Current working directory: "' + "\n";
   script_text += "pwd\n\n";
-  if(config.site == 'vamps' || config.site == 'vampsdev'){
-    script_text += "source /groups/vampsweb/"+config.site+"/seqinfobin/vamps_environment.sh\n\n";
+  if(CFG.site == 'vamps' || CFG.site == 'vampsdev'){
+    script_text += "source /groups/vampsweb/"+CFG.site+"/seqinfobin/vamps_environment.sh\n\n";
   }
   for (var i in cmd_list) {
     script_text += cmd_list[i] + "\n\n";
@@ -1116,6 +1116,7 @@ module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
 };
 
 function get_current_primer_suite(id) {
+
   if (C.MD_PRIMER_SUITE.hasOwnProperty(id) && C.MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
     return C.MD_PRIMER_SUITE[id].name;
   }
@@ -1192,6 +1193,8 @@ module.exports.required_metadata_names_from_ids = (selection_obj, name_id) => {
     case 'primer_ids':
       real_name = 'primers';
       value = get_current_primers(selection_obj['primer_suite_id']);
+
+
       break;
     default:
       real_name = name_id;

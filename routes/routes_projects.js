@@ -75,7 +75,6 @@ function get_dsinfo(req) {
 
 function get_mdata(dsinfo){
   let mdata = {};
-
   for (let d_inf of dsinfo){
     let did = d_inf.did;
     let metadata_name = d_inf.dname;
@@ -185,14 +184,11 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
     
   if (req.params.id in C.PROJECT_INFORMATION_BY_PID) {
     let project_count = C.ALL_PCOUNTS_BY_PID[req.params.id];
-
     let dsinfo = get_dsinfo(req);
     let dscounts = get_dscounts(dsinfo);
     let mdata = get_mdata(dsinfo);
-
     let info = C.PROJECT_INFORMATION_BY_PID[req.params.id];
     let member_of_portal = get_member_of_portal(req, info);
-
     let best_file = '';
     if (info.project.startsWith('DCO')) {
       best_file = get_best_file(req);
@@ -203,7 +199,6 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       protocol_file = get_protocol_file(req, file_middle);
     }
     let publish_data = get_publish_data(req, info.project);
-
     let user_metadata_csv_files = get_csv_files(req);
     let project_file_names = filter_metadata_csv_files_by_project(user_metadata_csv_files, info.project, req.user.username);
     project_file_names.sort(function sortByTime(a, b) {
@@ -212,7 +207,6 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
     });
 
     let pnotes = [];
-
     let arg_obj = {
       info: info,
       dsinfo: dsinfo,
@@ -226,6 +220,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       project_file_names: project_file_names,
       protocol: protocol_file
     };
+    console.log('z')
     connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
       if (err) {
         console.log('Getting Project Notes Error: ' + err);
