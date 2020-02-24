@@ -4350,7 +4350,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
             project = C.PROJECT_INFORMATION_BY_PID[pid].project
             if(project.substring(0,3)=='DCO'){
                 //console.log(C.PROJECT_INFORMATION_BY_PID[pid])
-                dids_list = DATASET_IDS_BY_PID[pid]
+                dids_list = C.DATASET_IDS_BY_PID[pid]
                 dids = dids.concat(dids_list)
             } 
         }
