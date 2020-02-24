@@ -251,7 +251,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     user: req.user,
     proj_to_open: proj_to_open,
     project_list: JSON.stringify(project_list),
-    user_info: JSON.stringify(ALL_USERS_BY_UID),
+    user_info: JSON.stringify(C.ALL_USERS_BY_UID),
     hostname: req.CONFIG.hostname, // get the user out of session and pass to template
   });
 
@@ -521,7 +521,7 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   //console.log(JSON.stringify(C.ALL_USERS_BY_UID))
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var user_order = get_name_ordered_users_list()
   res.render('admin/inactivate_user', {
     title: 'VAMPS Inactivate User',
@@ -534,7 +534,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
   console.log('in delete_user POST ADMIN')
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var uid_to_delete = req.body.uid;
   var response;
   // var finish = () => {
@@ -1454,8 +1454,8 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
   console.log(req.user)
   var rows = []
   if (req.user.security_level <= 10) {
-    // for(uid in ALL_USERS_BY_UID){
-// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
+    // for(uid in C.ALL_USERS_BY_UID){
+// 	        rows.push({uid:uid,fullname:C.ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
 // 	    }
 // 	    rows.sort( (a, b) => {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);

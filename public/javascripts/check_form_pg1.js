@@ -43,7 +43,7 @@ if (selection_btn_visuals !== null)
           f.submit();
           document.body.removeChild(f);
       }else{
-          alert('Select some data');
+          alert('Select some datasets');
           return;
       }
     

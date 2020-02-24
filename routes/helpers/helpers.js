@@ -298,19 +298,19 @@ module.exports.assignment_finish_request = (res, rows1, rows2, status_params) =>
   const global_vars = new global_vars_controller.GlobalVars();
 
   global_vars.run_select_datasets_query(rows1);
-  console.log(' UPDATING ALL_DATASETS');
-  console.log(' UPDATING PROJECT_ID_BY_DID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
-  console.log(' UPDATING DATASET_IDS_BY_PID');
-  console.log(' UPDATING DATASET_NAME_BY_DID');
-  console.log(' UPDATING AllMetadataNames');
-  console.log(' UPDATING DatasetsWithLatLong');
+  console.log(' UPDATING C.ALL_DATASETS');
+  console.log(' UPDATING C.PROJECT_ID_BY_DID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PNAME');
+  console.log(' UPDATING C.DATASET_IDS_BY_PID');
+  console.log(' UPDATING C.DATASET_NAME_BY_DID');
+  console.log(' UPDATING C.AllMetadataNames');
+  console.log(' UPDATING C.DatasetsWithLatLong');
   // This function needs to be (re)written
   //this.run_select_sequences_query(rows2);
-  console.log(' UPDATING ALL_DCOUNTS_BY_DID');
-  console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
-  console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
+  console.log(' UPDATING C.ALL_DCOUNTS_BY_DID');
+  console.log(' UPDATING C.ALL_PCOUNTS_BY_PID ');
+  console.log(' UPDATING C.ALL_CLASSIFIERS_BY_PID');
   // re-run re-create new_taxonomy (see app.js)
   const silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
   var all_silva_taxonomy = new silvaTaxonomy();
@@ -435,15 +435,16 @@ module.exports.sort_json_matrix = (mtx, fxn_obj) => {
       reorder = true;
       break;
     case 'count':
-      if (fxn_obj === 'max') {
+      if (fxn_obj.value == 'max') {
         curr_obj.sort(function sortByCount(a, b) {
-          return b.cnt[0] - a.cnt[0];
+          return module.exports.compareStrings_int(a.cnt[0], b.cnt[0])
         });
       }
       else {
         curr_obj.sort(function sortByCount(a, b) {
-          return a.cnt[0] - b.cnt[0];
+          return module.exports.compareStrings_int(b.cnt[0], a.cnt[0])
         });
+        
       }
       reorder = true;
       break;
@@ -833,8 +834,8 @@ module.exports.deleteFolderRecursive = (path) => {
 //
 //
 module.exports.make_gast_script_txt = (req, data_dir, project, cmd_list, opts) => {
-  console.log('OPTS: ')
-  console.log(opts)
+  //console.log('OPTS: ')
+  //console.log(opts)
   make_gast_script_txt = "";
   if (module.exports.isLocal(req)) {
     make_gast_script_txt += "export PERL5LIB=" + app_root + "/public/scripts/gast\n"
@@ -1292,7 +1293,7 @@ module.exports.log_timestamp = () => {
 
 module.exports.get_key_from_value = (obj, value) => {
   // returns the key first found object only
-  console.log('3 -in get_key from val - ' + value);
+  //console.log('3 -in get_key from val - ' + value);
   found_key   = null;
   unknown_key = null;
   for (let key in obj) {
@@ -1309,14 +1310,13 @@ module.exports.get_key_from_value = (obj, value) => {
   if (!found_key) {
     found_key = null;
   }
-  console.log('4 -key - ' + found_key);
+  //console.log('4 -key - ' + found_key);
   return found_key;
 };
 
 module.exports.ensure_dir_exists = (dir) => {
   fs.ensureDir(dir, err => {
     if (err) {
-      console.log('2');
       console.log(err);
     } // => null
     else {
@@ -1537,7 +1537,7 @@ exports.transpose_2d_arr_and_fill = (data_arr, matrix_length) => {
   // console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
-  // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  // var matrix_length = C.DATASET_IDS_BY_PID[project_id].length + 1;
   let length_array = data_arr[0];
   if (data_arr[0].length < matrix_length) {
     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
@@ -1663,8 +1663,8 @@ exports.create_matrix_from_biom = (res, file_path, ts) => {
     let biom_file_name = ts + '_count_matrix.biom';
     let biom_file_path = path.join(file_path, biom_file_name);
     let out_file_path = path.join(file_path,  out_file_name);
-    console.log("biom_file_path: " + biom_file_path);
-    console.log("out_file_path: " + out_file_path);
+    //console.log("biom_file_path: " + biom_file_path);
+    //console.log("out_file_path: " + out_file_path);
     fs.readFile(biom_file_path, (err, data) => {
         if(err){ console.log(err); return; }
         const parsed_data = JSON.parse(data);

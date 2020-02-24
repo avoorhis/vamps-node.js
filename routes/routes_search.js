@@ -384,8 +384,8 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
 // 	// Find Geographic Range of Datasets by Metadata Values (not ready yet)
 //     console.log('req.body-->>');
 //     console.log(req.body);
-//     console.log(PROJECT_INFORMATION_BY_PID[44]);  // SPO
-//     console.log(MD_CUSTOM_UNITS[44]);
+//     console.log(C.PROJECT_INFORMATION_BY_PID[44]);  // SPO
+//     console.log(C.MD_CUSTOM_UNITS[44]);
 //     console.log(C.AllMetadata[44]);
 //     console.log('<<--req.body');
 //     var search_name = req.body.name
@@ -432,13 +432,13 @@ router.get('/metadata/:type', helpers.isLoggedIn, (req, res) => {
 })
 
 function get_metadata_values(){
-     var MD_items = new Object()
-     var tmp_metadata_fields = {};
+     let MD_items = new Object()
+     let tmp_metadata_fields = {};
      MD_items.metadata_fields_array = []
      MD_items.metadata_fields       = {}
       
      for (var did in C.AllMetadata){
-        for (var name in C.AllMetadata[did]){
+        for (let name in C.AllMetadata[did]){
             val = C.AllMetadata[did][name];
             if(name in tmp_metadata_fields){
               tmp_metadata_fields[name].push(val);
@@ -453,7 +453,7 @@ function get_metadata_values(){
         }
      }
       
-     for (var tmp_name in tmp_metadata_fields){
+     for (let tmp_name in tmp_metadata_fields){
         MD_items.metadata_fields_array.push(tmp_name);
         if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
           tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
@@ -517,7 +517,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
           pid = C.PROJECT_ID_BY_DID[did];
           pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
           datasets.ids.push(did);
-          datasets.names.push(pname+'--'+C.DATASET_NAME_BY_DID[did]);
+          datasets.names.push(pname+'--'+ C.DATASET_NAME_BY_DID[did]);
         }catch(e){
           console.log('Skipping did:'+did+'; No project found')
         }
@@ -1079,9 +1079,6 @@ function get_search_datasets(user, search){
         }
     }
 
-    
-
-
     console.log('ds',datasets1)
 
     return {datasets:datasets1}//, mdv:tmp_metadata};
@@ -1162,7 +1159,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
         }else{
-          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:C.AllMetadata[did][search["metadata-item"]] });
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value: C.AllMetadata[did][search["metadata-item"]] });
         }
       }
       return ds_plus;

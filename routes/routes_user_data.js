@@ -2198,8 +2198,8 @@ function checkPid(check_pid_options, last_line)
           status_params.msg = status_params.msgOK;
           helpers.update_status(status_params);
             C.ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db;
-          console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + C.ALL_CLASSIFIERS_BY_PID);
-          console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + C.ALL_CLASSIFIERS_BY_PID[pid]);
+          console.log('FROM func. C.ALL_CLASSIFIERS_BY_PID: ' + C.ALL_CLASSIFIERS_BY_PID);
+          console.log('FROM func. C.ALL_CLASSIFIERS_BY_PID[pid]: ' + C.ALL_CLASSIFIERS_BY_PID[pid]);
 
         }
 
@@ -2761,9 +2761,9 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
 
 
 
-    //4- ALL_DATASETS
+    //4- C.ALL_DATASETS
     //console.log('ALL_DATASETS')
-    //console.log(ALL_DATASETS.projects[0]);
+    //console.log(C.ALL_DATASETS.projects[0]);
     for (var i = 0; i < C.ALL_DATASETS.projects.length; i++) {
       if (C.ALL_DATASETS.projects[i].pid == req.body.project_pid) {
           C.ALL_DATASETS.projects[i].name = req.body.new_project_name;

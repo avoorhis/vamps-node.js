@@ -1,4 +1,3 @@
-// var mysql = require('mysql2');
 var helpers = require(app_root + '/routes/helpers/helpers');
 var User    = require(app_root + '/models/user_model');
 var fs      = require('fs');
@@ -120,7 +119,7 @@ class Project {
   }
 
   make_project_obj_with_existing_project_info_by_pid(pid) {
-    this.project_obj = Object.assign(PROJECT_INFORMATION_BY_PID[pid]);
+    this.project_obj = Object.assign(C.PROJECT_INFORMATION_BY_PID[pid]);
     const owner_id   = this.project_obj.oid;
     this.this_user.getUserInfoFromGlobal(owner_id);
     this.user_obj = this.this_user.User_obj;
@@ -128,7 +127,7 @@ class Project {
     //renaming
     this.project_obj.project_description = C.PROJECT_INFORMATION_BY_PID[pid].description;
     this.project_obj.pi_email            = C.PROJECT_INFORMATION_BY_PID[pid].email;
-    this.project_obj.pi_name             = C.PROJECT_INFORMATION_BY_PID[pid].first + ' ' + PROJECT_INFORMATION_BY_PID[pid].last;
+    this.project_obj.pi_name             = C.PROJECT_INFORMATION_BY_PID[pid].first + ' ' + C.PROJECT_INFORMATION_BY_PID[pid].last;
     this.project_obj.first_name          = C.PROJECT_INFORMATION_BY_PID[pid].first;
     this.project_obj.last_name           = C.PROJECT_INFORMATION_BY_PID[pid].last;
     this.project_obj.project_id          = C.PROJECT_INFORMATION_BY_PID[pid].pid;
@@ -276,13 +275,13 @@ class Project {
   add_info_to_project_globals(object_to_add, pid) {
 
     //undefined: env_package_id
-    if (typeof PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
+    if (typeof C.PROJECT_INFORMATION_BY_PID[pid] === 'undefined') {
       C.PROJECT_INFORMATION_BY_PID[pid]            = Object.assign(object_to_add);
       C.PROJECT_INFORMATION_BY_PID[pid].pid        = pid;
       C.PROJECT_INFORMATION_BY_PID[pid].project_id = pid;
     }
 
-    if (typeof PROJECT_INFORMATION_BY_PNAME[object_to_add.project] === 'undefined') {
+    if (typeof C.PROJECT_INFORMATION_BY_PNAME[object_to_add.project] === 'undefined') {
       C.PROJECT_INFORMATION_BY_PNAME[object_to_add.project] = Object.assign(C.PROJECT_INFORMATION_BY_PID[pid]);
     }
   }

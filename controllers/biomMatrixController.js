@@ -393,9 +393,9 @@ class TaxaCounts {
   get_taxonomy_object() { //TODO: switch or object instead of if/else
     let taxonomy_object;
     if (this.units === 'tax_rdp2.6_simple') {
-      taxonomy_object = new_rdp_taxonomy;
+      taxonomy_object = C.new_rdp_taxonomy;
     } else if (this.units === 'tax_generic_simple') {
-      taxonomy_object = new_generic_taxonomy;
+      taxonomy_object = C.new_generic_taxonomy;
     } else {
       taxonomy_object = C.new_taxonomy;
     }

@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const extend = require('util')._extend;
 const C = require(app_root + '/public/constants');
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 
 
 module.exports = {
@@ -151,7 +151,7 @@ module.exports = {
   save_post_items: (req) => {
     // GLOBAL Variable
     var post_hash = {};
-    if(config.site == 'vamps' ){
+    if(CFG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
     }else{
       console.log('VS--BODY (routes_common.js)',req.body)
@@ -181,7 +181,7 @@ module.exports = {
           if(typeof post_hash.domains == 'string') {
               post_hash.domains = post_hash.domains.split(',');
           }
-          if(config.site == 'vamps' ){
+          if(CFG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log(req.body.custom_taxa)
@@ -417,7 +417,7 @@ create_chosen_id_name_order: (dataset_ids) => {
 },
 create_new_chosen_id_name_hash: (dataset_list, pjds_lookup) => {
 
-  if(config.site == 'vamps' ){
+  if(CFG.site == 'vamps' ){
       console.log('VAMPS PRODUCTION -- no print to log');
   }else{
       

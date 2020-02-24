@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const helpers = require(app_root + '/routes/helpers/helpers');
+=======
+var helpers = require(app_root + '/routes/helpers/helpers');
+>>>>>>> d1b9e110ba4a027046221f89186984a25ba4e263
 const C		  = require(app_root + '/public/constants');
 
 class Dataset {

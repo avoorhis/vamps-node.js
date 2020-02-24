@@ -7,8 +7,8 @@ const url  = require('url');
 const path = require('path');
 const fs   = require('fs-extra');
 const multer    = require('multer');
-const config  = require(app_root + '/config/config');
-const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+const CFG  = require(app_root + '/config/config');
+const upload = multer({ dest: CFG.TMP, limits: { fileSize: CFG.UPLOAD_FILE_SIZE.bytes }  });
 const helpers = require(app_root + '/routes/helpers/helpers');
 const QUERY = require(app_root + '/routes/queries');
 
@@ -118,8 +118,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     constants       : JSON.stringify(needed_constants),
     post_items      : JSON.stringify(visual_post_items),
     user            : req.user,
-    hostname        : req.CONFIG.hostname,
-    token           : req.CONFIG.MAPBOX_TOKEN,
+    hostname        : CFG.hostname,
+    token           : CFG.MAPBOX_TOKEN,
     image_to_render : JSON.stringify(image_to_open),
   });
 });
@@ -214,7 +214,7 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
       md_req       : JSON.stringify(required_metadata_headers),   //
       unit_choice  : current_unit_choice,
       user         : req.user,
-      hostname     : req.CONFIG.hostname,
+      hostname     : CFG.hostname,
     });  // end render
   }
   // benchmarking
@@ -258,7 +258,7 @@ function render_visuals_index(res, req, needed_constants = C) {
     portal_to_show : '',
     data_to_open: JSON.stringify(DATA_TO_OPEN),
     user        : req.user,
-    hostname    : req.CONFIG.hostname,
+    hostname    : CFG.hostname,
   });
 }
 
@@ -283,7 +283,7 @@ router.get('/visuals_index', helpers.isLoggedIn, (req, res) => {
   // GLOBAL
   SHOW_DATA = C.ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {};
+  //METADATA  = {};
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
 
@@ -311,7 +311,7 @@ router.post('/visuals_index', helpers.isLoggedIn, (req, res) => {
   // GLOBAL
   SHOW_DATA = C.ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {};
+  //METADATA  = {};
   // GLOBAL
   DATA_TO_OPEN = get_data_to_open(req);
 
@@ -335,7 +335,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, (req, res) => {
     constants: JSON.stringify(C),
     referer: req.body.referer,
     ts: user_timestamp,
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
   });
 
 });
@@ -386,15 +386,15 @@ router.post('/dendrogram',  helpers.isLoggedIn, (req,  res) => {
 
   let user_timestamp = viz_files_obj.get_user_timestamp(req);
   let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath: CFG.PATH_TO_VIZ_SCRIPTS,
     args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
   console.log(options.scriptPath + script + ' ' + options.args.join(' '));
 
   let dendrogram_process = spawn( options.scriptPath + script,
     options.args, {
-      env: {'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      env: {'PATH': CFG.PATH,
+        'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
       detached: true,
       stdio: 'pipe' // stdin,  stdout,  stderr
     });
@@ -447,7 +447,7 @@ router.post('/pcoa', helpers.isLoggedIn, (req, res) => {
   console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
 
   let pcoa_process = spawn( options.scriptPath + options.script, options.args, {
-    env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+    env: { 'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
   });
@@ -501,7 +501,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, (req, res) => {
 
   const script_full_path = path.join(options1.scriptPath, options1.script);
   let pcoa_process = spawn( script_full_path, options1.args, {
-    env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+    env:{ 'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
   });
@@ -718,7 +718,7 @@ router.post('/phyloseq', helpers.isLoggedIn, (req, res) => {
 
   console.log(path.join(options.scriptPath, options.script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, options.script), options.args, {
-    env: {'PATH': req.CONFIG.PATH},
+    env: {'PATH': CFG.PATH},
     detached: true,
     //stdio: [ 'ignore', null, null ]
     stdio: 'pipe'  // stdin, stdout, stderr
@@ -857,13 +857,14 @@ function get_new_order_by_button(order) {
   let new_order = {};
   switch (order.orderby) {
     case "alpha":
+      new_order.count_value = '';
       if (order.value === 'a') {
         new_order.alpha_value = 'z';
       }
       else {
         new_order.alpha_value = 'a';
       }
-      new_order.count_value = '';
+      
       break;
     case "count":
       if (order.value === 'min') {
@@ -876,6 +877,14 @@ function get_new_order_by_button(order) {
     default:
       break;
   }
+  //works
+  // { count_value: 'max', alpha_value: '' }
+  // { count_value: 'min', alpha_value: '' }
+  // { count_value: '',    alpha_value: 'a' }
+  // { count_value: '',    alpha_value: 'z' }
+  // returns to
+  // router.get('/bar_single'  and
+  // router.get('/bar_double'
   return new_order;
 }
 
@@ -899,7 +908,6 @@ router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
   let pi = make_pi([selected_did], req, pd_vars);
   let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
   let new_order = get_new_order_by_button(order);
-
   if (pi.unit_choice !== 'OTUs') {
     write_seq_file_async(req, res, selected_did);
     const bar_type = 'single';
@@ -923,7 +931,7 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, ne
     bar_type: bar_type,
     order: JSON.stringify(new_order),
     dist: dist,
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
   });
 }
 
@@ -993,7 +1001,7 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
       tax: search_tax,
       fname: seqs_filename,
       seq_list: 'Error Retrieving Sequences',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
     });
     return;
   }
@@ -1009,7 +1017,7 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
     fname: seqs_filename,
     seq_list: seq_list,
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
   });
 }
 
@@ -1149,7 +1157,7 @@ router.get('/sequences/', helpers.isLoggedIn, (req, res) => {
       tax: search_tax,
       fname: '',
       seq_list: 'Error Retrieving Sequences',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
     });
   }
 });
@@ -1213,9 +1221,9 @@ router.post('/save_datasets', helpers.isLoggedIn,  (req, res) => {
   viz_files_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
-  let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
+  let filename_path = path.join(CFG.USER_FILES_BASE,req.user.username,req.body.filename);
+  helpers.mkdirSync(path.join(CFG.USER_FILES_BASE));  // create dir if not present
+  helpers.mkdirSync(path.join(CFG.USER_FILES_BASE,req.user.username)); // create dir if not present
   //console.log(filename);
   helpers.write_to_file(filename_path,req.body.datasets);
 
@@ -1236,7 +1244,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
     let acceptable_prefixes = ['datasets', 'image'];
-    let saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
 
     let file_info = {};
     let modify_times = [];
@@ -1271,7 +1279,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
 
           finfo: JSON.stringify(file_info),
           times: modify_times,
-          user: req.user, hostname: req.CONFIG.hostname,
+          user: req.user, hostname: CFG.hostname,
         });
 
     });
@@ -1409,13 +1417,13 @@ router.post('/cluster_ds_order', helpers.isLoggedIn, (req, res) => {
 
   let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj_by_name;
   let options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
   };
   console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
 
   let cluster_process = spawn( options.scriptPath + '/distance_and_ordination.py', options.args, {
-    env:{'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env:{'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true,
     stdio: [ 'ignore', null, null ]
   });  // stdin, stdout, stderr
@@ -1553,13 +1561,13 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn, (req, res) => {
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath: CFG.PATH_TO_VIZ_SCRIPTS,
     args:       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
 
   console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
   let split_process = spawn( options.scriptPath +'/distance_and_ordination.py', options.args, {
-    env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true,
     stdio: 'pipe'  // stdin, stdout, stderr
   });
@@ -1614,7 +1622,7 @@ router.post('/download_file', helpers.isLoggedIn, (req, res) => {
 //
 // test: clear by substring, first opening
 router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
-  //SHOW_DATA = ALL_DATASETS;
+  //SHOW_DATA = C.ALL_DATASETS;
   console.log('in clear filters');
   //console.log(req.query)
   //FILTER_ON = false
@@ -1623,6 +1631,8 @@ router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
     DATA_TO_OPEN = {};
   }
   //DATA_TO_OPEN = {}
+  // TOTO These 'now GLOBAL' variables should be attached to the session so filering is seen by only one person
+  // DATA_TO_OPEN PROJECT_TREE_OBJ PROJECT_TREE_PIDS PROJECT_FILTER SHOW_DATA
   PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, SHOW_DATA.projects);
   PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
   res.json(PROJECT_FILTER);
@@ -1786,7 +1796,7 @@ router.get('/livesearch_metadata/:num/:q', (req, res) => {
 });
 
 function get_files_prefix(req) {
-  let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE) + "--datasets_" ;
+  let files_prefix = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE) + "--datasets_" ;
   let units = req.body.units;
   let taxonomies = {
     default_simple: 'tax_' + C.default_taxonomy.name + '_simple',
@@ -1824,7 +1834,7 @@ router.post('/check_units', (req, res) => {
 //   console.log(dataset_ids)
 
   for (let i in dataset_ids){
-    //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
+    //console.log(dataset_ids[i]+' <> '+C.DATASET_NAME_BY_DID[dataset_ids[i]])
     path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
     //console.log(path_to_file)
     try {
@@ -1988,7 +1998,7 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
     let all_checked_dids = [];
     if (Object.keys(DATA_TO_OPEN).length > 0){
       // TODO: Andy, how to test this?
-      console.log('dto');
+      //console.log('dto');
       viz_files_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
       for (let openpid in DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
@@ -2074,7 +2084,7 @@ router.get('/taxa_piechart', (req, res) => {
         datasets: JSON.stringify(cols),
         counts: data,
         ts: timestamp_only,
-        user: req.user, hostname: req.CONFIG.hostname,
+        user: req.user, hostname: CFG.hostname,
       });
     }
   });

@@ -138,7 +138,7 @@ router.post('/dco_project_list',  (req, res) => {
         }     
     }
     for(pid in new_dco_list_latlon){
-        //console.log(DATASET_IDS_BY_PID[pid].length)
+        //console.log(C.DATASET_IDS_BY_PID[pid].length)
         //console.log(new_dco_list_latlon[pid])
         if(C.DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
             new_dco_list_latlon[pid] = 'COMPLETE'
@@ -308,13 +308,13 @@ router.get('/abstracts/CMP', (req, res) => {
 //     var md = {}
 //     for(n in project_list){
 //         var pid = project_list[n].pid
-//         var dids = DATASET_IDS_BY_PID[pid]
+//         var dids = C.DATASET_IDS_BY_PID[pid]
 //        
 //         
 //         md_order = []
 //         md_lookup = {}
 //         for(m in dids){
-//             var pjds = project_list[n].project+'--'+DATASET_NAME_BY_DID[dids[m]]
+//             var pjds = project_list[n].project+'--'+ C.DATASET_NAME_BY_DID[dids[m]]
 //             
 //             md[pjds] = {}
 //             headers = {}
@@ -400,31 +400,25 @@ router.get('/protocol_list/:portal', (req, res) => {
     console.log('in /protocol_list/:portal')
     let portal = req.params.portal;
     console.log(portal)
-    if(portal == 'ICOMM') {
+    if (portal == 'ICOMM') {
         let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
         let protocol_list = []
         console.log(protocol_dir)
         fs.readdir(protocol_dir, (err, files) => {
             files.forEach(file => {
                 console.log(file);
-                let file_w_dnld_path = path.join('protocols',file)
-                protocol_list.push({file_w_path:file_w_dnld_path, file_name:file})
+                let file_w_dnld_path = path.join('protocols', file)
+                protocol_list.push({file_w_path: file_w_dnld_path, file_name: file})
             });
 
             res.render('portals/census_of_marine_microbes/protocol_list', {
-                title       : 'VAMPS: ICoMM Protocols',
-                user: req.user,hostname: req.CONFIG.hostname,
+                title: 'VAMPS: ICoMM Protocols',
+                user: req.user, hostname: req.CONFIG.hostname,
                 p_list: JSON.stringify(protocol_list)
             });
         });
 
     }
-//
-//     var portal_info = get_portal_metadata(req, portal)
-//     portal_info[portal].zoom = C.PORTALS[portal].zoom
-//     //console.log('FOUND '+JSON.stringify(portal_info))
-//
-
 });
 
 module.exports = router;
@@ -446,7 +440,7 @@ function get_portal_metadata(req, portal){
     for(did in C.DATASET_NAME_BY_DID){   // too big
         //did = all_metadata[i]
         pid = C.PROJECT_ID_BY_DID[did]
-        //console.log(PROJECT_INFORMATION_BY_PID[pid])
+        //console.log(C.PROJECT_INFORMATION_BY_PID[pid])
         pname = C.PROJECT_INFORMATION_BY_PID[pid].project
         
         dataset_metadata = C.AllMetadata[did] || {}

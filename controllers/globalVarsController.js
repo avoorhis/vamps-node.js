@@ -285,7 +285,7 @@ class GlobalVars {
     if (type === 'del') {
       let dids  = C.DATASET_IDS_BY_PID[pid];
       let pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
-      console.log('RE-INTIALIZING ALL_DATASETS');
+      console.log('RE-INTIALIZING C.ALL_DATASETS');
       let dataset_objs = [];
       for (let i in C.ALL_DATASETS.projects) {
         let item = C.ALL_DATASETS.projects[i];
@@ -298,21 +298,21 @@ class GlobalVars {
           break;
         }
       }
-      console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
-      console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
-      console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
+      console.log('RE-INTIALIZING C.PROJECT_ID_BY_DID');
+      console.log('RE-INTIALIZING C.DATASET_NAME_BY_DID');
+      console.log('RE-INTIALIZING C.ALL_DCOUNTS_BY_DID');
       for (let d in dids) {
         delete C.PROJECT_ID_BY_DID[dids[d]];
         delete C.DATASET_NAME_BY_DID[dids[d]];
         delete C.ALL_DCOUNTS_BY_DID[dids[d]];
         delete C.DatasetsWithLatLong[dids[d]];
       }
-      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
-      console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
-      console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
-      console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
-      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
-      console.log('RE-INTIALIZING DatasetsWithLatLong');
+      console.log('RE-INTIALIZING C.PROJECT_INFORMATION_BY_PID');
+      console.log('RE-INTIALIZING C.DATASET_IDS_BY_PID');
+      console.log('RE-INTIALIZING C.ALL_PCOUNTS_BY_PID');
+      console.log('RE-INTIALIZING C.ALL_CLASSIFIERS_BY_PID');
+      console.log('RE-INTIALIZING C.PROJECT_INFORMATION_BY_PNAME');
+      console.log('RE-INTIALIZING C.DatasetsWithLatLong');
 
       delete C.PROJECT_INFORMATION_BY_PID[pid];
       delete C.DATASET_IDS_BY_PID[pid];
