@@ -34,11 +34,11 @@ function start_visual_post_items(req) {
 
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
-  console.log('visual_post_items.chosen_datasets1');
-  console.log(visual_post_items.chosen_datasets);
+  //console.log('visual_post_items.chosen_datasets1');
+  //console.log(visual_post_items.chosen_datasets);
   visual_post_items.chosen_datasets = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
-console.log('visual_post_items.chosen_datasets2');
-console.log(visual_post_items.chosen_datasets);
+//console.log('visual_post_items.chosen_datasets2');
+//console.log(visual_post_items.chosen_datasets);
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\n\nreq.session: ' + JSON.stringify(req.session);
   viz_files_obj.print_log_if_not_vamps(req, msg);
@@ -228,22 +228,22 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
 
 //TODO: test     for (const pj of obj) {
 function get_data_to_open(req) {
-  let DATA_TO_OPEN = {};
+  let local_data_to_open = {};
   if (req.body.data_to_open) {
     // open many projects
     let obj = JSON.parse(req.body.data_to_open);
     for (let pj in obj){
       let pid = C.PROJECT_INFORMATION_BY_PNAME[pj].pid;
-      DATA_TO_OPEN[pid] = obj[pj];
+      local_data_to_open[pid] = obj[pj];
     }
     //console.log('got data to open '+data_to_open)
   } else if (req.body.project){
     // open whole project
-    DATA_TO_OPEN[req.body.project_id] = C.DATASET_IDS_BY_PID[req.body.project_id];
+    local_data_to_open[req.body.project_id] = C.DATASET_IDS_BY_PID[req.body.project_id];
   }
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
-  return DATA_TO_OPEN;
+  console.log('local_data_to_open');
+  console.log(local_data_to_open);
+  return local_data_to_open;
 }
 
 function render_visuals_index(res, req, needed_constants = C) {
@@ -256,7 +256,7 @@ function render_visuals_index(res, req, needed_constants = C) {
     md_names    : C.AllMetadataNames,
     filtering   : 0,
     portal_to_show : '',
-    data_to_open: JSON.stringify(DATA_TO_OPEN),
+    data_to_open: JSON.stringify(req.session.DATA_TO_OPEN),
     user        : req.user,
     hostname    : CFG.hostname,
   });
@@ -281,11 +281,11 @@ router.get('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = C.ALL_DATASETS;
-  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+  req.session.SHOW_DATA = C.ALL_DATASETS;
+  //req.session.TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   //METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = get_data_to_open(req);
+  req.session.DATA_TO_OPEN = get_data_to_open(req);
 
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   render_visuals_index(res, req, needed_constants);
@@ -309,11 +309,11 @@ router.post('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = C.ALL_DATASETS;
-  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+  req.session.SHOW_DATA = C.ALL_DATASETS;
+  //req.session.TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   //METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = get_data_to_open(req);
+  req.session.DATA_TO_OPEN = get_data_to_open(req);
 
   render_visuals_index(res, req, C);
 });
@@ -1136,9 +1136,7 @@ router.get('/sequences/', helpers.isLoggedIn, (req, res) => {
 
           // console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-          // TODO: Andy, do we still need to print it out? It's huge!
-          // console.log('filtered_data')
-          // console.log(filtered_data)
+
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
           // console.timeEnd("TIME: loop through clean_data");
 
@@ -1622,20 +1620,20 @@ router.post('/download_file', helpers.isLoggedIn, (req, res) => {
 //
 // test: clear by substring, first opening
 router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
-  //SHOW_DATA = C.ALL_DATASETS;
+  //req.session.SHOW_DATA = C.ALL_DATASETS;
   console.log('in clear filters');
   //console.log(req.query)
   //FILTER_ON = false
-  PROJECT_TREE_OBJ = [];
+  req.session.PROJECT_TREE_OBJ = [];
   if (req.query.hasOwnProperty('btn') && req.query.btn === '1'){
-    DATA_TO_OPEN = {};
+    req.session.DATA_TO_OPEN = {};
   }
-  //DATA_TO_OPEN = {}
+
   // TOTO These 'now GLOBAL' variables should be attached to the session so filering is seen by only one person
   // DATA_TO_OPEN PROJECT_TREE_OBJ PROJECT_TREE_PIDS PROJECT_FILTER SHOW_DATA
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-  PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
-  res.json(PROJECT_FILTER);
+  req.session.PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, req.session.SHOW_DATA.projects);
+  req.session.PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":req.session.PROJECT_TREE_PIDS.length};
+  res.json(req.session.PROJECT_FILTER);
 });
 
 
@@ -1643,18 +1641,18 @@ router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
 //
 //
 
-router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
-  let portal = req.params.portal;
-
-  console.log('in load_portal: ' + portal);
-  SHOW_DATA = C.ALL_DATASETS;
-  PROJECT_TREE_OBJ = [];
-
-  PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-  let PROJECT_FILTER = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
-  res.json(PROJECT_FILTER);
-});
+// router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
+//   console.log('in load_portal: ' + portal);
+//   let portal = req.params.portal;
+//
+//   req.session.SHOW_DATA = C.ALL_DATASETS;
+//   PROJECT_TREE_OBJ = [];
+//
+//   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
+//   PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+//   let temp_project_filter = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
+//   res.json(temp_project_filter);
+// });
 //
 //
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
@@ -1673,17 +1671,14 @@ router.get('/livesearch_projects/:substring', (req, res) => {
   if (empty_string) {
     substring = "";
   }
-  PROJECT_FILTER.substring = substring;
+  req.session.PROJECT_FILTER.substring = substring;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
-  console.log(PROJECT_FILTER);
-
-  res.json(PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 });
 
 
@@ -1692,16 +1687,16 @@ router.get('/livesearch_projects/:substring', (req, res) => {
 //
 // test click filter by ENV source on visuals_index
 router.get('/livesearch_env/:envid', (req, res) => {
-  PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
+  req.session.PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
   // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1714,15 +1709,15 @@ router.get('/livesearch_target/:gene_target', (req, res) => {
   if (empty_string) {
     gene_target = "";
   }
-  PROJECT_FILTER.target = gene_target;
+  req.session.PROJECT_FILTER.target = gene_target;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1737,14 +1732,14 @@ router.get('/livesearch_portal/:portal', (req, res) => {
   if (empty_string) {
     select_box_portal = "";
   }
-  PROJECT_FILTER.portal = select_box_portal;
+  req.session.PROJECT_FILTER.portal = select_box_portal;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  res.json(PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1755,15 +1750,15 @@ router.get('/livesearch_portal/:portal', (req, res) => {
 // test: click public/private on visuals_index
 router.get('/livesearch_status/:q', (req, res) => {
   console.log('viz:in livesearch status');
-  PROJECT_FILTER.public = req.params.q;
+  req.session.PROJECT_FILTER.public = req.params.q;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1783,15 +1778,15 @@ router.get('/livesearch_metadata/:num/:q', (req, res) => {
   if (empty_string) {
     q = "";
   }
-  PROJECT_FILTER['metadata' + num] = q;
+  req.session.PROJECT_FILTER['metadata' + num] = q;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 
@@ -1953,18 +1948,18 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
   let json = {};
   json.id = id;
   json.item = [];
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
+  console.log('req.session.DATA_TO_OPEN');
+  console.log(req.session.DATA_TO_OPEN);
 
-  //PROJECT_TREE_OBJ = []
-  //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
+
+
   let itemtext;
   if (parseInt(id) === 0){
-    PROJECT_TREE_PIDS.map(pid => {
+    req.session.PROJECT_TREE_PIDS.map(pid => {
       itemtext = get_itemtext(pid);
 
       let pid_str = pid.toString();
-      // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      // if (Object.keys(req.session.DATA_TO_OPEN).includes(pid_str)){
       // TODO: Andy, how to test this?
       //   // TODO ? use json_item_collect(node, json_item, checked)
       //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
@@ -1980,7 +1975,7 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
         child: 1,
         item: [],
       };
-      if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      if (Object.keys(req.session.DATA_TO_OPEN).includes(pid_str)){
         // TODO: Andy, how to test this?
         options_obj.open = '1';
       }
@@ -1996,12 +1991,12 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
     let this_project = C.ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
 
     let all_checked_dids = [];
-    if (Object.keys(DATA_TO_OPEN).length > 0){
+    if (Object.keys(req.session.DATA_TO_OPEN).length > 0){
       // TODO: Andy, how to test this?
       //console.log('dto');
-      viz_files_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
-      for (let openpid in DATA_TO_OPEN){
-        Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
+      viz_files_obj.print_log_if_not_vamps(req, 'req.session.DATA_TO_OPEN');
+      for (let openpid in req.session.DATA_TO_OPEN){
+        Array.prototype.push.apply(all_checked_dids, req.session.DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');

@@ -51,7 +51,7 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
                                   md_names    : C.AllMetadataNames,
                                   filtering   : 0,
                                   portal_to_show : '',
-                                  data_to_open: JSON.stringify(DATA_TO_OPEN),
+                                  data_to_open: JSON.stringify(req.session.DATA_TO_OPEN),
                                   user        : req.user,
                                   hostname    : req.CONFIG.hostname,
                                   

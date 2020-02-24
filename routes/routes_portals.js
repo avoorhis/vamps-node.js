@@ -23,10 +23,8 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
     //console.log('visuals_index: '+portal);
     
     var project_list = helpers.get_portal_projects(req, portal)
-    
-    
-    // GLOBAL
-    SHOW_DATA = project_list;
+
+    req.session.SHOW_DATA = project_list;
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
