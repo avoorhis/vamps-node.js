@@ -428,7 +428,8 @@ dheatmap: (req, res) =>{
         //console.log(mtxdata)
         let body = pies_factory(req, matrix, d3pie_data, imagetype, ts);
 
-        let html = '<center>'+body.select('.container').html()+'</center>';
+        let html = body.select('.container').html();
+        html += create_color_legend(matrix)
         let outfile_name = ts + '-piecharts-api.svg';
         let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         console.log('outfile_path:', outfile_path);
@@ -487,6 +488,7 @@ barcharts: (req, res) =>{
         create_bars_svg_object(req, svg, props, mtxdata, ts);
 
         let html = body.select('.container').html();
+        html += create_color_legend(matrix)
         let outfile_name = ts + '-barcharts-api.svg';
         let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
@@ -1370,8 +1372,11 @@ function charts_otus(req, biom_data) {
 function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
   let x0 = 0;
   tmp_ob.unitObj = [];
+  let unique_taxa = {}
+
   matrix.rows.forEach((row, t_ind) => {
     let name = row.id;
+    unique_taxa[name] = 1
     let cnts = matrix.data[t_ind][p_ind];
     tmp_ob[name] = cnts;
     let tmp_unitObj = {
@@ -1385,6 +1390,7 @@ function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
     };
     tmp_ob.unitObj.push(tmp_unitObj);
   });
+  //console.log(JSON.stringify(unique_taxa))
   return tmp_ob;
 }
 
@@ -1394,6 +1400,64 @@ function normalize_to_100_prc(tmp_obj) {
     unit_obj.x1 = (unit_obj.x1 * 100) / tmp_obj.total;
   });
   return tmp_obj;
+}
+//
+//
+//
+// function create_color_legend(mtxdata) {
+//   let unique_taxa = []
+//   for( n in mtxdata){
+//     delete mtxdata[n].pjds
+//     delete mtxdata[n].did
+//     delete mtxdata[n].total
+//     delete mtxdata[n].unitObj
+//     for(tax in mtxdata[n]){
+//       if(mtxdata[n][tax] > 0){
+//         unique_taxa.push(tax)
+//       }
+//     }
+//   }
+//   unique_taxa = helpers.unique_array(unique_taxa)
+//
+//   let html = ""
+//   html += "<div class='pull-left'><table>"
+//
+//   for(n in unique_taxa.sort()){
+//     let taxon = unique_taxa[n]
+//     let color = string_to_color_code(taxon);
+//     html += "<tr>"
+//     html += "<td style='background: " + color + ";width:20px;'></td>"
+//     html += "<td style='font-size:x-small;'>" + taxon + "</td>"
+//     html += "</tr>"
+//   }
+//
+//   html += "</table></div>"
+//   return html
+// }
+function create_color_legend(matrix) {
+  let unique_taxa = []
+  for( n in matrix.rows){
+    //console.log(n)
+    if(matrix.data[n].reduce( (a,b) => a + b) > 0 ){
+      unique_taxa.push(matrix.rows[n].id)
+    }
+  }
+  unique_taxa = helpers.unique_array(unique_taxa)
+
+  let html = ""
+  html += "<div class='pull-right'><table>"
+
+  for(n in unique_taxa.sort()){
+    let taxon = unique_taxa[n]
+    let color = string_to_color_code(taxon);
+    html += "<tr>"
+    html += "<td style='background: " + color + ";width:20px;'></td>"
+    html += "<td style='font-size:x-small;'> " + taxon + "</td>"
+    html += "</tr>"
+  }
+
+  html += "</table></div>"
+  return html
 }
 function make_svgContainer_pies(data, width, height, margin_left, margin_top, body) {
   // both pies and bars
@@ -1434,14 +1498,14 @@ function image_options_pies(imagetype, matrix, d3) {
   io_obj.margin = 15;
   io_obj.pie_rows = 320 / io_obj.pies_per_row; // four pies per row
 
-  if (imagetype === 'single') {
+  if (imagetype === 'single') {   // taxonomy only
     io_obj.pies_per_row = 1;
     io_obj.margin = 20;
     io_obj.pie_rows = 120; // five pies per row
   }
 
   // image start in upper left corner
-  io_obj.image_w = 1200;
+  io_obj.image_w = 900;  //1200;
   io_obj.image_h = get_image_hight(matrix, io_obj.pie_rows, io_obj.pies_per_row);
 
   io_obj.margin_left = 0;
@@ -1480,8 +1544,8 @@ function pies_factory(req, matrix, d3pie_data, imagetype, ts) {
   const io = image_options_pies(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
+  //let svg = make_svgContainer(io.image_w, io.image_h, io.margin_left, io.margin_top, body);
   let svg = make_svgContainer(io.image_w, io.image_h, io.margin_left, io.margin_top, body);
-
   let arc = d3.arc().innerRadius(0).outerRadius(io.pie_rows);
 
   if (req.body.source === 'website'){
@@ -1574,6 +1638,8 @@ function if_imagetype_single(matrix, total) {
 
 function make_bar_mtxdata(matrix) {
   let mtxdata = [];
+  //let unique_taxa = {}
+
   matrix.columns.forEach((column, p_ind) => {
     let tmp = {};
     tmp.pjds = column.id;

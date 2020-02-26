@@ -794,7 +794,8 @@ function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   // console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
+  //new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
+  new_matrix.pjds = pd_vars.get_current_pr_dataset_name_by_did(selected_did);
   new_matrix.did = selected_did;
   new_matrix.total = 0;
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
@@ -895,6 +896,27 @@ function write_seq_file_async(req, res, selected_did) {
     });
 }
 
+function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist = ""}) {
+  console.log('LoadDataFinishRequest in bar_' + bar_type);
+  let title = 'Taxonomic Data';
+  if (pi.unit_choice === 'OTUs') {
+    title = 'OTU Count Data';
+  }
+  let url = 'visuals/user_viz_data/bar_' + bar_type;
+  res.render(url, {
+    title: title,
+    ts: timestamp_only,
+    matrix: JSON.stringify(new_matrix),
+    post_items: JSON.stringify(pi),
+    bar_type: bar_type,
+    order: JSON.stringify(new_order),
+    dist: dist,
+    user: req.user, hostname: CFG.hostname,
+  });
+}
+//
+// B A R - C H A R T  -- S I N G L E
+//
 router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_viz/bar_single');
   let myurl = url.parse(req.url, true);
@@ -915,26 +937,6 @@ router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
     LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
   }
 });
-
-function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist = ""}) {
-  console.log('LoadDataFinishRequest in bar_' + bar_type);
-  let title = 'Taxonomic Data';
-  if (pi.unit_choice === 'OTUs') {
-    title = 'OTU Count Data';
-  }
-  let url = 'visuals/user_viz_data/bar_' + bar_type;
-  res.render(url, {
-    title: title,
-    ts: timestamp_only,
-    matrix: JSON.stringify(new_matrix),
-    post_items: JSON.stringify(pi),
-    bar_type: bar_type,
-    order: JSON.stringify(new_order),
-    dist: dist,
-    user: req.user, hostname: CFG.hostname,
-  });
-}
-
 //
 // B A R - C H A R T  -- D O U B L E
 //
