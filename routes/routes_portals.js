@@ -405,8 +405,18 @@ router.get('/protocol_list/:portal', (req, res) => {
         fs.readdir(protocol_dir, (err, files) => {
             files.forEach(file => {
                 console.log(file);
-                let file_w_dnld_path = path.join('protocols', file)
-                protocol_list.push({file_w_path: file_w_dnld_path, file_name: file})
+                let prefix = 'ICM_' + file.split('_')[0]
+                let projects = []
+                for (let pid in C.PROJECT_INFORMATION_BY_PID) {
+                    let prj = C.PROJECT_INFORMATION_BY_PID[pid].project
+                    if(prj.startsWith(prefix)){
+                        projects.push(prj)
+                    }
+                }
+                if(projects.length > 0) {
+                    let file_w_dnld_path = path.join('protocols', file)
+                    protocol_list.push({file_w_path: file_w_dnld_path, file_name: file, projects: projects.join(', ')})
+                }
             });
 
             res.render('portals/census_of_marine_microbes/protocol_list', {
@@ -415,7 +425,6 @@ router.get('/protocol_list/:portal', (req, res) => {
                 p_list: JSON.stringify(protocol_list)
             });
         });
-
     }
 });
 

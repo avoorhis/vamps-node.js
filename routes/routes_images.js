@@ -1404,36 +1404,7 @@ function normalize_to_100_prc(tmp_obj) {
 //
 //
 //
-// function create_color_legend(mtxdata) {
-//   let unique_taxa = []
-//   for( n in mtxdata){
-//     delete mtxdata[n].pjds
-//     delete mtxdata[n].did
-//     delete mtxdata[n].total
-//     delete mtxdata[n].unitObj
-//     for(tax in mtxdata[n]){
-//       if(mtxdata[n][tax] > 0){
-//         unique_taxa.push(tax)
-//       }
-//     }
-//   }
-//   unique_taxa = helpers.unique_array(unique_taxa)
-//
-//   let html = ""
-//   html += "<div class='pull-left'><table>"
-//
-//   for(n in unique_taxa.sort()){
-//     let taxon = unique_taxa[n]
-//     let color = string_to_color_code(taxon);
-//     html += "<tr>"
-//     html += "<td style='background: " + color + ";width:20px;'></td>"
-//     html += "<td style='font-size:x-small;'>" + taxon + "</td>"
-//     html += "</tr>"
-//   }
-//
-//   html += "</table></div>"
-//   return html
-// }
+
 function create_color_legend(matrix) {
   let unique_taxa = []
   for( n in matrix.rows){
@@ -1446,7 +1417,7 @@ function create_color_legend(matrix) {
 
   let html = ""
   html += "<div class='pull-right'><table>"
-
+  html += "<tr><td></td><th>-Legend-</th></tr>"
   for(n in unique_taxa.sort()){
     let taxon = unique_taxa[n]
     let color = string_to_color_code(taxon);
