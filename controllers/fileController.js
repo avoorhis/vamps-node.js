@@ -225,7 +225,7 @@ class FileUtil {
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
-    if (this.CFG.cluster_available === true) {
+    if (CFG.cluster_available === true) {
       let log = path.join(tmp_path, 'export_log.txt');
       let qsub_script_text = helpers.get_qsub_script_text(this.req, log, tmp_path, code, cmd_list);
       let qsub_file_name   = this.req.user.username + '_qsub_export_' + ts + '.sh';
