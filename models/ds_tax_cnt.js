@@ -27,7 +27,7 @@
 // 
 // datasetTaxaCnts.prototype.get_cnts = function(callback) 
 // {
-//   connection.query(taxa_query, function (err, rows, fields) {
+//   DBConn.query(taxa_query, function (err, rows, fields) {
 //     callback(err, rows);
 //   });
 // };

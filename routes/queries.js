@@ -42,7 +42,7 @@ module.exports = {
     qSelectDatasets += " FROM dataset";
     qSelectDatasets += " JOIN project USING(project_id)";
     qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
-    qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
+    qSelectDatasets += " WHERE project_id = " + DBConn.escape(pid);
     qSelectDatasets += " AND project.active = 1";
 //qSelectDatasets += " AND metagenomic='0'";
     qSelectDatasets += " ORDER BY project, dataset";
@@ -88,7 +88,7 @@ get_select_seq_count_query: () => {
     var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count";
     qSequenceCounts += " FROM sequence_pdr_info";
     qSequenceCounts += " JOIN dataset using(dataset_id)";
-    qSequenceCounts += " WHERE project_id = " + connection.escape(pid);
+    qSequenceCounts += " WHERE project_id = " + DBConn.escape(pid);
     //qSequenceCounts += " AND project.active = 1";  // not needed here
     qSequenceCounts += " GROUP BY project_id, dataset_id";
     return qSequenceCounts;
@@ -151,14 +151,14 @@ get_select_seq_count_query: () => {
     }
     
     seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
-    seqQuery += " WHERE dataset_id = " + connection.escape(did);
+    seqQuery += " WHERE dataset_id = " + DBConn.escape(did);
 
     for(t=0;t<  tax_items.length;t++){
       var name = tax_items[t]
       var val = name+'_'+C.RANKS[t];
       //console.log(val)
       var id = C.new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
-      seqQuery += " and "+C.RANKS[t]+"_id = " + connection.escape(id);
+      seqQuery += " and "+C.RANKS[t]+"_id = " + DBConn.escape(id);
     }
     seqQuery += "\nORDER BY seq_count DESC";
     seqQuery += " LIMIT 100";
@@ -182,24 +182,24 @@ get_select_seq_count_query: () => {
   MakeInsertStatusQ: (status_params) => {
     // "SELECT user_id, project_id, status, message, NOW() ";
     var statQuery1 = "INSERT IGNORE INTO user_project_status (user_id, project_id, status, message, created_at)"
-      + " SELECT "  + connection.escape(status_params.user_id)
+      + " SELECT "  + DBConn.escape(status_params.user_id)
       + ", project_id"
-      + ", "  + connection.escape(status_params.status)
-      + ", "  + connection.escape(status_params.msg)
+      + ", "  + DBConn.escape(status_params.status)
+      + ", "  + DBConn.escape(status_params.msg)
       + ", NOW()"
       + " FROM user_project_status RIGHT JOIN project using(project_id)"
-      + " WHERE owner_user_id = " + connection.escape(status_params.user_id);
+      + " WHERE owner_user_id = " + DBConn.escape(status_params.user_id);
     if ('project' in status_params) {
-      statQuery1 += " AND project = "  + connection.escape(status_params.project);
-      // console.log("statQuery1 project: " + connection.escape(status_params.project));
+      statQuery1 += " AND project = "  + DBConn.escape(status_params.project);
+      // console.log("statQuery1 project: " + DBConn.escape(status_params.project));
     }
     else if ('pid' in status_params) {
-      statQuery1 += " AND project_id = " + connection.escape(status_params.pid);
-      // console.log("statQuery1 pid: " + connection.escape(status_params.pid));
+      statQuery1 += " AND project_id = " + DBConn.escape(status_params.pid);
+      // console.log("statQuery1 pid: " + DBConn.escape(status_params.pid));
     }
     statQuery1 += " ON DUPLICATE KEY UPDATE"
-      + " user_project_status.status   = " + connection.escape(status_params.status)
-      + ", user_project_status.message = "  + connection.escape(status_params.msg)
+      + " user_project_status.status   = " + DBConn.escape(status_params.status)
+      + ", user_project_status.message = "  + DBConn.escape(status_params.msg)
       + ", user_project_status.updated_at = NOW()"
       + ";"
     console.log("statQuery1: " + statQuery1);

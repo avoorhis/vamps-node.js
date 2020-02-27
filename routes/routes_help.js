@@ -1,7 +1,7 @@
 const express = require('express');
 var router = express.Router();
 const spawn = require('child_process').spawn;
-
+const C		  = require(app_root + '/public/constants');
 // These are all under /help
 
 /* GET Overview page. */
@@ -31,7 +31,7 @@ router.get('/contact', (req, res) => {
             res.render('help/contact', {
               
               title: 'VAMPS:Contact Us',
-              choices : req.CONSTS.CONTACT_US_SUBJECTS,
+              choices : C.CONTACT_US_SUBJECTS,
               user: req.user,
               
               hostname: req.CONFIG.hostname

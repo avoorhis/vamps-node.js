@@ -194,7 +194,7 @@ class GlobalVars {
     this.get_AllMetadataNames_n_clean_metadata();
     this.sort_AllMetadataNames();
 
-    connection.query(queries.get_project_permissions(), (err, rows) => {
+    DBConn.query(queries.get_project_permissions(), (err, rows) => {
       //console.log(qSequenceCounts)
       if (err) {
         console.log('Query error: ' + err);
@@ -221,7 +221,7 @@ class GlobalVars {
   get_select_seq_counts_query(rows) {
     // console.time("TIME: get_select_seq_counts_query");
     // console.log(Object.values(PROJECT_ID_BY_DID));
-    connection.query('SELECT dataset_id, project_id from dataset', (err, rows2) => {
+    DBConn.query('SELECT dataset_id, project_id from dataset', (err, rows2) => {
 
       // console.time("TIME: make_pid_by_did_dict");
       //instead it's better to use PROJECT_ID_BY_DID after it's initialized

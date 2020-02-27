@@ -1,35 +1,36 @@
 #!/usr/bin/env node
 
-var app = require('../app');
-var debug = require('debug')('vamps-node.js');
-var config = require('../config/config');
+const app = require('../app');
+const debug = require('debug')('vamps-node.js');
+const CFG = require(app_root + '/config/config');
 // CL example: nodemon bin/www testing
 
 available_environments = ['testing','development','production'];
+
 if(available_environments.indexOf(process.argv[2]) !== -1){
 	process.env.NODE_ENV = process.argv[2];
 }else{
-	console.log('available environments:',available_environments);
-	if(config.hostname == 'bpcweb8') {
+	console.log('Available Environments:', available_environments);
+	if(CFG.hostname === 'bpcweb8') {
 	    process.env.NODE_ENV = 'production';  // vamps
-	}else if(config.hostname == 'bpcweb7'){
+	}else if(CFG.hostname === 'bpcweb7'){
 	    process.env.NODE_ENV = 'development';  // vampsdev
 	}else{
 	    process.env.NODE_ENV = 'development';
 	}
-	console.log("setting environment to: "+process.env.NODE_ENV);
-}
 
+}
+console.log("Setting Environment to: "+process.env.NODE_ENV);
 
 
 app.set('env', process.env.NODE_ENV);
-process.env.PORT = config.server_port || 3000;
+process.env.PORT = CFG.server_port || 3000;
 app.set('port', process.env.PORT);
 console.log('DATABASE: '+NODE_DATABASE,'(Database set in config/db-connection.js)');
 console.log('ENV:',app.get('env'),'(Environment set in bin/www)');
-console.log('HOSTNAME: '+config.hostname)
+console.log('HOSTNAME: '+CFG.hostname)
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
- 	console.log('VAMPS-Node.js started on: '+config.hostname+':'+process.env.PORT);
+ 	console.log('VAMPS-Node.js started on: '+CFG.hostname+':'+process.env.PORT);
 });

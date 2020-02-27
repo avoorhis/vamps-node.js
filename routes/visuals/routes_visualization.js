@@ -890,7 +890,7 @@ function get_new_order_by_button(order) {
 }
 
 function write_seq_file_async(req, res, selected_did) {
-  connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
+  DBConn.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
      (err, rows) => {
       mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did);
     });

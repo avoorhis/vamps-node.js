@@ -9,7 +9,7 @@ const queries = require('./queries');
 router.get('/index', helpers.isLoggedIn, (req, res) => {
     console.log('In Metagenome index.html')
     project_list=[]
-    connection.query(queries.get_metagenomic_projects_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_metagenomic_projects_query(), (err, rows, fields) => {
         let metagenomic_information_by_pid = {}  // local var for now
         for(n in rows){
             pid = rows[n].pid

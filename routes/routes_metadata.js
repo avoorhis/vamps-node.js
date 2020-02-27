@@ -6,7 +6,7 @@ const constants_metadata = require(app_root + '/public/constants_metadata');
 const constants = require(app_root + '/public/constants');
 const C       = Object.assign(constants, constants_metadata);
 const path    = require("path");
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 // const validator           = require('validator');
 // const expressValidator = require('express-validator');
 const nodeMailer           = require('nodemailer');
@@ -16,7 +16,7 @@ const User                 = require(app_root + '/models/user_model');
 const metadata_controller  = require(app_root + '/controllers/metadataController');
 const csv_files_controller = require(app_root + '/controllers/csvFilesController');
 const multer             = require('multer');
-let upload               = multer({dest: config.TMP, limits: {fileSize: config.UPLOAD_FILE_SIZE.bytes}});
+let upload               = multer({dest: CFG.TMP, limits: {fileSize: CFG.UPLOAD_FILE_SIZE.bytes}});
 const file_controller    = require(app_root + '/controllers/fileController');
 
 /* GET metadata page. */
@@ -25,7 +25,7 @@ router.get('/metadata', (req, res) => {
   res.render('metadata/metadata', {
     title: 'VAMPS:Metadata',
     user: req.user,
-    hostname: req.CONFIG.hostname
+    hostname: CFG.hostname
   });
 });
 
@@ -59,7 +59,7 @@ router.get('/metadata_list', helpers.isLoggedIn, (req, res) => {
   //console.log(mdata_w_latlon)
   res.render("metadata/metadata_list", {
     title: "VAMPS:Metadata List",
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
     metadata: C.AllMetadataNames,
     req_mdata_names: JSON.stringify(C.REQ_METADATA_FIELDS_wIDs),
     mdata_latlon: JSON.stringify(mdata_w_latlon),
@@ -91,7 +91,7 @@ router.get('/list_result/:mditem', helpers.isLoggedIn, (req, res) => {
   }
   res.render('metadata/list_result', {
     title: 'VAMPS:Metadata List Result',
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
     vals: JSON.stringify(mdvalues),
     names_by_did: JSON.stringify(C.DATASET_NAME_BY_DID),
     pid_by_did: JSON.stringify(C.PROJECT_ID_BY_DID),
@@ -113,10 +113,10 @@ router.get('/geomap/:item', helpers.isLoggedIn, (req, res) => {
   //console.log('metadata_info')
   res.render('metadata/geomap', {
     title: 'VAMPS:Metadata Distribution',
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
     md_item: md_item_show,
     mdinfo: JSON.stringify(metadata_info),
-    token: req.CONFIG.MAPBOX_TOKEN,
+    token: CFG.MAPBOX_TOKEN,
   });
 });
 
@@ -216,7 +216,7 @@ router.get('/metadata_new_csv_upload', helpers.isLoggedIn, (req, res) => {
   res.render('metadata/metadata_new_csv_upload', {
     title: 'VAMPS: New Metadata CSV Upload',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
     button_name: "Validate"
   });
 });
@@ -257,7 +257,7 @@ router.get('/metadata_new', helpers.isLoggedIn, (req, res) => {
   res.render('metadata/metadata_new', {
     title: 'VAMPS: New Metadata',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
     button_name: "Validate",
     domain_regions: C.DOMAIN_REGIONS,
     samples_number: "",
@@ -524,7 +524,7 @@ function make_metadata_object_from_csv(req, res) {// move to met_obj?
   // console.time("TIME: make_metadata_object_from_csv");
 
   let file_name       = req.body.edit_metadata_file;
-  let full_file_name  = path.join(config.USER_FILES_BASE, req.user.username, file_name);
+  let full_file_name  = path.join(CFG.USER_FILES_BASE, req.user.username, file_name);
   const csv_file_read = new csv_files_controller.CsvFileRead(req, res, full_file_name);
   let data_arr        = csv_file_read.data_arr;
   const transposed    = helpers.transpose_arr_of_obj(data_arr);
@@ -825,7 +825,7 @@ router.get('/metadata_file_list', (req, res) => {
   res.render('metadata/metadata_file_list', {
     title: 'VAMPS:Metadata',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
     finfo: JSON.stringify(user_metadata_csv_files),
     edit: true
   });
@@ -851,7 +851,7 @@ router.post('/metadata_files',
       res.render("metadata/metadata_file_list", {
         title: "VAMPS: Metadata File List",
         user: req.user,
-        hostname: req.CONFIG.hostname,
+        hostname: CFG.hostname,
         table_diff_html: table_diff_html,
         finfo: JSON.stringify(sorted_files),
         files_to_compare: files_to_compare,
@@ -874,7 +874,7 @@ router.post('/metadata_files',
 function send_mail_finished(req, res) {
   // console.time("TIME: send_mail_finished");
   console.log("EMAIL from send_mail_finished");
-  let transporter = nodeMailer.createTransport(config.smtp_connection_obj);
+  let transporter = nodeMailer.createTransport(CFG.smtp_connection_obj);
 
   let d            = new Date();
   let timeReadable = d.toDateString();
@@ -883,7 +883,7 @@ function send_mail_finished(req, res) {
   let text_msg = req.user.first_name + " " + req.user.last_name + " (" + req.user.email + ")" + " finished submitting available metadata to " + project_name + " on " + timeReadable + ".";
 
   let mailOptions = {
-    from: '"VAMPS2" <' + config.vamps_email + '>', // sender address
+    from: '"VAMPS2" <' + CFG.vamps_email + '>', // sender address
     // to: req.body.to, // list of receivers
     // subject: req.body.subject, // Subject line
     to: ["ashipunova@mbl.edu"],

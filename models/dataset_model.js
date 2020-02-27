@@ -205,30 +205,30 @@ class Dataset {
 
   getAllDatasets(callback) {
 
-    return connection.query("SELECT * FROM dataset", callback);
+    return DBConn.query("SELECT * FROM dataset", callback);
 
   }
 
   getDatasetByName(dataset_name, callback) {
 
-    return connection.query("SELECT * FROM dataset WHERE dataset = ?", [dataset_name], callback);
+    return DBConn.query("SELECT * FROM dataset WHERE dataset = ?", [dataset_name], callback);
   }
 
   getDatasetById(dataset_ids, callback) {
 
     var dataset_ids_str = "('" + dataset_ids.join("', '") + "')";
-    return connection.query("SELECT * FROM dataset WHERE dataset_id in ?", [dataset_ids_str], callback);
+    return DBConn.query("SELECT * FROM dataset WHERE dataset_id in ?", [dataset_ids_str], callback);
   }
 
   get_new_dataset_by_name(callback) {
     var dataset_names = "('" + this.DatasetInfo["dataset"].join("', '") + "')";
 
-    return connection.query("SELECT * FROM dataset WHERE dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
+    return DBConn.query("SELECT * FROM dataset WHERE dataset in " + dataset_names + "AND project_id = ?", [this.pid], callback);
   }
 
   addDataset(callback) {
     var query = this.make_query();
-    return connection.query(query, callback);
+    return DBConn.query(query, callback);
   }
 
 }

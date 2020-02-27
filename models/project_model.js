@@ -263,13 +263,13 @@ class Project {
 
   getAllProjects(callback) {
 
-    return connection.query("SELECT * FROM project", callback);
+    return DBConn.query("SELECT * FROM project", callback);
 
   }
 
   getProjectById(project_id, callback) {
 
-    return connection.query("SELECT * FROM project WHERE project_id = ?", [project_id], callback);
+    return DBConn.query("SELECT * FROM project WHERE project_id = ?", [project_id], callback);
   }
 
   add_info_to_project_globals(object_to_add, pid) {
@@ -290,7 +290,7 @@ class Project {
     console.log("IN: Project:addProject");
     console.log('PPP0 project_obj', project_obj);
 
-    return connection.query("INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, active) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [
+    return DBConn.query("INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public, metagenomic, matrix, active) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE project = VALUES(project), rev_project_name = VALUES(rev_project_name);", [
       project_obj.project,
       project_obj.title,
       project_obj.project_description,
@@ -308,17 +308,17 @@ class Project {
     // const query_getProjectByName = "SELECT * FROM project WHERE project = ?", [project_name];
     // const query_getProjectByName = "SELECT * FROM project WHERE project = 'DCO_BRZ_Av6'";
 
-    const query_getProjectByName = "SELECT * FROM project WHERE project = " + connection.escape(project_name);
+    const query_getProjectByName = "SELECT * FROM project WHERE project = " + DBConn.escape(project_name);
     console.log("FROM getProjectByName: query_getProjectByName", query_getProjectByName);
-    return connection.query(query_getProjectByName, callback);
+    return DBConn.query(query_getProjectByName, callback);
   }
 
   deleteProject(id, callback) {
-    return connection.query("DELETE FROM project WHERE project_id = ?", [id], callback);
+    return DBConn.query("DELETE FROM project WHERE project_id = ?", [id], callback);
   }
 
   updateProject(id, Project, callback) {
-    return connection.query("UPDATE project SET Title = ?, Status = ? WHERE project_id = ?", [Project.Title, Project.Status, id], callback);
+    return DBConn.query("UPDATE project SET Title = ?, Status = ? WHERE project_id = ?", [Project.Title, Project.Status, id], callback);
   }
 
   get_project_name_from_file_name(edit_metadata_file) {

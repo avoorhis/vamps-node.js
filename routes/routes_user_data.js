@@ -21,7 +21,7 @@ const spawn     = require('child_process').spawn;
 
 const helpers = require(app_root + '/routes/helpers/helpers');
 const queries = require(app_root + '/routes/queries');
-const config  = require(app_root + '/config/config');
+const CFG      = require(app_root + '/config/config');
 const C       = require(app_root + '/public/constants');
 const COMMON  = require(app_root + '/routes/visuals/routes_common');
 const META    = require('./visuals/routes_visuals_metadata');
@@ -31,7 +31,7 @@ const file_path_obj = new file_controller.FilePath();
 const global_vars_controller = require(app_root + '/controllers/globalVarsController');
 const global_vars = new global_vars_controller.GlobalVars();
 
-var upload = multer({ dest: config.TMP, limits: { fileSize: '4gb' }  });
+var upload = multer({ dest: CFG.TMP, limits: { fileSize: '4gb' }  });
 GLOBAL_EDIT_METADATA = {}
 var infile_fa = "infile.fna";
 
@@ -43,11 +43,11 @@ var infile_fa = "infile.fna";
 // this will allow adding to or deleteing these empty projects.
 // console.log(PROJECT_INFORMATION_BY_PNAME['seek'])
 function create_empty_project_directory(req) {
-  connection.query(queries.get_projects_queryUID(req.user.user_id), (err, rows) => {
+    DBConn.query(queries.get_projects_queryUID(req.user.user_id), (err, rows) => {
     for(let n in rows){
       // let pid = rows[n].project_id;
       let dir = file_controller.get_user_file_path(req, req.user.username, 'project-' + rows[n].project);
-      // path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + rows[n].project);
+      // path.join(CFG.USER_FILES_BASE, req.user.username, 'project-' + rows[n].project);
       if(!helpers.fileExists(dir)){
       // turned OFF
       helpers.mkdirSync(dir);
@@ -66,7 +66,7 @@ router.get('/your_data', helpers.isLoggedIn, function get_your_data(req, res) {
     res.render('user_data/your_data', {
       title: 'VAMPS:Data Administration',
       user: req.user,
-      hostname: req.CONFIG.hostname,
+      hostname: CFG.hostname,
         
     });
 });
@@ -88,7 +88,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function get_file_retrieval(re
     });
     //console.log(JSON.stringify(files))
     res.render('user_data/file_retrieval', { title: 'VAMPS:Retrieve Data',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
       finfo: JSON.stringify(files)
 
     });
@@ -168,7 +168,7 @@ router.post('/export_confirm', helpers.isLoggedIn, (req, res) => {
         selected_rank			: req.body.tax_depth,
         selected_domains		: JSON.stringify(req.body.domains),
         user: req.user,
-        hostname: req.CONFIG.hostname
+        hostname: CFG.hostname
       });
       return;
   }
@@ -176,7 +176,7 @@ router.post('/export_confirm', helpers.isLoggedIn, (req, res) => {
   let timestamp = +new Date();  // millisecs since the epoch!
   let user_file_base_path = file_path_obj.get_user_file_base_path(req);
   let user_dir = path.join(user_file_base_path, req.user.username);
-    // path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    // path.join(CFG.USER_FILES_BASE, req.user.username);
   helpers.mkdirSync(user_file_base_path); // create dir if not exists
   helpers.mkdirSync(user_dir);
 
@@ -208,7 +208,7 @@ router.post('/export_confirm', helpers.isLoggedIn, (req, res) => {
       selected_rank: req.body.tax_depth,
       selected_domains: JSON.stringify(req.body.domains),
       user: req.user,
-      hostname: req.CONFIG.hostname
+      hostname: CFG.hostname
     });
 });
 //
@@ -263,7 +263,7 @@ router.post('/export_selection', helpers.isLoggedIn, (req, res) => {
       selected_rank:'phylum', // initial condition
       selected_domains:JSON.stringify(C.DOMAINS.domains), // initial condition
       user: req.user,
-      hostname: req.CONFIG.hostname
+      hostname: CFG.hostname
     });
   }
 });
@@ -318,7 +318,7 @@ router.get('/import_choices/add_metadata_to_pr', helpers.isLoggedIn, (req, res) 
       illumina_index : JSON.stringify(C.MD_ILLUMINA_INDEX),
       req_md_fields : JSON.stringify(C.REQ_METADATA_FIELDS),
       user: req.user,
-      hostname: req.CONFIG.hostname
+      hostname: CFG.hostname
     });
 });
 
@@ -486,7 +486,7 @@ router.post('/save_metadata', helpers.isLoggedIn, (req, res) => {
         q = q.substring(0,q.length-1)
         q += " where dataset_id='"+did+"'"
         //console.log(q)
-        connection.query(q, function update_req_metadata(err, rows, fields) {
+        DBConn.query(q, function update_req_metadata(err, rows, fields) {
            if (err) {
              console.log('ERROR-in req metadata update: '+err);
            } else {
@@ -586,11 +586,11 @@ function save_cust_metadata(pid, mdname, data){
 router.get('/import_choices', helpers.isLoggedIn, (req, res) => {
   console.log('in import_choices');
   var project = req.query.project || '' // url should always be like: /user_data/import_choices?project=andy003
-  // if(req.user.security_level > 1 && req.CONFIG.hostname == 'bpcweb8'){
+  // if(req.user.security_level > 1 && CFG.hostname == 'bpcweb8'){
 //       req.flash('fail','Not coded yet')
 //       res.render('user_data/your_data', {
 //         title: 'VAMPS:Data Administration',
-//         user: req.user, hostname: req.CONFIG.hostname,
+//         user: req.user, hostname: CFG.hostname,
 //
 //       });
 //       return;
@@ -602,7 +602,7 @@ router.get('/import_choices', helpers.isLoggedIn, (req, res) => {
       res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: project,
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
           });
   }
 });
@@ -615,7 +615,7 @@ router.get('/import_choices/fasta', [helpers.isLoggedIn], (req, res) => {
       title: 'VAMPS:Import Data:fasta',
       def_name:default_project_name,
       user: req.user,
-      hostname: req.CONFIG.hostname
+      hostname: CFG.hostname
     });
           
 });
@@ -626,7 +626,7 @@ router.get('/import_choices/matrix', [helpers.isLoggedIn], (req, res) => {
     res.render('user_data/import_choices/matrix', {
           title: 'VAMPS:Import Data:matrix',
           def_name:default_project_name,
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
     });
           
 });
@@ -637,14 +637,14 @@ router.get('/import_choices/biom', [helpers.isLoggedIn], (req, res) => {
     res.render('user_data/import_choices/biom', {
           title: 'VAMPS:Import Data:Biom',
           def_name:default_project_name,
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
     });
           
 });
 router.get('/import_choices/lzt_list', (req, res) => {
     var list = {}
     q = "SELECT term_name, definition from term where ontology_id='3' order by term_name"
-    connection.query(q, function update_req_metadata(err, rows, fields) {
+    DBConn.query(q, function update_req_metadata(err, rows, fields) {
            if (err) {
              console.log(err);return;
            } else {
@@ -661,7 +661,7 @@ router.get('/import_choices/lzt_list', (req, res) => {
 router.get('/import_choices/country_list', (req, res) => {
     var list = {}
     q = "SELECT term_name from term where ontology_id='4' order by term_name"
-    connection.query(q, function update_req_metadata(err, rows, fields) {
+    DBConn.query(q, function update_req_metadata(err, rows, fields) {
            if (err) {
              console.log(err);return;
            } else {             
@@ -693,7 +693,7 @@ router.get('/import_choices/metadata', [helpers.isLoggedIn], (req, res) => {
           title: 'VAMPS:Import Data:metadata',
           ENV : JSON.stringify(C.MD_ENV_PACKAGE),
           pjs  : JSON.stringify(my_projects),
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
     });
           
 });
@@ -717,7 +717,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], (req, res
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: '',
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
         });
         
     }
@@ -735,7 +735,7 @@ router.post('/upload_import_file', [helpers.isLoggedIn, upload.any()], (req, res
     info.public = 1 
     info.dataset = {}
     // TODO: let user_file_base_path = file_path_obj.get_user_file_base_path(req);
-    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+info.project_name);
+    info.project_dir = path.join(CFG.USER_FILES_BASE, req.user.username,'project-'+info.project_name);
     
     var new_info_filename_path = path.join(info.project_dir, C.CONFIG_FILE);
     var analysis_dir = path.join(info.project_dir, 'analysis')
@@ -820,7 +820,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], (req,
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: '',
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
         });
         
     }
@@ -834,7 +834,7 @@ router.post('/upload_metadata_fileAV', [helpers.isLoggedIn, upload.any()], (req,
 
   //TODO: let user_file_base_path = file_path_obj.get_user_file_base_path(req);
 
-  info.metadata_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
+  info.metadata_dir = path.join(CFG.USER_FILES_BASE, req.user.username,'project_metadata-'+info.project_name + '_'+ timestamp);
     
     var new_info_filename_path = path.join(info.metadata_dir, C.CONFIG_FILE);
     
@@ -1100,8 +1100,8 @@ function upload_finish(req, res, file_type, info, new_file_path){
   console.log('in upload_finish()')
   if(file_type == 'metadata'){
     console.log('in upload_finish:metadata')
-    var load_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_load_metadata.py')
-    var load_params = ['-host',req.CONFIG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
+    var load_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'vamps_script_load_metadata.py')
+    var load_params = ['-host',CFG.dbhost,'-pid',info.pid,'-f',new_file_path,'-g']
     load_cmd = load_cmd + ' ' + load_params.join(' ')
 
     var cmd_list = [] //matrixTax(req, info)
@@ -1144,7 +1144,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
           // res.render('user_data/import_choices', {
 // 					        title: 'VAMPS:Import Choices',
 // 					        def_name:'',
-// 					        user: req.user, hostname: req.CONFIG.hostname
+// 					        user: req.user, hostname: CFG.hostname
 // 					    });
           //return
         }
@@ -1154,7 +1154,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
     req.flash('success', 'Metadata Load' + " has been started for project: '" + info.project_name + "'");
     res.redirect('/')
   }else if(file_type == 'matrix'){
-    var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
+    var parse_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
     var parse_params = ['-t','matrix','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
     parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
 
@@ -1204,7 +1204,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
           res.render('user_data/import_choices/matrix', {
             title: 'VAMPS:Import Choices',
             def_name:'',
-            user: req.user, hostname: req.CONFIG.hostname
+            user: req.user, hostname: CFG.hostname
           });
           return
         }
@@ -1214,11 +1214,11 @@ function upload_finish(req, res, file_type, info, new_file_path){
 
   }else if(file_type == 'fasta'){
 
-    var parse_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
+    var parse_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'vamps_script_parse.py')
     var parse_params = ['-t','fasta','-d',info.project_dir,'-p',info.project_name,'-u',info.owner,'-f',new_file_path]
     parse_cmd = parse_cmd + ' ' + parse_params.join(' ')
-    var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
-    var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
+    var demultiplex_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
+    var fastaunique_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'fastaunique')
     var demultiplex_params = ['-i',new_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
     //console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
     demultiplex_cmd = demultiplex_cmd + ' ' + demultiplex_params.join(' ')
@@ -1267,7 +1267,7 @@ function upload_finish(req, res, file_type, info, new_file_path){
           res.render('user_data/import_choices/fasta', {
             title: 'VAMPS:Import Choices',
             def_name:'',
-            user: req.user, hostname: req.CONFIG.hostname
+            user: req.user, hostname: CFG.hostname
           });
           return
         }
@@ -1297,7 +1297,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
         res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           project: '',
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
         });
         
     }
@@ -1316,7 +1316,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
     info.public = 1 
     info.dataset = {}
     // TODO:  use file_path_obj;
-    info.project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project);
+    info.project_dir = path.join(CFG.USER_FILES_BASE, req.user.username,'project-'+project);
     var new_info_filename_path = path.join(info.project_dir, C.CONFIG_FILE)
     var analysis_dir = path.join(info.project_dir, 'analysis')
     if(file_type == 'fasta'){
@@ -1459,7 +1459,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
                         res.render('user_data/import_choices/matrix', {
 					        title: 'VAMPS:Import Choices',
 					        def_name:'',
-					        user: req.user, hostname: req.CONFIG.hostname
+					        user: req.user, hostname: CFG.hostname
 					    });
 					    return
                       }
@@ -1509,12 +1509,12 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
                 }
             }
               // TODO:  use file_path_obj;
-              var demultiplex_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
-            var fastaunique_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS,'fastaunique')
+              var demultiplex_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'demultiplex.py')
+            var fastaunique_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS,'fastaunique')
             var demultiplex_params = ['-i',new_file_path,'-d',info.project_dir,'-f',fastaunique_cmd]
             console.log(demultiplex_cmd + ' ' + demultiplex_params.join(' '))
             var proc = spawn(demultiplex_cmd, demultiplex_params, {
-                    env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                    env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     detached: true, stdio: 'pipe'
             });
             var output = '';
@@ -1569,7 +1569,7 @@ router.post('/upload_import_fileX', [helpers.isLoggedIn, upload.any()], (req, re
 					res.render('user_data/import_choices/fasta', {
 					  title: 'VAMPS:Import Choices',
 					  def_name:'',
-					  user: req.user, hostname: req.CONFIG.hostname
+					  user: req.user, hostname: CFG.hostname
 					});
 					return
 				}); 
@@ -1591,7 +1591,7 @@ router.get('/upload_configuration', [helpers.isLoggedIn], (req, res) => {
   res.render('user_data/import_choices/config_file', {
             title:       'Configuration File',
             user:        req.user,
-            hostname:    req.CONFIG.hostname,
+            hostname:    CFG.hostname,
             //pinfo:       JSON.stringify(user_project_info),
             //project: project,
             //import_type: import_type,
@@ -1610,7 +1610,7 @@ router.post('/upload_file', [helpers.isLoggedIn, upload.any()], (req, res) => {
     var originalFileName = req.files[0].originalname
     var new_file_name = req.body.username+'_'+timestamp+'_'+originalFileName
   // TODO:  use file_path_obj;
-  var new_file_path = path.join(req.CONFIG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
+  var new_file_path = path.join(CFG.PATH_TO_USER_DATA_UPLOADS, new_file_name)
     console.log('new_file_path: '+new_file_path)
     fs.move(originalFilePath, new_file_path, function moveDataDir(err) {
             if (err) {
@@ -1644,7 +1644,7 @@ router.post('/import_choices/re_create_from_file', [helpers.isLoggedIn, upload.s
       new_filename = 'configuration-'+timestamp+'.json'
     }
   // TODO:  use file_path_obj;
-  new_filename_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, new_filename)
+  new_filename_path = path.join(CFG.USER_FILES_BASE, req.user.username, new_filename)
     console.log(new_filename_path)
     fs.move(req.file.path, new_filename_path, err => {
       if (err) return console.error(err)
@@ -1673,7 +1673,7 @@ router.get('/validate_format', helpers.isLoggedIn, (req, res) => {
     file_style:'',
     result:'',
     original_fname:'',
-    user: req.user, hostname: req.CONFIG.hostname
+    user: req.user, hostname: CFG.hostname
   });
 });
 //
@@ -1689,18 +1689,18 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     var file_type    = req.body.file_type;
     var file_style   = req.body.file_style;
   // TODO:  use file_path_obj;
-  var file_path = path.join(req.CONFIG.PROCESS_DIR, req.file.path);
+  var file_path = path.join(CFG.PROCESS_DIR, req.file.path);
     console.log('file_path '+ file_path);
 
-    var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                  args : [ '-i', file_path, '-ft', file_type, '-s', file_style, '-process_dir', req.CONFIG.PROCESS_DIR, ]
+    var options = { scriptPath : CFG.PATH_TO_NODE_SCRIPTS,
+                  args : [ '-i', file_path, '-ft', file_type, '-s', file_style, '-process_dir', CFG.PROCESS_DIR, ]
               };
 
     console.log(options.scriptPath + '/vamps_script_validate.py '+options.args.join(' '));
 
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'validate.log'), 'a');
+    var log = fs.openSync(path.join(CFG.PROCESS_DIR, 'logs', 'validate.log'), 'a');
     var validate_process = spawn( options.scriptPath + '/vamps_script_validate.py', options.args, {
-                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                        env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                         detached: true, stdio: 'pipe'
                     });  // stdin, stdout, stderr
     var output = '';
@@ -1735,7 +1735,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
                result_ary:    ary,
                original_fname: req.file.originalname,
                result : result,
-               user: req.user, hostname: req.CONFIG.hostname
+               user: req.user, hostname: CFG.hostname
              });
 
         } else {
@@ -1744,7 +1744,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
           res.render('user_data/validate_format', {
               title: 'VAMPS:Import Data',
               file_type: file_type,
-              user: req.user, hostname: req.CONFIG.hostname
+              user: req.user, hostname: CFG.hostname
                           });
         }
 
@@ -1760,7 +1760,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, (req, res) => {
   console.log(req.params.id);
   var project = req.params.id;
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
+  var config_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
 
   var cfg_data = ini.parse(fs.readFileSync(config_file, 'utf-8'));
   
@@ -1768,7 +1768,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, (req, res) => {
       project : project,
       pinfo   : JSON.stringify(cfg_data),
       title   : project,
-      user: req.user, hostname: req.CONFIG.hostname
+      user: req.user, hostname: CFG.hostname
          });
 });
 
@@ -1783,7 +1783,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
   console.log(req.params.id);
   var project = req.params.id;
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
+  var config_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
 
   stats = fs.statSync(config_file);
   if (stats.isFile()) {
@@ -1795,7 +1795,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
   }
   // TODO:  use file_path_obj;
 
-  var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
+  var metadata_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
 
   var parser = parse({delimiter: '\t'}, function createParserPipe(err, data) {
       json_data = {};
@@ -1806,7 +1806,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
         pinfo   : JSON.stringify(cfg_data),
         mdata   : data,
         title   : project,
-        user: req.user, hostname: req.CONFIG.hostname
+        user: req.user, hostname: CFG.hostname
       });
   });
 
@@ -1825,7 +1825,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, (req, res) => {
       pinfo   : JSON.stringify(cfg_data),
       mdata   : [],
       title   : project,
-      user: req.user, hostname: req.CONFIG.hostname
+      user: req.user, hostname: CFG.hostname
     });
   }
 
@@ -1839,8 +1839,8 @@ router.get('/user_project_validation/:id', helpers.isLoggedIn, (req, res) => {
         // check config variables
         // grep Traceback project-*/cluster.log
   // TODO:  use file_path_obj;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
-        var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
+  var config_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, C.CONFIG_FILE);
+        var metadata_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
 
         stats = fs.statSync(config_file);
         if (stats.isFile()) {
@@ -1874,8 +1874,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
 
   // TODO:  use file_path_obj;
   var options = {
-        scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-pid', pid, '-site', req.CONFIG.site, '--user', req.user.username, '--project', project, '-data_dir',req.CONFIG.USER_FILES_BASE,'--jsonfile_dir', req.CONFIG.JSON_FILES_BASE ],
+        scriptPath : CFG.PATH_TO_NODE_SCRIPTS,
+        args :       [ '-pid', pid, '-site', CFG.site, '--user', req.user.username, '--project', project, '-data_dir',CFG.USER_FILES_BASE,'--jsonfile_dir', CFG.JSON_FILES_BASE ],
         };
     if (delete_kind == 'all') {
       // must delete pid data from mysql ()
@@ -1895,9 +1895,9 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
       return;
     }
   // TODO:  use file_path_obj;
-  var delete_cmd = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, 'vamps_script_utils.py') + ' ' + options.args.join(' ')
+  var delete_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS, 'vamps_script_utils.py') + ' ' + options.args.join(' ')
     console.log(delete_cmd)
-    var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'delete.log'), 'a');
+    var log = fs.openSync(path.join(CFG.PROCESS_DIR, 'logs', 'delete.log'), 'a');
 
 
       // called imediately
@@ -1923,13 +1923,13 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
       } else if (delete_kind == 'all') {
         // TODO:  use file_path_obj;
         // MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
-          var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
-          var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_project'+timestamp+'-'+project);
+          var data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project);
+          var deleted_data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'DELETED_project'+timestamp+'-'+project);
 			
 		  fs.remove(data_dir, err => {
 			if(err){ 
 				console.log(err); 
-				data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'DELETED_'+project);
+				data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'DELETED_'+project);
 				fs.rmdir(data_dir, err2 => {
 					console.log(err2); 
 				})
@@ -1953,8 +1953,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, (req, res) => {
 router.get('/duplicate_project/:project', helpers.isLoggedIn, (req, res) => {
    var project = req.params.project;
   // TODO:  use file_path_obj;
-  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
-   var new_data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project+'_dupe');
+  var data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project);
+   var new_data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project+'_dupe');
 
 
    try{
@@ -2001,13 +2001,13 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn, (req, res) => {
 router.get('/assign_taxonomy/:project/', helpers.isLoggedIn, (req, res) => {
     var project = req.params.project;
   // TODO:  use file_path_obj;
-  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
+  var data_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project);
     var config_file = path.join(data_dir, C.CONFIG_FILE);
     res.render('user_data/assign_taxonomy', {
       project : project,
       title   : project,
       tax_choices : JSON.stringify(C.UNIT_ASSIGNMENT_CHOICES),
-      user: req.user, hostname: req.CONFIG.hostname
+      user: req.user, hostname: CFG.hostname
      });
 
 });
@@ -2040,7 +2040,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
   console.log('start: Project: ' + project + ' - Classifier: ' + classifier + ' - RefDatabase: ' + ref_db);
   var status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   // TODO:  use file_path_obj;
-  var data_dir  = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  var data_dir  = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var config_file = path.join(data_dir, C.CONFIG_FILE);
   try
   {
@@ -2162,7 +2162,7 @@ function checkPid(check_pid_options, last_line)
   status_params = check_pid_options[1];
   res           = check_pid_options[2];
   ref_db    = check_pid_options[3];
-  // if(config.hostname.substring(0,7) != 'bpcweb8'){
+  // if(CFG.hostname.substring(0,7) != 'bpcweb8'){
 //       console.log(' classifier CLCLCL: ' + classifier);
 //       console.log(' last_line CLCLCL: ' + last_line);
 //       console.log("status_params from checkPid: ");
@@ -2178,7 +2178,7 @@ function checkPid(check_pid_options, last_line)
   if (Number.isInteger(pid))
   {
 
-    connection.query(queries.get_select_datasets_queryPID(pid), (err, rows1, fields) => {
+      DBConn.query(queries.get_select_datasets_queryPID(pid), (err, rows1, fields) => {
       if (err)
       {
         console.log('1-GAST/RDP-Query error: ' + err);
@@ -2186,7 +2186,7 @@ function checkPid(check_pid_options, last_line)
       else
       {
 
-        connection.query(queries.get_select_seq_count_queryPID(pid), (err, rows2, fields) => {
+          DBConn.query(queries.get_select_seq_count_queryPID(pid), (err, rows2, fields) => {
         if (err)
         {
           console.log('2-GAST/RDP-Query error: ' + err);
@@ -2218,12 +2218,12 @@ function checkPid(check_pid_options, last_line)
 function matrixTax(req, info)
 {
   // TODO:  use file_path_obj;
-  var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+  var script_path = CFG.PATH_TO_NODE_SCRIPTS;
     var units = 'matrix'
     var new_file_path = path.join(info.project_dir, 'original_matrix.csv')
-    var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',req.CONFIG.hostname,'-p',info.project_name,'-u',req.user.username]    
-    //var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
+    var cmd1_opts = [ '-i',new_file_path,'-d',info.project_dir,'-host',CFG.hostname,'-p',info.project_name,'-u',req.user.username]    
+    //var cmd2_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',CFG.site,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',info.project_dir,'-p',info.project_name,'-site',CFG.site,'-units',units,'--jsonfile_dir',CFG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     var matrix_cmd1 = script_path + '/vamps_script_matrix_loader.py'                + ' '+cmd1_opts.join(' ')
     //var matrix_cmd2 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd2_opts.join(' ')
     //var matrix_cmd3 = script_path + '/vamps_script_create_json_dataset_files.py'    + ' '+cmd3_opts.join(' ')
@@ -2243,14 +2243,14 @@ function rdpTax(req, project_config, ref_db)
       gene = 'fungalits_unite';
     }
   // TODO:  use file_path_obj;
-  var path2classifier = path.join(req.CONFIG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
-    var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+  var path2classifier = path.join(CFG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
+    var script_path = CFG.PATH_TO_NODE_SCRIPTS;
     var units = 'rdp'
     var classifier = 'RDP'
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',C.CONFIG_FILE]
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
-    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',C.CONFIG_FILE]
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'--config',C.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-units',units,'--jsonfile_dir',CFG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     
     var rdp_cmd1 = script_path + '/vamps_script_rdp_run.py'                         + ' '+cmd1_opts.join(' ')
     var rdp_cmd2 = script_path + '/vamps_script_database_loader.py'                 + ' '+cmd2_opts.join(' ')
@@ -2266,19 +2266,19 @@ function spingoTax(req, project_config, ref_db)
 {
     var project  = project_config.MAIN.project_name;
     var data_dir = project_config.MAIN.project_dir;
-    var ref_db_path = path.join(req.CONFIG.PATH_TO_SPINGO+'database',ref_db+'.full_taxa.fa')
+    var ref_db_path = path.join(CFG.PATH_TO_SPINGO+'database',ref_db+'.full_taxa.fa')
     console.log('ref_db_path')
     console.log(ref_db_path)
   // TODO:  use file_path_obj;
-  var path2spingo = path.join(req.CONFIG.PATH_TO_SPINGO,'spingo')
-    var script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+  var path2spingo = path.join(CFG.PATH_TO_SPINGO,'spingo')
+    var script_path = CFG.PATH_TO_NODE_SCRIPTS;
     var units = 'generic'
     var classifier = 'SPINGO'
     
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-path_to_spingo',path2spingo,'--config',C.CONFIG_FILE,'-db',ref_db_path]
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',req.CONFIG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
-    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'--config',C.CONFIG_FILE ]
-    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',req.CONFIG.site,'-units',units,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-path_to_spingo',path2spingo,'--config',C.CONFIG_FILE,'-db',ref_db_path]
+    var cmd2_opts = [ '-project_dir',data_dir,'-site',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'--config',C.CONFIG_FILE ]
+    //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-units',units,'--jsonfile_dir',CFG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     var spingo_cmd1 = script_path + '/vamps_script_spingo_run.py'                   + ' '+cmd1_opts.join(' ')
     var spingo_cmd2 = script_path + '/vamps_script_database_loader.py'              + ' '+cmd2_opts.join(' ')
     //var spingo_cmd3 = script_path + '/vamps_script_upload_metadata.py'              + ' '+cmd3_opts.join(' ')
@@ -2304,8 +2304,8 @@ function gastTaxOpts(req, project_config, ref_db){
 	//opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
 	opts.ref_db_name      = req.params.ref_db
 	opts.full_option      = getFullOption(req.params.ref_db);
-	opts.gast_db_path     = config.GAST_DB_PATH;
-	opts.gast_script_path = config.GAST_SCRIPT_PATH;
+	opts.gast_db_path     = CFG.GAST_DB_PATH;
+	opts.gast_script_path = CFG.GAST_SCRIPT_PATH;
 	return opts
 }
 function gastTax(req, project_config, ref_db)
@@ -2324,8 +2324,8 @@ function gastTax(req, project_config, ref_db)
   //opts.ref_db_name      = chooseRefFile(req.params.classifier);  //req.body.classifier
   opts.ref_db_name      = req.params.ref_db
   opts.full_option      = getFullOption(req.params.ref_db);
-  opts.gast_db_path     = config.GAST_DB_PATH;
-  opts.gast_script_path = config.GAST_SCRIPT_PATH;
+  opts.gast_db_path     = CFG.GAST_DB_PATH;
+  opts.gast_script_path = CFG.GAST_SCRIPT_PATH;
   
   console.log('gast_db_path: ' + opts.gast_db_path); 
   console.log('gast_script_path: ' + opts.gast_script_path); 
@@ -2370,14 +2370,14 @@ function gastTax(req, project_config, ref_db)
   // for tests: is_local = false;
   // TODO:  use file_path_obj;
   var new_info_filename_path = path.join(data_dir, C.CONFIG_FILE)
-  var database_loader_args = ['-site',req.CONFIG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
-  var database_loader = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
+  var database_loader_args = ['-site',CFG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
+  var database_loader = CFG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
   
   //var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"
-  //var metadata_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
-  //var metadata_loader   = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+scriptlog
-  //var create_json_files_args = ['-site',req.CONFIG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',req.CONFIG.JSON_FILES_BASE]
-  //var create_json_files = req.CONFIG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+scriptlog
+  //var metadata_args = ['-site',CFG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path]
+  //var metadata_loader   = CFG.PATH_TO_NODE_SCRIPTS+'/vamps_script_upload_metadata.py' +' '+metadata_args.join(' ') +' >> '+scriptlog
+  //var create_json_files_args = ['-site',CFG.site,'-project_dir',data_dir,'-p',project,'-config',new_info_filename_path,'--jsonfile_dir',CFG.JSON_FILES_BASE]
+  //var create_json_files = CFG.PATH_TO_NODE_SCRIPTS+'/vamps_script_create_json_dataset_files.py' +' '+create_json_files_args.join(' ') +' >> '+scriptlog
 
   var status_params = {'type': 'New', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   status_params.statusOK      = 'OK-GAST';
@@ -2462,7 +2462,7 @@ function getFastaExtensions(data_dir)
 //
 router.get('/your_projects', helpers.isLoggedIn, (req, res) => {
   // TODO:  use file_path_obj;
-    var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+    var user_projects_base_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
    // AAV must find and list projects that 
    //   1) have no directory (DB only)
    //   2) have no presence in PROJECT_INFORMATION_BY_PID
@@ -2592,7 +2592,7 @@ router.get('/your_projects', helpers.isLoggedIn, (req, res) => {
             pinfo: JSON.stringify(project_info),
             pnames: pnames,
             //env_sources :   JSON.stringify(MD_ENV_PACKAGE),
-            user: req.user, hostname: req.CONFIG.hostname
+            user: req.user, hostname: CFG.hostname
         });
 
     });  // readdir
@@ -2606,7 +2606,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, (req, res) => {
   //console.log(PROJECT_INFORMATION_BY_PID)
   var project_name = req.params.project;
   // TODO:  use file_path_obj;
-  var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var user_projects_base_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
 
   var config_file = path.join(user_projects_base_dir, 'project-'+project_name, C.CONFIG_FILE);
 
@@ -2667,7 +2667,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, (req, res) => {
         title       : 'Edit Project',
         project     : project_name,
         pinfo       : JSON.stringify(project_info),
-        user: req.user, hostname: req.CONFIG.hostname,
+        user: req.user, hostname: CFG.hostname,
     });
 });
 
@@ -2704,8 +2704,8 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
       p_sql += " public='1'\n";
     }
     p_sql += " WHERE project_id='"+req.body.project_pid+"' ";
-    
-    connection.query(p_sql, function mysqlUpdateProject(err, rows, fields) {
+
+      DBConn.query(p_sql, function mysqlUpdateProject(err, rows, fields) {
        if (err) {
          console.log('ERROR-in project update: '+err);
        } else {
@@ -2744,7 +2744,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
           d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' ";
           d_sql += " AND project_id='"+req.body.project_pid+"' ";
           // TODO: Don't make functions within a loop.
-          connection.query(d_sql, function mysqlUpdateDataset(err, rows, fields) {
+          DBConn.query(d_sql, function mysqlUpdateDataset(err, rows, fields) {
             if (err) {
               console.log('ERROR - in dataset update: '+err);
             } else {
@@ -2785,7 +2785,7 @@ router.post('/edit_project', helpers.isLoggedIn, (req, res) => {
   var project_info = {};
   var project_name = req.body.old_project_name;
   // TODO:  use file_path_obj;
-  var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var user_projects_base_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
 
   var project_dir = path.join(user_projects_base_dir, 'project-'+project_name);
   var config_file = path.join(project_dir, C.CONFIG_FILE);
@@ -2924,7 +2924,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   var project = req.body.project_name;
   var file_format = req.body.metadata_file_format;
   // TODO:  use file_path_obj;
-  var original_metafile = path.join(req.CONFIG.PROCESS_DIR, req.file.path);
+  var original_metafile = path.join(CFG.PROCESS_DIR, req.file.path);
   var username = req.user.username;
   console.log('1-req.body upload_metadata');
   console.log(req.body);
@@ -2939,10 +2939,10 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 
   var timestamp = +new Date();  // millisecs since the epoch!
   // TODO:  use file_path_obj;
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
+  var data_repository = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
-  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                  args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',req.CONFIG.PROCESS_DIR]
+  var options = { scriptPath : CFG.PATH_TO_NODE_SCRIPTS,
+                  args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',CFG.PROCESS_DIR]
               };
           if(has_tax){
             options.args = options.args.concat(['--has_tax']);
@@ -2950,9 +2950,9 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
           console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
 
   // TODO:  use file_path_obj;
-          var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR,'logs','upload.log'), 'a');
+          var log = fs.openSync(path.join(CFG.PROCESS_DIR,'logs','upload.log'), 'a');
           var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {
-                                        env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+                                        env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                                         detached: true, stdio: 'pipe'
                                     });  // stdin, stdout, stderr
           var output = '';
@@ -2983,11 +2983,11 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
                   console.log("PROJECT_INFORMATION_BY_PNAME[project]: ");
                   console.log(C.PROJECT_INFORMATION_BY_PNAME[project]);
                   pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid;
-                  connection.query(queries.get_select_datasets_queryPID(pid), function mysqlGetDatasetsByPID(err, rows1, fields){
+                    DBConn.query(queries.get_select_datasets_queryPID(pid), function mysqlGetDatasetsByPID(err, rows1, fields){
                     if (err)  {
                       console.log('1-Upload METADATA-Query error: ' + err);                   
                     } else {
-                          connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
+                        DBConn.query(queries.get_select_seq_count_queryPID(pid), function mysqlGetSeqsByPID(err, rows2, fields){
                             if (err)  {
                               console.log('2-Upload METADATA-Query error: ' + err);                   
                             } else {
@@ -3172,7 +3172,7 @@ var LoadDataFinishRequest = (req, res, project, display) => {
   // type, user, project, status, msg
   res.render('success', {  title   : 'VAMPS: Import Success',
                             display : display,
-                            user    : req.user, hostname: req.CONFIG.hostname
+                            user    : req.user, hostname: CFG.hostname
   });
 };
 
@@ -3183,7 +3183,7 @@ function OriginalMetafileUpload(req, options)
   var original_metafile  = '';
   try {
     // TODO:  use file_path_obj;
-    original_metafile   = path.join(req.CONFIG.TMP, req.files[1].filename);
+    original_metafile   = path.join(CFG.TMP, req.files[1].filename);
     options.args        = options.args.concat(['-mdfile', original_metafile ]);
     metadata_compressed = IsFileCompressed(req.files[1]);
 
@@ -3231,7 +3231,7 @@ function CreateUploadOptions(req, res, project)
   console.log(req.files);
   console.log('2-req.body upload_data');
   // TODO:  use file_path_obj;
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  var data_repository = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-' + project);
   // console.log("data_repository DDD: " + data_repository);
 
   const fs_old   = require('fs');
@@ -3246,10 +3246,10 @@ function CreateUploadOptions(req, res, project)
   helpers.update_status(status_params);
 
   // TODO:  use file_path_obj;
-  var original_fastafile = path.join(req.CONFIG.TMP, req.files[0].filename);
+  var original_fastafile = path.join(CFG.TMP, req.files[0].filename);
 
-  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-              args : [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site, '-infile', original_fastafile]
+  var options = { scriptPath : CFG.PATH_TO_NODE_SCRIPTS,
+              args : [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', CFG.site, '-infile', original_fastafile]
           };
 
   fasta_compressed = IsFileCompressed(req.files[0]);
@@ -3273,15 +3273,15 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = infile_fa;
-      var demultiplex_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS, '/vamps_script_demultiplex.sh') + ' ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
 
   // todo: provied ".fa" fo single and ".fna" for multi
-  // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-  //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
-  //var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + req.CONFIG.PATH + ' ' + data_repository;
-  var fnaunique_cmd = path.join(config.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + data_repository;
+  // var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + CFG.PATH + " " + data_repository;
+  //var fnaunique_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + CFG.PATH + ' ' + data_repository;
+  //var fnaunique_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + CFG.PATH + ' ' + data_repository;
+  var fnaunique_cmd = path.join(CFG.PATH_TO_NODE_SCRIPTS, '/vamps_script_fnaunique.sh') + ' ' + data_repository;
   //console.log("LLL1 options.scriptPath: " + options.scriptPath);
   //console.log("LLL2 fnaunique_cmd: " + fnaunique_cmd);
   
@@ -3367,7 +3367,7 @@ function editUploadData(req, res)
     import_type:  req.body.type,
     user:         req.user,
     form_data:    req.form,
-    hostname:     req.CONFIG.hostname
+    hostname:     CFG.hostname
   });
 }
 
@@ -3404,7 +3404,7 @@ function successCode(successCode_options, last_line)
 function failedCode(req, res, data_repository, project, last_line)
 {
   // TODO:  use file_path_obj;
-  fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project),
+  fs.move(data_repository, path.join(CFG.USER_FILES_BASE, req.user.username, 'FAILED-project-' + project),
   function failureHandle(err) {
    if (err) { 
      console.log("err 6: ");  
@@ -3421,7 +3421,7 @@ function failedCode(req, res, data_repository, project, last_line)
        var redirect_url = path.join('/user_data', req.url);
        res.render(redirect_url, {
          user: req.user,
-         hostname: req.CONFIG.hostname,
+         hostname: CFG.hostname,
        });
        
        // res.redirect(redirect_url);  // for now we'll send errors to the browser
@@ -3438,12 +3438,12 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
 
   const exec = require('child_process').exec;
   // TODO:  use file_path_obj;
-  var opts = {env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH} }
+  var opts = {env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH} }
   var child = exec(script_path, opts);
-  //var scriptlog1 = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,'project-'+project, 'matrix_log1.txt');
+  //var scriptlog1 = path.join(CFG.USER_FILES_BASE, req.user.username,'project-'+project, 'matrix_log1.txt');
   
   // var child = spawn(script_path, [], {
-//                             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//                             env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
 //                             detached: true, stdio: 'pipe'
 //                         });
   var output = '';
@@ -3475,7 +3475,7 @@ function RunAndCheck(script_path, nodelog, req, project, res, callback_function,
      else // code != 0
      {
        console.log('FAILED',script_path)
-       //failedCode(req, res, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
+       //failedCode(req, res, path.join(CFG.USER_FILES_BASE, req.user.username, 'project-' + project), project, last_line);
      }
   });
 
@@ -3553,7 +3553,7 @@ function validate_metadata(req, res, options)
   var import_type = url_parts.pathname.split("/").slice(-1)[0];
   var project = req.body.project
   
-  //var metadata_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
+  //var metadata_file = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+project, 'metadata_clean.csv');
   mdata = []
   html_json = {} 
   html_json.error = false
@@ -3605,7 +3605,7 @@ function validate_metadata(req, res, options)
           res.render(path.join('user_data',url_parts.pathname), {
                   title:       'Import DataX',
                   user:        req.user,
-                  hostname:    req.CONFIG.hostname,
+                  hostname:    CFG.hostname,
                   pinfo:       JSON.stringify({}),
                   project:      '',
                   html_json:    JSON.stringify(html_json),
@@ -3694,7 +3694,7 @@ router.get('/add_project', [helpers.isLoggedIn], (req, res) => {
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
   });
 });
 
@@ -3721,11 +3721,11 @@ function saveToDb(req, res){
           owner_user_id = content.user_id;
           let new_privacy = 1;
           new_privacy = getPrivacyCode(req.form.new_privacy);
-          //TODO wrire a test for connection insert 1 vs. 0 for privacy
+          //TODO wrire a test for DBConn insert 1 vs. 0 for privacy
 
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
           // console.log("QQQ sql_a = " + sql_a);
-          connection.query(sql_a,
+          DBConn.query(sql_a,
           (err, rows) => {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
@@ -3757,7 +3757,7 @@ function editAddProject(req, res){
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
     add_project_info: req.add_project_info,
     //env_sources:  JSON.stringify(MD_ENV_PACKAGE),
   });
@@ -3792,7 +3792,7 @@ router.post('/add_project',
       //console.log('FORM INFOx')
       //console.log(req)
       // TODO:  use file_path_obj;
-      let project_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
+      let project_dir = path.join(CFG.USER_FILES_BASE, req.user.username, 'project-'+req.form.new_project_name)
       helpers.mkdirSync(project_dir)
       res.redirect("/user_data/import_choices?project="+req.form.new_project_name);
     }
@@ -3816,7 +3816,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], (req, res) => {
   //import_type = req.url.split("/").slice(-1)[0];
   //'/import_choices/multi_fasta', 'multi_fasta'
   user_project_info = {}
-  connection.query(queries.get_projects_queryUID(req.user.user_id), (err, rows, fields) => {
+    DBConn.query(queries.get_projects_queryUID(req.user.user_id), (err, rows, fields) => {
       if (err)
       {
         console.log(err);
@@ -3831,7 +3831,7 @@ router.get('/import_choices/tax_by_seq', [helpers.isLoggedIn], (req, res) => {
           res.render(path.join('user_data',url_parts.pathname), {
             title:       'Import Data',
             user:        req.user,
-            hostname:    req.CONFIG.hostname,
+            hostname:    CFG.hostname,
             pinfo:       JSON.stringify(user_project_info),
             project: project,
             import_type: import_type,
@@ -3878,19 +3878,19 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
   
   if (req.files.length === 0 ) {
     // TODO:  use file_path_obj;
-    req.flash('fail', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
+    req.flash('fail', 'Make sure you are choosing a file to upload and that it is smaller than '+ CFG.UPLOAD_FILE_SIZE+' bytes');
 
     res.redirect(render_url);
     return;
   }
 
-  if (req.files[0] && req.files[0].size > config.UPLOAD_FILE_SIZE.bytes) {  // 1155240026
-    req.flash('fail', 'The file '+req.files[0].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
+  if (req.files[0] && req.files[0].size > CFG.UPLOAD_FILE_SIZE.bytes) {  // 1155240026
+    req.flash('fail', 'The file '+req.files[0].originalname+' exceeds the limit of '+CFG.UPLOAD_FILE_SIZE.MB);
     res.redirect(render_url);
     return;
   }
-  if (req.files[1] && req.files[1].size > config.UPLOAD_FILE_SIZE.bytes) {
-    req.flash('fail', 'The file '+req.files[1].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
+  if (req.files[1] && req.files[1].size > CFG.UPLOAD_FILE_SIZE.bytes) {
+    req.flash('fail', 'The file '+req.files[1].originalname+' exceeds the limit of '+CFG.UPLOAD_FILE_SIZE.MB);
     res.redirect(render_url);
     return;
   }
@@ -3957,9 +3957,9 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
     // }
 
     // TODO:  use file_path_obj;
-      var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+      var options = { scriptPath : CFG.PATH_TO_NODE_SCRIPTS,
                   args :       [ '-infile', original_taxbyseqfile, '-o', username, '--upload_type', 'multi',
-                                  '--process_dir', req.CONFIG.PROCESS_DIR, '-db', NODE_DATABASE, '-host', req.CONFIG.dbhost ]
+                                  '--process_dir', CFG.PROCESS_DIR, '-db', NODE_DATABASE, '-host', CFG.dbhost ]
       };
       if (taxbyseq_compressed) {
         options.args = options.args.concat(['-tax_comp']);
@@ -3985,11 +3985,11 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
 
         console.log(options.scriptPath + '/vamps_load_tax_by_seq.py '+options.args.join(' '));
     // TODO:  use file_path_obj;
-        var log = fs.openSync(path.join(req.CONFIG.PROCESS_DIR, 'logs', 'upload_taxbyseq.log'), 'a');
+        var log = fs.openSync(path.join(CFG.PROCESS_DIR, 'logs', 'upload_taxbyseq.log'), 'a');
 
 
         var tax_by_seq_process = spawn( options.scriptPath + '/vamps_load_tax_by_seq.py', options.args, {
-                              env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
+                              env:{ 'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH, 'PATH':CFG.PATH },
                               detached: true, stdio: 'pipe'
                             });  // stdin, stdout, stderr
         console.log('py process pid='+tax_by_seq_process.pid);
@@ -4024,11 +4024,11 @@ router.post('/import_choices/upload_data_tax_by_seq', [helpers.isLoggedIn, uploa
                    //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
                    if (Number.isInteger(pid)) {
                      // TODO: Don't make functions within a loop.
-                      connection.query(queries.get_select_datasets_queryPID(pid), function mysqlSelectDatasetsByPID(err, rows1, fields) {
+                       DBConn.query(queries.get_select_datasets_queryPID(pid), function mysqlSelectDatasetsByPID(err, rows1, fields) {
                         if (err)  {
                            console.log('1-TAXBYSEQ-Query error: ' + err);
                         } else {
-                               connection.query(queries.get_select_seq_count_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
+                            DBConn.query(queries.get_select_seq_count_queryPID(pid), function mysqlSelectSeqssByPID(err, rows2, fields) {
                                  if (err)  {
                                    console.log('2-TAXBYSEQ-Query error: ' + err);
                                 } else {
@@ -4104,15 +4104,15 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, (req, res) => {
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
   // TODO:  use file_path_obj;
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  // if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb7') {
+  var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
+  // if (CFG.hostname.substring(0, 7) == 'bpcweb7') {
   //       var user_dir = path.join('/groups/vampsweb/vampsdev_user_data/', req.user.username);
-  // } else if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb8') {
+  // } else if (CFG.hostname.substring(0, 7) == 'bpcweb8') {
   //       var user_dir = path.join('/groups/vampsweb/vamps_user_data/', req.user.username);
   // } else {
-  //       var user_dir = path.join(req.CONFIG.PROCESS_DIR, 'user_data', NODE_DATABASE, req.user.username);
+  //       var user_dir = path.join(CFG.PROCESS_DIR, 'user_data', NODE_DATABASE, req.user.username);
   // }
-  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+  helpers.mkdirSync(CFG.USER_FILES_BASE);
   helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
@@ -4168,7 +4168,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, (req, res) => {
 
   var wstream = fs.createWriteStream(out_file_path);
   var rs = new Readable();
-  var collection = connection.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
+  var collection = DBConn.query(qSelect, function mysqlSelectSeqs(err, rows, fields) {
     if (err) {
         console.log('query ERROR')
         throw err;
@@ -4238,7 +4238,7 @@ router.get('/required_metadata_options', (req, res) => {
             md_primer_suite:        JSON.stringify(C.MD_PRIMER_SUITE),
             md_run:					JSON.stringify(C.MD_RUN),
             
-            hostname: req.CONFIG.hostname,
+            hostname: CFG.hostname,
     });
 });
 //
@@ -4254,8 +4254,8 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
   // TODO:  use file_path_obj;
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+  var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
+  helpers.mkdirSync(CFG.USER_FILES_BASE);
   helpers.mkdirSync(user_dir);  // create dir if not exists
   var orientation = req.body.orientation;
   var dids;
@@ -4356,11 +4356,11 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
         }
         file_name = 'dco_all_metadata_'+today+'.tsv.gz';
     // TODO:  use file_path_obj;
-    out_file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, file_name)
+    out_file_path = path.join(CFG.PATH_TO_DCO_DOWNLOADS, file_name)
         //out_file_path = path.join('../vamps_data_downloads', file_name)
         header = 'Project: DCO'+"\n\t";
         file_util_obj.create_export_files(
-            req.CONFIG.PATH_TO_DCO_DOWNLOADS, 
+            CFG.PATH_TO_DCO_DOWNLOADS, 
             timestamp, 
             [''],  // empty did list for dco_bulk 
             ['--dco_metadata_file'], 
@@ -4484,8 +4484,8 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //   
 //   var timestamp = +new Date();  // millisecs since the epoch!
 // 
-//   var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-//   helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+//   var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
+//   helpers.mkdirSync(CFG.USER_FILES_BASE);
 //   helpers.mkdirSync(user_dir);  // create dir if not exists
 //   var dids;
 //   var header, project;
@@ -4586,8 +4586,8 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function download
 //         //console.log(JSON.stringify(req.user))
 //         
 //         //req.flash('Done')
-//         console.log(path.join(req.CONFIG.PROCESS_DIR,  out_file_path))
-//         res.download(path.join(req.CONFIG.PROCESS_DIR,   out_file_path))
+//         console.log(path.join(CFG.PROCESS_DIR,  out_file_path))
+//         res.download(path.join(CFG.PROCESS_DIR,   out_file_path))
 // 
 // 
 //       });
@@ -4604,8 +4604,8 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, (req, res) => {
     console.log(req.body);
     //var timestamp = +new Date();  // millisecs since the epoch!
   // TODO:  use file_path_obj;
-     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
-    helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+     var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
+    helpers.mkdirSync(CFG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
 
     //console.log(biom_matrix)
@@ -4667,7 +4667,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, (req, res) => {
     var ts = req.body.ts;
     var w = id_name_order.length;
   // TODO:  use file_path_obj;
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
     var image = req.body.image
     var html = ''
     var outfile;
@@ -4707,7 +4707,7 @@ router.post('/copy_html_to_image', helpers.isLoggedIn, (req, res) => {
 
         var n = 1;
       // TODO:  use file_path_obj;
-      distance_matrix_file = path.join(req.CONFIG.TMP_FILES,ts+'_distance.json')
+      distance_matrix_file = path.join(CFG.TMP_FILES,ts+'_distance.json')
         console.log(distance_matrix_file);
         fs.readFile(distance_matrix_file, 'utf-8', (err, data) => {
             distance_matrix = JSON.parse(data)
@@ -4771,7 +4771,7 @@ router.post('/download_file', helpers.isLoggedIn, (req, res) => {
   // file_type - fasta, metadata, or matrix
   console.log(req.body);
   // TODO:  use file_path_obj;
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
   var timestamp = +new Date();  // millisecs since the epoch!
   var file_tag = ['-'+req.body.file_type+'_file'];
   console.log(req.session);
@@ -4808,61 +4808,61 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, (req, res) => {
   // TODO:  use file_path_obj;
   if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.biom';
     }else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
     }else if (file_type == 'phyloseq-tree') {
       old_file_name = old_ts+'_outtree.tre';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tre';
     }else if (file_type == 'distance-R') {
       old_file_name = old_ts+'_distance.R';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
     }else if (file_type == 'distance-py') {
       old_file_name = old_ts+'_distance.json';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.json';
     }else if (file_type == 'emperor-pc') {
       old_file_name = old_ts+'.pc';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
     }else if (file_type == 'pdf-fheatmap') {
       old_file_name = old_ts+'_fheatmap.svg';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'pdf-pcoa') {
        old_file_name = old_ts+'_pcoa.pdf';
-       old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+       old_file_path = path.join(CFG.TMP_FILES, old_file_name);
        new_file_name = file_type+'-'+timestamp+'.pdf';
     }else if (file_type == 'metadata') {
       old_file_name = old_ts+'_metadata.txt';
-      old_file_path = path.join(req.CONFIG.TMP_FILES, old_file_name);
+      old_file_path = path.join(CFG.TMP_FILES, old_file_name);
       new_file_name = file_type+'-'+timestamp+'.tsv';
     }else if (file_type == 'slp_otus') {
        old_file_name = old_ts
-       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters', old_file_name);
+       old_file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'clusters', old_file_name);
        console.log(old_file_path)
        new_file_name = 'otus-'+old_ts;
     }else if (file_type == 'slp_tax_def') {
        old_file_name = old_ts
-       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/tax_definitions', old_file_name);
+       old_file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'clusters/tax_definitions', old_file_name);
        console.log(old_file_path)
        new_file_name = 'otus-tax_definitions-'+old_ts;
     }else if (file_type == 'slp_repseqs') {
        old_file_name = old_ts
-       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/repseqs', old_file_name);
+       old_file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'clusters/repseqs', old_file_name);
        console.log(old_file_path)
        new_file_name = 'otus-repseqs-'+old_ts;
     }else if (file_type == 'slp_otumember') {
        old_file_name = old_ts
-       old_file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'clusters/otumembership', old_file_name);
+       old_file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'clusters/otumembership', old_file_name);
        console.log(old_file_path)
        new_file_name = 'otus-membership-'+old_ts;
     }else if (file_type == 'oligotype_fasta') {
         console.log("FOUND OLIGOTYPE FAST DOWNLOAD");
         old_file_name = req.body.ts+'/fasta.fa'
-        old_file_path = path.join(config.USER_FILES_BASE, req.user.username, old_file_name);
+        old_file_path = path.join(CFG.USER_FILES_BASE, req.user.username, old_file_name);
         console.log(old_file_path)
         new_file_name = 'fasta-'+req.body.ts+'.fa';
     }
@@ -4871,9 +4871,9 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, (req, res) => {
     }
 
   // TODO:  use file_path_obj;
-  var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
+  var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
     
-    helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+    helpers.mkdirSync(CFG.USER_FILES_BASE);
     helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );
     console.log(old_file_path, destination);
@@ -4891,7 +4891,7 @@ router.get('/get_template', (req, res) => {
     console.log('in get_template')
     var template = ''
   // TODO:  use file_path_obj;
-  var template_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,template)
+  var template_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,template)
     console.log(template_path)
 });
 

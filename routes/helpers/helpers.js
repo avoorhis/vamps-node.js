@@ -240,9 +240,11 @@ module.exports.IsJsonString = str => {
   }
   return true;
 };
-function IsNumeric(n) {
+
+module.exports.IsNumeric = n => {
     return !isNaN(parseFloat(n)) && isFinite(n);
-  }
+};
+
 module.exports.onlyUnique = (value, index, self) => {
   // usage: ukeys = ukeys.filter(helpers.onlyUnique);
   return self.indexOf(value) === index;
@@ -592,7 +594,7 @@ module.exports.update_status = (status_params) => {
     let delete_status_params = [status_params.user_id, status_params.pid];
     statQuery            = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
-    connection.query(statQuery, delete_status_params, (err, rows) => {
+    DBConn.query(statQuery, delete_status_params, (err, rows) => {
       if (err) {
         console.log('ERROR1-in status update: ' + err);
       }
@@ -605,7 +607,7 @@ module.exports.update_status = (status_params) => {
   else if (status_params.type == 'update') {
     statQuery2 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2, (err, rows) => {
+    DBConn.query(statQuery2, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -617,7 +619,7 @@ module.exports.update_status = (status_params) => {
   else {  // Type::New
     statQuery1 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery1: ' + statQuery1);
-    connection.query(statQuery1, (err, rows) => {
+    DBConn.query(statQuery1, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -629,7 +631,7 @@ module.exports.update_status = (status_params) => {
 };
 
 module.exports.fetchInfo = (query, values, callback) => {
-  connection.query(query, values, (err, rows) => {
+  DBConn.query(query, values, (err, rows) => {
     if (err) {
       callback(err, null);
     }

@@ -35,7 +35,7 @@ function query_dataset_seq_tax()
   var dataset_seq_tax_dict = {};
   console.log("Started query_dataset_seq_tax");
 
-  var query = connection.db.query('SELECT * \
+  var query = DBConn.db.query('SELECT * \
     FROM taxa_counts_temp \
   ');
 
@@ -44,9 +44,9 @@ function query_dataset_seq_tax()
   });
 
   query.on('result', row => {
-      connection.db.pause();
+      DBConn.db.pause();
       make_count_dict(row, dataset_seq_tax_dict);
-      connection.db.resume();
+      DBConn.db.resume();
   });
 
   query.on('end', err => {

@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const helpers = require('./helpers/helpers');
 const queries = require(app_root + '/routes/queries');
 const path = require('path');
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 const C		  = require(app_root + '/public/constants');
 
 // These are all under /projects
@@ -28,7 +28,7 @@ router.get('/projects_index', (req, res) => {
   res.render('projects/projects_index', {
     title: 'VAMPS Projects',
     projects: JSON.stringify(project_list),
-    user: req.user, hostname: req.CONFIG.hostname
+    user: req.user, hostname: CFG.hostname
   });
 });
 
@@ -48,7 +48,7 @@ function ProjectProfileFinishRequest (req, res, arg_obj) {
     finfo: JSON.stringify(arg_obj.project_file_names),
     protocol: JSON.stringify(arg_obj.protocol),
     user: req.user,
-    hostname: req.CONFIG.hostname
+    hostname: CFG.hostname
   });
 }
 
@@ -119,15 +119,15 @@ function get_member_of_portal(req, info) {
 function get_publish_data(req, project_name) {
   let info_file_name = "";
   if (project_name.startsWith('DCO')) {
-    info_file_name = req.CONFIG.INFO_FILES['dco'];   //    'DCO_INFO.json';
+    info_file_name = CFG.INFO_FILES['dco'];   //    'DCO_INFO.json';
   }
   else if (project_name.startsWith('CMP')) {
-    info_file_name = req.CONFIG.INFO_FILES['cmp'];   //'CMP_INFO.json';
+    info_file_name = CFG.INFO_FILES['cmp'];   //'CMP_INFO.json';
   }
 
   let publish_data = {};
   try {
-    let info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, info_file_name);
+    let info_file = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, info_file_name);
     publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
   }
   catch(e) {
@@ -139,7 +139,7 @@ function get_publish_data(req, project_name) {
 function get_best_file(req) {
   let best_date = Date.parse('2000-01-01');
   let best_file = '';
-  fs.readdirSync(req.CONFIG.PATH_TO_DCO_DOWNLOADS)
+  fs.readdirSync(CFG.PATH_TO_DCO_DOWNLOADS)
     .filter(file => file.startsWith('dco_all_metadata'))
     .filter(name => {
       let file_date = name.substring(17, name.length - 7);
@@ -155,9 +155,9 @@ function get_best_file(req) {
 //
 //
 function get_protocol_file(req, prefix) {
-  let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
+  let protocol_dir = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
   let found = false
-  let found_file = fs.readdirSync(path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'protocols')).filter(file => file.startsWith(prefix))[0]
+  let found_file = fs.readdirSync(path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'protocols')).filter(file => file.startsWith(prefix))[0]
     if(found_file){
       return found_file
     }else{
@@ -221,7 +221,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       protocol: protocol_file
     };
     console.log('z')
-    connection.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
+    DBConn.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
       if (err) {
         console.log('Getting Project Notes Error: ' + err);
       } else {
@@ -243,7 +243,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
 router.post('/download_dco_metadata_file', helpers.isLoggedIn, (req, res) => {
   console.log('in POST download_dco_metadata_file');
   console.log(req.body);
-  let file_path = path.join(req.CONFIG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
+  let file_path = path.join(CFG.PATH_TO_DCO_DOWNLOADS, req.body.dco_file);
   //let file_path = path.join('../vamps_data_downloads', req.body.file);
   console.log('file_path ' + file_path);
   // res.setHeader('Content-Type', 'application/gzip');
@@ -276,7 +276,7 @@ router.post('/download_dco_metadata_file', helpers.isLoggedIn, (req, res) => {
 function get_csv_files(req) {
   // console.time("TIME: get_csv_files");
 
-  let user_csv_dir = path.join(config.USER_FILES_BASE, req.user.username);
+  let user_csv_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
   let all_my_files = helpers.walk_sync(user_csv_dir);
 
   // console.timeEnd("TIME: get_csv_files");

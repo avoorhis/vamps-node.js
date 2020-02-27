@@ -36,7 +36,7 @@ reset_user_signin: (new_count, old_date, uid) => {
 insert_access_table: (uid,pid) => {
     
     var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
-    qInsertAccess += " VALUES(" + connection.escape(uid) + ", " + connection.escape(pid) + ")"; 
+    qInsertAccess += " VALUES(" + DBConn.escape(uid) + ", " + DBConn.escape(pid) + ")";
     console.log(qInsertAccess);
     return qInsertAccess; 
      

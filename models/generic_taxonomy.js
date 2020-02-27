@@ -24,7 +24,7 @@ function genericTaxonomy() {
 }
 
 genericTaxonomy.prototype.get_domains = function(callback) {
-  connection.query(select_domains_q, function (err, rows) {
+  DBConn.query(select_domains_q, function (err, rows) {
     callback(err, rows);
   });
 };
@@ -32,7 +32,7 @@ genericTaxonomy.prototype.get_domains = function(callback) {
 genericTaxonomy.prototype.get_all_taxa = function(callback) 
 {
   var query = taxa_query_pt1 + 'generic_taxonomy' + taxa_query_pt2;
-  connection.query(query, function (err, rows, fields) {
+  DBConn.query(query, function (err, rows, fields) {
     callback(err, rows);
   });
 };

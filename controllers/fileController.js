@@ -3,6 +3,7 @@ const path = require('path');
 const spawn = require('child_process').spawn;
 const helpers = require(app_root + '/routes/helpers/helpers');
 const C = require(app_root + '/public/constants');
+const CFG = require(app_root + '/config/config');
 
 class FileUtil {
   constructor(req, res) {
@@ -88,14 +89,17 @@ class FileUtil {
   }
 
   get_pid_lookup(dids){
-    let pid_lookup = [];
-    Object.keys(C.PROJECT_ID_BY_DID).forEach(did => {
-      let pid = C.PROJECT_ID_BY_DID[did];
-      if (dids.includes(did) && !pid_lookup.includes(pid)) {
-        pid_lookup.push(pid);
+    let pid_lookup = {};
+    console.log('dids')
+    console.log(dids)
+    for(n in dids){
+      if(C.PROJECT_ID_BY_DID.hasOwnProperty(dids[n])){
+        let pid = C.PROJECT_ID_BY_DID[dids[n]]
+        pid_lookup[pid] = 1;
       }
-    });
-    return pid_lookup.join(',');
+
+    }
+    return Object.keys(pid_lookup).join(',');
   }
 
   get_pid_list(dids, file_tags){
@@ -112,12 +116,15 @@ class FileUtil {
     else {
       pids_str = this.get_pid_lookup(dids);
     }
+
+    console.log('pids_str')
+    console.log(pids_str)
     return pids_str;
   }
 
   get_export_cmd_options(user_dir, ts, dids, file_tags, normalization, rank, domains, include_nas, compress) {
     let req = this.req;
-    let site = req.CONFIG.site;
+    let site = CFG.site;
     let dids_str = JSON.stringify(dids.join(','));
     let pids_str = this.get_pid_list(dids, file_tags);
     let norm = this.get_norm(normalization);
@@ -168,7 +175,7 @@ class FileUtil {
           }
           else {
             let dwnld_process = spawn(qsub_file_path, {}, {
-              env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+              env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
               detached: true,
               stdio: ['pipe', 'pipe', 'pipe']
               //stdio: [ 'ignore', null, log ]
@@ -181,12 +188,12 @@ class FileUtil {
 
   no_cluster_export(export_cmd, export_cmd_options) {
     let req = this.req;
-    console.log('No Cluster Available according to req.CONFIG.cluster_available');
+    console.log('No Cluster Available according to CFG.cluster_available');
     let cmd = path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' ');
     console.log('RUNNING:', cmd);
 
     let dwnld_process = spawn(path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
-      env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
       detached: true,
       stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
     });
@@ -218,7 +225,7 @@ class FileUtil {
     let cmd_list = [];
     cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd) + ' ' + export_cmd_options.args.join(' '));
 
-    if (this.req.CONFIG.cluster_available === true) {
+    if (this.CFG.cluster_available === true) {
       let log = path.join(tmp_path, 'export_log.txt');
       let qsub_script_text = helpers.get_qsub_script_text(this.req, log, tmp_path, code, cmd_list);
       let qsub_file_name   = this.req.user.username + '_qsub_export_' + ts + '.sh';
@@ -250,32 +257,32 @@ class FilePath {
   }
 
   get_path_to_node_scripts(req) {
-    return req.CONFIG.PATH_TO_NODE_SCRIPTS + "/";
+    return CFG.PATH_TO_NODE_SCRIPTS + "/";
   }
 
   get_process_dir(req) {
-    return req.CONFIG.PROCESS_DIR + "/";
+    return CFG.PROCESS_DIR + "/";
   }
 
   get_user_file_path(req, user = req.body.user, filename = req.body.filename) {
-    this.user_file_path = req.CONFIG.USER_FILES_BASE + "/";
+    this.user_file_path = CFG.USER_FILES_BASE + "/";
     return path.join(this.user_file_path, user, filename);
   }
 
   get_user_file_base_path(req) {
-    return req.CONFIG.USER_FILES_BASE + "/";
+    return CFG.USER_FILES_BASE + "/";
   }
 
   get_tmp_file_path(req) {
-    return req.CONFIG.TMP_FILES + "/";
+    return CFG.TMP_FILES + "/";
   }
 
   get_static_script_file_path(req) {
-    return req.CONFIG.PATH_TO_STATIC_BASE + "/";
+    return CFG.PATH_TO_STATIC_BASE + "/";
   }
 
   get_viz_scripts_path(req) {
-    return req.CONFIG.PATH_TO_VIZ_SCRIPTS + "/";
+    return CFG.PATH_TO_VIZ_SCRIPTS + "/";
   }
 
   get_tmp_distmtx_file_path(req) {
@@ -287,7 +294,7 @@ class FilePath {
   }
 
   get_json_files_prefix(req) {
-    return path.join(req.CONFIG.JSON_FILES_BASE,
+    return path.join(CFG.JSON_FILES_BASE,
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
   }
 }
@@ -306,7 +313,7 @@ class visualizationFiles {
   }
 
   print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
-    if (req.CONFIG.site === 'vamps') {
+    if (CFG.site === 'vamps') {
       console.log(msg_prod);
     } else {
       console.log(msg);

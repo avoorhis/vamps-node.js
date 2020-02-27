@@ -27,7 +27,7 @@ rdpTaxonomy.prototype.get_all_taxa = function(callback)
 {
   var query = taxa_query_pt1+'rdp_taxonomy'+taxa_query_pt2
   //console.log('RDP Taxonomy: '+query)
-  connection.query(query, function (err, rows, fields) {
+    DBConn.query(query, function (err, rows, fields) {
     callback(err, rows);
   });
 };

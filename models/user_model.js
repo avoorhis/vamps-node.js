@@ -17,17 +17,15 @@ class User {
   }
 
   getAllUsers(callback) {
-    return connection.query("Select * from user", callback);
+    return DBConn.query("Select * from user", callback);
   }
 
   getUserById(user_id, callback) {
-
-    return connection.query("select * from user where user_id = ?", [user_id], callback);
+    return DBConn.query("select * from user where user_id = ?", [user_id], callback);
   }
 
   getUser_id(first_name, last_name, email, institution, callback) {
-
-    return connection.query("SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?", [first_name, last_name, email, institution], callback);
+    return DBConn.query("SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?", [first_name, last_name, email, institution], callback);
   }
 
   getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution) {
@@ -73,7 +71,7 @@ class User {
   }
 
   addUser(callback) {
-    return connection.query("Insert into user values(?,?,?,?,?,?,?,?,?,?,?,?)", [
+    return DBConn.query("Insert into user values(?,?,?,?,?,?,?,?,?,?,?,?)", [
       this.User_obj.user_id,
       this.User_obj.username,
       this.User_obj.email,

@@ -6,6 +6,7 @@ const helpers = require('./helpers/helpers');
 const d3 = require('d3');
 const file_controller = require(app_root + '/controllers/fileController');
 const file_path_obj = new file_controller.FilePath();
+const CFG  = require(app_root + '/config/config');
 
 module.exports = {
   taxon_color_legend: (req, res) => {
@@ -255,14 +256,14 @@ dheatmap: (req, res) =>{
     var dist_json_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_distance.json')
     console.log(dist_json_file_path)
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', file_path_obj.get_tmp_file_path(req), '--prefix', ts],
     };
 
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-      env:{'PATH':req.CONFIG.PATH,
-        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH':CFG.PATH,
+        'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe' // stdin, stdout, stderr
@@ -316,7 +317,7 @@ dheatmap: (req, res) =>{
             res.json(data)
 
           });
-          if(req.CONFIG.site == 'vamps' ){
+          if(CFG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log(stdout)
@@ -347,12 +348,12 @@ dheatmap: (req, res) =>{
 
 
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ req.CONFIG.TMP_FILES, req.session.selected_distance, ts, req.session.tax_depth],
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ CFG.TMP_FILES, req.session.selected_distance, ts, req.session.tax_depth],
     };
     console.log(options.scriptPath+'/fheatmap2.R '+options.args.join(' '));
     var fheatmap_process = spawn( options.scriptPath+'/fheatmap2.R', options.args, {
-      env:{'PATH':req.CONFIG.PATH},
+      env:{'PATH':CFG.PATH},
       detached: true,
       //stdio: [ 'ignore', null, log ]
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -479,8 +480,6 @@ barcharts: (req, res) =>{
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
         let svg = make_svgContainer(props.width, props.height, props.margin.left, props.margin.top, body);
-        console.log('bars-svg')
-        console.log(svg)
         // axis legends -- would like to rotate dataset names
         props.y.domain(matrix.columns.map(c => c.id));
         props.x.domain([0, 100]);
@@ -581,15 +580,15 @@ adiversity: (req, res) =>{
     var title = 'VAMPS';
 
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', matrix_file_path, '--site_base', file_path_obj.get_process_dir(req), '--prefix', ts],
     };
 
 
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-      env:{'PATH':req.CONFIG.PATH,
-        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH':CFG.PATH,
+        'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe' // stdin, stdout, stderr
@@ -672,15 +671,15 @@ dendrogram: (req, res) =>{
     var html = '';
     var title = 'VAMPS';
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ file_path_obj.get_process_dir(req), metric, ts ],
     };
 
 
     console.log(options.scriptPath+'/dendrogram2.R '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/dendrogram2.R', options.args, {
-      env:{'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH': CFG.PATH,
+        'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -741,12 +740,12 @@ phyloseq: (req,res) => {
     var metric = req.session.selected_distance
     var tax_depth = req.session.tax_depth
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ file_path_obj.get_process_dir(req), metric, ts, tax_depth ],
     };
     console.log(options.scriptPath+'/phyloseq_test.R'+' '+options.args.join(' '));
     var phyloseq_process = spawn( options.scriptPath+'/phyloseq_test.R', options.args, {
-      env:{'PATH':req.CONFIG.PATH},
+      env:{'PATH':CFG.PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ]
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -1129,8 +1128,6 @@ create_hm_table: (req, dm, metadata) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function create_bars_svg_object(req, svg, props, data, ts) {
-  console.log('req.body')
-  console.log(req.body)
   console.log('In create_bars_svg_object')
   svg.append("g")
     .attr("class", "x axis")
