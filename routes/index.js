@@ -7,8 +7,7 @@ const helpers = require('./helpers/helpers');
 const ds = require('./load_all_datasets');
 const C		  = require(app_root + '/public/constants');
 
-var rs_ds = ds.get_datasets( () => {
-  
+var rs_ds = ds.get_datasets( () => {  
 
   /* GET home page. */
   router.get('/', (req, res) => {
