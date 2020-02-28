@@ -1,21 +1,25 @@
 /*jslint node: true */
 const express = require('express');
 var router = express.Router();
-const passport = require('passport');
+//const passport = require('passport');
 const helpers = require('./helpers/helpers');
 const path = require('path');
 const fs = require('fs-extra');
-const queries = require('./queries');
+//const queries = require('./queries');
 const CFG = require('../config/config');
-const mysql = require('mysql2');
+//const mysql = require('mysql2');
 const url = require('url');
 const iniparser = require('iniparser');
 const COMMON = require('./visuals/routes_common');
-const Readable = require('readable-stream').Readable;
-const spawn = require('child_process').spawn;
+//const Readable = require('readable-stream').Readable;
+//const spawn = require('child_process').spawn;
 const extend = require('util')._extend;
 const C = require(app_root + '/public/constants');
+const visualization_controller = require(app_root + '/controllers/visualizationController');
+const file_controller = require(app_root + '/controllers/fileController');
 
+const viz_files_obj = new file_controller.visualizationFiles();
+const file_path_obj = new file_controller.FilePath();
 //
 // POST ENTROPY
 //
@@ -26,9 +30,11 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
 
   dataset_ids = JSON.parse(req.body.dataset_ids);
   req.session.chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+  
   console.log('chosen_id_name_hash-->');
   console.log(req.session.chosen_id_name_hash);
   console.log(req.session.chosen_id_name_hash.ids.length);
+  
   console.log('<--chosen_id_name_hash');
 
   res.render('otus/otus_method_selection', {
@@ -76,13 +82,14 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     var timestamp = +new Date();
     timestamp = req.user.username+'-'+timestamp
     let visual_post_items = get_post_items(req)
-    visual_post_items.ts = timestamp;
+    visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
     req.session.chosen_id_name_hash = {}
     req.session.chosen_id_name_hash.ids = []
     req.session.chosen_id_name_hash.names = []
     
     //console.log(chosen_id_name_hash)
-    visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
+    //visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
+    
     
     const parse = require('csv-parse');
     
@@ -127,13 +134,27 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
         datasets.sort()
     
         req.session.BIOM_MATRIX = get_otu_matrix(req, otudata, datasets, visual_post_items);
-        console.log(req.session.BIOM_MATRIX)
+        //console.log(req.session.BIOM_MATRIX)
+        //visual_post_items.chosen_datasets = req.session.BIOM_MATRIX.columns
+        // did and name
+        
+        visual_post_items.chosen_datasets = []
+        for(n in req.session.BIOM_MATRIX.columns) {
+        	visual_post_items.chosen_datasets[n] = {}
+        	visual_post_items.chosen_datasets[n].did = req.session.BIOM_MATRIX.columns[n].did
+        	visual_post_items.chosen_datasets[n].name = req.session.BIOM_MATRIX.columns[n].id
+        	
+    
+        	
+        }
+    	visual_post_items.no_of_datasets = req.session.BIOM_MATRIX.columns.length
         console.log(visual_post_items)
         console.log(req.session.chosen_id_name_hash)
+        req.session.chosen_id_order = req.session.chosen_id_name_hash.ids
         visual_post_items.max_ds_count   = req.session.BIOM_MATRIX.max_ds_count;
         let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
-        console.log('needed_constants')
-        console.log(needed_constants)
+        //console.log('needed_constants')
+        //console.log(needed_constants)
         res.render('otus/visuals/view_selection', {
                     title           : 'OTU Visuals', 
                     referer         : 'otu_index',                                
@@ -151,93 +172,7 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
      
     
 });
-// router.post('/view_selection2', helpers.isLoggedIn, (req, res) => {
-//     console.log('in GET OTU view_selection')
-//     console.log(req.body);
-//     console.log('<<--in OTU view_selection')
-//     opid= req.body.otu_id  // filename
-//     prj = req.body.otu_id  // filename
-//     var timestamp = +new Date();
-//     timestamp = req.user.username+'-'+timestamp
-//     visual_post_items = get_post_items(req)
-//     visual_post_items.ts = timestamp;
-//     req.session.chosen_id_name_hash = {}
-//     req.session.chosen_id_name_hash.ids = []
-//     req.session.chosen_id_name_hash.names = []
-//
-//     //console.log(chosen_id_name_hash)
-//     visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
-//
-//     const parse = require('csv-parse');
-//
-//     var file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
-//     var csvData=[];
-//     var row_count = 0
-//     var otudata = {}
-//     var rows = []
-//     datasets = []
-//     otudata = []
-//     fs.createReadStream(file_path)
-//         .pipe(parse({delimiter: '\t'}))
-//         .on('data', csvrow => {
-//             row_count += 1
-//             if(row_count == 1){
-//                 headers = csvrow
-//                 for(n=7;n<=headers.length-1;n++){
-//                     datasets.push(headers[n].split(';')[1])
-//                 }
-//
-//             }else{
-//                 //console.log(csvrow);
-//                 //do something with csvrow
-//                 //csvData.push(csvrow);
-//                 //rows.push(csvrow)
-//                 otudata[csvrow[0]] = {}
-//                 otudata[csvrow[0]].taxonomy = csvrow[1]
-//                 otudata[csvrow[0]].rank = csvrow[2]
-//                 otudata[csvrow[0]].min_gdist = csvrow[3]
-//                 otudata[csvrow[0]].avg_gdist = csvrow[4]
-//                 otudata[csvrow[0]].total = csvrow[5]
-//                 otudata[csvrow[0]].counts = {}
-//                 //console.log('start')
-//                 for(n=7;n<=csvrow.length-1;n++){
-//                     //console.log(headers[n])
-//                     if(parseInt(csvrow[n]) > 0){
-//                         otudata[csvrow[0]].counts[headers[n].split(';')[1]] = csvrow[n]
-//                     }
-//                 }
-//
-//             }
-//         })
-//         .on('end',() => {
-//           //do something wiht csvData
-//           //console.log(JSON.stringify(otudata));
-//           datasets.sort()
-//           console.log(datasets);
-//           BIOM_MATRIX = get_otu_matrix(req, otudata, datasets, visual_post_items);
-//           visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
-//           res.render('otus/visuals/view_selection', {
-//                                 title           : 'OTU Visuals',
-//                                 referer         : 'otu_index',
-//                                 matrix          : JSON.stringify(BIOM_MATRIX),
-//                                 project         : prj,
-//                                 pid             : opid,
-//                                 post_items      : JSON.stringify(visual_post_items),
-//                                 chosen_id_name_hash : JSON.stringify(req.session.chosen_id_name_hash),
-//                                 constants       : JSON.stringify(C),
-//                                 user            : req.user,
-//                                 hostname        : CFG.hostname
-//             });
-//         });
-//     //fs.readFile(file_path, 'utf8', (err, content) => {
-//
-//
-//
-//
-//
-//
-//     //})
-// });
+
 
 function get_post_items(req){
     var post_items = {

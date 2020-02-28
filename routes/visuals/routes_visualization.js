@@ -109,7 +109,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.log('image to open', image_to_open);
 
   let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
-
+console.log('visual_post_items')
+console.log(visual_post_items)
   res.render('visuals/view_selection', {
     title           : 'VAMPS: Visuals Select',
     referer         : 'unit_selection',
