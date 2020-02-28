@@ -1517,7 +1517,8 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn, (req, res) => {
 });
 
 function FinishSplitFile(req, res){
-  let distmtx_file_path = file_path_obj.get_tmp_distmtx_file_path(req);
+  let file_name = viz_files_obj.get_distmtx_file_name(req);
+  let distmtx_file_path = file_path_obj.get_tmp_distmtx_file_path(req, file_name);
 
   read_file_when_ready(distmtx_file_path);
   fs.readFile(distmtx_file_path, 'utf8', function readFile(err, mtxdata) {

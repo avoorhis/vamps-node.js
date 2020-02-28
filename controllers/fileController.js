@@ -4,7 +4,9 @@ const spawn = require('child_process').spawn;
 const helpers = require(app_root + '/routes/helpers/helpers');
 const C = require(app_root + '/public/constants');
 const CFG = require(app_root + '/config/config');
-
+//
+// C L A S S
+//
 class FileUtil {
   constructor(req, res) {
     this.req = req;
@@ -250,7 +252,9 @@ class FileUtil {
     }
   }
 }
-
+//
+// C L A S S
+//
 class FilePath {
   constructor() {
     this.user_file_path = "";
@@ -284,9 +288,9 @@ class FilePath {
   get_viz_scripts_path(req) {
     return CFG.PATH_TO_VIZ_SCRIPTS + "/";
   }
-
-  get_tmp_distmtx_file_path(req) {
-    const test_split_file_name = this.get_distmtx_file_name(req);
+// ****
+  get_tmp_distmtx_file_path(req, test_split_file_name) {
+    //const test_split_file_name = get_distmtx_file_name(req);
     const tmp_path = this.get_tmp_file_path(req);
     const test_distmtx_file_path = path.join(tmp_path, test_split_file_name);
 
@@ -298,7 +302,9 @@ class FilePath {
       NODE_DATABASE + "--datasets_" + C.default_taxonomy.name);
   }
 }
-
+//
+// C L A S S
+//
 class visualizationFiles {
   constructor() {
     this.file_paths = new module.exports.FilePath();
