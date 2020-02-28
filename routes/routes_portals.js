@@ -2,6 +2,7 @@ const express = require('express');
 var router = express.Router();
 const helpers = require(app_root + '/routes/helpers/helpers');
 const C = require(app_root + '/public/constants');
+const CFG = require(app_root + '/config/config');
 const path  = require('path');
 const fs   = require('fs-extra');
 
@@ -10,7 +11,7 @@ router.get('/portals_index', (req, res) => {
     res.render('portals/portals_index', { 
             title: 'VAMPS:Portals',
             portals : JSON.stringify(C.PORTALS),
-            user: req.user,hostname: req.CONFIG.hostname,
+            user: req.user,hostname: CFG.hostname,
         });
 });
 //
@@ -23,10 +24,8 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
     //console.log('visuals_index: '+portal);
     
     var project_list = helpers.get_portal_projects(req, portal)
-    
-    
-    // GLOBAL
-    SHOW_DATA = project_list;
+
+    req.session.SHOW_DATA = project_list;
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
@@ -39,7 +38,7 @@ router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
             filtering : 0,
             portal_to_show : portal,
             data_to_open : JSON.stringify({}),
-            user      : req.user,hostname: req.CONFIG.hostname,
+            user      : req.user,hostname: CFG.hostname,
         });
 });
 //
@@ -66,7 +65,7 @@ router.get('/projects/:portal',  (req, res) => {
     
         res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
-            user      : req.user,hostname: req.CONFIG.hostname,
+            user      : req.user,hostname: CFG.hostname,
             pagetitle : C.PORTALS[portal].pagetitle,
             portal_code    : portal,
             projects  : JSON.stringify(project_list),
@@ -89,7 +88,7 @@ router.post('/dco_project_list',  (req, res) => {
     
     let publish_data = {}
     try{
-        info_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['dco']);
+        info_file = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, CFG.INFO_FILES['dco']);
         publish_data = JSON.parse(fs.readFileSync(info_file, 'utf8'));
     }catch(e) {
         publish_data = {};
@@ -138,7 +137,7 @@ router.post('/dco_project_list',  (req, res) => {
         }     
     }
     for(pid in new_dco_list_latlon){
-        //console.log(DATASET_IDS_BY_PID[pid].length)
+        //console.log(C.DATASET_IDS_BY_PID[pid].length)
         //console.log(new_dco_list_latlon[pid])
         if(C.DATASET_IDS_BY_PID[pid].length == new_dco_list_latlon[pid]){
             new_dco_list_latlon[pid] = 'COMPLETE'
@@ -279,7 +278,7 @@ router.get('/abstracts/CMP', (req, res) => {
     console.log('in abstracts/CMP')
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['cmp'])
+        var cmp_file = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, CFG.INFO_FILES['cmp'])
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     var project_list = helpers.get_portal_projects(req, portal)
@@ -290,7 +289,7 @@ router.get('/abstracts/CMP', (req, res) => {
     
         res.render('portals/coral_microbiome/abstracts', { 
             title     : 'VAMPS:'+portal+'Portals',
-            user      : req.user,hostname: req.CONFIG.hostname,
+            user      : req.user,hostname: CFG.hostname,
             portal    : C.PORTALS[portal].pagetitle,
             projects  : JSON.stringify(project_list),
             info      : JSON.stringify(info_data),
@@ -308,13 +307,13 @@ router.get('/abstracts/CMP', (req, res) => {
 //     var md = {}
 //     for(n in project_list){
 //         var pid = project_list[n].pid
-//         var dids = DATASET_IDS_BY_PID[pid]
+//         var dids = C.DATASET_IDS_BY_PID[pid]
 //        
 //         
 //         md_order = []
 //         md_lookup = {}
 //         for(m in dids){
-//             var pjds = project_list[n].project+'--'+DATASET_NAME_BY_DID[dids[m]]
+//             var pjds = project_list[n].project+'--'+ C.DATASET_NAME_BY_DID[dids[m]]
 //             
 //             md[pjds] = {}
 //             headers = {}
@@ -337,7 +336,7 @@ router.get('/abstracts/CMP', (req, res) => {
 //     console.log(md['CMP_JJ_Bv5v6x--ApD2'])
 //     res.render('portals/metadata', { 
 //             title  : 'VAMPS:'+portal+' Portal Metadata',
-//             user   : req.user,hostname: req.CONFIG.hostname,
+//             user   : req.user,hostname: CFG.hostname,
 //             mdata  : JSON.stringify(md),
 //             portal : portal,
 //             md_order: JSON.stringify(md_order),
@@ -353,7 +352,7 @@ router.get('/:portal', (req, res) => {
     var pagetitle, maintitle, subtitle;
     var info_data = {}
     if(portal == 'CMP'){
-        var cmp_file = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, req.CONFIG.INFO_FILES['cmp'])
+        var cmp_file = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, CFG.INFO_FILES['cmp'])
         info_data = JSON.parse(fs.readFileSync(cmp_file, 'utf8'));
     }
     
@@ -375,7 +374,7 @@ router.get('/:portal', (req, res) => {
             portal      : portal,
             projects  : JSON.stringify(project_list),
             info : JSON.stringify(info_data),
-            user: req.user,hostname: req.CONFIG.hostname,
+            user: req.user,hostname: CFG.hostname,
         });
     
 });
@@ -390,8 +389,8 @@ router.get('/geomap/:portal', (req, res) => {
             title       : 'VAMPS: Geomap',
             portal      : portal,
             portal_info : JSON.stringify(portal_info[portal]),
-            user: req.user,hostname: req.CONFIG.hostname,
-            token       : req.CONFIG.MAPBOX_TOKEN,
+            user: req.user,hostname: CFG.hostname,
+            token       : CFG.MAPBOX_TOKEN,
         });
 
 });
@@ -399,32 +398,35 @@ router.get('/geomap/:portal', (req, res) => {
 router.get('/protocol_list/:portal', (req, res) => {
     console.log('in /protocol_list/:portal')
     let portal = req.params.portal;
-    console.log(portal)
-    if(portal == 'ICOMM') {
-        let protocol_dir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
+    //console.log(portal)
+    if (portal == 'ICOMM') {
+        let protocol_dir = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, 'protocols')
         let protocol_list = []
-        console.log(protocol_dir)
+        //console.log(protocol_dir)
         fs.readdir(protocol_dir, (err, files) => {
             files.forEach(file => {
-                console.log(file);
-                let file_w_dnld_path = path.join('protocols',file)
-                protocol_list.push({file_w_path:file_w_dnld_path, file_name:file})
+                //console.log(file);
+                let prefix = 'ICM_' + file.split('_')[0]
+                let projects = []
+                for (let pid in C.PROJECT_INFORMATION_BY_PID) {
+                    let prj = C.PROJECT_INFORMATION_BY_PID[pid].project
+                    if(prj.startsWith(prefix)){
+                        projects.push(prj)
+                    }
+                }
+                if(projects.length > 0) {
+                    let file_w_dnld_path = path.join('protocols', file)
+                    protocol_list.push({file_w_path: file_w_dnld_path, file_name: file, projects: projects.join(', ')})
+                }
             });
 
             res.render('portals/census_of_marine_microbes/protocol_list', {
-                title       : 'VAMPS: ICoMM Protocols',
-                user: req.user,hostname: req.CONFIG.hostname,
+                title: 'VAMPS: ICoMM Protocols',
+                user: req.user, hostname: CFG.hostname,
                 p_list: JSON.stringify(protocol_list)
             });
         });
-
     }
-//
-//     var portal_info = get_portal_metadata(req, portal)
-//     portal_info[portal].zoom = C.PORTALS[portal].zoom
-//     //console.log('FOUND '+JSON.stringify(portal_info))
-//
-
 });
 
 module.exports = router;
@@ -446,7 +448,7 @@ function get_portal_metadata(req, portal){
     for(did in C.DATASET_NAME_BY_DID){   // too big
         //did = all_metadata[i]
         pid = C.PROJECT_ID_BY_DID[did]
-        //console.log(PROJECT_INFORMATION_BY_PID[pid])
+        //console.log(C.PROJECT_INFORMATION_BY_PID[pid])
         pname = C.PROJECT_INFORMATION_BY_PID[pid].project
         
         dataset_metadata = C.AllMetadata[did] || {}

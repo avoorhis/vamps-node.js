@@ -207,7 +207,7 @@ class visualizationFilters {
     if (portal) {
       projects_to_filter = helpers.get_portal_projects(req, portal);
     } else {
-      projects_to_filter = SHOW_DATA.projects;
+      projects_to_filter = req.session.SHOW_DATA.projects;
     }
     return projects_to_filter;
   }
@@ -255,68 +255,68 @@ class visualizationFilters {
   }
 
   filter_by_substring(filter_obj, prj_obj) {
-    let NewPROJECT_TREE_OBJ1 = [];
+    let newproject_tree_obj1 = [];
     let filter_empty = this.filter_is_empty(filter_obj.substring);
     if (filter_empty || prj_obj.length === 0) {
-      NewPROJECT_TREE_OBJ1 = prj_obj;
+      newproject_tree_obj1 = prj_obj;
     }
     else {
-      NewPROJECT_TREE_OBJ1 = prj_obj.filter(prj => {
+      newproject_tree_obj1 = prj_obj.filter(prj => {
         let ucname = "";
         ucname = prj.name || prj.project;
         return ucname.toUpperCase().includes(filter_obj.substring);
       });
     }
-    return NewPROJECT_TREE_OBJ1;
+    return newproject_tree_obj1;
   }
 
-  filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1){
+  filter_by_env(filter_obj, newproject_tree_obj1){
     //console.log('Filtering for ENV')
     let filter_empty = this.filter_is_empty(filter_obj.env);
-    let NewPROJECT_TREE_OBJ2 = [];
-    if (filter_empty || NewPROJECT_TREE_OBJ1.length === 0) {
-      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1;
+    let newproject_tree_obj2 = [];
+    if (filter_empty || newproject_tree_obj1.length === 0) {
+      newproject_tree_obj2 = newproject_tree_obj1;
     }
     else {
-      NewPROJECT_TREE_OBJ2 = NewPROJECT_TREE_OBJ1.filter(prj => {
+      newproject_tree_obj2 = newproject_tree_obj1.filter(prj => {
         const current_pr_env_package_id = parseInt(C.PROJECT_INFORMATION_BY_PID[prj.pid].env_package_id);
         return filter_obj.env.includes(current_pr_env_package_id);
       });
     }
     // console.timeEnd("TIME: filter_by_env filter");
-    return NewPROJECT_TREE_OBJ2;
+    return newproject_tree_obj2;
   }
 
-  filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2) {
-    let NewPROJECT_TREE_OBJ3 = [];
+  filter_by_target(filter_obj, newproject_tree_obj2) {
+    let newproject_tree_obj3 = [];
     let filter_empty = this.filter_is_empty(filter_obj.target);
-    if (filter_empty || NewPROJECT_TREE_OBJ2.length === 0) {
-      NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2;
+    if (filter_empty || newproject_tree_obj2.length === 0) {
+      newproject_tree_obj3 = newproject_tree_obj2;
     }
     else {
       let pr_name = "";
       let pparts = [];
       let last_el = [];
-      NewPROJECT_TREE_OBJ3 = NewPROJECT_TREE_OBJ2.filter(prj => {
+      newproject_tree_obj3 = newproject_tree_obj2.filter(prj => {
         pr_name = prj.name || prj.project;
         pparts = pr_name.split('_');
         last_el = pparts[pparts.length - 1];
         return ((filter_obj.target === 'ITS' && last_el.startsWith('ITS')) || (last_el === filter_obj.target));
       });
     }
-    return NewPROJECT_TREE_OBJ3;
+    return newproject_tree_obj3;
   }
 
-  filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3) {
-    let NewPROJECT_TREE_OBJ4 = [];
+  filter_by_portal(filter_obj, newproject_tree_obj3) {
+    let newproject_tree_obj4 = [];
     let filter_empty = this.filter_is_empty(filter_obj.portal);
-    if (filter_empty || NewPROJECT_TREE_OBJ3.length === 0) {
-      NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3;
+    if (filter_empty || newproject_tree_obj3.length === 0) {
+      newproject_tree_obj4 = newproject_tree_obj3;
     }
     else {
       //console.log('Filtering for PORTAL')
       const portal = C.PORTALS[filter_obj.portal];
-      NewPROJECT_TREE_OBJ4 = NewPROJECT_TREE_OBJ3.filter(prj => {
+      newproject_tree_obj4 = newproject_tree_obj3.filter(prj => {
         let pr_name = prj.name || prj.project;
         let pparts = pr_name.split('_');
         let prefix = pparts[0];
@@ -324,33 +324,33 @@ class visualizationFilters {
         return (portal.prefixes.includes(prefix) || portal.projects.includes(pr_name) || portal.suffixes.includes(suffix));
       });
     }
-    return NewPROJECT_TREE_OBJ4;
+    return newproject_tree_obj4;
   }
 
-  filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4) {
-    let NewPROJECT_TREE_OBJ5 = [];
-    if (filter_obj.public === '-1' || NewPROJECT_TREE_OBJ4.length === 0) {
-      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4;
+  filter_by_public_private(filter_obj, newproject_tree_obj4) {
+    let newproject_tree_obj5 = [];
+    if (filter_obj.public === '-1' || newproject_tree_obj4.length === 0) {
+      newproject_tree_obj5 = newproject_tree_obj4;
     } else {
       //console.log('Filtering for PRIVACY')
-      NewPROJECT_TREE_OBJ5 = NewPROJECT_TREE_OBJ4.filter(prj => C.PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
+      newproject_tree_obj5 = newproject_tree_obj4.filter(prj => C.PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(filter_obj.public));
     }
-    return NewPROJECT_TREE_OBJ5;
+    return newproject_tree_obj5;
   }
 
-  filter_by_metadata(filter_obj_metadata, current_NewPROJECT_TREE_OBJ) {
-    let res_NewPROJECT_TREE_OBJ = [];
+  filter_by_metadata(filter_obj_metadata, current_newproject_tree_obj) {
+    let res_newproject_tree_obj = [];
     let filter_empty = this.filter_is_empty(filter_obj_metadata);
-    if (filter_empty || current_NewPROJECT_TREE_OBJ.length === 0) {
-      res_NewPROJECT_TREE_OBJ = current_NewPROJECT_TREE_OBJ;
+    if (filter_empty || current_newproject_tree_obj.length === 0) {
+      res_newproject_tree_obj = current_newproject_tree_obj;
     }
     else {
-      res_NewPROJECT_TREE_OBJ = current_NewPROJECT_TREE_OBJ.filter(prj => {
+      res_newproject_tree_obj = current_newproject_tree_obj.filter(prj => {
         let dids = C.DATASET_IDS_BY_PID[prj.pid];
         return dids.some(did => (did in C.AllMetadata && C.AllMetadata[did].hasOwnProperty(filter_obj_metadata)));
       });
     }
-    return res_NewPROJECT_TREE_OBJ;
+    return res_newproject_tree_obj;
   }
 
   filter_projects (req, prj_obj, filter_obj) {
@@ -365,30 +365,30 @@ class visualizationFilters {
     //console.log(prj_obj, filter_obj)
     // console.time("TIME: filter_projects");
     // SUBSTRING
-    let NewPROJECT_TREE_OBJ1 = this.filter_by_substring(filter_obj, prj_obj);
+    let newproject_tree_obj1 = this.filter_by_substring(filter_obj, prj_obj);
 
     // ENV
-    let NewPROJECT_TREE_OBJ2 = this.filter_by_env(filter_obj, NewPROJECT_TREE_OBJ1);
+    let newproject_tree_obj2 = this.filter_by_env(filter_obj, newproject_tree_obj1);
 
     // TARGET
-    let NewPROJECT_TREE_OBJ3 = this.filter_by_target(filter_obj, NewPROJECT_TREE_OBJ2);
+    let newproject_tree_obj3 = this.filter_by_target(filter_obj, newproject_tree_obj2);
 
     // PORTAL
-    let NewPROJECT_TREE_OBJ4 = this.filter_by_portal(filter_obj, NewPROJECT_TREE_OBJ3);
+    let newproject_tree_obj4 = this.filter_by_portal(filter_obj, newproject_tree_obj3);
 
     // public/private
-    let NewPROJECT_TREE_OBJ5 = this.filter_by_public_private(filter_obj, NewPROJECT_TREE_OBJ4);
+    let newproject_tree_obj5 = this.filter_by_public_private(filter_obj, newproject_tree_obj4);
 
     // METADATA1
-    let NewPROJECT_TREE_OBJ6 = this.filter_by_metadata(filter_obj.metadata1, NewPROJECT_TREE_OBJ5);
+    let newproject_tree_obj6 = this.filter_by_metadata(filter_obj.metadata1, newproject_tree_obj5);
 
     // METADATA2
-    let NewPROJECT_TREE_OBJ7 = this.filter_by_metadata(filter_obj.metadata2, NewPROJECT_TREE_OBJ6);
+    let newproject_tree_obj7 = this.filter_by_metadata(filter_obj.metadata2, newproject_tree_obj6);
 
     // METADATA3
-    let NewPROJECT_TREE_OBJ8 = this.filter_by_metadata(filter_obj.metadata3, NewPROJECT_TREE_OBJ7);
+    let newproject_tree_obj8 = this.filter_by_metadata(filter_obj.metadata3, newproject_tree_obj7);
 
-    let new_obj = NewPROJECT_TREE_OBJ8;
+    let new_obj = newproject_tree_obj8;
     //console.log('new_obj')
     //console.log(new_obj)
     // console.timeEnd("TIME: filter_projects");
@@ -398,20 +398,21 @@ class visualizationFilters {
 
   get_global_filter_values(req) {
     const projects_to_filter = this.get_projects_to_filter(req);
-    const newproject_tree_obj = this.filter_projects(req, projects_to_filter, PROJECT_FILTER);
+    const newproject_tree_obj = this.filter_projects(req, projects_to_filter, req.session.PROJECT_FILTER);
     const project_tree_pids = this.filter_project_tree_for_permissions(req, newproject_tree_obj);
-    this.update_project_filter_length(project_tree_pids);
 
+    //this.update_project_filter_length(project_tree_pids);
+    req.session.PROJECT_FILTER.pid_length = project_tree_pids.length;
     return {
-      project_filter: PROJECT_FILTER,
+      project_filter: req.session.PROJECT_FILTER,
       newproject_tree_obj: newproject_tree_obj,
       project_tree_pids: project_tree_pids
     };
   }
 
-  update_project_filter_length(project_tree_pids) {
-    PROJECT_FILTER.pid_length = project_tree_pids.length;
-  }
+  // update_project_filter_length(project_tree_pids) {
+  //   this.req.session.PROJECT_FILTER.pid_length = project_tree_pids.length;
+  // }
 
 }
 

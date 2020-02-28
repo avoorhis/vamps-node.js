@@ -6,13 +6,14 @@ const fs   = require('fs-extra');
 const path  = require('path');
 const spawn = require('child_process').spawn;
 const C		  = require(app_root + '/public/constants');
+const CFG = require(app_root + '/config/config');
 
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, (req, res) => {
 
     //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
-        user:            req.user,hostname: req.CONFIG.hostname,
+        user:            req.user,hostname: CFG.hostname,
     		});
 });
 //
@@ -21,7 +22,7 @@ router.get('/search_index', helpers.isLoggedIn, (req, res) => {
 router.get('/users', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/users', { title: 'VAMPS:Search',
-        user:                 req.user,hostname: req.CONFIG.hostname,
+        user:                 req.user,hostname: CFG.hostname,
     });
 });
 //
@@ -30,7 +31,7 @@ router.get('/users', helpers.isLoggedIn, (req, res) => {
 router.get('/names', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/names', { title: 'VAMPS:Search',
-        user:                 req.user,hostname: req.CONFIG.hostname,
+        user:                 req.user,hostname: CFG.hostname,
     });
 });
 //
@@ -43,8 +44,8 @@ router.get('/blast', helpers.isLoggedIn, (req, res) => {
     // separate dbs
     var db_collector = []
     for(n in blast_dbs){
-        var blast_db_test1 = path.join(req.CONFIG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.nhr');
-        var blast_db_test2 = path.join(req.CONFIG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.00.nhr');
+        var blast_db_test1 = path.join(CFG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.nhr');
+        var blast_db_test2 = path.join(CFG.PATH_TO_BLAST_DBS, blast_dbs[n], blast_dbs[n]+'.00.nhr');
         if(helpers.fileExists(blast_db_test1)){
             db_collector.push(blast_dbs[n])
         }
@@ -55,17 +56,18 @@ router.get('/blast', helpers.isLoggedIn, (req, res) => {
     
     res.render('search/blast', { title: 'VAMPS:Search',
         blast_dbs : JSON.stringify(db_collector),
-        user: req.user,hostname: req.CONFIG.hostname,
+        user: req.user,hostname: CFG.hostname,
     });
 });
 //
 //
 //
 router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
+    console.log('in geo_by_tax')
     var phyla = []
     var ranks_without_domain = C.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
     var qSelect = "select phylum from phylum order by phylum"
-    var query = connection.query(qSelect, (err, rows, fields) => {
+    var query = DBConn.query(qSelect, (err, rows, fields) => {
         
         for(i in rows){
             //console.log(rows[i])
@@ -73,7 +75,7 @@ router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
         }
        
         res.render('search/geo_by_tax', { title: 'VAMPS:Search',
-            user  :     req.user,hostname: req.CONFIG.hostname,
+            user  :     req.user,hostname: CFG.hostname,
             ranks :   JSON.stringify(ranks_without_domain),
             //domains : JSON.stringify(C.DOMAINS.domains),
             phyla :  JSON.stringify(phyla),
@@ -87,8 +89,8 @@ router.get('/geo_by_tax', helpers.isLoggedIn, (req, res) => {
 router.get('/geo', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/geo_area', { title: 'VAMPS:Search',
-        user:     req.user,hostname: req.CONFIG.hostname,
-        token :   req.CONFIG.MAPBOX_TOKEN
+        user:     req.user,hostname: CFG.hostname,
+        token :   CFG.MAPBOX_TOKEN
     });
 });
 //
@@ -127,14 +129,14 @@ router.post('/geo_by_meta_search', helpers.isLoggedIn, (req, res) => {
         return
     }
     res.render('search/geo_map', { title: 'VAMPS:Search',
-                        user  :     req.user,hostname: req.CONFIG.hostname,
+                        user  :     req.user,hostname: CFG.hostname,
                         data :   JSON.stringify(latlon_datasets),
                         tax_name : 'noTax',
                         rank : 'noRank',
                         metadata : '',
                         md_range : '',
                         searches : JSON.stringify(searches),
-                        token :   req.CONFIG.MAPBOX_TOKEN,
+                        token :   CFG.MAPBOX_TOKEN,
                         search_type : 'metadata',
                         sub_title : 'Datasets by Metadata Value'
     })
@@ -156,7 +158,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
         var phyla = []
         var ranks_without_domain = C.RANKS.slice(1,-2)  // remove domain (too numerous), species and strain
         var qSelect = "select phylum from phylum order by phylum"
-        var query = connection.query(qSelect, (err, rows, fields) => {
+        var query = DBConn.query(qSelect, (err, rows, fields) => {
         
             for(i in rows){
                 //console.log(rows[i])
@@ -164,7 +166,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
             }
        
             res.render('search/geo_by_tax', { title: 'VAMPS:Search',
-                user  :     req.user,hostname: req.CONFIG.hostname,
+                user  :     req.user,hostname: CFG.hostname,
                 ranks :   JSON.stringify(ranks_without_domain),
                 //domains : JSON.stringify(C.DOMAINS.domains),
                 phyla :  JSON.stringify(phyla),
@@ -193,7 +195,7 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
     var latlon_datasets = {}
     latlon_datasets.points = {}
     taxa_collector = {}
-    var query = connection.query(qSelect, (err, rows, fields) => {
+    var query = DBConn.query(qSelect, (err, rows, fields) => {
             if (err) return(err);
             console.log('Long Query Finished')
             if(rows.length == 0){
@@ -246,14 +248,14 @@ router.post('/geo_by_tax_search', helpers.isLoggedIn, (req, res) => {
                     //`console.log(latlon_datasets)
                     
                     res.render('search/geo_map', { title: 'VAMPS:Search',
-                        user  :     req.user,hostname: req.CONFIG.hostname,
+                        user  :     req.user,hostname: CFG.hostname,
                         data :   JSON.stringify(latlon_datasets),
                         tax_name : tax,
                         rank: rank,
                         metadata:'noMD',
                         md_range: 'noRange',
                         searches : JSON.stringify({}),
-                        token :   req.CONFIG.MAPBOX_TOKEN,
+                        token :   CFG.MAPBOX_TOKEN,
                         search_type : 'tax',
                         sub_title : 'Datasets by Selected Taxon'
                     })
@@ -285,7 +287,7 @@ router.post('/all_taxa_by_rank', helpers.isLoggedIn, (req, res) => {
         var qSelect = "SELECT `"+rank+"` FROM `"+rank+"`"
         console.log(qSelect)
        
-        var query = connection.query(qSelect, (err, rows, fields) => {
+        var query = DBConn.query(qSelect, (err, rows, fields) => {
             if (err) return(err);
             for(i in rows){
                 if(rows[i][rank]){
@@ -369,7 +371,7 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
 //        
 //         XX = get_metadata_values()
 //         res.render('search/geo_by_meta_values', { title: 'VAMPS:Search',
-//             user  :  req.user,hostname: req.CONFIG.hostname,
+//             user  :  req.user,hostname: CFG.hostname,
 //             metadata_items:       JSON.stringify(XX.metadata_fields),
 //             mkeys:                XX.metadata_fields_array,
 //             md    :  JSON.stringify(temp),
@@ -384,8 +386,8 @@ router.post('/geo_search', helpers.isLoggedIn, (req, res) => {
 // 	// Find Geographic Range of Datasets by Metadata Values (not ready yet)
 //     console.log('req.body-->>');
 //     console.log(req.body);
-//     console.log(PROJECT_INFORMATION_BY_PID[44]);  // SPO
-//     console.log(MD_CUSTOM_UNITS[44]);
+//     console.log(C.PROJECT_INFORMATION_BY_PID[44]);  // SPO
+//     console.log(C.MD_CUSTOM_UNITS[44]);
 //     console.log(C.AllMetadata[44]);
 //     console.log('<<--req.body');
 //     var search_name = req.body.name
@@ -409,7 +411,7 @@ router.post('/accept_latlon_datasets', helpers.isLoggedIn, (req, res) => {
 router.get('/taxonomy', helpers.isLoggedIn, (req, res) => {
 
     res.render('search/taxonomy', { title: 'VAMPS:Search',
-        user:                 req.user,hostname: req.CONFIG.hostname,
+        user:                 req.user,hostname: CFG.hostname,
     });
 });
 //
@@ -417,7 +419,7 @@ router.get('/taxonomy', helpers.isLoggedIn, (req, res) => {
 //
 router.get('/metadata/:type', helpers.isLoggedIn, (req, res) => {
 
-      console.log('in by '+req.params.type);
+      console.log('in /metadata/:type '+req.params.type);
       let XX = get_metadata_values();
       let metadata_items = helpers.clean_escape(JSON.stringify(XX.metadata_fields));
 
@@ -427,18 +429,18 @@ router.get('/metadata/:type', helpers.isLoggedIn, (req, res) => {
         metadata_search_type: req.params.type,
         mkeys:                XX.metadata_fields_array,
         user:                 req.user,
-        hostname: req.CONFIG.hostname,
+        hostname: CFG.hostname,
       });
 })
 
 function get_metadata_values(){
-     var MD_items = new Object()
-     var tmp_metadata_fields = {};
+     let MD_items = new Object()
+     let tmp_metadata_fields = {};
      MD_items.metadata_fields_array = []
      MD_items.metadata_fields       = {}
       
      for (var did in C.AllMetadata){
-        for (var name in C.AllMetadata[did]){
+        for (let name in C.AllMetadata[did]){
             val = C.AllMetadata[did][name];
             if(name in tmp_metadata_fields){
               tmp_metadata_fields[name].push(val);
@@ -453,7 +455,7 @@ function get_metadata_values(){
         }
      }
       
-     for (var tmp_name in tmp_metadata_fields){
+     for (let tmp_name in tmp_metadata_fields){
         MD_items.metadata_fields_array.push(tmp_name);
         if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
           tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
@@ -503,7 +505,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
 	}
 	qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 	console.log(qSelect);
-	var query = connection.query(qSelect, (err, rows, fields) => {
+	var query = DBConn.query(qSelect, (err, rows, fields) => {
     if (err) {
         req.flash('fail', 'SQL Error: '+err);
         res.redirect('search_index#taxonomy');
@@ -517,7 +519,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
           pid = C.PROJECT_ID_BY_DID[did];
           pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
           datasets.ids.push(did);
-          datasets.names.push(pname+'--'+C.DATASET_NAME_BY_DID[did]);
+          datasets.names.push(pname+'--'+ C.DATASET_NAME_BY_DID[did]);
         }catch(e){
           console.log('Skipping did:'+did+'; No project found')
         }
@@ -530,7 +532,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, (req, res) => {
                     title    : 'VAMPS: Search Datasets',
                     datasets : JSON.stringify(datasets),
                     tax_string : tax_string,
-                    user     : req.user, hostname: req.CONFIG.hostname,
+                    user     : req.user, hostname: CFG.hostname,
           });
 
 
@@ -625,7 +627,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, (req, res) => {
                     //filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
                     //join_type: join_type,
-                    user     : req.user,hostname: req.CONFIG.hostname,
+                    user     : req.user,hostname: CFG.hostname,
           });  //
 //   }
 
@@ -882,7 +884,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
     var db_collector_short = []
     for(n in C.blast_dbs){
         if(C.blast_dbs[n] in req.body){
-            var db_path = path.join(req.CONFIG.PATH_TO_BLAST_DBS, C.blast_dbs[n], C.blast_dbs[n])
+            var db_path = path.join(CFG.PATH_TO_BLAST_DBS, C.blast_dbs[n], C.blast_dbs[n])
             db_collector.push(db_path)
             db_collector_short.push(C.blast_dbs[n])
         }
@@ -901,14 +903,14 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
 
     // using blastn with -outfmt 13 option produces 2 files
     var out_file = timestamp+"_blast_result.json";
-    var out_file_path = path.join(req.CONFIG.TMP_FILES,out_file);
+    var out_file_path = path.join(CFG.TMP_FILES,out_file);
     var query_file = timestamp+"_blast_query.fa";
-    var query_file_path = path.join(req.CONFIG.TMP_FILES,query_file);
+    var query_file_path = path.join(CFG.TMP_FILES,query_file);
     // then run 'blastn' command
     // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     
     const exec = require('child_process').exec;
-    var blast_cmd = req.CONFIG.PATH_TO_BLAST+"/blastn"
+    var blast_cmd = CFG.PATH_TO_BLAST+"/blastn"
     var dbs_string = '"'+db_collector.join(' ')+'"'
     //var echo_cmd = "\""+"echo -e TTTAGAGGGGTTTTGCGCAGCTAACGCG|"
     // Ev9:  ACACGACGACAACCTGAAAGGGAT
@@ -925,7 +927,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
         res.redirect('search_index');
       }else{
             var blast_options = {
-              scriptPath : req.CONFIG.PATH_TO_BLAST,
+              scriptPath : CFG.PATH_TO_BLAST,
               //args :       [ "-c",echo_cmd+blast_cmd,"-db ",dbs_string,"-outfmt","15","-out",out_file_path+"\"" ],
               args :       [ blast_cmd,"-db ",dbs_string,"-outfmt","15","-query",query_file_path,"-out",out_file_path,'-task',task ],
             };
@@ -933,7 +935,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
             console.log(blast_options.args.join(' '))
             //return   TTTAGAGGGGTTTTGCGCAGCTAACGCG
            //  var blast_process = exec( "sh",blast_options.args, {
-        //             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+        //             env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
         //             detached: true,
         //             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
         //             stdio: 'pipe'  // stdin, stdout, stderr
@@ -952,7 +954,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, (req, res) => {
                         show     : 'blast_result',
                         dbs      : JSON.stringify(db_collector_short),
                         query    : req.body.query,
-                        user     : req.user,hostname: req.CONFIG.hostname,
+                        user     : req.user,hostname: CFG.hostname,
                 });
             });
         
@@ -992,7 +994,7 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, (req, res) => {
     q += " AND seq_count > 0"
   
   console.log(q);
-  connection.query(q, (err, rows, fields) => {
+    DBConn.query(q, (err, rows, fields) => {
     if(err){
       console.log(err);
     }else{
@@ -1023,7 +1025,7 @@ router.get('/seqs_hit/:seqid/:ds', helpers.isLoggedIn, (req, res) => {
                     seqid    : seqid,
                     seq      : seq.toString(),
                     obj      : JSON.stringify(obj),
-                    user     : req.user,hostname: req.CONFIG.hostname,
+                    user     : req.user,hostname: CFG.hostname,
                 });  //
       }
   });
@@ -1078,9 +1080,6 @@ function get_search_datasets(user, search){
             console.log('skipping pid,did',pid,did,e)
         }
     }
-
-    
-
 
     console.log('ds',datasets1)
 
@@ -1162,7 +1161,7 @@ function get_search_datasets_did(datasets, search, did, mdname, mdvalue){
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
         }else{
-          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:C.AllMetadata[did][search["metadata-item"]] });
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value: C.AllMetadata[did][search["metadata-item"]] });
         }
       }
       return ds_plus;

@@ -7,8 +7,8 @@ const url  = require('url');
 const path = require('path');
 const fs   = require('fs-extra');
 const multer    = require('multer');
-const config  = require(app_root + '/config/config');
-const upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+const CFG  = require(app_root + '/config/config');
+const upload = multer({ dest: CFG.TMP, limits: { fileSize: CFG.UPLOAD_FILE_SIZE.bytes }  });
 const helpers = require(app_root + '/routes/helpers/helpers');
 const QUERY = require(app_root + '/routes/queries');
 
@@ -34,11 +34,11 @@ function start_visual_post_items(req) {
 
   // get dataset_ids the add names for biom file output:
   // chosen_id_order was set in unit_select and added to session variable
-  console.log('visual_post_items.chosen_datasets1');
-  console.log(visual_post_items.chosen_datasets);
+  //console.log('visual_post_items.chosen_datasets1');
+  //console.log(visual_post_items.chosen_datasets);
   visual_post_items.chosen_datasets = req.session.project_dataset_vars.current_project_dataset_obj_w_keys;
-console.log('visual_post_items.chosen_datasets2');
-console.log(visual_post_items.chosen_datasets);
+//console.log('visual_post_items.chosen_datasets2');
+//console.log(visual_post_items.chosen_datasets);
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\n\nreq.session: ' + JSON.stringify(req.session);
   viz_files_obj.print_log_if_not_vamps(req, msg);
@@ -118,8 +118,8 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
     constants       : JSON.stringify(needed_constants),
     post_items      : JSON.stringify(visual_post_items),
     user            : req.user,
-    hostname        : req.CONFIG.hostname,
-    token           : req.CONFIG.MAPBOX_TOKEN,
+    hostname        : CFG.hostname,
+    token           : CFG.MAPBOX_TOKEN,
     image_to_render : JSON.stringify(image_to_open),
   });
 });
@@ -214,7 +214,7 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
       md_req       : JSON.stringify(required_metadata_headers),   //
       unit_choice  : current_unit_choice,
       user         : req.user,
-      hostname     : req.CONFIG.hostname,
+      hostname     : CFG.hostname,
     });  // end render
   }
   // benchmarking
@@ -228,22 +228,22 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
 
 //TODO: test     for (const pj of obj) {
 function get_data_to_open(req) {
-  let DATA_TO_OPEN = {};
+  let local_data_to_open = {};
   if (req.body.data_to_open) {
     // open many projects
     let obj = JSON.parse(req.body.data_to_open);
     for (let pj in obj){
       let pid = C.PROJECT_INFORMATION_BY_PNAME[pj].pid;
-      DATA_TO_OPEN[pid] = obj[pj];
+      local_data_to_open[pid] = obj[pj];
     }
     //console.log('got data to open '+data_to_open)
   } else if (req.body.project){
     // open whole project
-    DATA_TO_OPEN[req.body.project_id] = C.DATASET_IDS_BY_PID[req.body.project_id];
+    local_data_to_open[req.body.project_id] = C.DATASET_IDS_BY_PID[req.body.project_id];
   }
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
-  return DATA_TO_OPEN;
+  console.log('local_data_to_open');
+  console.log(local_data_to_open);
+  return local_data_to_open;
 }
 
 function render_visuals_index(res, req, needed_constants = C) {
@@ -256,9 +256,9 @@ function render_visuals_index(res, req, needed_constants = C) {
     md_names    : C.AllMetadataNames,
     filtering   : 0,
     portal_to_show : '',
-    data_to_open: JSON.stringify(DATA_TO_OPEN),
+    data_to_open: JSON.stringify(req.session.DATA_TO_OPEN),
     user        : req.user,
-    hostname    : req.CONFIG.hostname,
+    hostname    : CFG.hostname,
   });
 }
 
@@ -281,11 +281,11 @@ router.get('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = C.ALL_DATASETS;
-  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {};
+  req.session.SHOW_DATA = C.ALL_DATASETS;
+  //req.session.TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+  //METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = get_data_to_open(req);
+  req.session.DATA_TO_OPEN = get_data_to_open(req);
 
   let needed_constants = helpers.retrieve_needed_constants(C,'visuals_index');
   render_visuals_index(res, req, needed_constants);
@@ -309,11 +309,11 @@ router.post('/visuals_index', helpers.isLoggedIn, (req, res) => {
 
   //console.log(ALL_DATASETS);
   // GLOBAL
-  SHOW_DATA = C.ALL_DATASETS;
-  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {};
+  req.session.SHOW_DATA = C.ALL_DATASETS;
+  //req.session.TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+  //METADATA  = {};
   // GLOBAL
-  DATA_TO_OPEN = get_data_to_open(req);
+  req.session.DATA_TO_OPEN = get_data_to_open(req);
 
   render_visuals_index(res, req, C);
 });
@@ -335,7 +335,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, (req, res) => {
     constants: JSON.stringify(C),
     referer: req.body.referer,
     ts: user_timestamp,
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
   });
 
 });
@@ -386,15 +386,15 @@ router.post('/dendrogram',  helpers.isLoggedIn, (req,  res) => {
 
   let user_timestamp = viz_files_obj.get_user_timestamp(req);
   let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath: CFG.PATH_TO_VIZ_SCRIPTS,
     args: [ '-in',  biom_file_path,  '-metric', metric, '--function', 'dendrogram-' + image_type, '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
   console.log(options.scriptPath + script + ' ' + options.args.join(' '));
 
   let dendrogram_process = spawn( options.scriptPath + script,
     options.args, {
-      env: {'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      env: {'PATH': CFG.PATH,
+        'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
       detached: true,
       stdio: 'pipe' // stdin,  stdout,  stderr
     });
@@ -447,7 +447,7 @@ router.post('/pcoa', helpers.isLoggedIn, (req, res) => {
   console.log(options.scriptPath + options.script + ' ' + options.args.join(' '));
 
   let pcoa_process = spawn( options.scriptPath + options.script, options.args, {
-    env: { 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+    env: { 'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH },
     detached: true,
     stdio: [ 'ignore', null, null ]
   });
@@ -501,7 +501,7 @@ router.post('/pcoa3d', helpers.isLoggedIn, (req, res) => {
 
   const script_full_path = path.join(options1.scriptPath, options1.script);
   let pcoa_process = spawn( script_full_path, options1.args, {
-    env:{ 'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH },
+    env:{ 'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH },
     detached: true,
     stdio:['pipe', 'pipe', 'pipe']
   });
@@ -718,7 +718,7 @@ router.post('/phyloseq', helpers.isLoggedIn, (req, res) => {
 
   console.log(path.join(options.scriptPath, options.script) + ' ' + options.args.join(' '));
   let phyloseq_process = spawn( path.join(options.scriptPath, options.script), options.args, {
-    env: {'PATH': req.CONFIG.PATH},
+    env: {'PATH': CFG.PATH},
     detached: true,
     //stdio: [ 'ignore', null, null ]
     stdio: 'pipe'  // stdin, stdout, stderr
@@ -794,7 +794,8 @@ function make_new_matrix(req, pi, selected_did, order, pd_vars) {
   const biom_matrix_obj = new biom_matrix_controller.BiomMatrix(req, pi, overwrite_the_matrix_file);
   let new_matrix = biom_matrix_obj.biom_matrix;
   // console.timeEnd("TIME: biom_matrix_new_from_bar_single");
-  new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
+  //new_matrix.dataset = pd_vars.get_current_dataset_name_by_did(selected_did);
+  new_matrix.pjds = pd_vars.get_current_pr_dataset_name_by_did(selected_did);
   new_matrix.did = selected_did;
   new_matrix.total = 0;
   new_matrix = helpers.sort_json_matrix(new_matrix, order);
@@ -857,13 +858,14 @@ function get_new_order_by_button(order) {
   let new_order = {};
   switch (order.orderby) {
     case "alpha":
+      new_order.count_value = '';
       if (order.value === 'a') {
         new_order.alpha_value = 'z';
       }
       else {
         new_order.alpha_value = 'a';
       }
-      new_order.count_value = '';
+      
       break;
     case "count":
       if (order.value === 'min') {
@@ -876,37 +878,23 @@ function get_new_order_by_button(order) {
     default:
       break;
   }
+  //works
+  // { count_value: 'max', alpha_value: '' }
+  // { count_value: 'min', alpha_value: '' }
+  // { count_value: '',    alpha_value: 'a' }
+  // { count_value: '',    alpha_value: 'z' }
+  // returns to
+  // router.get('/bar_single'  and
+  // router.get('/bar_double'
   return new_order;
 }
 
 function write_seq_file_async(req, res, selected_did) {
-  connection.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
+  DBConn.query(QUERY.get_sequences_perDID([selected_did], req.session.unit_choice),
      (err, rows) => {
       mysqlSelectedSeqsPerDID_to_file(err, req, res, rows, selected_did);
     });
 }
-
-router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
-  console.log('in routes_viz/bar_single');
-  let myurl = url.parse(req.url, true);
-  //console.log('in piechart_single',myurl.query)
-  let selected_did = myurl.query.did;
-  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
-  let value = myurl.query.val || 'z'; // a,z, min, max
-  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
-  let pd_vars = new visualization_controller.visualizationCommonVariables(req);
-
-  let pi = make_pi([selected_did], req, pd_vars);
-  let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
-  let new_order = get_new_order_by_button(order);
-
-  if (pi.unit_choice !== 'OTUs') {
-    write_seq_file_async(req, res, selected_did);
-    const bar_type = 'single';
-    const timestamp_only = viz_files_obj.get_timestamp_only(req);
-    LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
-  }
-});
 
 function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type, dist = ""}) {
   console.log('LoadDataFinishRequest in bar_' + bar_type);
@@ -923,10 +911,32 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, ne
     bar_type: bar_type,
     order: JSON.stringify(new_order),
     dist: dist,
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user, hostname: CFG.hostname,
   });
 }
+//
+// B A R - C H A R T  -- S I N G L E
+//
+router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
+  console.log('in routes_viz/bar_single');
+  let myurl = url.parse(req.url, true);
+  //console.log('in piechart_single',myurl.query)
+  let selected_did = myurl.query.did;
+  let orderby = myurl.query.orderby || 'alpha'; // alpha, count
+  let value = myurl.query.val || 'z'; // a,z, min, max
+  let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
+  let pd_vars = new visualization_controller.visualizationCommonVariables(req);
 
+  let pi = make_pi([selected_did], req, pd_vars);
+  let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
+  let new_order = get_new_order_by_button(order);
+  if (pi.unit_choice !== 'OTUs') {
+    write_seq_file_async(req, res, selected_did);
+    const bar_type = 'single';
+    const timestamp_only = viz_files_obj.get_timestamp_only(req);
+    LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, new_order, bar_type});
+  }
+});
 //
 // B A R - C H A R T  -- D O U B L E
 //
@@ -993,7 +1003,7 @@ function get_clean_data_or_die(req, res, data, pjds, selected_did, search_tax, s
       tax: search_tax,
       fname: seqs_filename,
       seq_list: 'Error Retrieving Sequences',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
     });
     return;
   }
@@ -1009,7 +1019,7 @@ function render_seq(req, res, pjds, search_tax, seqs_filename = '', seq_list = '
     fname: seqs_filename,
     seq_list: seq_list,
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
   });
 }
 
@@ -1128,9 +1138,7 @@ router.get('/sequences/', helpers.isLoggedIn, (req, res) => {
 
           // console.time("TIME: loop through clean_data");
           let filtered_data = filter_data_by_last_taxon(search_tax, clean_data);
-          // TODO: Andy, do we still need to print it out? It's huge!
-          // console.log('filtered_data')
-          // console.log(filtered_data)
+
           let seq_list = make_seq_list_by_filtered_data_loop(filtered_data);
           // console.timeEnd("TIME: loop through clean_data");
 
@@ -1149,7 +1157,7 @@ router.get('/sequences/', helpers.isLoggedIn, (req, res) => {
       tax: search_tax,
       fname: '',
       seq_list: 'Error Retrieving Sequences',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
     });
   }
 });
@@ -1213,9 +1221,9 @@ router.post('/save_datasets', helpers.isLoggedIn,  (req, res) => {
   viz_files_obj.print_log_if_not_vamps(req, req.body);
   console.log('req.body: save_datasets');
 
-  let filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
-  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
+  let filename_path = path.join(CFG.USER_FILES_BASE,req.user.username,req.body.filename);
+  helpers.mkdirSync(path.join(CFG.USER_FILES_BASE));  // create dir if not present
+  helpers.mkdirSync(path.join(CFG.USER_FILES_BASE,req.user.username)); // create dir if not present
   //console.log(filename);
   helpers.write_to_file(filename_path,req.body.datasets);
 
@@ -1236,7 +1244,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
     let acceptable_prefixes = ['datasets', 'image'];
-    let saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
 
     let file_info = {};
     let modify_times = [];
@@ -1271,7 +1279,7 @@ router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
 
           finfo: JSON.stringify(file_info),
           times: modify_times,
-          user: req.user, hostname: req.CONFIG.hostname,
+          user: req.user, hostname: CFG.hostname,
         });
 
     });
@@ -1409,13 +1417,13 @@ router.post('/cluster_ds_order', helpers.isLoggedIn, (req, res) => {
 
   let pjds_lookup = current_pr_dat_obj.current_project_dataset_obj_by_name;
   let options = {
-    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-in', biom_file_path, '-metric', metric, '--function', 'cluster_datasets', '--basedir', tmp_file_path, '--prefix', user_timestamp],
   };
   console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
 
   let cluster_process = spawn( options.scriptPath + '/distance_and_ordination.py', options.args, {
-    env:{'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env:{'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true,
     stdio: [ 'ignore', null, null ]
   });  // stdin, stdout, stderr
@@ -1509,7 +1517,8 @@ router.post('/dheatmap_number_to_color', helpers.isLoggedIn, (req, res) => {
 });
 
 function FinishSplitFile(req, res){
-  let distmtx_file_path = file_path_obj.get_tmp_distmtx_file_path(req);
+  let file_name = viz_files_obj.get_distmtx_file_name(req);
+  let distmtx_file_path = file_path_obj.get_tmp_distmtx_file_path(req, file_name);
 
   read_file_when_ready(distmtx_file_path);
   fs.readFile(distmtx_file_path, 'utf8', function readFile(err, mtxdata) {
@@ -1553,13 +1562,13 @@ router.post('/dheatmap_split_distance', helpers.isLoggedIn, (req, res) => {
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
   const tmp_file_path = file_path_obj.get_tmp_file_path(req);
   let options = {
-    scriptPath: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    scriptPath: CFG.PATH_TO_VIZ_SCRIPTS,
     args:       [ '-in', biom_file_path, '-splits', '--function', 'splits_only', '--basedir', tmp_file_path, '--prefix', user_timestamp ],
   };
 
   console.log(options.scriptPath + '/distance_and_ordination.py ' + options.args.join(' '));
   let split_process = spawn( options.scriptPath +'/distance_and_ordination.py', options.args, {
-    env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true,
     stdio: 'pipe'  // stdin, stdout, stderr
   });
@@ -1614,18 +1623,20 @@ router.post('/download_file', helpers.isLoggedIn, (req, res) => {
 //
 // test: clear by substring, first opening
 router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
-  //SHOW_DATA = ALL_DATASETS;
+  //req.session.SHOW_DATA = C.ALL_DATASETS;
   console.log('in clear filters');
   //console.log(req.query)
   //FILTER_ON = false
-  PROJECT_TREE_OBJ = [];
+  req.session.PROJECT_TREE_OBJ = [];
   if (req.query.hasOwnProperty('btn') && req.query.btn === '1'){
-    DATA_TO_OPEN = {};
+    req.session.DATA_TO_OPEN = {};
   }
-  //DATA_TO_OPEN = {}
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-  PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":PROJECT_TREE_PIDS.length};
-  res.json(PROJECT_FILTER);
+
+  // TOTO These 'now GLOBAL' variables should be attached to the session so filering is seen by only one person
+  // DATA_TO_OPEN PROJECT_TREE_OBJ PROJECT_TREE_PIDS PROJECT_FILTER SHOW_DATA
+  req.session.PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, req.session.SHOW_DATA.projects);
+  req.session.PROJECT_FILTER = {"substring":"", "env":[], "target":"", "portal":"", "public":"-1", "metadata1":"", "metadata2":"", "metadata3":"", "pid_length":req.session.PROJECT_TREE_PIDS.length};
+  res.json(req.session.PROJECT_FILTER);
 });
 
 
@@ -1633,18 +1644,18 @@ router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
 //
 //
 
-router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
-  let portal = req.params.portal;
-
-  console.log('in load_portal: ' + portal);
-  SHOW_DATA = C.ALL_DATASETS;
-  PROJECT_TREE_OBJ = [];
-
-  PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
-  PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-  let PROJECT_FILTER = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
-  res.json(PROJECT_FILTER);
-});
+// router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
+//   console.log('in load_portal: ' + portal);
+//   let portal = req.params.portal;
+//
+//   req.session.SHOW_DATA = C.ALL_DATASETS;
+//   PROJECT_TREE_OBJ = [];
+//
+//   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
+//   PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+//   let temp_project_filter = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
+//   res.json(temp_project_filter);
+// });
 //
 //
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS
@@ -1663,17 +1674,14 @@ router.get('/livesearch_projects/:substring', (req, res) => {
   if (empty_string) {
     substring = "";
   }
-  PROJECT_FILTER.substring = substring;
+  req.session.PROJECT_FILTER.substring = substring;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
-  console.log(PROJECT_FILTER);
-
-  res.json(PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 });
 
 
@@ -1682,16 +1690,16 @@ router.get('/livesearch_projects/:substring', (req, res) => {
 //
 // test click filter by ENV source on visuals_index
 router.get('/livesearch_env/:envid', (req, res) => {
-  PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
+  req.session.PROJECT_FILTER.env = filters_obj.get_envid_lst(req);
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
   // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1704,15 +1712,15 @@ router.get('/livesearch_target/:gene_target', (req, res) => {
   if (empty_string) {
     gene_target = "";
   }
-  PROJECT_FILTER.target = gene_target;
+  req.session.PROJECT_FILTER.target = gene_target;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1727,14 +1735,14 @@ router.get('/livesearch_portal/:portal', (req, res) => {
   if (empty_string) {
     select_box_portal = "";
   }
-  PROJECT_FILTER.portal = select_box_portal;
+  req.session.PROJECT_FILTER.portal = select_box_portal;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  res.json(PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1745,15 +1753,15 @@ router.get('/livesearch_portal/:portal', (req, res) => {
 // test: click public/private on visuals_index
 router.get('/livesearch_status/:q', (req, res) => {
   console.log('viz:in livesearch status');
-  PROJECT_FILTER.public = req.params.q;
+  req.session.PROJECT_FILTER.public = req.params.q;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 //
@@ -1773,20 +1781,20 @@ router.get('/livesearch_metadata/:num/:q', (req, res) => {
   if (empty_string) {
     q = "";
   }
-  PROJECT_FILTER['metadata' + num] = q;
+  req.session.PROJECT_FILTER['metadata' + num] = q;
 
   const global_filter_vals = filters_obj.get_global_filter_values(req);
-  PROJECT_FILTER = global_filter_vals.project_filter;
-  NewPROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
-  PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
+  req.session.PROJECT_FILTER = global_filter_vals.project_filter;
+  req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
+  req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  console.log(PROJECT_FILTER);
-  res.json(PROJECT_FILTER);
+  console.log(req.session.PROJECT_FILTER);
+  res.json(req.session.PROJECT_FILTER);
 
 });
 
 function get_files_prefix(req) {
-  let files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE) + "--datasets_" ;
+  let files_prefix = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE) + "--datasets_" ;
   let units = req.body.units;
   let taxonomies = {
     default_simple: 'tax_' + C.default_taxonomy.name + '_simple',
@@ -1824,7 +1832,7 @@ router.post('/check_units', (req, res) => {
 //   console.log(dataset_ids)
 
   for (let i in dataset_ids){
-    //console.log(dataset_ids[i]+' <> '+DATASET_NAME_BY_DID[dataset_ids[i]])
+    //console.log(dataset_ids[i]+' <> '+C.DATASET_NAME_BY_DID[dataset_ids[i]])
     path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
     //console.log(path_to_file)
     try {
@@ -1943,18 +1951,18 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
   let json = {};
   json.id = id;
   json.item = [];
-  console.log('DATA_TO_OPEN');
-  console.log(DATA_TO_OPEN);
+  console.log('req.session.DATA_TO_OPEN');
+  console.log(req.session.DATA_TO_OPEN);
 
-  //PROJECT_TREE_OBJ = []
-  //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
+
+
   let itemtext;
   if (parseInt(id) === 0){
-    PROJECT_TREE_PIDS.map(pid => {
+    req.session.PROJECT_TREE_PIDS.map(pid => {
       itemtext = get_itemtext(pid);
 
       let pid_str = pid.toString();
-      // if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      // if (Object.keys(req.session.DATA_TO_OPEN).includes(pid_str)){
       // TODO: Andy, how to test this?
       //   // TODO ? use json_item_collect(node, json_item, checked)
       //   json.item.push({id: 'p' + pid_str, text: itemtext, checked: false, child: 1, item: [], open: '1'});
@@ -1970,7 +1978,7 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
         child: 1,
         item: [],
       };
-      if (Object.keys(DATA_TO_OPEN).includes(pid_str)){
+      if (Object.keys(req.session.DATA_TO_OPEN).includes(pid_str)){
         // TODO: Andy, how to test this?
         options_obj.open = '1';
       }
@@ -1986,12 +1994,12 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
     let this_project = C.ALL_DATASETS.projects.find(prj => prj.pid === parseInt(id));
 
     let all_checked_dids = [];
-    if (Object.keys(DATA_TO_OPEN).length > 0){
+    if (Object.keys(req.session.DATA_TO_OPEN).length > 0){
       // TODO: Andy, how to test this?
-      console.log('dto');
-      viz_files_obj.print_log_if_not_vamps(req, 'DATA_TO_OPEN');
-      for (let openpid in DATA_TO_OPEN){
-        Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid]);
+      //console.log('dto');
+      viz_files_obj.print_log_if_not_vamps(req, 'req.session.DATA_TO_OPEN');
+      for (let openpid in req.session.DATA_TO_OPEN){
+        Array.prototype.push.apply(all_checked_dids, req.session.DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
@@ -2074,7 +2082,7 @@ router.get('/taxa_piechart', (req, res) => {
         datasets: JSON.stringify(cols),
         counts: data,
         ts: timestamp_only,
-        user: req.user, hostname: req.CONFIG.hostname,
+        user: req.user, hostname: CFG.hostname,
       });
     }
   });

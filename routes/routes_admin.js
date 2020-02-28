@@ -3,7 +3,7 @@ var router   = express.Router();
 const passport = require('passport');
 const helpers  = require(app_root + '/routes/helpers/helpers');
 const queries  = require(app_root + '/routes/queries_admin');
-const config   = require(app_root + '/config/config');
+const CFG   = require(app_root + '/config/config');
 const fs       = require('fs-extra');
 const path     = require('path');
 const spawn    = require('child_process').spawn;
@@ -29,7 +29,7 @@ router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => 
   res.render('admin/admin_index', {
     title: 'VAMPS Site Administration',
     user: req.user,
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -44,7 +44,7 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, r
     user: req.user,
     project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
     user_info: JSON.stringify(C.ALL_USERS_BY_UID),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -66,7 +66,7 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => 
     user_order: JSON.stringify(user_order),
     //project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
     user_info: JSON.stringify(C.ALL_USERS_BY_UID),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -81,7 +81,7 @@ router.get('/public_status', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     user: req.user,
     project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PID),
     user_info: JSON.stringify(C.ALL_USERS_BY_UID),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -106,7 +106,7 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
       C.PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [C.PROJECT_INFORMATION_BY_PID[selected_pid].oid];
       C.PROJECT_INFORMATION_BY_PID[selected_pid].public      = 0;
     }
-    connection.query(q, (err, rows, fields) => {
+    DBConn.query(q, (err, rows, fields) => {
       //console.log(qSequenceCounts)
       if (err) {
         console.log('Query error: ' + err);
@@ -131,7 +131,7 @@ router.get('/admin_status', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =>
     user: req.user,
     //project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
     user_info: JSON.stringify(user_order),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -156,7 +156,7 @@ router.post('/admin_update', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     } else {
       C.ALL_USERS_BY_UID[selected_uid].status = 50; // Lowly User
     }
-    connection.query(q, (err, rows, fields) => {
+    DBConn.query(q, (err, rows, fields) => {
       if (err) {
         console.log('Query error: ' + err);
         response = 'Query error: ' + err;
@@ -224,7 +224,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
     pid: pid,
     project_info: JSON.stringify(myjson),
     project: C.PROJECT_INFORMATION_BY_PID[pid].project,
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -252,7 +252,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
     proj_to_open: proj_to_open,
     project_list: JSON.stringify(project_list),
     user_info: JSON.stringify(C.ALL_USERS_BY_UID),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 
 });
@@ -456,7 +456,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], (req,
   }
 
   console.log(q);
-  connection.query(q, (err, rows, fields) => {
+  DBConn.query(q, (err, rows, fields) => {
     if (err) {
       console.log('Query error: ' + err);
       response = 'Query error: ' + err;
@@ -499,7 +499,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], (req, res) =
 
   // 2- add to table 'access'
   //q = "INSERT ignore into `access` (user_id, project_id) VALUES('"+selected_uid+"','"+selected_pid+"')"
-  connection.query(queries.insert_access_table(selected_uid, selected_pid), (err, rows, fields) => {
+  DBConn.query(queries.insert_access_table(selected_uid, selected_pid), (err, rows, fields) => {
     //console.log(qSequenceCounts)
     if (err) {
       console.log('Query error: ' + err);
@@ -521,20 +521,20 @@ router.get('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   //console.log(JSON.stringify(C.ALL_USERS_BY_UID))
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var user_order = get_name_ordered_users_list()
   res.render('admin/inactivate_user', {
     title: 'VAMPS Inactivate User',
     user: req.user,
     user_info: JSON.stringify(user_order),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 });
 router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in delete_user POST ADMIN')
   // set active to 0 in user table
   // results on login attempt:  That account is inactive -- send email to vamps.mbl.edu to request re-activation.
-  // also delete from ALL_USERS_BY_UID
+  // also delete from C.ALL_USERS_BY_UID
   var uid_to_delete = req.body.uid;
   var response;
   // var finish = () => {
@@ -542,7 +542,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
 //               title     :'VAMPS Inactivate User',
 //               user: req.user,
 //               user_info: JSON.stringify(ALL_USERS_BY_UID),
-//               hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+//               hostname: CFG.hostname, // get the user out of session and pass to template
 //             });
 // 
 //     };
@@ -552,7 +552,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
     res.send('FAILED: You cannot inactivate yourself!');
   } else {
     delete C.ALL_USERS_BY_UID[uid_to_delete]
-    connection.query(queries.inactivate_user(uid_to_delete), (err, rows) => {
+    DBConn.query(queries.inactivate_user(uid_to_delete), (err, rows) => {
       if (err) {
         response = 'FAILED: sql error ' + err
       } else {
@@ -569,7 +569,7 @@ router.post('/inactivate_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res
 //
 router.get('/update_metadata_object', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in update_metadata_object')
-  var meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
+  var meta_file = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   delete require.cache[require.resolve(meta_file)];  // THIS CLEARS THE REQUIRE CACHE
   //console.log(require.cache)
   //C.AllMetadata  = {}
@@ -587,7 +587,7 @@ router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   res.render('admin/new_user', {
     title: 'VAMPS Create new user',
     user: req.user,
-    hostname: req.CONFIG.hostname,
+    hostname: CFG.hostname,
     new_user: {}
   });
 });
@@ -605,7 +605,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
     res.render('admin/new_user', {
       title: 'VAMPS Create new user',
       user: req.user,
-      hostname: req.CONFIG.hostname,
+      hostname: CFG.hostname,
       new_user: nuser
     });
   }
@@ -616,7 +616,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
 
   } else {
 
-    connection.query(queries.get_user_by_name(new_user.username), (err, rows) => {
+    DBConn.query(queries.get_user_by_name(new_user.username), (err, rows) => {
       if (err) {
         console.log(err);
         req.flash('fail', err);
@@ -638,14 +638,14 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
         newUserMysql.security_level = 50;  //reg user
         var insertQuery             = queries.insert_new_user(newUserMysql)
 
-        connection.query(insertQuery, (err, rows) => {
+        DBConn.query(insertQuery, (err, rows) => {
           if (err) {
             console.log(insertQuery);
             console.log(err);
             req.flash('fail', 'Username "' + new_user.username + '" is already taken.');
           } else {
             new_user.user_id                   = rows.insertId;
-            var user_data_dir                  = path.join(req.CONFIG.USER_FILES_BASE, new_user.username);
+            var user_data_dir                  = path.join(CFG.USER_FILES_BASE, new_user.username);
             console.log('Admin:Validating/Creating User Data Directory: ' + user_data_dir);
             helpers.ensure_dir_exists(user_data_dir);  // also chmod to 0777 (ug+rwx)
             C.ALL_USERS_BY_UID[new_user.user_id] = {
@@ -675,7 +675,7 @@ router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], (req, 
     title: 'VAMPS Reset User Password',
     user: req.user,
     user_info: JSON.stringify(user_order),
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
 });
 //
@@ -692,7 +692,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], (req,
       title: 'VAMPS Reset User Password',
       user: req.user,
       user_info: JSON.stringify(user_order),
-      hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+      hostname: CFG.hostname, // get the user out of session and pass to template
     });
 
   };
@@ -704,7 +704,7 @@ router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], (req,
 
     var updateQuery = queries.reset_user_password_by_uid(password, uid)
     console.log(updateQuery);
-    connection.query(updateQuery, (err, rows) => {
+    DBConn.query(updateQuery, (err, rows) => {
       if (err) {
         req.flash('fail', 'FAILED: sql error ' + err);
       } else {
@@ -725,7 +725,7 @@ router.get('/update_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
     title: 'VAMPS Validate Metadata',
     user: req.user,
     project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
-    hostname: req.CONFIG.hostname // get the user out of session and pass to template
+    hostname: CFG.hostname // get the user out of session and pass to template
   });
 });
 //
@@ -803,7 +803,7 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
 //
 router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in apply_metadata')
-  if (req.CONFIG.site == 'vamps') {
+  if (CFG.site == 'vamps') {
     console.log('VAMPS PRODUCTION -- no print to log');
   } else {
     console.log(req.body)
@@ -811,7 +811,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   var timestamp             = +new Date();
   var selected_pid          = req.body.pid
   var filename              = req.body.filename
-  var file_path             = path.join(req.CONFIG.TMP_FILES, filename)
+  var file_path             = path.join(CFG.TMP_FILES, filename)
   var dids                  = C.DATASET_IDS_BY_PID[selected_pid]
   var new_required_metadata = {}
   var new_custom_metadata   = {}
@@ -873,16 +873,16 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
 
   // Run script to add custom and required metadata to mysql database
   var options          = {
-    scriptPath: req.CONFIG.PATH_TO_NODE_SCRIPTS,
-    args: ['-host', req.CONFIG.dbhost, '-f', file_path, '-pid', selected_pid, '-q']
+    scriptPath: CFG.PATH_TO_NODE_SCRIPTS,
+    args: ['-host', CFG.dbhost, '-f', file_path, '-pid', selected_pid, '-q']
   };
   var script_name      = 'vamps_script_update_metadata.py'
-  var script_path      = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, script_name)
+  var script_path      = path.join(CFG.PATH_TO_NODE_SCRIPTS, script_name)
   var full_script_path = script_path + ' ' + options.args.join(' ')
 
   ////No module named argparse  need path
   var update_metadata_process = spawn(options.scriptPath + '/vamps_script_update_metadata.py', options.args, {
-    env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true, stdio: 'pipe'
   });  // stdin, stdout, stderr
 
@@ -900,7 +900,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   });
   update_metadata_process.on('close', function checkExitCode(code) {
     console.log('From apply_metadata process exited with code ' + code);
-    if (req.CONFIG.site == 'vamps') {
+    if (CFG.site == 'vamps') {
       console.log('VAMPS PRODUCTION -- no print to log');
     } else {
       console.log('OUTPUT:\n' + output)
@@ -910,7 +910,7 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
       title: 'VAMPS Validate Metadata',
       user: req.user,
       project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
-      hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+      hostname: CFG.hostname, // get the user out of session and pass to template
     });
   });
 
@@ -1041,7 +1041,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
         console.log('OK--VALIDATES');
       }
       html_json.filename = username + '_' + project_name + '--' + timestamp + '.json';
-      let file_path = path.join(req.CONFIG.TMP_FILES, html_json.filename);
+      let file_path = path.join(CFG.TMP_FILES, html_json.filename);
 
       mdata = convert_names_to_ids_for_storage(newmd);
 
@@ -1075,7 +1075,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res
 });
 
 router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], function get_all_files_retrieval(req, res) {
-  var export_dir = path.join(config.USER_FILES_BASE);
+  var export_dir = path.join(CFG.USER_FILES_BASE);
 
   // console.log("XXX export_dir");
   // console.log(export_dir);
@@ -1092,7 +1092,7 @@ router.get('/all_files_retrieval', [helpers.isLoggedIn, helpers.isAdmin], functi
 
     res.render('admin/all_files_retrieval', {
       title: 'VAMPS: Users Files',
-      user: req.user, hostname: req.CONFIG.hostname,
+      user: req.user, hostname: CFG.hostname,
       finfo: JSON.stringify(files)
 
     });
@@ -1103,7 +1103,7 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
   console.log('in create_dco_metadata_file')
   var timestamp    = +new Date();
   var out_file     = 'dco_all_' + timestamp + '.tsv'
-  var outfile_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS, out_file)
+  var outfile_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS, out_file)
   var pids_list    = []
   for (pid in C.PROJECT_INFORMATION_BY_PID) {
     project = C.PROJECT_INFORMATION_BY_PID[pid].project
@@ -1113,19 +1113,19 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
   }
   var pids_str = '"' + pids_list.join(',') + '"'
   var options  = {
-    scriptPath: req.CONFIG.PATH_TO_NODE_SCRIPTS,
-    args: ['-host', req.CONFIG.dbhost, '-pids', pids_str, '-outfile', outfile_path]
+    scriptPath: CFG.PATH_TO_NODE_SCRIPTS,
+    args: ['-host', CFG.dbhost, '-pids', pids_str, '-outfile', outfile_path]
   };
 
 
   var script_name      = 'create_all_dco_metadata.py'
-  var script_path      = path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS, script_name)
+  var script_path      = path.join(CFG.PATH_TO_NODE_SCRIPTS, script_name)
   var full_script_path = script_path + ' ' + options.args.join(' ')
   console.log(full_script_path)
   return;
 
   var dco_metadata_process = spawn(options.scriptPath + '/vamps_script_update_metadata.py', options.args, {
-    env: {'PATH': req.CONFIG.PATH, 'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+    env: {'PATH': CFG.PATH, 'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
     detached: true, stdio: 'pipe'
   });  // stdin, stdout, stderr
 
@@ -1145,7 +1145,7 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
   });
   dco_metadata_process.on('close', function checkExitCode(code) {
     console.log('From apply_metadata process exited with code ' + code);
-    if (req.CONFIG.site == 'vamps') {
+    if (CFG.site == 'vamps') {
       console.log('VAMPS PRODUCTION -- no print to log');
     } else {
       console.log('OUTPUT:\n' + output)
@@ -1155,7 +1155,7 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
       title: 'VAMPS Validate Metadata',
       user: req.user,
       project_info: JSON.stringify(C.PROJECT_INFORMATION_BY_PNAME),
-      hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+      hostname: CFG.hostname, // get the user out of session and pass to template
     });
   });
 });
@@ -1454,14 +1454,14 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
   console.log(req.user)
   var rows = []
   if (req.user.security_level <= 10) {
-    // for(uid in ALL_USERS_BY_UID){
-// 	        rows.push({uid:uid,fullname:ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
+    // for(uid in C.ALL_USERS_BY_UID){
+// 	        rows.push({uid:uid,fullname:C.ALL_USERS_BY_UID[uid].last_name+', '+C.ALL_USERS_BY_UID[uid].first_name,username:C.ALL_USERS_BY_UID[uid].username})
 // 	    }
 // 	    rows.sort( (a, b) => {
 // 	        return helpers.compareStrings_alpha(a.fullname, b.fullname);
 // 	    });
     var qSelect    = "SELECT * from user where active='1'";
-    var collection = connection.query(qSelect, (err, rows, fields) => {
+    var collection = DBConn.query(qSelect, (err, rows, fields) => {
       if (err) {
         msg = 'ERROR Message ' + err;
         helpers.render_error_page(req, res, msg);
@@ -1474,7 +1474,7 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
         res.render('admin/users_index', {
           title: 'VAMPS:users',
           rows: rows,
-          user: req.user, hostname: req.CONFIG.hostname
+          user: req.user, hostname: CFG.hostname
         });
 
       } // end else
@@ -1484,7 +1484,7 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
     res.render('denied', {
       title: 'VAMPS:users',
       user: req.user,
-      hostname: req.CONFIG.hostname,
+      hostname: CFG.hostname,
     });
 
 
@@ -1497,9 +1497,9 @@ router.get('/users_index', helpers.isLoggedIn, (req, res) => {
 router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
     console.log('IN GET cleanup_tmp_dirs')
 
-    var temp_dir_path1 = path.join(req.CONFIG.PROCESS_DIR,'tmp');
-    var temp_dir_path2 = path.join(req.CONFIG.PROCESS_DIR, 'views', 'tmp');
-    var temp_dir_path3 = path.join(req.CONFIG.TMP_FILES);
+    var temp_dir_path1 = path.join(CFG.PROCESS_DIR,'tmp');
+    var temp_dir_path2 = path.join(CFG.PROCESS_DIR, 'views', 'tmp');
+    var temp_dir_path3 = path.join(CFG.TMP_FILES);
 
     console.log("Deleting ALL files and directories in:");
     console.log(temp_dir_path1);
@@ -1528,12 +1528,12 @@ router.get('/cleanup_tmp_dirs', [helpers.isLoggedIn, helpers.isAdmin], (req, res
   res.render('admin/admin_index', {
     title: 'VAMPS Site Administration',
     user: req.user,
-    hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+    hostname: CFG.hostname, // get the user out of session and pass to template
   });
     // res.render('admin/kill_cluster_jobs', {
 //       title: 'VAMPS:kill_cluster_jobs',
 //       user: req.user,
-//       hostname: req.CONFIG.hostname,
+//       hostname: CFG.hostname,
 //     });
 });
 //
@@ -1544,7 +1544,7 @@ router.get('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, re
     res.render('admin/kill_cluster_jobs', {
       title: 'VAMPS:kill_cluster_jobs',
       user: req.user,
-      hostname: req.CONFIG.hostname,
+      hostname: CFG.hostname,
     });
 });
 //
@@ -1555,7 +1555,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, r
     console.log(req.body)
     var jid = req.body.jobid
     var cmd = ''
-    cmd += "export SGE_ROOT="+req.CONFIG.SGE_ROOT+'; '
+    cmd += "export SGE_ROOT="+CFG.SGE_ROOT+'; '
     cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
     if(!Number.isInteger(jid)){
         req.flash('fail', 'FAIL: Job ID is not Integer');
@@ -1564,7 +1564,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, r
     }
     console.log('Running Command: '+cmd)
     const exec = require('child_process').exec;
-    exec(cmd, {env: {'SGE_ROOT': req.CONFIG.SGE_ROOT}}, (e, stdout, stderr) => {
+    exec(cmd, {env: {'SGE_ROOT': CFG.SGE_ROOT}}, (e, stdout, stderr) => {
         if (e instanceof Error) {
             console.error(e);
             req.flash('fail', e.toString());
@@ -1581,7 +1581,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, r
    //  res.render('admin/kill_cluster_jobs', {
 //       title: 'VAMPS:kill_cluster_jobs',
 //       user: req.user,
-//       hostname: req.CONFIG.hostname,
+//       hostname: CFG.hostname,
 //     });
 });
 //

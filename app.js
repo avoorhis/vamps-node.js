@@ -4,7 +4,7 @@ const config = require('./config/config');
 const dbconn = require('./config/database').pool;
 const path = require('path');
 // explicitly makes conn global
-global.connection = dbconn;
+global.DBConn = dbconn;
 global.app_root = path.resolve(__dirname);
 const C		= require('./public/constants');
 
@@ -69,7 +69,7 @@ require('console-stamp')(console, { pattern: 'yyyy/mm/dd HH:MM:ss.l' });
 
 const app = express();
 app.set('appName', 'VAMPS');
-require('./config/passport')(passport, connection); // pass passport for configuration
+require('./config/passport')(passport, DBConn); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -132,12 +132,12 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 
 app.use(function(req, res, next){
-    if (connection == null) {
+    if (DBConn == null) {
         this.send('We cannot reach the database right now, please try again later.');
         return;
     }else{
-        req.db = connection; // not needed because connection is in global scope
-        req.CONSTS = C;     // doubtful if this is needed
+        req.DBCONN = DBConn; // need to get DBConn out of global scope??
+        //req.CONSTS = C;     // doubtful if this is needed
         req.CONFIG = config;
         return next();
     }
@@ -388,7 +388,7 @@ all_rdp_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (rdp-taxonomy object):',sizeof(C.new_rdp_taxonomy));
             }catch(e){
                 C.new_rdp_taxonomy = {};
-                console.log('Could not get sizeof(new_rdp_taxonomy) in app.js; Connection Problem?')
+                console.log('Could not get sizeof(C.new_rdp_taxonomy) in app.js; Connection Problem?')
             }
         }
     }
@@ -404,7 +404,7 @@ all_generic_taxonomy.get_all_taxa(function(err, results) {
                 console.log('SIZE (generic-taxonomy object):',sizeof(C.new_generic_taxonomy));
             }catch(e){
                 C.new_generic_taxonomy = {};
-                console.log('Could not get sizeof(new_generic_taxonomy) in app.js; Connection Problem?')
+                console.log('Could not get sizeof(C.new_generic_taxonomy) in app.js; Connection Problem?')
             }
         }
     }

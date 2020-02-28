@@ -34,7 +34,7 @@ silvaTaxonomy.prototype.get_all_taxa = function(callback)
   let query = taxa_query_pt1+'silva_taxonomy'+silva_query_pt2
   //var query = taxa_query_pt1+'taxonomy'+taxa_query_pt2
   //console.log('SILVA Taxonomy: '+query)
-  connection.query(query, function (err, rows, fields) {
+    DBConn.query(query, function (err, rows, fields) {
     callback(err, rows);
   });
 };

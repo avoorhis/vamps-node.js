@@ -1,5 +1,5 @@
 const helpers = require(app_root + '/routes/helpers/helpers');
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 const fs      = require("fs");
 const path    = require("path");
 const C = require(app_root + '/public/constants');
@@ -90,7 +90,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   constructor(req, res) {
     this.req      = req;
     this.res      = res;
-    this.hostname = req.CONFIG.hostname;
+    this.hostname = CFG.hostname;
     this.user     = req.user;
     this.fields_for_pipeline_csv = {"adaptor": ["adapter_sequence"],
       "amp_operator": ["amp_operator"],
@@ -128,7 +128,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   });*/
     // console.time("sorted_files_by_time");
     let f_info = JSON.parse(this.req.body.file_info);
-    let dir    = path.join(config.USER_FILES_BASE, this.user.username);
+    let dir    = path.join(CFG.USER_FILES_BASE, this.user.username);
     f_info.sort(function (a, b) {
       return fs.statSync(path.join(dir, a.filename)).mtime.getTime() -
         fs.statSync(path.join(dir, b.filename)).mtime.getTime();
@@ -158,8 +158,8 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
 
   get_file_diff(files) {
     const coopy    = require('coopyhx');
-    let inputPath1 = path.join(config.USER_FILES_BASE, this.user.username, files[0]["filename"]);
-    let inputPath2 = path.join(config.USER_FILES_BASE, this.user.username, files[1]["filename"]);
+    let inputPath1 = path.join(CFG.USER_FILES_BASE, this.user.username, files[0]["filename"]);
+    let inputPath2 = path.join(CFG.USER_FILES_BASE, this.user.username, files[1]["filename"]);
 
     // console.log("PPP1 inputPath1");
     // console.log(inputPath1);
@@ -206,7 +206,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
   get_csv_files() {
     // console.time("TIME: get_csv_files");
 
-    let user_csv_dir = path.join(config.USER_FILES_BASE, this.user.username);
+    let user_csv_dir = path.join(CFG.USER_FILES_BASE, this.user.username);
     let all_my_files = helpers.walk_sync(user_csv_dir);
 
     // console.timeEnd("TIME: get_csv_files");
@@ -391,7 +391,7 @@ class CsvFilesWrite { // writes a csv file from form, manageable from "Your Data
       project_id: req.body.project_id
     });
 
-    const full_out_csv_file_name = path.join(config.USER_FILES_BASE, req.user.username, base_name);
+    const full_out_csv_file_name = path.join(CFG.USER_FILES_BASE, req.user.username, base_name);
 
     fs.writeFile(full_out_csv_file_name, csv, function (err) {
       if (err) throw err;

@@ -7,7 +7,7 @@
 
 const COMMON = require(app_root + '/routes/visuals/routes_common');
 const C      = require(app_root + '/public/constants');
-const CONFIG = require(app_root + '/config/config');
+const CFG = require(app_root + '/config/config');
 const path   = require("path");
 const extend = require('util')._extend;
 
@@ -386,16 +386,16 @@ class TaxaCounts {
     } else {
       taxonomy_name += "--datasets_" + C.default_taxonomy.name;  // default
     }
-    let files_prefix = path.join(this.req.CONFIG.JSON_FILES_BASE, taxonomy_name);
+    let files_prefix = path.join(CFG.JSON_FILES_BASE, taxonomy_name);
     return files_prefix; // /Users/ashipunova/BPC/vamps-node.js/public/json/vamps2--datasets_silva119
   }
 
   get_taxonomy_object() { //TODO: switch or object instead of if/else
     let taxonomy_object;
     if (this.units === 'tax_rdp2.6_simple') {
-      taxonomy_object = new_rdp_taxonomy;
+      taxonomy_object = C.new_rdp_taxonomy;
     } else if (this.units === 'tax_generic_simple') {
-      taxonomy_object = new_generic_taxonomy;
+      taxonomy_object = C.new_generic_taxonomy;
     } else {
       taxonomy_object = C.new_taxonomy;
     }
@@ -874,7 +874,7 @@ class WriteMatrixFile {
   constructor(req, post_items, biom_matrix) {
     this.post_items = post_items;
     this.biom_matrix = biom_matrix;
-    // this.tmp_path = CONFIG.TMP_FILES;    //app_root + '/tmp/'; // get_tmp_file_path(req)
+    // this.tmp_path = CFG.TMP_FILES;    //app_root + '/tmp/'; // get_tmp_file_path(req)
     this.tmp_path = file_path_obj.get_tmp_file_path(req);
   }
 

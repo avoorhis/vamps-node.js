@@ -266,6 +266,7 @@ function showLiveProjectNames(e,str) {
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
         result = JSON.parse(xmlhttp.responseText);
+
         update_gui_elements(result)
         projectTree.deleteChildItems(0);
         projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterLoadTree,"json");     

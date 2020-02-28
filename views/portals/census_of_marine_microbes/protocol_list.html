@@ -11,15 +11,18 @@
 <div class="container">
 <br>
 	<div class="hero-unit">
-	       <h3>ICoMM Extraction Protocol PDFs</h3>
+	       <h3>ICoMM Extraction Protocol PDF Files</h3>
 	</div>
+    Click to Open; Right-Click to Download
     <br><br>
-    <ul>
+    <table >
+        <tr>
 	<% for(n in protocol_list){ %>
-
-        <li><a href="/static_dnld/<%- protocol_list[n].file_w_path %>" target="_blank"><%- protocol_list[n].file_name %></a></li>
+            <td style="padding:3px;"><a href="/static_dnld/<%- protocol_list[n].file_w_path %>" target="_blank"><%- protocol_list[n].file_name %></a></td>
+            <td style="padding:3px;"> Projects: [<%- protocol_list[n].projects %>]</td>
     <% } %>
-    </ul>
+        </tr>
+    </table>
 
 
 </div>

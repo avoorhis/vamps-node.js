@@ -6,6 +6,7 @@ const helpers = require('./helpers/helpers');
 const d3 = require('d3');
 const file_controller = require(app_root + '/controllers/fileController');
 const file_path_obj = new file_controller.FilePath();
+const CFG  = require(app_root + '/config/config');
 
 module.exports = {
   taxon_color_legend: (req, res) => {
@@ -255,14 +256,14 @@ dheatmap: (req, res) =>{
     var dist_json_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_distance.json')
     console.log(dist_json_file_path)
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', matrix_file_path, '-metric', req.session.selected_distance, '--function', 'dheatmap', '--basedir', file_path_obj.get_tmp_file_path(req), '--prefix', ts],
     };
 
     console.log(options.scriptPath+'/distance_and_ordination.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance_and_ordination.py', options.args, {
-      env:{'PATH':req.CONFIG.PATH,
-        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH':CFG.PATH,
+        'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe' // stdin, stdout, stderr
@@ -316,7 +317,7 @@ dheatmap: (req, res) =>{
             res.json(data)
 
           });
-          if(req.CONFIG.site == 'vamps' ){
+          if(CFG.site == 'vamps' ){
             console.log('VAMPS PRODUCTION -- no print to log');
           }else{
             console.log(stdout)
@@ -347,12 +348,12 @@ dheatmap: (req, res) =>{
 
 
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ req.CONFIG.TMP_FILES, req.session.selected_distance, ts, req.session.tax_depth],
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ CFG.TMP_FILES, req.session.selected_distance, ts, req.session.tax_depth],
     };
     console.log(options.scriptPath+'/fheatmap2.R '+options.args.join(' '));
     var fheatmap_process = spawn( options.scriptPath+'/fheatmap2.R', options.args, {
-      env:{'PATH':req.CONFIG.PATH},
+      env:{'PATH':CFG.PATH},
       detached: true,
       //stdio: [ 'ignore', null, log ]
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -428,7 +429,8 @@ dheatmap: (req, res) =>{
         //console.log(mtxdata)
         let body = pies_factory(req, matrix, d3pie_data, imagetype, ts);
 
-        let html = '<center>'+body.select('.container').html()+'</center>';
+        let html = body.select('.container').html();
+        html += create_color_legend(matrix)
         let outfile_name = ts + '-piecharts-api.svg';
         let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         console.log('outfile_path:', outfile_path);
@@ -478,8 +480,6 @@ barcharts: (req, res) =>{
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
         let svg = make_svgContainer(props.width, props.height, props.margin.left, props.margin.top, body);
-        console.log('bars-svg')
-        console.log(svg)
         // axis legends -- would like to rotate dataset names
         props.y.domain(matrix.columns.map(c => c.id));
         props.x.domain([0, 100]);
@@ -487,6 +487,7 @@ barcharts: (req, res) =>{
         create_bars_svg_object(req, svg, props, mtxdata, ts);
 
         let html = body.select('.container').html();
+        html += create_color_legend(matrix)
         let outfile_name = ts + '-barcharts-api.svg';
         let outfile_path = path.join(file_path_obj.get_tmp_file_path(req), outfile_name);  // file name save to user_location
         save_file(html, outfile_path); // this saved file should now be downloadable from jupyter notebook
@@ -579,15 +580,15 @@ adiversity: (req, res) =>{
     var title = 'VAMPS';
 
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', matrix_file_path, '--site_base', file_path_obj.get_process_dir(req), '--prefix', ts],
     };
 
 
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-      env:{'PATH':req.CONFIG.PATH,
-        'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH':CFG.PATH,
+        'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe' // stdin, stdout, stderr
@@ -670,15 +671,15 @@ dendrogram: (req, res) =>{
     var html = '';
     var title = 'VAMPS';
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ file_path_obj.get_process_dir(req), metric, ts ],
     };
 
 
     console.log(options.scriptPath+'/dendrogram2.R '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/dendrogram2.R', options.args, {
-      env:{'PATH': req.CONFIG.PATH,
-        'LD_LIBRARY_PATH': req.CONFIG.LD_LIBRARY_PATH},
+      env:{'PATH': CFG.PATH,
+        'LD_LIBRARY_PATH': CFG.LD_LIBRARY_PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ] // stdin, stdout, stderr
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -739,12 +740,12 @@ phyloseq: (req,res) => {
     var metric = req.session.selected_distance
     var tax_depth = req.session.tax_depth
     var options = {
-      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
       args :       [ file_path_obj.get_process_dir(req), metric, ts, tax_depth ],
     };
     console.log(options.scriptPath+'/phyloseq_test.R'+' '+options.args.join(' '));
     var phyloseq_process = spawn( options.scriptPath+'/phyloseq_test.R', options.args, {
-      env:{'PATH':req.CONFIG.PATH},
+      env:{'PATH':CFG.PATH},
       detached: true,
       //stdio: [ 'ignore', null, null ]
       stdio: 'pipe'  // stdin, stdout, stderr
@@ -1127,8 +1128,6 @@ create_hm_table: (req, dm, metadata) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function create_bars_svg_object(req, svg, props, data, ts) {
-  console.log('req.body')
-  console.log(req.body)
   console.log('In create_bars_svg_object')
   svg.append("g")
     .attr("class", "x axis")
@@ -1370,8 +1369,11 @@ function charts_otus(req, biom_data) {
 function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
   let x0 = 0;
   tmp_ob.unitObj = [];
+  let unique_taxa = {}
+
   matrix.rows.forEach((row, t_ind) => {
     let name = row.id;
+    unique_taxa[name] = 1
     let cnts = matrix.data[t_ind][p_ind];
     tmp_ob[name] = cnts;
     let tmp_unitObj = {
@@ -1385,6 +1387,7 @@ function add_data_from_rows(matrix, tmp_ob, column, p_ind) {
     };
     tmp_ob.unitObj.push(tmp_unitObj);
   });
+  //console.log(JSON.stringify(unique_taxa))
   return tmp_ob;
 }
 
@@ -1394,6 +1397,35 @@ function normalize_to_100_prc(tmp_obj) {
     unit_obj.x1 = (unit_obj.x1 * 100) / tmp_obj.total;
   });
   return tmp_obj;
+}
+//
+//
+//
+
+function create_color_legend(matrix) {
+  let unique_taxa = []
+  for( n in matrix.rows){
+    //console.log(n)
+    if(matrix.data[n].reduce( (a,b) => a + b) > 0 ){
+      unique_taxa.push(matrix.rows[n].id)
+    }
+  }
+  unique_taxa = helpers.unique_array(unique_taxa)
+
+  let html = ""
+  html += "<div class='pull-right'><table>"
+  html += "<tr><td></td><th>-Legend-</th></tr>"
+  for(n in unique_taxa.sort()){
+    let taxon = unique_taxa[n]
+    let color = string_to_color_code(taxon);
+    html += "<tr>"
+    html += "<td style='background: " + color + ";width:20px;'></td>"
+    html += "<td style='font-size:x-small;'> " + taxon + "</td>"
+    html += "</tr>"
+  }
+
+  html += "</table></div>"
+  return html
 }
 function make_svgContainer_pies(data, width, height, margin_left, margin_top, body) {
   // both pies and bars
@@ -1434,14 +1466,14 @@ function image_options_pies(imagetype, matrix, d3) {
   io_obj.margin = 15;
   io_obj.pie_rows = 320 / io_obj.pies_per_row; // four pies per row
 
-  if (imagetype === 'single') {
+  if (imagetype === 'single') {   // taxonomy only
     io_obj.pies_per_row = 1;
     io_obj.margin = 20;
     io_obj.pie_rows = 120; // five pies per row
   }
 
   // image start in upper left corner
-  io_obj.image_w = 1200;
+  io_obj.image_w = 900;  //1200;
   io_obj.image_h = get_image_hight(matrix, io_obj.pie_rows, io_obj.pies_per_row);
 
   io_obj.margin_left = 0;
@@ -1480,8 +1512,8 @@ function pies_factory(req, matrix, d3pie_data, imagetype, ts) {
   const io = image_options_pies(imagetype, matrix, d3);
   const unit_list = get_unit_list(matrix);
 
+  //let svg = make_svgContainer(io.image_w, io.image_h, io.margin_left, io.margin_top, body);
   let svg = make_svgContainer(io.image_w, io.image_h, io.margin_left, io.margin_top, body);
-
   let arc = d3.arc().innerRadius(0).outerRadius(io.pie_rows);
 
   if (req.body.source === 'website'){
@@ -1574,6 +1606,8 @@ function if_imagetype_single(matrix, total) {
 
 function make_bar_mtxdata(matrix) {
   let mtxdata = [];
+  //let unique_taxa = {}
+
   matrix.columns.forEach((column, p_ind) => {
     let tmp = {};
     tmp.pjds = column.id;

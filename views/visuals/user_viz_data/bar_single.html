@@ -1,6 +1,7 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
 <% var mtx = JSON.parse(matrix); %>
 <% var order = JSON.parse(order); %>
+
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
@@ -10,7 +11,7 @@
 </script>
   
 <div class='title'><%= title %></div>
-<div class='subtitle'>Dataset: <%= mtx.dataset %></div>
+<div class='subtitle'>Dataset: <%= mtx.pjds %></div>
 <br>
 
 <div id='my_div' class='well' style="height: 150px;">

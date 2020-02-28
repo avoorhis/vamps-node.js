@@ -194,7 +194,7 @@ class GlobalVars {
     this.get_AllMetadataNames_n_clean_metadata();
     this.sort_AllMetadataNames();
 
-    connection.query(queries.get_project_permissions(), (err, rows) => {
+    DBConn.query(queries.get_project_permissions(), (err, rows) => {
       //console.log(qSequenceCounts)
       if (err) {
         console.log('Query error: ' + err);
@@ -221,7 +221,7 @@ class GlobalVars {
   get_select_seq_counts_query(rows) {
     // console.time("TIME: get_select_seq_counts_query");
     // console.log(Object.values(PROJECT_ID_BY_DID));
-    connection.query('SELECT dataset_id, project_id from dataset', (err, rows2) => {
+    DBConn.query('SELECT dataset_id, project_id from dataset', (err, rows2) => {
 
       // console.time("TIME: make_pid_by_did_dict");
       //instead it's better to use PROJECT_ID_BY_DID after it's initialized
@@ -285,7 +285,7 @@ class GlobalVars {
     if (type === 'del') {
       let dids  = C.DATASET_IDS_BY_PID[pid];
       let pname = C.PROJECT_INFORMATION_BY_PID[pid].project;
-      console.log('RE-INTIALIZING ALL_DATASETS');
+      console.log('RE-INTIALIZING C.ALL_DATASETS');
       let dataset_objs = [];
       for (let i in C.ALL_DATASETS.projects) {
         let item = C.ALL_DATASETS.projects[i];
@@ -298,21 +298,21 @@ class GlobalVars {
           break;
         }
       }
-      console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
-      console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
-      console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
+      console.log('RE-INTIALIZING C.PROJECT_ID_BY_DID');
+      console.log('RE-INTIALIZING C.DATASET_NAME_BY_DID');
+      console.log('RE-INTIALIZING C.ALL_DCOUNTS_BY_DID');
       for (let d in dids) {
         delete C.PROJECT_ID_BY_DID[dids[d]];
         delete C.DATASET_NAME_BY_DID[dids[d]];
         delete C.ALL_DCOUNTS_BY_DID[dids[d]];
         delete C.DatasetsWithLatLong[dids[d]];
       }
-      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
-      console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
-      console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
-      console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
-      console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
-      console.log('RE-INTIALIZING DatasetsWithLatLong');
+      console.log('RE-INTIALIZING C.PROJECT_INFORMATION_BY_PID');
+      console.log('RE-INTIALIZING C.DATASET_IDS_BY_PID');
+      console.log('RE-INTIALIZING C.ALL_PCOUNTS_BY_PID');
+      console.log('RE-INTIALIZING C.ALL_CLASSIFIERS_BY_PID');
+      console.log('RE-INTIALIZING C.PROJECT_INFORMATION_BY_PNAME');
+      console.log('RE-INTIALIZING C.DatasetsWithLatLong');
 
       delete C.PROJECT_INFORMATION_BY_PID[pid];
       delete C.DATASET_IDS_BY_PID[pid];

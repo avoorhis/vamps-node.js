@@ -8,6 +8,7 @@ const validator = require('validator');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const C		  = require(app_root + '/public/constants');
+const CFG  = require(app_root + '/config/config');
 
 new_user = {}
 /* GET User List (index) page. */
@@ -21,7 +22,7 @@ router.get('/login', (req, res) => {
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       user: req.user, 
-                      hostname: req.CONFIG.hostname,
+                      hostname: CFG.hostname,
                       return_to_url: req.session.returnTo });
 });
 
@@ -30,7 +31,7 @@ router.post('/login',  passport.authenticate('local-login', {
   // successRedirect: '/users/profile',
   failureRedirect: 'login',   // on fail GET:login (empty form)
   failureFlash: true }), (req, res) => {  
-    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    var data_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
     //str.startsWith('/metadata/file_utils')
     var redirect_to_home = [
       '/metadata/metadata_edit_form',
@@ -78,10 +79,10 @@ router.post('/login',  passport.authenticate('local-login', {
         if(err) {console.log(err);} // => null
         else{
             console.log('Checking USER_FILES_BASE: '+data_dir+' Exists - yes');
-            fs.chmod(data_dir, 0777,  err => {
+            fs.chmod(data_dir, 0o777,  err => {
                 if(err) {console.log(err);} // ug+rwx
                 else{
-                    console.log('Setting USER_FILES_BASE permissions to 0775');
+                    console.log('Setting USER_FILES_BASE permissions to 0o777');
                     console.log('=== url ===: req.body.return_to_url');
                     console.log(url);
                     
@@ -113,7 +114,7 @@ router.get('/signup', (req, res) => {
         res.render('user_admin/signup', { 
                             title   : 'VAMPS:signup',
                             user    : req.user,
-                            hostname: req.CONFIG.hostname,
+                            hostname: CFG.hostname,
                             new_user: new_user
         });
 });
@@ -134,7 +135,7 @@ router.get('/profile', helpers.isLoggedIn, (req, res) => {
     console.log('PROFILE')    
     res.render('user_admin/profile', {
           title:'VAMPS:profile',
-          user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
+          user : req.user,hostname: CFG.hostname // get the user out of session and pass to template
     });        
 
 });
@@ -156,7 +157,7 @@ router.get('/change_password', helpers.isLoggedIn, (req, res) => {
   res.render('user_admin/change_password', {
               title     :'VAMPS:change-password',
               form_type : 'update',
-              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+              user      : req.user, hostname: CFG.hostname // get the user out of session and pass to template
             });  
 });
 router.get('/change_password/:id', (req, res) => {
@@ -164,7 +165,7 @@ router.get('/change_password/:id', (req, res) => {
     // should be private but not logged in
     console.log(req.params)
 
-    var file_code_path = path.join(req.CONFIG.TMP_FILES,'resetPW-'+req.params.id+'.json')
+    var file_code_path = path.join(CFG.TMP_FILES,'resetPW-'+req.params.id+'.json')
 
     console.log(file_code_path)
     // if file exists then valid? (or confirm some file content?) -- delete file after success
@@ -183,7 +184,7 @@ router.get('/change_password/:id', (req, res) => {
               code      : req.params.id,
               username  : data.username,
               uid       : data.uid,
-              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+              hostname  : CFG.hostname // get the user out of session and pass to template
         });  
     })
     
@@ -204,7 +205,7 @@ router.get('/update_account', helpers.isLoggedIn, (req, res) => {
 
   res.render('user_admin/update_account', {
               title     :'VAMPS:update-account',
-              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+              user      : req.user, hostname: CFG.hostname // get the user out of session and pass to template
             });  
 });
 router.post('/update_account', helpers.isLoggedIn, (req, res) => {
@@ -237,7 +238,7 @@ router.post('/update_account', helpers.isLoggedIn, (req, res) => {
         res.redirect('/users/update_account');
     }else{
         var query = "UPDATE user set email='"+email+"', institution='"+inst+"' where user_id='"+req.body.uid+"'"
-        connection.query(query, (err, rows, fields) => {
+        DBConn.query(query, (err, rows, fields) => {
             if (err)  {
                 req.flash('fail', 'Something went wrong with update - exiting');
                 res.redirect('/users/update_account');
@@ -259,7 +260,7 @@ router.get('/forgotten_password', (req, res) => {
     res.render('user_admin/change_password', {
           title     :'VAMPS:forgotten-password',
           form_type : 'forgotten1',
-           hostname: req.CONFIG.hostname // get the user out of session and pass to template
+           hostname: CFG.hostname // get the user out of session and pass to template
         });
 });
 //
@@ -286,7 +287,7 @@ router.post('/reset_password1', (req, res) => {
     }
     var query = "SELECT user_id from user where username='"+username+"' and email ='"+email+"'"
     console.log(query)
-    connection.query(query, (err, rows, fields) => {
+    DBConn.query(query, (err, rows, fields) => {
         if (err)  {
                 req.flash('fail', 'We cannot find that username--email combination. Please contact us [vamps@mbl.edu] for assistance.');
                 res.redirect('/users/forgotten_password');
@@ -297,7 +298,7 @@ router.post('/reset_password1', (req, res) => {
                     res.redirect('/users/forgotten_password');
                     return;
                 }
-                let transporter = nodemailer.createTransport(req.CONFIG.smtp_connection_obj) 
+                let transporter = nodemailer.createTransport(CFG.smtp_connection_obj)
                 console.log(rows)
                 var uid = rows[0].user_id
       
@@ -305,15 +306,15 @@ router.post('/reset_password1', (req, res) => {
                 //create unique link: vamps2.mbl.edu/users/change_password?123xyz
                 //var link;
                 var rando = Math.floor((Math.random() * (999999 - 100000 + 1)) + 100000);
-                var link = req.CONFIG.server_url+'/users/change_password/'+rando
-                // if(req.CONFIG.hostname == 'localhost'){
-//                     link = req.CONFIG.server_url+'/users/change_password/'+rando
+                var link = CFG.server_url+'/users/change_password/'+rando
+                // if(CFG.hostname == 'localhost'){
+//                     link = CFG.server_url+'/users/change_password/'+rando
 //                 }else{
 //                     link = 'https://vamps2.mbl.edu/users/change_password/'+rando
 //                 }
                 // write json file to 
 
-                var file_path = path.join(req.CONFIG.TMP_FILES,'resetPW-'+rando+'.json')
+                var file_path = path.join(CFG.TMP_FILES,'resetPW-'+rando+'.json')
 
                 console.log(file_path)
                 var file_text = { "username":username, "uid":uid, "email":email }
@@ -380,7 +381,7 @@ router.post('/reset_password2', (req, res) => {
               code      : req.body.code,
               username  : req.body.username,
               uid       : req.body.uid,
-              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+              hostname  : CFG.hostname // get the user out of session and pass to template
         }); 
         return 
     }
@@ -392,14 +393,14 @@ router.post('/reset_password2', (req, res) => {
               code      : req.body.code,
               username  : req.body.username,
               uid       : req.body.uid,
-              hostname  : req.CONFIG.hostname // get the user out of session and pass to template
+              hostname  : CFG.hostname // get the user out of session and pass to template
         }); 
         return 
     }
     // validate existence of file -- then delete it
     // file has been validated and deleted in router.get('/change_password/:id', (req, res) => {
 
-    var file_code_path = path.join(req.CONFIG.TMP_FILES,'resetPW-'+req.body.code+'.json')
+    var file_code_path = path.join(CFG.TMP_FILES,'resetPW-'+req.body.code+'.json')
 
     //read file and validate username & email
     fs.readFile(file_code_path, (err,data) => {
@@ -417,7 +418,7 @@ router.post('/reset_password2', (req, res) => {
         // now valid must enter new PW in database and return user to logon screen
     
         console.log('Trying: '+queries.reset_user_password_by_uid(new_password, req.body.uid))
-        connection.query(queries.reset_user_password_by_uid(new_password, req.body.uid), (err, rows, fields) => {
+        DBConn.query(queries.reset_user_password_by_uid(new_password, req.body.uid), (err, rows, fields) => {
             if(err){ console.log(err);return }
             console.log('Success -- password Updated')
             req.flash('success', 'Password updated! Password updated! Password updated! Password updated! Password updated!');
@@ -437,13 +438,13 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
     res.render('index', {
         title: 'VAMPS:Home',
         user: req.user, 
-        hostname: req.CONFIG.hostname 
+        hostname: CFG.hostname
      });
      return;  
    }else{
            var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
            console.log(qSelect)
-           var collection = connection.query(qSelect, (err, rows, fields) => {
+           var collection = DBConn.query(qSelect, (err, rows, fields) => {
             if (err)  {
               msg = 'ERROR Message '+err;
               helpers.render_error_page(req,res,msg);
@@ -452,7 +453,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
                   title     :'VAMPS:profile',
                   projects  : rows,
                   user_info : JSON.stringify(C.ALL_USERS_BY_UID[uid]),
-                  user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+                  user      : req.user, hostname: CFG.hostname // get the user out of session and pass to template
                 });  
      
 

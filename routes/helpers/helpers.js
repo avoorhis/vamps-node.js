@@ -1,6 +1,6 @@
 const C       = require(app_root + '/public/constants');
 const queries = require(app_root + '/routes/queries');
-const config  = require(app_root + '/config/config');
+const CFG  = require(app_root + '/config/config');
 const express     = require('express');
 const fs          = require('fs-extra');
 const nodemailer  = require('nodemailer');
@@ -240,9 +240,11 @@ module.exports.IsJsonString = str => {
   }
   return true;
 };
-function IsNumeric(n) {
+
+module.exports.IsNumeric = n => {
     return !isNaN(parseFloat(n)) && isFinite(n);
-  }
+};
+
 module.exports.onlyUnique = (value, index, self) => {
   // usage: ukeys = ukeys.filter(helpers.onlyUnique);
   return self.indexOf(value) === index;
@@ -298,19 +300,19 @@ module.exports.assignment_finish_request = (res, rows1, rows2, status_params) =>
   const global_vars = new global_vars_controller.GlobalVars();
 
   global_vars.run_select_datasets_query(rows1);
-  console.log(' UPDATING ALL_DATASETS');
-  console.log(' UPDATING PROJECT_ID_BY_DID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PID');
-  console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
-  console.log(' UPDATING DATASET_IDS_BY_PID');
-  console.log(' UPDATING DATASET_NAME_BY_DID');
-  console.log(' UPDATING AllMetadataNames');
-  console.log(' UPDATING DatasetsWithLatLong');
+  console.log(' UPDATING C.ALL_DATASETS');
+  console.log(' UPDATING C.PROJECT_ID_BY_DID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PID');
+  console.log(' UPDATING C.PROJECT_INFORMATION_BY_PNAME');
+  console.log(' UPDATING C.DATASET_IDS_BY_PID');
+  console.log(' UPDATING C.DATASET_NAME_BY_DID');
+  console.log(' UPDATING C.AllMetadataNames');
+  console.log(' UPDATING C.DatasetsWithLatLong');
   // This function needs to be (re)written
   //this.run_select_sequences_query(rows2);
-  console.log(' UPDATING ALL_DCOUNTS_BY_DID');
-  console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
-  console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
+  console.log(' UPDATING C.ALL_DCOUNTS_BY_DID');
+  console.log(' UPDATING C.ALL_PCOUNTS_BY_PID ');
+  console.log(' UPDATING C.ALL_CLASSIFIERS_BY_PID');
   // re-run re-create new_taxonomy (see app.js)
   const silvaTaxonomy      = require(app_root + '/models/silva_taxonomy');
   var all_silva_taxonomy = new silvaTaxonomy();
@@ -335,7 +337,7 @@ module.exports.clean_string              = str => {
 };
 
 module.exports.get_metadata_from_file = () => {
-  let meta_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
+  let meta_file = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE + '--metadata.json');
   try {
     AllMetadataFromFile = require(meta_file);
   }
@@ -347,7 +349,7 @@ module.exports.get_metadata_from_file = () => {
 };
 
 module.exports.write_metadata_to_files = did => {
-  let dataset_file = path.join(config.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
+  let dataset_file = path.join(CFG.JSON_FILES_BASE, NODE_DATABASE + '--datasets_' + C.default_taxonomy.name, did + '.json');
 
   fs.readFile(dataset_file, 'utf8', (err, data) => {
     if (err) throw err;
@@ -435,15 +437,16 @@ module.exports.sort_json_matrix = (mtx, fxn_obj) => {
       reorder = true;
       break;
     case 'count':
-      if (fxn_obj === 'max') {
+      if (fxn_obj.value == 'max') {
         curr_obj.sort(function sortByCount(a, b) {
-          return b.cnt[0] - a.cnt[0];
+          return module.exports.compareStrings_int(a.cnt[0], b.cnt[0])
         });
       }
       else {
         curr_obj.sort(function sortByCount(a, b) {
-          return a.cnt[0] - b.cnt[0];
+          return module.exports.compareStrings_int(b.cnt[0], a.cnt[0])
         });
+        
       }
       reorder = true;
       break;
@@ -533,7 +536,7 @@ module.exports.make_color_seq = seq => {
 // TODO: to globVar, not used
 // module.exports.update_project_information_global_object = (pid, form, user_obj) => {
 //   console.log('Updating PROJECT_INFORMATION_BY_PID');
-//   if (config.site == 'vamps') {
+//   if (CFG.site == 'vamps') {
 //     console.log('VAMPS PRODUCTION -- no print to log');
 //   } else {
 //     console.log(pid);
@@ -591,7 +594,7 @@ module.exports.update_status = (status_params) => {
     let delete_status_params = [status_params.user_id, status_params.pid];
     statQuery            = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
-    connection.query(statQuery, delete_status_params, (err, rows) => {
+    DBConn.query(statQuery, delete_status_params, (err, rows) => {
       if (err) {
         console.log('ERROR1-in status update: ' + err);
       }
@@ -604,7 +607,7 @@ module.exports.update_status = (status_params) => {
   else if (status_params.type == 'update') {
     statQuery2 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2, (err, rows) => {
+    DBConn.query(statQuery2, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -616,7 +619,7 @@ module.exports.update_status = (status_params) => {
   else {  // Type::New
     statQuery1 = queries.MakeInsertStatusQ(status_params);
     // console.log('statQuery1: ' + statQuery1);
-    connection.query(statQuery1, (err, rows) => {
+    DBConn.query(statQuery1, (err, rows) => {
       if (err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -628,7 +631,7 @@ module.exports.update_status = (status_params) => {
 };
 
 module.exports.fetchInfo = (query, values, callback) => {
-  connection.query(query, values, (err, rows) => {
+  DBConn.query(query, values, (err, rows) => {
     if (err) {
       callback(err, null);
     }
@@ -654,8 +657,8 @@ module.exports.get_local_script_text = (cmd_list) => {
   script_text += "hostname\n";
   script_text += 'echo -n "Current working directory: "' + "\n";
   script_text += "pwd\n\n";
-  if(config.site == 'vamps' || config.site == 'vampsdev'){
-    script_text += "source /groups/vampsweb/"+config.site+"/seqinfobin/vamps_environment.sh\n\n";
+  if(CFG.site == 'vamps' || CFG.site == 'vampsdev'){
+    script_text += "source /groups/vampsweb/"+CFG.site+"/seqinfobin/vamps_environment.sh\n\n";
   }
   for (var i in cmd_list) {
     script_text += cmd_list[i] + "\n\n";
@@ -833,8 +836,8 @@ module.exports.deleteFolderRecursive = (path) => {
 //
 //
 module.exports.make_gast_script_txt = (req, data_dir, project, cmd_list, opts) => {
-  console.log('OPTS: ')
-  console.log(opts)
+  //console.log('OPTS: ')
+  //console.log(opts)
   make_gast_script_txt = "";
   if (module.exports.isLocal(req)) {
     make_gast_script_txt += "export PERL5LIB=" + app_root + "/public/scripts/gast\n"
@@ -1115,6 +1118,7 @@ module.exports.required_metadata_ids_from_names = (selection_obj, mdname) => {
 };
 
 function get_current_primer_suite(id) {
+
   if (C.MD_PRIMER_SUITE.hasOwnProperty(id) && C.MD_PRIMER_SUITE[id].hasOwnProperty('name')) {
     return C.MD_PRIMER_SUITE[id].name;
   }
@@ -1191,6 +1195,8 @@ module.exports.required_metadata_names_from_ids = (selection_obj, name_id) => {
     case 'primer_ids':
       real_name = 'primers';
       value = get_current_primers(selection_obj['primer_suite_id']);
+
+
       break;
     default:
       real_name = name_id;
@@ -1292,7 +1298,7 @@ module.exports.log_timestamp = () => {
 
 module.exports.get_key_from_value = (obj, value) => {
   // returns the key first found object only
-  console.log('3 -in get_key from val - ' + value);
+  //console.log('3 -in get_key from val - ' + value);
   found_key   = null;
   unknown_key = null;
   for (let key in obj) {
@@ -1309,14 +1315,13 @@ module.exports.get_key_from_value = (obj, value) => {
   if (!found_key) {
     found_key = null;
   }
-  console.log('4 -key - ' + found_key);
+  //console.log('4 -key - ' + found_key);
   return found_key;
 };
 
 module.exports.ensure_dir_exists = (dir) => {
   fs.ensureDir(dir, err => {
     if (err) {
-      console.log('2');
       console.log(err);
     } // => null
     else {
@@ -1537,7 +1542,7 @@ exports.transpose_2d_arr_and_fill = (data_arr, matrix_length) => {
   // console.time('TIME: transpose_2d_arr_and_fill');
 
   //make an array with proper length, even if the first one is empty
-  // var matrix_length = DATASET_IDS_BY_PID[project_id].length + 1;
+  // var matrix_length = C.DATASET_IDS_BY_PID[project_id].length + 1;
   let length_array = data_arr[0];
   if (data_arr[0].length < matrix_length) {
     length_array = module.exports.fill_out_arr_doubles('', matrix_length);
@@ -1663,8 +1668,8 @@ exports.create_matrix_from_biom = (res, file_path, ts) => {
     let biom_file_name = ts + '_count_matrix.biom';
     let biom_file_path = path.join(file_path, biom_file_name);
     let out_file_path = path.join(file_path,  out_file_name);
-    console.log("biom_file_path: " + biom_file_path);
-    console.log("out_file_path: " + out_file_path);
+    //console.log("biom_file_path: " + biom_file_path);
+    //console.log("out_file_path: " + out_file_path);
     fs.readFile(biom_file_path, (err, data) => {
         if(err){ console.log(err); return; }
         const parsed_data = JSON.parse(data);

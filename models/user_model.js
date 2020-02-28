@@ -17,17 +17,15 @@ class User {
   }
 
   getAllUsers(callback) {
-    return connection.query("Select * from user", callback);
+    return DBConn.query("Select * from user", callback);
   }
 
   getUserById(user_id, callback) {
-
-    return connection.query("select * from user where user_id = ?", [user_id], callback);
+    return DBConn.query("select * from user where user_id = ?", [user_id], callback);
   }
 
   getUser_id(first_name, last_name, email, institution, callback) {
-
-    return connection.query("SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?", [first_name, last_name, email, institution], callback);
+    return DBConn.query("SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?", [first_name, last_name, email, institution], callback);
   }
 
   getUserInfoFromGlobalbyUniqKey(first_name, last_name, email, institution) {
@@ -44,13 +42,13 @@ class User {
       this.User_obj.groups         = C.ALL_USERS_BY_UnK[uniq_key].groups;
     }
     else {
-      console.log("ERR from getUserInfoFromGlobalbyUniqKey. No such user: ALL_USERS_BY_UnK[uniq_key]", uniq_key);
+      console.log("ERR from getUserInfoFromGlobalbyUniqKey. No such user: C.ALL_USERS_BY_UnK[uniq_key]", uniq_key);
     }
   }
 
   getUserInfoFromGlobal(user_id) {
 
-    // console.log("UUU1 ALL_USERS_BY_UID = ", ALL_USERS_BY_UID);
+    // console.log("UUU1 C.ALL_USERS_BY_UID = ", C.ALL_USERS_BY_UID);
     //   { email: 'kirchman@udel.edu',
     //      username: 'kirchman',
     //      last_name: 'Kirchman',
@@ -73,7 +71,7 @@ class User {
   }
 
   addUser(callback) {
-    return connection.query("Insert into user values(?,?,?,?,?,?,?,?,?,?,?,?)", [
+    return DBConn.query("Insert into user values(?,?,?,?,?,?,?,?,?,?,?,?)", [
       this.User_obj.user_id,
       this.User_obj.username,
       this.User_obj.email,

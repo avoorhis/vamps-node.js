@@ -2,9 +2,9 @@
 // LOAD_ALL_DATASETS.js
 const express = require('express');
 let router = express.Router();
-const queries = require('./queries');
-const helpers = require('./helpers/helpers');
-const config  = require('../config/config');
+const queries = require(app_root + '/routes/queries');
+const helpers = require(app_root + '/routes/helpers/helpers');
+const CFG  = require(app_root + '/config/config');
 const async = require('async');
 const global_vars_controller = require(app_root + '/controllers/globalVarsController');
 const global_vars = new global_vars_controller.GlobalVars();
@@ -14,7 +14,7 @@ const C		  = require(app_root + '/public/constants');
 //
 
 //console.log(queries.qSequenceCounts)
-// This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
+// This connection (DBConn) object is made global in app.js:  var routes = require('./routes/index');  and in routes/index:
 module.exports.get_datasets = callback => {
     C.PROJECT_INFORMATION_BY_PID  = {};
     C.ALL_CLASSIFIERS_BY_CID      = {};
@@ -51,7 +51,7 @@ module.exports.get_datasets = callback => {
     C.MD_CUSTOM_FIELDS_UNITS      = {};
 
 
-  connection.query(queries.get_select_datasets_query(), (err, rows, fields) => {
+  DBConn.query(queries.get_select_datasets_query(), (err, rows, fields) => {
       if (err)  {
 		    console.log('Query error: ' + err);
 		    console.log(err.stack);
@@ -77,7 +77,7 @@ module.exports.get_datasets = callback => {
       callback(C.ALL_DATASETS); // Filled in in helpers (ALL_DATASETS.projects.push(tmp);)
   });
 
-  connection.query(queries.get_all_user_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_all_user_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -106,7 +106,7 @@ module.exports.get_datasets = callback => {
             C.ALL_USERS_BY_UnK[uniq_key].status      = rows[i].security_level;
             C.ALL_USERS_BY_UnK[uniq_key].groups = [];
         }
-        connection.query(queries.get_all_user_groups(), (err, rows, fields) => {
+          DBConn.query(queries.get_all_user_groups(), (err, rows, fields) => {
           if (err)  {
             console.log('Query error: ' + err);
             console.log(err.stack);
@@ -127,7 +127,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.ALL_USERS_BY_UID and C.ALL_USERS_BY_UnK');
   });
 
-  connection.query(queries.get_select_classifier_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_classifier_query(), (err, rows, fields) => {
 
       //console.log(qSequenceCounts)
       if (err)  {
@@ -143,7 +143,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.ALL_CLASSIFIERS_BY_CID');
   });
 
-  connection.query(queries.get_select_env_term_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_env_term_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -158,18 +158,18 @@ module.exports.get_datasets = callback => {
  ///////////////////////////////////////////
 
   var ug_array = []
-  for(var gp in config.user_groups){
+  for(var gp in CFG.user_groups){
       //console.log('gp',gp)
       C.USER_GROUPS[gp] = []
-    //ug_array.push(config.user_groups[gp])
-    // console.log(config.user_groups[gp])
-//     if(Array.isArray(config.user_groups[gp])){
+    //ug_array.push(CFG.user_groups[gp])
+    // console.log(CFG.user_groups[gp])
+//     if(Array.isArray(CFG.user_groups[gp])){
 //         console.log('UG is array')
 // 
 //     }else{
 //         console.log('UG is not Array')
 //     }
-    var q = 'SELECT project_id FROM project '+ config.user_groups[gp]
+    var q = 'SELECT project_id FROM project '+ CFG.user_groups[gp]
     ug_array.push({'q':q,'gp':gp})
   }
   //console.log(ug_array)
@@ -188,7 +188,7 @@ module.exports.get_datasets = callback => {
 
 
   ///////////////////////////////////////////////////
-  connection.query(queries.get_select_env_package_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_env_package_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -199,7 +199,7 @@ module.exports.get_datasets = callback => {
       }
       console.log(' INITIALIZING C.MD_ENV_PACKAGE');
   });
-  connection.query(queries.get_select_domain_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_domain_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -209,7 +209,7 @@ module.exports.get_datasets = callback => {
       }
       console.log(' INITIALIZING C.MD_DOMAIN');
   });
-  connection.query(queries.get_select_dna_region_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_dna_region_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -220,7 +220,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.MD_DNA_REGION');
   });
 
-  connection.query(queries.get_select_target_gene_query(),  (err, rows, fields) => {
+    DBConn.query(queries.get_select_target_gene_query(),  (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -231,7 +231,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.MD_TARGET_GENE');
   });
 
-  connection.query(queries.get_select_sequencing_platform_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_sequencing_platform_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -242,7 +242,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.MD_SEQUENCING_PLATFORM');
   });
 
-  connection.query(queries.get_select_Illumina_3letter_adapter_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_Illumina_3letter_adapter_query(), (err, rows, fields) => {
     if (err)  {
       console.log('Query error: ' + err);
       console.log(err.stack);
@@ -253,7 +253,7 @@ module.exports.get_datasets = callback => {
     console.log(' INITIALIZING C.MD_3LETTER_ADAPTER');
   });
 
-    connection.query(queries.get_select_adapter_sequence_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_adapter_sequence_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -263,7 +263,7 @@ module.exports.get_datasets = callback => {
       }
       console.log(' INITIALIZING C.MD_ADAPTER_SEQUENCE');
   });
-  connection.query(queries.get_select_illumina_index_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_illumina_index_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -274,7 +274,7 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.MD_ILLUMINA_INDEX');
   });
 
-  connection.query(queries.get_select_primer_suite_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_primer_suite_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -286,7 +286,7 @@ module.exports.get_datasets = callback => {
 
 
   });
-  connection.query(queries.get_select_run_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_run_query(), (err, rows, fields) => {
       if (err)  {
         console.log('Query error: ' + err);
         console.log(err.stack);
@@ -298,7 +298,7 @@ module.exports.get_datasets = callback => {
   });
 
   // slow query
-  connection.query(queries.get_select_seq_count_query(), (err, rows, fields) => {
+    DBConn.query(queries.get_select_seq_count_query(), (err, rows, fields) => {
 
       //console.log(qSequenceCounts)
       if (err)  {
@@ -316,8 +316,8 @@ module.exports.get_datasets = callback => {
       console.log(' INITIALIZING C.ALL_CLASSIFIERS_BY_PID');
   });
 
-  connection.query(queries.get_select_custom_units_query(), (err, rows, fields) => {
-    // console.time("TIME: connection queries.get_select_custom_units_query");
+    DBConn.query(queries.get_select_custom_units_query(), (err, rows, fields) => {
+    // console.time("TIME: DBConn queries.get_select_custom_units_query");
     if (err)  {
       console.log('Query error: ' + err);
       console.log(err.stack);
@@ -326,7 +326,7 @@ module.exports.get_datasets = callback => {
       global_vars.get_select_custom_units_query(rows);
     }
     console.log(' INITIALIZING C.MD_CUSTOM_UNITS');
-    // console.timeEnd("TIME: connection queries.get_select_custom_units_query");
+    // console.timeEnd("TIME: DBConn queries.get_select_custom_units_query");
   });
 
 
@@ -337,7 +337,7 @@ var fakeAsyncApi = (thing, callback) => {
   var gp = thing.gp   // group from config file
   var q = thing.q     // query from config file
   setTimeout( () => {
-        connection.query(q, (err, rows, fields) => {
+      DBConn.query(q, (err, rows, fields) => {
               if (err)  {
                 console.log('Query error: ' + err);
                 return

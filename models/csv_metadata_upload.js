@@ -153,7 +153,7 @@ function csvMetadataUpload() {
 csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callback) 
 {
   get_db_id_query = make_db_id_query(project, datasets);
-  connection.query(get_db_id_query, function (err, rows, fields) {
+  DBConn.query(get_db_id_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
@@ -163,8 +163,8 @@ csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_cus
   var insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
   // console.log('insert_into_custom_fields_info_query:');
   // console.log(insert_into_custom_fields_info_query);
-  
-  connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
+
+  DBConn.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
@@ -176,7 +176,7 @@ csvMetadataUpload.prototype.insert_required_field_names = function(req_fields, i
   // console.log('888 insert_into_required_fields_info_query:');
   // console.log(insert_into_required_fields_info_query);
   // 
-  connection.query(insert_into_required_fields_info_query, function (err, rows, fields) {
+  DBConn.query(insert_into_required_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
@@ -184,7 +184,7 @@ csvMetadataUpload.prototype.insert_required_field_names = function(req_fields, i
 csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, callback) 
 {
   get_custom_fields_names_query = make_get_custom_fields_query(project_id);
-  connection.query(get_custom_fields_names_query, function (err, rows, fields) {
+  DBConn.query(get_custom_fields_names_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
@@ -192,7 +192,7 @@ csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, ca
 csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, project_id, callback) 
 {
   create_custom_query = make_create_custom_query(custom_fields, project_id);
-  connection.query(create_custom_query, function (err, rows, fields) {
+  DBConn.query(create_custom_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
@@ -200,7 +200,7 @@ csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, p
 csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(metadata_dict_w_ids, table_name, custom_fields_names_arr, callback) 
 {
   insert_into_custom_metadata_info_query = make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr);
-  connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
+  DBConn.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };

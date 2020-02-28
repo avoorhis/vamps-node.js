@@ -6,7 +6,7 @@ const helpers = require('./helpers/helpers');
 const path = require('path');
 const fs = require('fs-extra');
 const queries = require('./queries');
-const config = require('../config/config');
+const CFG = require('../config/config');
 const mysql = require('mysql2');
 const url = require('url');
 const iniparser = require('iniparser');
@@ -25,17 +25,17 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
   console.log('<<--in method_selection')
 
   dataset_ids = JSON.parse(req.body.dataset_ids);
-  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-      console.log('chosen_id_name_hash-->');
-      console.log(chosen_id_name_hash);
-      console.log(chosen_id_name_hash.ids.length);
-      console.log('<--chosen_id_name_hash');
+  req.session.chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+  console.log('chosen_id_name_hash-->');
+  console.log(req.session.chosen_id_name_hash);
+  console.log(req.session.chosen_id_name_hash.ids.length);
+  console.log('<--chosen_id_name_hash');
 
   res.render('otus/otus_method_selection', {
           title: 'VAMPS:OTUs',
           referer: 'otus',
-          chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-          user: req.user, hostname: req.CONFIG.hostname
+          chosen_id_name_hash: JSON.stringify(req.session.chosen_id_name_hash),
+          user: req.user, hostname: CFG.hostname
   });
 
 });
@@ -51,77 +51,16 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
                                   md_names    : C.AllMetadataNames,
                                   filtering   : 0,
                                   portal_to_show : '',
-                                  data_to_open: JSON.stringify(DATA_TO_OPEN),
+                                  data_to_open: JSON.stringify(req.session.DATA_TO_OPEN),
                                   user        : req.user,
-                                  hostname    : req.CONFIG.hostname,
+                                  hostname    : CFG.hostname,
                                   
                               });
  });
  //
  //
  //
- // router.get('/otu_tree_dhtmlx', (req, res) => {
-//     console.log('IN otu_tree_dhtmlx - routes_otus')
-//     var myurl = url.parse(req.url, true);
-//     var id = myurl.query.id
-//     console.log('id='+id)
-//     var json = {}
-//     json.id = id;
-//     json.item = []
-//     //PROJECT_TREE_OBJ = []
-//     //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
-// 
-//     if(id==0){
-//         
-//         var q = 'SELECT otu_project, otu_project_id,title,project_description,owner_user_id from otu_project'
-//         connection.query(q, function otu_projects(err, rows, fields){
-//             if(err){
-//                 console.log(err)
-//             }else{
-//                 
-//                 for(n in rows){
-//                     console.log(rows[n])
-//                     pid = rows[n]['otu_project_id'].toString()
-//                     prj = rows[n]['otu_project']
-//                     title =  rows[n]['title']
-//                     desc =  rows[n]['project_description']
-//                     oid =  rows[n]['owner_user_id']
-//                     
-//                     itemtext = "<span id='"+ prj +"' class='tooltip_pjds_list'>"+prj+"</span>";
-//                     json.item.push({id:'p'+pid, text:itemtext, checked:false,  child:1, item:[]});
-//                     
-//                 }
-//                 
-//             }
-//             console.log('json')
-//             console.log(json)
-//             res.send(json)
-//         })
-// 
-// 
-//     }else{
-//         var this_project = {}
-//         id = id.substring(1);  // id = pxx
-//         var q = "SELECT otu_dataset, otu_dataset_id from otu_dataset where otu_project_id='"+id+"'"
-//         console.log(q)
-//         connection.query(q , function otu_datasets(err, rows, fields){
-//             if(err){
-//                 console.log(err)
-//             }else{
-//                 for(n in rows){
-//                     console.log(rows[n])
-//                     ds =  rows[n]['otu_dataset']
-//                     did =  rows[n]['otu_dataset_id']
-//                     
-//                     itemtext = "<span id='"+ ds +"' class='tooltip_pjds_list'>"+ds+"</span>";
-//                     json.item.push({id:did, text:itemtext, checked:'1',  child:0});
-//                 }
-//             }
-//             console.log('json')
-//             console.log(json)
-//             res.send(json)
-//         })
-//     }
+
  
     
 //});
@@ -131,25 +70,26 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     const readline = require('readline');
     console.log(req.body);
     console.log('<<--in OTU view_selection')
-    opid= req.body.otu_id  // filename
-    prj = req.body.otu_id  // filename
+    // { otu_id: 'AB_SAND_Bv6.Bacteria.slp.otus.03.mtx.gz' }
+    let opid = req.body.otu_id  // filename
+    //let prj = req.body.otu_id  // filename
     var timestamp = +new Date();
     timestamp = req.user.username+'-'+timestamp
-    visual_post_items = get_post_items(req)
+    let visual_post_items = get_post_items(req)
     visual_post_items.ts = timestamp;
-    chosen_id_name_hash = {}  // GLOBAL
-    chosen_id_name_hash.ids = []
-    chosen_id_name_hash.names = []
+    req.session.chosen_id_name_hash = {}
+    req.session.chosen_id_name_hash.ids = []
+    req.session.chosen_id_name_hash.names = []
     
     //console.log(chosen_id_name_hash)
-    visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
+    visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
     
     const parse = require('csv-parse');
     
-    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
-    
-    datasets = []
-    otudata = []
+    var file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
+    console.log(req.session.chosen_id_name_hash)
+    let datasets = []
+    let otudata = []
     let lineReader = readline.createInterface({
       input: fs.createReadStream(file_path).pipe(zlib.createGunzip())
     });
@@ -164,8 +104,9 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
             datasets.push(headers[n].split(';')[1])
         }
       }else{
-      ///console.log("line: " + n);
+      //console.log("line: " + n);
       //console.log(line);
+      // WS3_03_1625	Bacteria;WS3	phylum	0.0968	0.0968	1	1	0	0	0	0	0	0	0	1	0
         
         otudata[line_ary[0]] = {
             "taxonomy":line_ary[1],
@@ -183,207 +124,124 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
       }
     
     }).on('close', () => {
-    datasets.sort()
+        datasets.sort()
     
-      BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
-      visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
-      res.render('otus/visuals/view_selection', {
+        req.session.BIOM_MATRIX = get_otu_matrix(req, otudata, datasets, visual_post_items);
+        console.log(req.session.BIOM_MATRIX)
+        console.log(visual_post_items)
+        console.log(req.session.chosen_id_name_hash)
+        visual_post_items.max_ds_count   = req.session.BIOM_MATRIX.max_ds_count;
+        let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
+        console.log('needed_constants')
+        console.log(needed_constants)
+        res.render('otus/visuals/view_selection', {
                     title           : 'OTU Visuals', 
                     referer         : 'otu_index',                                
-                    matrix          : JSON.stringify(BIOM_MATRIX), 
-                    project         : prj,
-                    pid             : opid,  
-                    post_items      : JSON.stringify(visual_post_items), 
-                    chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
-                    constants       : JSON.stringify(C),
+                    matrix          : JSON.stringify(req.session.BIOM_MATRIX),
+                    project         : opid,
+                    pid             : opid,
+                    post_items      : JSON.stringify(visual_post_items),
+                    chosen_id_name_hash : JSON.stringify(req.session.chosen_id_name_hash),
+                    constants : JSON.stringify(needed_constants),
                     user            : req.user,
-                    hostname        : req.CONFIG.hostname 
-            });
+                    hostname        : CFG.hostname
+        });
     });
    
      
     
 });
-router.post('/view_selection2', helpers.isLoggedIn, (req, res) => {
-    console.log('in GET OTU view_selection')
-    console.log(req.body);
-    console.log('<<--in OTU view_selection')
-    opid= req.body.otu_id  // filename
-    prj = req.body.otu_id  // filename
-    var timestamp = +new Date();
-    timestamp = req.user.username+'-'+timestamp
-    visual_post_items = get_post_items(req)
-    visual_post_items.ts = timestamp;
-    chosen_id_name_hash = {}  // GLOBAL
-    chosen_id_name_hash.ids = []
-    chosen_id_name_hash.names = []
-    
-    //console.log(chosen_id_name_hash)
-    visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
-    
-    const parse = require('csv-parse');
-    
-    var file_path = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
-    var csvData=[];
-    var row_count = 0
-    var otudata = {}
-    var rows = []
-    datasets = []
-    otudata = []
-    fs.createReadStream(file_path)
-        .pipe(parse({delimiter: '\t'}))
-        .on('data', csvrow => {
-            row_count += 1
-            if(row_count == 1){
-                headers = csvrow
-                for(n=7;n<=headers.length-1;n++){
-                    datasets.push(headers[n].split(';')[1])
-                }
-                
-            }else{
-                //console.log(csvrow);
-                //do something with csvrow
-                //csvData.push(csvrow);  
-                //rows.push(csvrow)
-                otudata[csvrow[0]] = {}
-                otudata[csvrow[0]].taxonomy = csvrow[1]
-                otudata[csvrow[0]].rank = csvrow[2]
-                otudata[csvrow[0]].min_gdist = csvrow[3]
-                otudata[csvrow[0]].avg_gdist = csvrow[4]
-                otudata[csvrow[0]].total = csvrow[5]
-                otudata[csvrow[0]].counts = {}
-                //console.log('start')
-                for(n=7;n<=csvrow.length-1;n++){
-                    //console.log(headers[n])
-                    if(parseInt(csvrow[n]) > 0){
-                        otudata[csvrow[0]].counts[headers[n].split(';')[1]] = csvrow[n]
-                    }
-                }
-                
-            }      
-        })
-        .on('end',() => {
-          //do something wiht csvData
-          //console.log(JSON.stringify(otudata));
-          datasets.sort()
-          console.log(datasets);
-          BIOM_MATRIX = get_otu_matrix(otudata, datasets, visual_post_items);
-          visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
-          res.render('otus/visuals/view_selection', {
-                                title           : 'OTU Visuals', 
-                                referer         : 'otu_index',                                
-                                matrix          : JSON.stringify(BIOM_MATRIX), 
-                                project         : prj,
-                                pid             : opid,  
-                                post_items      : JSON.stringify(visual_post_items), 
-                                chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
-                                constants       : JSON.stringify(C),
-                                user            : req.user,
-                                hostname        : req.CONFIG.hostname 
-            });
-        });
-    //fs.readFile(file_path, 'utf8', (err, content) => {
-        
-    
-    
-    
-        
-            
-    //})        
-});
-// router.post('/view_selectionDELETEME', helpers.isLoggedIn, (req, res) => {
+// router.post('/view_selection2', helpers.isLoggedIn, (req, res) => {
 //     console.log('in GET OTU view_selection')
 //     console.log(req.body);
 //     console.log('<<--in OTU view_selection')
-//     opid= req.body.otu_id
+//     opid= req.body.otu_id  // filename
+//     prj = req.body.otu_id  // filename
 //     var timestamp = +new Date();
 //     timestamp = req.user.username+'-'+timestamp
-//     chosen_id_name_hash = {}  // GLOBAL
-//     
-// 
-//  
+//     visual_post_items = get_post_items(req)
+//     visual_post_items.ts = timestamp;
+//     req.session.chosen_id_name_hash = {}
+//     req.session.chosen_id_name_hash.ids = []
+//     req.session.chosen_id_name_hash.names = []
+//
+//     //console.log(chosen_id_name_hash)
+//     visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
+//
+//     const parse = require('csv-parse');
+//
+//     var file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
+//     var csvData=[];
+//     var row_count = 0
 //     var otudata = {}
-//     //visual_post_items = COMMON.save_post_items(req);
-//     //console.log(visual_post_items)
-//     var q = "SELECT otu_project.otu_project, otu_dataset.otu_dataset, otu_dataset.otu_dataset_id, otu_pdr_info.otu_label, otu_pdr_info.count,\n"
-//     q += " (\n"
-//     q += "   CASE\n"
-// 	q += "      WHEN otu_taxonomy_id IS NULL\n"
-// 	q += "      THEN ''\n"
-// 	q += "      ELSE concat_ws(';', domain, phylum, klass, `order`, family, genus, species)\n"
-//     q += "   END\n"
-//     q += " ) as taxonomy\n"
-//     q += " FROM otu_pdr_info\n" 
-//     q += " JOIN otu_dataset using(otu_dataset_id)\n" 
-//     q += " JOIN otu_project using(otu_project_id)\n"
-//     q += " LEFT JOIN otu_taxonomy  using(otu_taxonomy_id)\n"
-//     q += " LEFT JOIN domain using(domain_id)\n" 
-//     q += " LEFT JOIN phylum using(phylum_id)\n" 
-//     q += " LEFT JOIN klass using(klass_id)\n" 
-//     q += " LEFT JOIN `order` using(order_id)\n" 
-//     q += " LEFT JOIN family using(family_id)\n" 
-//     q += " LEFT JOIN genus using(genus_id)\n"
-//     q += " LEFT JOIN species using(species_id)\n"    
-//     q += " WHERE otu_project_id='"+opid+"'" 
-//     //console.log(q)
-//     connection.query(q, function otu_data(err, rows, fields){
-//         if(err){
-//             console.log(err)
-//         }else{
-//             
-//             prj = rows[0]['otu_project']
-//             
-//             visual_post_items = get_post_items(req)
-//             visual_post_items.ts = timestamp;
-//             
-//             
-//             //console.log('otu post items:')
-//             //console.log(visual_post_items)
-//             
-//             
-// 			chosen_id_name_hash.ids = []
-// 			chosen_id_name_hash.names = []
-// 		
-//             //BIOM_MATRIX = get_otu_matrix(req, rows);
-//             //BIOM_MATRIX2 = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-//             BIOM_MATRIX = get_otu_matrix(rows, visual_post_items);
-//             
-//             //console.log(chosen_id_name_hash)
-//             visual_post_items.no_of_datasets = chosen_id_name_hash.ids.length;
-//             visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
-//             // console.log('chosen_id_name_hash')
-// //             console.log(chosen_id_name_hash)
-// //             console.log('visual_post_items')
-// //             console.log(visual_post_items)
-// //             console.log('BIOM_MATRIX')
-// //             console.log(BIOM_MATRIX)
-//             //console.log('BIOM_MATRIX2')
-//             //console.log(BIOM_MATRIX2)
-//             
-//             
-//  
-//             
-//             
-//             res.render('otus/visuals/view_selection', {
-//                                 title           : 'OTU Visuals', 
-//                                 referer         : 'otu_index',                                
-//                                 matrix          : JSON.stringify(BIOM_MATRIX), 
+//     var rows = []
+//     datasets = []
+//     otudata = []
+//     fs.createReadStream(file_path)
+//         .pipe(parse({delimiter: '\t'}))
+//         .on('data', csvrow => {
+//             row_count += 1
+//             if(row_count == 1){
+//                 headers = csvrow
+//                 for(n=7;n<=headers.length-1;n++){
+//                     datasets.push(headers[n].split(';')[1])
+//                 }
+//
+//             }else{
+//                 //console.log(csvrow);
+//                 //do something with csvrow
+//                 //csvData.push(csvrow);
+//                 //rows.push(csvrow)
+//                 otudata[csvrow[0]] = {}
+//                 otudata[csvrow[0]].taxonomy = csvrow[1]
+//                 otudata[csvrow[0]].rank = csvrow[2]
+//                 otudata[csvrow[0]].min_gdist = csvrow[3]
+//                 otudata[csvrow[0]].avg_gdist = csvrow[4]
+//                 otudata[csvrow[0]].total = csvrow[5]
+//                 otudata[csvrow[0]].counts = {}
+//                 //console.log('start')
+//                 for(n=7;n<=csvrow.length-1;n++){
+//                     //console.log(headers[n])
+//                     if(parseInt(csvrow[n]) > 0){
+//                         otudata[csvrow[0]].counts[headers[n].split(';')[1]] = csvrow[n]
+//                     }
+//                 }
+//
+//             }
+//         })
+//         .on('end',() => {
+//           //do something wiht csvData
+//           //console.log(JSON.stringify(otudata));
+//           datasets.sort()
+//           console.log(datasets);
+//           BIOM_MATRIX = get_otu_matrix(req, otudata, datasets, visual_post_items);
+//           visual_post_items.max_ds_count   = BIOM_MATRIX.max_ds_count;
+//           res.render('otus/visuals/view_selection', {
+//                                 title           : 'OTU Visuals',
+//                                 referer         : 'otu_index',
+//                                 matrix          : JSON.stringify(BIOM_MATRIX),
 //                                 project         : prj,
-//                                 pid             : opid,  
-//                                 post_items      : JSON.stringify(visual_post_items), 
-//                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),                                                
-//                                 constants       : JSON.stringify(req.CONSTS),                                
+//                                 pid             : opid,
+//                                 post_items      : JSON.stringify(visual_post_items),
+//                                 chosen_id_name_hash : JSON.stringify(req.session.chosen_id_name_hash),
+//                                 constants       : JSON.stringify(C),
 //                                 user            : req.user,
-//                                 hostname        : req.CONFIG.hostname 
+//                                 hostname        : CFG.hostname
 //             });
-//         }
-//     });        
-// 
+//         });
+//     //fs.readFile(file_path, 'utf8', (err, content) => {
+//
+//
+//
+//
+//
+//
+//     //})
 // });
+
 function get_post_items(req){
     var post_items = {
         "unit_choice"       : "OTUs",
-        //"no_of_datasets"    : BIOM_MATRIX.shape[1],
         "normalization"     : req.body.normalization || 'none',
         "visuals"           : req.body.visuals || '',
         "selected_distance" : req.body.selected_distance || "morisita_horn",
@@ -395,23 +253,21 @@ function get_post_items(req){
         "max_range"         : req.body.max_range || 100,
         "metadata"          : [],
         "update_data"       : req.body.update_data  || false,
-        //"max_ds_count"      : BIOM_MATRIX.max_ds_count
-        }          // GLOBAL
+        }
      if(typeof post_items.domains == 'string') {
               post_items.domains = post_items.domains.split(',');
      }
      return post_items   
 }
-function get_otu_matrix(otudata, datasets, post_items){
+function get_otu_matrix(req, otudata, datasets, post_items){
         console.log('get_otu_matrix')
         //console.log(otudata)
-        var date = new Date();
-        var otu_matrix = {}
+        let date = new Date();
+        let otu_matrix = {}
         //var ds_order = {}
         //var otu_tax = {}
        
-        //ds_totals = {}
-        var did,rank,db_tax_id,node_id,cnt,matrix_file;
+        //ds_totals = {
         //console.log('otu_label-0')
         otu_matrix = {
             id: post_items.ts,
@@ -430,30 +286,12 @@ function get_otu_matrix(otudata, datasets, post_items){
             data:  []									// ORDERED list of lists of counts: [ [],[],[] ... ]
             };
         
-        //GLOBAL.boim_matrix;
-        //console.log('otu_label-1')
-        //var ukeys = [];
-        //var unit_name_lookup = {};
-        //var unit_name_lookup_per_dataset = {};
-        //var unit_name_counts = {};
-		//db_tax_id_list = {};
-		// console.log('rows')
-// 		console.log(rows)
-        
-        
-  //        WS1_10_220: { taxonomy: 'Bacteria;WS1',
-//     rank: 'phylum',
-//     min_gdist: '0.127',
-//     avg_gdist: '0.1371',
-//     total: '1',
-//     counts: { DAO_0009_2007_08_15: '1' } },
-//console.log('otudata')
-//console.log(otudata)
+
        
         for(n in datasets){
-			otu_matrix.columns.push({"did":n,"id":datasets[n],"metadata":null})	
-			chosen_id_name_hash.ids.push(n)
-            chosen_id_name_hash.names.push(datasets[n])		
+			otu_matrix.columns.push({"did":n,"id":datasets[n],"metadata":null})
+            req.session.chosen_id_name_hash.ids.push(n)
+            req.session.chosen_id_name_hash.names.push(datasets[n])
 		}
 		otu_matrix.taxonomy = 0
 		for(otu_label in otudata) { //"taxonomy"
@@ -504,10 +342,10 @@ function get_otu_matrix(otudata, datasets, post_items){
 			// nothing here for the time being.....
 		}
 
-			
 //console.log('otu_matrix')
-//console.log(otu_matrix)		    
-        matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
+//console.log(otu_matrix)
+
+        let matrix_file = path.join(CFG.TMP_FILES, post_items.ts+'_count_matrix.biom');
         //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
         COMMON.write_file( matrix_file, JSON.stringify(otu_matrix,null,2) );
 
@@ -624,7 +462,7 @@ function get_custom_biom_matrix( post_items, mtx) {
 router.get('/load_otu_list', helpers.isLoggedIn, (req, res) => {
     console.log('in load_otu_list')
     otu_project_list = {}
-    var indir = path.join(req.CONFIG.PATH_TO_STATIC_DOWNLOADS,'clusters')
+    var indir = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters')
     fs.readdir(indir,  (err, list) => {
         if(err){
             console.log(err)
@@ -650,7 +488,7 @@ router.get('/load_otu_list', helpers.isLoggedIn, (req, res) => {
                  }else{
                     otu_project_list[file].size = parseInt(file_items[4],10) // base 10   
                  }
-                 if(PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
+                 if(C.PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project)){
                     otu_project_list[file].pid = C.PROJECT_INFORMATION_BY_PNAME[project].pid
                  }else{
                     otu_project_list[file].pid = ''
@@ -690,8 +528,8 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
             otu_size = '3'
   }
 
-    var pwd = req.CONFIG.PROCESS_DIR;
-    var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
+    var pwd = CFG.PROCESS_DIR;
+    var user_dir_path = path.join(CFG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
     //var otu_dir = req.user.username+'-'+otu_method+'-otus-'+timestamp;
     var otus_dir = 'otus-'+timestamp
     var data_repo_path = path.join(user_dir_path, otus_dir);
@@ -702,7 +540,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
     var config_file = 'config.ini'
     var config_file_path = path.join(data_repo_path, config_file);
     var log = path.join(data_repo_path, 'qsub.log');
-    var site = req.CONFIG.site
+    var site = CFG.site
 
     var script_name = 'fasta_script.sh';
     var script_path = path.join(data_repo_path, script_name);
@@ -714,17 +552,17 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
           fs.chmod(data_repo_path, '0775', function chmodFile(err) {
               if(err){ return console.log(err) } // => null
               script_commands =[]
-              args = ['--site',req.CONFIG.site,
+              args = ['--site',CFG.site,
                       '-r',timestamp,
                       '-u',req.user.username,
-                      '-dids',(chosen_id_name_hash.ids).join(","),
+                      '-dids',(req.session.chosen_id_name_hash.ids).join(","),
                       '-base',data_repo_path,
                       '-fxn','otus',
                       '-fasta_file'
               ]
-              script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/vamps_export_data.py " + args.join(' '))
-              //script_commands.push(req.CONFIG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
-              script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/fastaunique " + fasta_file_path)
+              script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+"/vamps_export_data.py " + args.join(' '))
+              //script_commands.push(CFG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
+              script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+"/fastaunique " + fasta_file_path)
               script_commands.push("val1=`grep '>' "+fasta_file_path+" | wc -l | xargs`")   // xargs trims the result
               script_commands.push("sed -i -e \"s/seq_count=/seq_count=\${val1}/\" "+config_file_path)
               script_commands.push("val2=`grep '>' "+unique_file_path+" | wc -l | xargs`")   // xargs trims the result
@@ -769,7 +607,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
               config_text += 'seq_count_uniques='+"\n";
               config_text += '\n[DATASETS]'+"\n";
               for(i in chosen_id_name_hash.names){
-                 config_text += chosen_id_name_hash.names[i]+"\n";
+                 config_text += req.session.chosen_id_name_hash.names[i]+"\n";
               }
               //
               fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
@@ -789,14 +627,14 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
   console.log("in create_otus_step2");
   //var method = req.params.method
   var otus_code = req.params.code
-  var pwd = req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
+  var pwd = CFG.PROCESS_DIR;
+  var user_dir_path = path.join(CFG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code;
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
-  var config = iniparser.parseSync(config_file);
-  var size = config['MAIN']['otu_size'];
-  var method = config['MAIN']['otu_method']
+  var config_obj = iniparser.parseSync(config_file);
+  var size = config_obj['MAIN']['otu_size'];
+  var method = config_obj['MAIN']['otu_method']
   if(size == '3'){
     dec_size_str = '0.97'
   }else if(size == '6'){
@@ -809,30 +647,30 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
   var fasta_file = 'fasta.fa'
   var fasta_file_path = path.join(data_repo_path, fasta_file);
   var log = path.join(data_repo_path, 'qsub.log');
-  var site = req.CONFIG.site
+  var site = CFG.site
   // var cmd_options = {
   //     exec : 'otu_create_fasta.py',
-  //     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+  //     scriptPath : CFG.PATH_TO_VIZ_SCRIPTS,
   //     args :       [       ],
   // };
   script_commands = []
   switch(method){
       case 'closed_ref':
-            script_commands.push(req.CONFIG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
+            script_commands.push(CFG.PATH_TO_MOTHUR+" \"#unique.seqs(fasta="+fasta_file_path+")\"")
             // otu_usearch_ref.py -i usearch_ref.unique.fa -n usearch_ref.names -p avoorhis_23618455 -u avoorhis -db /groups/vampsweb/vampsdev/seqinfobin/greengenes/v10-2012/rep_set/97_otus.fasta -tax /groups/vampsweb/vampsdev/seqinfobin/greengenes/v10-2012/taxonomy/97_otu_taxonomy.txt -size 0.97 -site vampsdev --use_cluster
             args = ['-i', path.join(data_repo_path,'fasta.unique.fa'),
                     '-n', path.join(data_repo_path,'fasta.names'),
                     '-u', req.user.username,
-                    '-db',  path.join(req.CONFIG.PATH_TO_GG_DATABASE,'rep_set','97_otus.fasta'),
-                    '-tax', path.join(req.CONFIG.PATH_TO_GG_DATABASE,'taxonomy','97_otu_taxonomy.txt'),
+                    '-db',  path.join(CFG.PATH_TO_GG_DATABASE,'rep_set','97_otus.fasta'),
+                    '-tax', path.join(CFG.PATH_TO_GG_DATABASE,'taxonomy','97_otu_taxonomy.txt'),
                     '-size',dec_size_str,
                     '-p',otus_dir,
-                    '-site',req.CONFIG.site
+                    '-site',CFG.site
                   ]
             if(site.substring(0,5) != 'local'){
               args.push('--use_cluster')
             }
-            script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/otu_usearch_ref.py " + args.join(' '))
+            script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+"/otu_usearch_ref.py " + args.join(' '))
             break;
       case 'uclust':
             //otus_uc2mtx_vamps  -i /groups/vampsweb/vampsdev/otus/avoorhis_83898848//uclust.fa -p 0.97 -site vampsdev -dbsource bpc -tax 1 -base /groups/vampsweb/vampsdev/otus/avoorhis_83898848/
@@ -845,7 +683,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
                             '--consout', path.join(data_repo_path,method+'.cons.'+dec_size_str+'.fa'),
                             '--uc', path.join(data_repo_path,method+'.otus.'+dec_size_str+'.uc')
                             ]
-            args_uc2mtxPY = [ '-site',req.CONFIG.site,
+            args_uc2mtxPY = [ '-site',CFG.site,
                             '-i', fasta_file_path,
                             '-p',dec_size_str,
                             '-base',data_repo_path,
@@ -853,12 +691,12 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
             args_uc2mtxPERL = [ '-uc', path.join(data_repo_path,method+'.otus.'+dec_size_str+'.uc'),
                                 '>',   path.join(data_repo_path,method+'.otus.'+dec_size_str+'.mtx')                
             ]
-            args_2tax   = [ '-site',req.CONFIG.site
+            args_2tax   = [ '-site',CFG.site
             ]
-            script_commands.push(req.CONFIG.PATH_TO_VSEARCH+' '+args_vsearch.join(' '))
-            script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+'/'+'otus_uc2mtx2.pl'+' '+args_uc2mtxPERL.join(' '))
-            //script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/otus_uc2mtx.pl" + args_uc2mtx.join(' '))
-            //script_commands.push(req.CONFIG.PATH_TO_NODE_SCRIPTS+"/otus2tax.pl" + args_2tax.join(' '))
+            script_commands.push(CFG.PATH_TO_VSEARCH+' '+args_vsearch.join(' '))
+            script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+'/'+'otus_uc2mtx2.pl'+' '+args_uc2mtxPERL.join(' '))
+            //script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+"/otus_uc2mtx.pl" + args_uc2mtx.join(' '))
+            //script_commands.push(CFG.PATH_TO_NODE_SCRIPTS+"/otus2tax.pl" + args_2tax.join(' '))
             break;
       case 'slp':
             // slp commands
@@ -878,13 +716,13 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
   }else{
     var script_text = helpers.get_qsub_script_text(req, log, pwd, 'vmps_otus', script_commands)
   }
-  var mode = 0775;
+
   var oldmask = process.umask(0);
   console.log("script_path2 = " + script_path);
   fs.writeFile(script_path,
     script_text,
     {
-      mode: mode
+      mode: '0o775'
     },
     err => {
       if(err) {
@@ -910,10 +748,10 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
 // YOUR PROJECTS
 //
 router.get('/project_list', helpers.isLoggedIn, (req, res) => {
-    //console.log(PROJECT_INFORMATION_BY_PNAME);
+    //console.log(C.PROJECT_INFORMATION_BY_PNAME);
 
-    var pwd = req.CONFIG.PROCESS_DIR;
-    var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
+    var pwd = CFG.PROCESS_DIR;
+    var user_dir_path = path.join(CFG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
 
 
     var project_info = {};
@@ -944,12 +782,12 @@ router.get('/project_list', helpers.isLoggedIn, (req, res) => {
                         //project_info[oligo_code].oligo_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-OLIGO')) ? 'COMPLETED' : ''
 
                         try{
-                            var config = iniparser.parseSync(config_file);
+                            var config_obj = iniparser.parseSync(config_file);
 
                             file_info.push({ 'otus_code':otus_code, 'time':stat.mtime});
 
-                            project_info[otus_code].method = config['MAIN']['otu_method'];
-                            project_info[otus_code].size = config['MAIN']['otu_size'];
+                            project_info[otus_code].method = config_obj['MAIN']['otu_method'];
+                            project_info[otus_code].size = config_obj['MAIN']['otu_size'];
                             
                             project_info[otus_code].start_date = stat.mtime.toISOString().substring(0,10);
 
@@ -973,7 +811,7 @@ router.get('/project_list', helpers.isLoggedIn, (req, res) => {
                   pinfo: JSON.stringify(project_info),
                   finfo: JSON.stringify(file_info),
                   
-                  user: req.user, hostname: req.CONFIG.hostname
+                  user: req.user, hostname: CFG.hostname
             });
 
     });  // readder
@@ -984,8 +822,8 @@ router.get('/project_list', helpers.isLoggedIn, (req, res) => {
 router.get('/delete/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in otus delete')
   var otus_code = req.params.code
-  var pwd = req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
+  var pwd = CFG.PROCESS_DIR;
+  var user_dir_path = path.join(CFG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   console.log(data_repo_path)
@@ -1000,12 +838,12 @@ router.get('/project/:code', helpers.isLoggedIn, (req, res) => {
   console.log('in otus - project')
   var otus_code = req.params.code
   console.log(otus_code)
-  var pwd = req.CONFIG.PROCESS_DIR;
-  var user_dir_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
+  var pwd = CFG.PROCESS_DIR;
+  var user_dir_path = path.join(CFG.USER_FILES_BASE,req.user.username);  //path.join(pwd,'public','user_projects');
   var otus_dir = 'otus-'+otus_code
   var data_repo_path = path.join(user_dir_path, otus_dir);
   var config_file = path.join(data_repo_path, 'config.ini');
-  var config_file_data = iniparser.parseSync(config_file);
+  var config_obj = iniparser.parseSync(config_file);
   
 
   fasta_status   = helpers.fileExists(path.join(data_repo_path, 'COMPLETED-FASTA')) ? 'COMPLETED' : ''
@@ -1016,9 +854,9 @@ router.get('/project/:code', helpers.isLoggedIn, (req, res) => {
   res.render('otus/otus_project',
                 { title: 'OTU Project',
                   code : otus_code,
-                  config: JSON.stringify(config_file_data),                  
+                  config: JSON.stringify(config_obj),
                   fasta_status   : fasta_status,            
-                  user: req.user, hostname: req.CONFIG.hostname
+                  user: req.user, hostname: CFG.hostname
   });
 
 });
@@ -1032,14 +870,14 @@ router.get('/otus_method_selection', helpers.isLoggedIn, (req, res) => {
     res.render('otus/otus_method_selection',
                 { title: 'OTU Select Method',
                   code : otus_code,
-                  user: req.user, hostname: req.CONFIG.hostname
+                  user: req.user, hostname: CFG.hostname
     });
 });
 //
 //
 //
 router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
-    //SHOW_DATA = ALL_DATASETS;
+    //SHOW_DATA = C.ALL_DATASETS;
     console.log('GET OTUs: in clear filters')
 
     

@@ -1,20 +1,19 @@
 <% menu_section='VISUALS' %>
 <% include ../../add_ins/begin.ejs %>
-
 <%  var cnsts  = JSON.parse(constants) %>
-<%  var mtx    = JSON.parse(matrix); %>
-<%  var pi     = JSON.parse(post_items); %>
-<%  var items  = JSON.parse(chosen_id_name_hash); %>
-<%  var activate_thumbs = true; %>
+<% var mtx    = JSON.parse(matrix); %>
+<% var pi     = JSON.parse(post_items); %>
+<% var items  = JSON.parse(chosen_id_name_hash); %>
+<% var activate_thumbs = true; %>
 <%  var visuals = cnsts.VISUAL_THUMBNAILS.visuals %>
-<script> 
-  var pi_local  = JSON.parse('<%- post_items %>');
-  var mtx_local  = JSON.parse('<%- matrix %>');
-  var cts_local  = JSON.parse('<%- constants %>');
-  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
-  var user_local = '<%= user.username %>';
-   
+<script>
+    var pi_local  = JSON.parse('<%- post_items %>');
+    var mtx_local = JSON.parse('<%- matrix %>');
+    var cts_local  = JSON.parse('<%- constants %>');
+    var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+    var user_local = '<%= user.username %>';
 </script>
+
 
 
 <div id='info_bar' class='navbar-fixed-top ' >
