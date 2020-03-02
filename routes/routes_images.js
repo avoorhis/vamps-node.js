@@ -56,9 +56,6 @@ module.exports = {
 counts_matrix: (req, res) => {
     console.log('In routes_images/function: images/counts_matrix')
 
-    //console.log('req session')
-    //console.log(req.session)
-
     var ts = req.session.ts
     matrix_file_path = path.join(file_path_obj.get_tmp_file_path(req), ts + '_count_matrix.biom')
     fs.readFile(matrix_file_path, 'utf8', (err, data) => {
@@ -246,7 +243,8 @@ dheatmap: (req, res) =>{
     console.log(matrix_file_path)
 
     //var pwd = file_path_obj.get_tmp_file_path(req);
-
+  console.log('req body')
+  console.log(req.body)
 
     var html = '';
     var title = 'VAMPS';
@@ -292,7 +290,7 @@ dheatmap: (req, res) =>{
       //var last_line = ary[ary.length - 1];
       if(code === 0){   // SUCCESS
         try{
-          console.log('dist_json_file_path',dist_json_file_path)
+          //console.log('dist_json_file_path',dist_json_file_path)
 
           fs.readFile(dist_json_file_path, 'utf8', (err, distance_matrix) => {
             if (err) throw err;
@@ -472,10 +470,11 @@ barcharts: (req, res) =>{
 
         let ds_count = matrix.shape[1];
         let props = get_image_properties_bars(imagetype, ds_count);
-
+        //console.log('matrix');
+        //console.log(matrix);
         let mtxdata = make_bar_mtxdata(matrix);
         
-        const jsdom = require('jsdom');  // NEED version <10 for jsdom.env
+        const jsdom = require('jsdom');  // NEED version <10 for jsdom.env - Is this still true?
         const { JSDOM } = jsdom;
         const fakeDom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         let body = d3.select(fakeDom.window.document).select('body');
@@ -977,8 +976,6 @@ create_hm_table: (req, dm, metadata) => {
     //console.log(metadata)
     var id_order = req.session.chosen_id_order
 
-    console.log('dm')
-    console.log(dm)
     var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
       'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
       'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}
@@ -1045,9 +1042,13 @@ create_hm_table: (req, dm, metadata) => {
     }
     html += "</tr>"
     k=1
-    for(var n in id_order) { // rows
+    for(var n in id_order) { // HM rows
       var xdid = id_order[n]
-      var xpjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[xdid]].project +'--'+C.DATASET_NAME_BY_DID[xdid]
+      if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+        var xpjds =  req.session.chosen_id_name_hash.names[xdid]
+      } else {
+        var xpjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[xdid]].project + '--' + C.DATASET_NAME_BY_DID[xdid]
+      }
       //var x = id_order[n]
       if(req.body.source == 'website'){
         html += "<tr id='"+xpjds+"'>"
@@ -1056,10 +1057,14 @@ create_hm_table: (req, dm, metadata) => {
       }
       html += "<td  id='"+xpjds+"' class='dragHandle ds_cell'>"+k+"</td>"
       html += "<td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value='"+ xdid +"' >"+xpjds+"</td>"
-      for(var m in id_order) {  // cols
-
+      for(var m in id_order) {  // HM cols
         var ydid = id_order[m]
-        var ypjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[ydid]].project +'--'+C.DATASET_NAME_BY_DID[ydid]
+
+        if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+          var ypjds =  req.session.chosen_id_name_hash.names[ydid]
+        } else {
+          var ypjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[ydid]].project + '--' + C.DATASET_NAME_BY_DID[ydid]
+        }
 
         if(dm.hasOwnProperty(xpjds) && dm[xpjds].hasOwnProperty(ypjds)){
           var d = dm[xpjds][ypjds].toFixed(5);
@@ -1308,36 +1313,44 @@ function save_file(data, file_path){
 }
 function thin_out_data_for_display_otus(mtx){
   console.log('in thin_out_data_for_display- OTUs only')
+  // needed because there are too many minor tax groups
   var new_mtx = {}
-  new_mtx.columns = mtx.columns
+  new_mtx.columns = mtx.columns  // keep same datasets
   new_mtx.data = []
   new_mtx.rows = []
+  new_mtx.column_totals = []
+  for(m in mtx.data){  // m is count of taxonomy
 
-  for(m in mtx.data){
-
-    for(n in mtx.data[m]){
+    for(n in mtx.data[m]){  // n is count of dataset
       cnt = mtx.data[m][n]
       dstot = mtx.column_totals[n]
       pct = (cnt/dstot)*100
+      //tmp_sum = 0
       //console.log('pct->')
       //console.log(cnt)
       //console.log(pct)
       got_one_above_limit = false
-      if((cnt/dstot)*100 > 1.0){
+      if(pct > 1.0){
         //console.log('greater than 1%')
         got_one_above_limit = true
-      }
-      if(got_one_above_limit){
-        new_mtx.data.push(mtx.data[m])
+        new_mtx.data.push(mtx.data[m]) // push in the entire row (array) for an accepted taxonomy
         new_mtx.rows.push(mtx.rows[m])
       }
 
+      //new_mtx.column_totals[n].push(tmp_sum)
+    }
+  }
+  (new_mtx.column_totals = []).length = new_mtx.columns.length;
+  new_mtx.column_totals.fill(0);
+  for(m in new_mtx.data) {  // m is count of taxonomy
+    for (n in new_mtx.data[m]) {  // n is count of dataset
+      new_mtx.column_totals[n] += new_mtx.data[m][n]
     }
   }
   new_mtx.shape = [new_mtx.rows.length, new_mtx.columns.length]
   new_mtx.matrix_type = "dense"
-  new_mtx.max_dataset_count = mtx.max_dataset_count
-  new_mtx.column_totals = mtx.column_totals
+  new_mtx.max_dataset_count = Math.max.apply(null, new_mtx.column_totals);
+  //new_mtx.column_totals = mtx.column_totals
   new_mtx.date = mtx.date
   new_mtx.generated_by = mtx.generated_by
   new_mtx.units = mtx.units
@@ -1345,13 +1358,18 @@ function thin_out_data_for_display_otus(mtx){
   new_mtx.format_url = mtx.format_url
   new_mtx.format = mtx.format
   new_mtx.id = mtx.id
-
+console.log('new_mtx')
+  console.log(new_mtx.data)
+  console.log(new_mtx.column_totals)
+  console.log(new_mtx.max_dataset_count)
   return new_mtx
 }
 
 function charts_otus(req, biom_data) {
-  console.log('calling thin_out_data_for_display: length= ' + biom_data.rows.length.toString());
-  return thin_out_data_for_display_otus(biom_data);
+  console.log('calling thin_out_data_for_display: before length= ' + biom_data.rows.length.toString());
+  let new_biom_data = thin_out_data_for_display_otus(biom_data);
+  console.log('calling thin_out_data_for_display: after length= ' + new_biom_data.rows.length.toString());
+  return new_biom_data
 }
 
 // function get_scaler(mtxdata, matrix) {

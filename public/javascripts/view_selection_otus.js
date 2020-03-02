@@ -910,6 +910,7 @@ function create_dheatmap(new_window) {
       var args = {}
       args.image = 'dheatmap'
       args.source = 'website'
+      args.type = 'otus'
       xmlhttp.open("POST", '/api/create_image', true);
       xmlhttp.setRequestHeader("Content-type","application/json");
       showDots='';
@@ -1046,22 +1047,21 @@ function create_piecharts_group(new_window) {
 function create_barcharts_group(new_window) {
       
     if(new_window){
-          var htmlstring = document.getElementById('barcharts_div').innerHTML;
-          function openindex()
-            {
+        let htmlstring = document.getElementById('barcharts_div').innerHTML;
+        function openindex() {
               rando = Math.floor(Math.random() * 20);
               OpenWindow=window.open("", "barcharts"+rando.toString(), "height=900, width=900,toolbar=no,scrollbars=yes,menubar=no");
               OpenWindow.document.write(new_window_skeleton(htmlstring))
               OpenWindow.document.close()
               self.name="main"
-            }
-          openindex()
-          return
+        }
+        openindex()
+        return;
     }
     barcharts_created = true;
-    var info_line = create_header('bars', pi_local);
+    let info_line = create_header('bars', pi_local);
     document.getElementById('barcharts_title').innerHTML = info_line;
-    var barcharts_div = document.getElementById('barcharts_div');
+    let barcharts_div = document.getElementById('barcharts_div');
     document.getElementById('barcharts_title').style.color = 'white';
     document.getElementById('barcharts_title').style['font-size'] = 'small';
     barcharts_div.innerHTML = '';
@@ -1072,9 +1072,9 @@ function create_barcharts_group(new_window) {
      
     // this fxn is in common_selection.js
     //create_barcharts('group', pi_local.ts, mtx_local, {alpha_value:'z',count_value:"min"});
-    var xmlhttp = new XMLHttpRequest();
+    let xmlhttp = new XMLHttpRequest();
 
-    var args = {}
+    let args = {}
     args.image = 'barcharts'
     args.source = 'website'
     args.type = 'otus'
@@ -1082,13 +1082,13 @@ function create_barcharts_group(new_window) {
     //         alert(xmlhttp) 
     xmlhttp.setRequestHeader("Content-type","application/json");
     showDots='';
-    var myWaitVar = setInterval(myWaitFunction,1000,barcharts_div);      
+    let myWaitVar = setInterval(myWaitFunction,1000,barcharts_div);
     xmlhttp.onreadystatechange = function(){
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           data = JSON.parse(xmlhttp.response)        
-           barcharts_div.innerHTML = data.html;
-           document.getElementById('barcharts_dnld_btn').disabled = false          
+           data = JSON.parse(xmlhttp.response)
+            barcharts_div.innerHTML = data.html;
+           document.getElementById('barcharts_dnld_btn').disabled = false
         }
      }
     xmlhttp.send(JSON.stringify(args));

@@ -78,6 +78,10 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     console.log('<<--in OTU view_selection')
     // { otu_id: 'AB_SAND_Bv6.Bacteria.slp.otus.03.mtx.gz' }
     let opid = req.body.otu_id  // filename
+    let otu_name_split = opid.split('.')
+    req.session.otu_project = otu_name_split[0]
+    req.session.otu_domain = otu_name_split[1]
+    req.session.otu_size = otu_name_split[4]
     //let prj = req.body.otu_id  // filename
     var timestamp = +new Date();
     timestamp = req.user.username+'-'+timestamp
@@ -90,12 +94,11 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     //console.log(chosen_id_name_hash)
     //visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
     
-    
     const parse = require('csv-parse');
     
     var file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
-    console.log(req.session.chosen_id_name_hash)
-    let datasets = []
+    //console.log(req.session.chosen_id_name_hash)
+    req.session.otu_datasets = []
     let otudata = []
     let lineReader = readline.createInterface({
       input: fs.createReadStream(file_path).pipe(zlib.createGunzip())
@@ -108,7 +111,7 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
       if(n == 1){
         headers = line_ary
         for(n=7;n<=headers.length-1;n++){
-            datasets.push(headers[n].split(';')[1])
+            req.session.otu_datasets.push(headers[n].split(';')[1])
         }
       }else{
       //console.log("line: " + n);
@@ -131,9 +134,9 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
       }
     
     }).on('close', () => {
-        datasets.sort()
+        req.session.otu_datasets.sort()
     
-        req.session.BIOM_MATRIX = get_otu_matrix(req, otudata, datasets, visual_post_items);
+        req.session.BIOM_MATRIX = get_otu_matrix(req, otudata, req.session.otu_datasets, visual_post_items);
         //console.log(req.session.BIOM_MATRIX)
         //visual_post_items.chosen_datasets = req.session.BIOM_MATRIX.columns
         // did and name
@@ -148,9 +151,11 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
         	
         }
     	visual_post_items.no_of_datasets = req.session.BIOM_MATRIX.columns.length
-        console.log(visual_post_items)
-        console.log(req.session.chosen_id_name_hash)
+        //console.log('visual_post_items')
+        //console.log(visual_post_items)
+        //console.log(req.session.chosen_id_name_hash)
         req.session.chosen_id_order = req.session.chosen_id_name_hash.ids
+        req.session.selected_distance = visual_post_items.selected_distance
         visual_post_items.max_ds_count   = req.session.BIOM_MATRIX.max_ds_count;
         let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
         //console.log('needed_constants')
@@ -224,9 +229,9 @@ function get_otu_matrix(req, otudata, datasets, post_items){
 
        
         for(n in datasets){
-			otu_matrix.columns.push({"did":n,"id":datasets[n],"metadata":null})
+			otu_matrix.columns.push({"did":n,"id": req.session.otu_project+'--'+datasets[n],"metadata":null})
             req.session.chosen_id_name_hash.ids.push(n)
-            req.session.chosen_id_name_hash.names.push(datasets[n])
+            req.session.chosen_id_name_hash.names.push(req.session.otu_project+'--'+ datasets[n])
 		}
 		otu_matrix.taxonomy = 0
 		for(otu_label in otudata) { //"taxonomy"
@@ -234,15 +239,15 @@ function get_otu_matrix(req, otudata, datasets, post_items){
 			//console.log(otudata[otu_label])
 		
 			if(otudata[otu_label].hasOwnProperty('taxonomy')){
-			    otu_matrix.rows.push({"id":otu_label,"metadata":{"taxonomy":otudata[otu_label].taxonomy}}) 
-			    otu_matrix.taxonomy = 1 
+			    otu_matrix.rows.push({"id":otu_label,"metadata":{"taxonomy":otudata[otu_label].taxonomy}})
+                otu_matrix.taxonomy = 1
 			}else{
-			    otu_matrix.rows.push({"id":otu_label,"metadata":null}) 
-			    otu_matrix.taxonomy = 0
+			    otu_matrix.rows.push({"id":otu_label,"metadata":null})
+                otu_matrix.taxonomy = 0
 			}     
 			var temp = []
-			col_tot = 0 
-			for(n in datasets){
+			col_tot = 0
+            for(n in datasets){
 			    ds= datasets[n]
 			    if(otudata[otu_label].counts.hasOwnProperty(ds)){
 			        temp.push(parseInt(otudata[otu_label].counts[ds]))
@@ -252,8 +257,7 @@ function get_otu_matrix(req, otudata, datasets, post_items){
 			    
 			}
 			
-			otu_matrix.data.push(temp)	  
-				  			
+			otu_matrix.data.push(temp)
 		}
         
 		otu_matrix.shape[0] = Object.keys(otu_matrix.rows).length
@@ -270,15 +274,11 @@ function get_otu_matrix(req, otudata, datasets, post_items){
        
         
 		if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
-                
-				otu_matrix = get_custom_biom_matrix( post_items, otu_matrix );
-
+		    otu_matrix = get_custom_biom_matrix( post_items, otu_matrix );
 		}else{
 			// nothing here for the time being.....
 		}
 
-//console.log('otu_matrix')
-//console.log(otu_matrix)
 
         let matrix_file = path.join(CFG.TMP_FILES, post_items.ts+'_count_matrix.biom');
         //COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
@@ -484,7 +484,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
 
     fs.ensureDir(data_repo_path, err => {
           if(err){ return console.log(err) } // => null
-          fs.chmod(data_repo_path, '0775', function chmodFile(err) {
+          fs.chmod(data_repo_path, 0o775, function chmodFile(err) {
               if(err){ return console.log(err) } // => null
               script_commands =[]
               args = ['--site',CFG.site,
