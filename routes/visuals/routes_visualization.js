@@ -62,7 +62,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   console.log('upload',upload.single('upload_files', 12))
   This page (view_selection) comes after the datasets and units have been selected
      in the previous two pages.
-  It should be protected with isLoggedIn like /unit_selection below.
+  It should be protected with isLoggedIn like /unit_selection visualizationCommonVariablesbelow.
   The function call will look like this when isLoggedIn is in place:
              router.post('/view_selection', isLoggedIn, (req, res) => {
   This page is where the user will choose to view his/her selected visuals.
@@ -80,10 +80,15 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   var body = JSON.parse(req.body);
   if(typeof visual_post_items == undefined){
   */
-
+  // initialize the session
+  req.session.otus = false;
+  req.session.biom_matrix = {}
   console.log(req.user.username+' req.body: view_selection body-->>');
   viz_files_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
+  console.log('req.session ==>>');
+  console.log(req.session);
+  console.log('<<--req.body: req.session -- don"t pollute the session');
 
   helpers.start = process.hrtime();
   let image_to_open = {};
@@ -921,13 +926,18 @@ function LoadDataFinishRequestFunc({req, res, pi, timestamp_only, new_matrix, ne
 router.get('/bar_single', helpers.isLoggedIn, (req, res) => {
   console.log('in routes_viz/bar_single');
   let myurl = url.parse(req.url, true);
-  //console.log('in piechart_single',myurl.query)
+  console.log('in piechart_single',myurl.query)
+  if (req.session.otus) {
+    console.log('found otus')
+  }else{
+    console.log('not otus')
+  }
   let selected_did = myurl.query.did;
   let orderby = myurl.query.orderby || 'alpha'; // alpha, count
   let value = myurl.query.val || 'z'; // a,z, min, max
   let order = {orderby: orderby, value: value}; // orderby: alpha: a,z or count: min,max
   let pd_vars = new visualization_controller.visualizationCommonVariables(req);
-
+  //console.log(pd_vars)
   let pi = make_pi([selected_did], req, pd_vars);
   let new_matrix = make_new_matrix(req, pi, selected_did, order, pd_vars);
   let new_order = get_new_order_by_button(order);
@@ -982,7 +992,7 @@ router.get('/bar_double', helpers.isLoggedIn, (req, res) => {
 
 function err_read_file(err, req, res, seqs_filename) {
   console.log(err);
-  if (req.session.unit_choice === 'OTUs'){
+  if (req.session.otus){
     res.send('<br><h3>No sequences are associated with this OTU project.</h3>');
   }
   else {

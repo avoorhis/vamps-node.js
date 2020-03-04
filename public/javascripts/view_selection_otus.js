@@ -726,31 +726,42 @@ function create_counts_matrix(new_window) {
       html += "<div style='height:500px;overflow:auto;'>"
       html += "<table id='counts_matrix_id' border='0' class='' >";
       html += "<tr><td></td><td>OTU</td>"
-      for (var n in mtx_local.columns){
+    let dataset_totals = {}
+    for (var n in mtx_local.columns){
           ds = mtx_local.columns[n].id
-          html += "<td>"+ds+"</td>"  
-      }
-      if(mtx_local.taxonomy == 1){
-          html += "<td>Taxonomy</td>" 
-      }
-      html += "</tr>"
-      for (var n in mtx_local.rows){
+          dataset_totals[ds] = 0
+          html += "<td>"+ds+"</td>"
+    }
+    if(mtx_local.taxonomy == 1){
+          html += "<td>OTU Taxonomy</td>"
+    }
+    html += "</tr>"
+
+    for (var n in mtx_local.rows){
         otu = mtx_local.rows[n].id
         html += "<tr>";
         html += '<td>'+(parseInt(n)+1)+'</td>';
         html += '<td>'+otu+'</td>';   
         for (var m in mtx_local.columns){
+            ds = mtx_local.columns[m].id
             cnt = mtx_local.data[n][m]
             html += '<td>'+ cnt +'</td>'
+            dataset_totals[ds] += parseInt(cnt)
         }
         if(mtx_local.taxonomy == 1){
             html += '<td>'+ mtx_local.rows[n].metadata.taxonomy +'</td>'
         }
         html += "</tr>"; 
-      }
-      html += "</table></div>";
-      tax_counts_div.innerHTML = html; 
-      document.getElementById('counts_matrix_dnld_btn').disabled = false
+    }
+    html += "<tr><td></td><td>Totals:</td>"
+    for (var n in mtx_local.columns) {
+        ds = mtx_local.columns[n].id
+        html += "<td>"+ dataset_totals[ds].toString() +"</td>"
+    }
+    html += "</tr>"
+    html += "</table></div>";
+    tax_counts_div.innerHTML = html;
+    document.getElementById('counts_matrix_dnld_btn').disabled = false
       
     document.getElementById('pre_counts_matrix_div').style.display = 'block';
       

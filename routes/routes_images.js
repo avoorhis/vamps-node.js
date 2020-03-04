@@ -1358,10 +1358,6 @@ function thin_out_data_for_display_otus(mtx){
   new_mtx.format_url = mtx.format_url
   new_mtx.format = mtx.format
   new_mtx.id = mtx.id
-console.log('new_mtx')
-  console.log(new_mtx.data)
-  console.log(new_mtx.column_totals)
-  console.log(new_mtx.max_dataset_count)
   return new_mtx
 }
 

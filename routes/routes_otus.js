@@ -29,18 +29,18 @@ router.post('/method_selection', helpers.isLoggedIn, (req, res) => {
   console.log('<<--in method_selection')
 
   dataset_ids = JSON.parse(req.body.dataset_ids);
-  req.session.chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+  req.session.otus.chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
   
   console.log('chosen_id_name_hash-->');
-  console.log(req.session.chosen_id_name_hash);
-  console.log(req.session.chosen_id_name_hash.ids.length);
+  console.log(req.session.otus.chosen_id_name_hash);
+  console.log(req.session.otus.chosen_id_name_hash.ids.length);
   
   console.log('<--chosen_id_name_hash');
 
   res.render('otus/otus_method_selection', {
           title: 'VAMPS:OTUs',
           referer: 'otus',
-          chosen_id_name_hash: JSON.stringify(req.session.chosen_id_name_hash),
+          chosen_id_name_hash: JSON.stringify(req.session.otus.chosen_id_name_hash),
           user: req.user, hostname: CFG.hostname
   });
 
@@ -78,27 +78,36 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     console.log('<<--in OTU view_selection')
     // { otu_id: 'AB_SAND_Bv6.Bacteria.slp.otus.03.mtx.gz' }
     let opid = req.body.otu_id  // filename
-    let otu_name_split = opid.split('.')
-    req.session.otu_project = otu_name_split[0]
-    req.session.otu_domain = otu_name_split[1]
-    req.session.otu_size = otu_name_split[4]
+    let otu_name_split = opid.split('.');
+    req.session.otus = {};
+
+    req.session.otus.otu_project = otu_name_split[0];
+    req.session.otus.otu_domain = otu_name_split[1];
+    req.session.otus.otu_size = otu_name_split[4];
+    req.session.project_dataset_vars = {}
+    req.session.chosen_id_order = []
+    req.session.otus.chosen_id_name_hash = {}
+    req.session.otus.chosen_id_name_hash.ids = []
+    req.session.otus.chosen_id_name_hash.names = []
+
+    console.log('req.session ==>>');
+    console.log(req.session);
+    console.log('<<--req.body: req.session -- don"t pollute the session');
     //let prj = req.body.otu_id  // filename
     var timestamp = +new Date();
-    timestamp = req.user.username+'-'+timestamp
-    let visual_post_items = get_post_items(req)
+    timestamp = req.user.username+'-'+timestamp;
+    let visual_post_items = get_post_items(req);
     visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
-    req.session.chosen_id_name_hash = {}
-    req.session.chosen_id_name_hash.ids = []
-    req.session.chosen_id_name_hash.names = []
+
     
     //console.log(chosen_id_name_hash)
-    //visual_post_items.no_of_datasets = req.session.chosen_id_name_hash.ids.length;
+    //visual_post_items.no_of_datasets = req.session.otus.chosen_id_name_hash.ids.length;
     
     const parse = require('csv-parse');
     
     var file_path = path.join(CFG.PATH_TO_STATIC_DOWNLOADS,'clusters',opid)
-    //console.log(req.session.chosen_id_name_hash)
-    req.session.otu_datasets = []
+    //console.log(req.session.otus.chosen_id_name_hash)
+    req.session.otus.otu_datasets = []
     let otudata = []
     let lineReader = readline.createInterface({
       input: fs.createReadStream(file_path).pipe(zlib.createGunzip())
@@ -111,7 +120,7 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
       if(n == 1){
         headers = line_ary
         for(n=7;n<=headers.length-1;n++){
-            req.session.otu_datasets.push(headers[n].split(';')[1])
+            req.session.otus.otu_datasets.push(headers[n].split(';')[1])
         }
       }else{
       //console.log("line: " + n);
@@ -134,40 +143,40 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
       }
     
     }).on('close', () => {
-        req.session.otu_datasets.sort()
+        req.session.otus.otu_datasets.sort()
     
-        req.session.BIOM_MATRIX = get_otu_matrix(req, otudata, req.session.otu_datasets, visual_post_items);
-        //console.log(req.session.BIOM_MATRIX)
-        //visual_post_items.chosen_datasets = req.session.BIOM_MATRIX.columns
+        req.session.biom_matrix = get_otu_matrix(req, otudata, req.session.otus.otu_datasets, visual_post_items);
+        //console.log(req.session.biom_matrix)
+        //visual_post_items.chosen_datasets = req.session.biom_matrix.columns
         // did and name
         
         visual_post_items.chosen_datasets = []
-        for(n in req.session.BIOM_MATRIX.columns) {
+        for(n in req.session.biom_matrix.columns) {
         	visual_post_items.chosen_datasets[n] = {}
-        	visual_post_items.chosen_datasets[n].did = req.session.BIOM_MATRIX.columns[n].did
-        	visual_post_items.chosen_datasets[n].name = req.session.BIOM_MATRIX.columns[n].id
+        	visual_post_items.chosen_datasets[n].did = req.session.biom_matrix.columns[n].did
+        	visual_post_items.chosen_datasets[n].name = req.session.biom_matrix.columns[n].id
         	
     
         	
         }
-    	visual_post_items.no_of_datasets = req.session.BIOM_MATRIX.columns.length
+    	visual_post_items.no_of_datasets = req.session.biom_matrix.columns.length
         //console.log('visual_post_items')
         //console.log(visual_post_items)
-        //console.log(req.session.chosen_id_name_hash)
-        req.session.chosen_id_order = req.session.chosen_id_name_hash.ids
+        //console.log(req.session.otus.chosen_id_name_hash)
+        req.session.chosen_id_order = req.session.otus.chosen_id_name_hash.ids
         req.session.selected_distance = visual_post_items.selected_distance
-        visual_post_items.max_ds_count   = req.session.BIOM_MATRIX.max_ds_count;
+        visual_post_items.max_ds_count   = req.session.biom_matrix.max_ds_count;
         let needed_constants = helpers.retrieve_needed_constants(C,'view_selection');
         //console.log('needed_constants')
         //console.log(needed_constants)
         res.render('otus/visuals/view_selection', {
                     title           : 'OTU Visuals', 
                     referer         : 'otu_index',                                
-                    matrix          : JSON.stringify(req.session.BIOM_MATRIX),
+                    matrix          : JSON.stringify(req.session.biom_matrix),
                     project         : opid,
                     pid             : opid,
                     post_items      : JSON.stringify(visual_post_items),
-                    chosen_id_name_hash : JSON.stringify(req.session.chosen_id_name_hash),
+                    chosen_id_name_hash : JSON.stringify(req.session.otus.chosen_id_name_hash),
                     constants : JSON.stringify(needed_constants),
                     user            : req.user,
                     hostname        : CFG.hostname
@@ -229,9 +238,9 @@ function get_otu_matrix(req, otudata, datasets, post_items){
 
        
         for(n in datasets){
-			otu_matrix.columns.push({"did":n,"id": req.session.otu_project+'--'+datasets[n],"metadata":null})
-            req.session.chosen_id_name_hash.ids.push(n)
-            req.session.chosen_id_name_hash.names.push(req.session.otu_project+'--'+ datasets[n])
+			otu_matrix.columns.push({"did":n,"id": req.session.otus.otu_project+'--'+datasets[n],"metadata":null})
+            req.session.otus.chosen_id_name_hash.ids.push(n)
+            req.session.otus.chosen_id_name_hash.names.push(req.session.otus.otu_project+'--'+ datasets[n])
 		}
 		otu_matrix.taxonomy = 0
 		for(otu_label in otudata) { //"taxonomy"
@@ -490,7 +499,7 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
               args = ['--site',CFG.site,
                       '-r',timestamp,
                       '-u',req.user.username,
-                      '-dids',(req.session.chosen_id_name_hash.ids).join(","),
+                      '-dids',(req.session.otus.chosen_id_name_hash.ids).join(","),
                       '-base',data_repo_path,
                       '-fxn','otus',
                       '-fasta_file'
@@ -541,8 +550,8 @@ router.post('/create_otus_fasta', helpers.isLoggedIn, (req, res) => {
               config_text += 'seq_count='+"\n";
               config_text += 'seq_count_uniques='+"\n";
               config_text += '\n[DATASETS]'+"\n";
-              for(i in chosen_id_name_hash.names){
-                 config_text += req.session.chosen_id_name_hash.names[i]+"\n";
+              for(i in req.session.otus.chosen_id_name_hash.names){
+                 config_text += req.session.otus.chosen_id_name_hash.names[i]+"\n";
               }
               //
               fs.writeFile(config_file_path, config_text, function writeConfigFile(err) {
