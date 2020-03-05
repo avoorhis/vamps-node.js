@@ -727,9 +727,11 @@ function create_counts_matrix(new_window) {
       html += "<table id='counts_matrix_id' border='0' class='' >";
       html += "<tr><td></td><td>OTU</td>"
     let dataset_totals = {}
+    //let dataset_filtered_totals = {}
     for (var n in mtx_local.columns){
           ds = mtx_local.columns[n].id
-          dataset_totals[ds] = 0
+          dataset_totals[ds] = 0;
+          //dataset_filtered_totals = 0;
           html += "<td>"+ds+"</td>"
     }
     if(mtx_local.taxonomy == 1){

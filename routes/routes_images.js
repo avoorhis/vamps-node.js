@@ -1326,39 +1326,39 @@ function save_file(data, file_path){
 function thin_out_data_for_display_otus(mtx){
   console.log('in thin_out_data_for_display- OTUs only')
   // needed because there are too many minor tax groups
-  var new_mtx = {}
-  new_mtx.columns = mtx.columns  // keep same datasets
-  new_mtx.data = []
-  new_mtx.rows = []
-  new_mtx.column_totals = []
-  for(m in mtx.data){  // m is count of taxonomy
 
-    for(n in mtx.data[m]){  // n is count of dataset
-      cnt = mtx.data[m][n]
-      dstot = mtx.column_totals[n]
-      pct = (cnt/dstot)*100
-      //tmp_sum = 0
-      //console.log('pct->')
-      //console.log(cnt)
-      //console.log(pct)
+  for(var i=0; i<mtx.data.length; i++){  // i is count of taxonomy
+    for(var j=0; j<mtx.data[i].length; j++){  // j is count of dataset
+      cnt = mtx.data[i][j]
+      dstot = mtx.column_totals[j]
+      pct = parseFloat((cnt/dstot)*100)
       got_one_above_limit = false
-      if(pct > 1.0){
-        //console.log('greater than 1%')
-        got_one_above_limit = true
-        new_mtx.data.push(mtx.data[m]) // push in the entire row (array) for an accepted taxonomy
-        new_mtx.rows.push(mtx.rows[m])
+      if(pct < 1.0){
+        mtx.data[i][j] = 0;
       }
-
-      //new_mtx.column_totals[n].push(tmp_sum)
     }
   }
+
+  var new_mtx = {}
+  new_mtx.columns = mtx.columns; // keep same datasets
   (new_mtx.column_totals = []).length = new_mtx.columns.length;
   new_mtx.column_totals.fill(0);
-  for(m in new_mtx.data) {  // m is count of taxonomy
-    for (n in new_mtx.data[m]) {  // n is count of dataset
-      new_mtx.column_totals[n] += new_mtx.data[m][n]
+  new_mtx.rows = []   // to be filled
+  new_mtx.data = []   // to be filled
+  // purpose: check each row(array) of 'data' and if not ALL zeros then add them back to new_mtx
+  for(var i=0;i<mtx.data.length;i++){
+    if(mtx.data[i].reduce((a, b) => a + b, 0) > 0){   // checks if ALL members are zero
+      new_mtx.data.push(mtx.data[i])
+      new_mtx.rows.push(mtx.rows[i])
     }
   }
+  // purpose re-calculate the column totals
+  for(var i=0;i<new_mtx.data.length;i++){
+    for(var j=0;j<new_mtx.data[i].length;j++){
+      new_mtx.column_totals[j] = (new_mtx.column_totals[j] || 0) + new_mtx.data[i][j];
+    }
+  }
+
   new_mtx.shape = [new_mtx.rows.length, new_mtx.columns.length]
   new_mtx.matrix_type = "dense"
   new_mtx.max_dataset_count = Math.max.apply(null, new_mtx.column_totals);
@@ -1370,6 +1370,7 @@ function thin_out_data_for_display_otus(mtx){
   new_mtx.format_url = mtx.format_url
   new_mtx.format = mtx.format
   new_mtx.id = mtx.id
+
   return new_mtx
 }
 
