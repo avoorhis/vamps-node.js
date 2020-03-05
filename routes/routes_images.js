@@ -1134,6 +1134,7 @@ create_hm_table: (req, dm, metadata) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function create_bars_svg_object(req, svg, props, data, ts) {
   console.log('In create_bars_svg_object')
+  let bar_link;
   svg.append("g")
     .attr("class", "x axis")
     .style('stroke-width', '2px')
@@ -1145,15 +1146,26 @@ function create_bars_svg_object(req, svg, props, data, ts) {
     .style("font-size",  "11px")
     .text("Percent");
   if(req.body.source == 'website'){
-    var datasetBar = svg.selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("g")
-      .attr("class", "g")
-      .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
-      .append("a")
-      .attr("xlink:xlink:href",  d => { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown';} )
-      .attr("target", '_blank' );
+    if(req.session.otus) {
+      var datasetBar = svg.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("class", "g")
+        .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
+    }else{
+      var datasetBar = svg.selectAll(".bar")
+          .data(data)
+          .enter()
+          .append("g")
+          .attr("class", "g")
+          .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
+          .append("a")
+          .attr("xlink:xlink:href",  d => { return '/visuals/bar_single?did='+d.did+'&ts='+ts+'&order=alphaDown'; } )
+          .attr("target", '_blank' );
+    }
+
+
   }else{
     var datasetBar = svg.selectAll(".bar")
       .data(data)
@@ -1161,8 +1173,8 @@ function create_bars_svg_object(req, svg, props, data, ts) {
       .append("g")
       .attr("class", "g")
       .attr("transform", d => { return  "translate(0, " + props.y(d.pjds) + ")"; })
-
   }
+
   var labels = datasetBar.append("text")
     .attr("class", "y label")
     .attr("text-anchor", "end")
@@ -1531,7 +1543,19 @@ function pies_factory(req, matrix, d3pie_data, imagetype, ts) {
   let arc = d3.arc().innerRadius(0).outerRadius(io.pie_rows);
 
   if (req.body.source === 'website'){
-    pies = svg.selectAll("svg")
+    if(req.session.otus) {
+      pies = svg.selectAll("svg")
+          .data(d3pie_data)   // d3pie_data is an array of arrays with objects being members of internal arrays
+          .enter()
+          .append("g")//.style('text-anchor', 'middle')
+          .attr("transform", (ds_objects, i) => {
+            let diam = (io.pie_rows) + io.margin;
+            let h_spacer = diam * 2 * (i % io.pies_per_row);
+            let v_spacer = diam * 2 * Math.floor(i / io.pies_per_row);
+            return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
+          })
+    }else{
+      pies = svg.selectAll("svg")
         .data(d3pie_data)   // d3pie_data is an array of arrays with objects being members of internal arrays
         .enter()
         .append("g")//.style('text-anchor', 'middle')
@@ -1541,12 +1565,12 @@ function pies_factory(req, matrix, d3pie_data, imagetype, ts) {
           let v_spacer = diam * 2 * Math.floor(i / io.pies_per_row);
           return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
-
         .append("a")
-        .attr("xlink:xlink:href", (ds_objects, i) => {
-          return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
-        })
-        .attr("target", '_blank' );
+          .attr("xlink:xlink:href", (ds_objects, i) => {
+            return '/visuals/bar_single?did=' + matrix.columns[i].did + '&ts=' + ts + '&orderby=alpha&val=z';
+          })
+          .attr("target", '_blank');
+    }
   }
 
   pies.append("text")
