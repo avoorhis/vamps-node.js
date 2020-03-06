@@ -1491,42 +1491,42 @@ function create_adiversity(ts, new_window){
         return
       
       
-      xmlhttp.setRequestHeader("Content-Type", "application/json");
-      showDots='';
-      var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 ) {
-           clearInterval(myWaitVar);
-           var retstring = xmlhttp.responseText;
-           var lines = retstring.split('\n');
-           //alert(lines[0])
-           var headers = lines.shift();
-           //var line2 = lines.pop();
-           //alert(headers)
-           html = "<table class='table'>";
-           html += '<tr>';
-           //alert(line2)
-           var header_items = headers.split('\t')
-           for(i in header_items){
-             html += '<td>'+header_items[i]+'</td>';
-           }
-           html +=  '</tr>';
-           for(i in lines){
-              html +=  '<tr>';
-              items = lines[i].split('\t');
-              for(j in items){
-                html += '<td>'+items[j]+'</td>';
-              }
-              html +=  '</tr>';
-           }
-           html += '</table>';
-
-           adiversity_div.innerHTML = html;
-           document.getElementById('adiversity_dnld_btn').disabled = false
-        }
-      };
-      args = JSON.stringify({"metric":pi_local.selected_distance,"ts":ts})
-      xmlhttp.send(args);
+ //      xmlhttp.setRequestHeader("Content-Type", "application/json");
+//       showDots='';
+//       var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
+//       xmlhttp.onreadystatechange = function() {
+//         if (xmlhttp.readyState == 4 ) {
+//            clearInterval(myWaitVar);
+//            var retstring = xmlhttp.responseText;
+//            var lines = retstring.split('\n');
+//            //alert(lines[0])
+//            var headers = lines.shift();
+//            //var line2 = lines.pop();
+//            //alert(headers)
+//            html = "<table class='table'>";
+//            html += '<tr>';
+//            //alert(line2)
+//            var header_items = headers.split('\t')
+//            for(i in header_items){
+//              html += '<td>'+header_items[i]+'</td>';
+//            }
+//            html +=  '</tr>';
+//            for(i in lines){
+//               html +=  '<tr>';
+//               items = lines[i].split('\t');
+//               for(j in items){
+//                 html += '<td>'+items[j]+'</td>';
+//               }
+//               html +=  '</tr>';
+//            }
+//            html += '</table>';
+// 
+//            adiversity_div.innerHTML = html;
+//            document.getElementById('adiversity_dnld_btn').disabled = false
+//         }
+//       };
+//       args = JSON.stringify({"metric":pi_local.selected_distance,"ts":ts})
+//       xmlhttp.send(args);
 
 
 }

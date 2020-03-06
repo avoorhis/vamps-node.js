@@ -1058,7 +1058,7 @@ function create_piecharts_group(new_window) {
 //  CREATE BARCHARTS
 //
 function create_barcharts_group(new_window) {
-      
+    console.log('in create_barcharts_group') 
     if(new_window){
         let htmlstring = document.getElementById('barcharts_div').innerHTML;
         function openindex() {
@@ -1229,6 +1229,7 @@ function create_dendrogram(image_type, script, new_window) {
 }
 
 function create_adiversity(new_window){
+    console.log('in create_adiversity') 
     if(new_window){
 
           var htmlstring = document.getElementById('adiversity_div').innerHTML;
@@ -1264,48 +1265,28 @@ function create_adiversity(new_window){
       var info_line = create_header('adiversity', pi_local);
       document.getElementById('adiversity_title').innerHTML = info_line;
       
-      var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+pi_local.ts;
+      //var html = '';
+      //var args =  "metric="+pi_local.selected_distance;
+      //args += "&ts="+pi_local.ts;
+      var args = {}
+      args.image = 'adiversity'
+      args.source = 'website'
       document.getElementById('pre_adiversity_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/alpha_diversity', true);
-      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.open("POST", '/api/create_image', true);
+      xmlhttp.setRequestHeader("Content-type","application/json");
       showDots='';
       var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
-      xmlhttp.onreadystatechange = function() {        
-        if (xmlhttp.readyState == 4 ) {
-           clearInterval(myWaitVar);
-           var retstring = xmlhttp.responseText;           
-           var lines = retstring.split('\n');
-           //alert(lines[0])
-           var headers = lines.shift();
-           //var line2 = lines.pop();
-           //alert(headers)
-           html = "<table class='table'>";
-           html += '<tr>';
-           //alert(line2)
-           var header_items = headers.split('\t')
-           for(i in header_items){
-             html += '<td>'+header_items[i]+'</td>';
-           }
-           html +=  '</tr>';
-           for(i in lines){
-              html +=  '<tr>';
-              items = lines[i].split('\t');
-              for(j in items){
-                html += '<td>'+items[j]+'</td>';
-              }
-              html +=  '</tr>';
-           }
-           html += '</table>';
-
-           adiversity_div.innerHTML = html;
-           document.getElementById('adiversity_dnld_btn').disabled = false
-        }
-      };
-      xmlhttp.send(args);      
+      xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 ) {
+               clearInterval(myWaitVar);
+               data = JSON.parse(xmlhttp.response)        
+               adiversity_div.innerHTML = data.html;
+               document.getElementById('adiversity_dnld_btn').disabled = false          
+            }
+         }
+		xmlhttp.send(JSON.stringify(args));
          
 
 }
