@@ -411,7 +411,7 @@ dheatmap: (req, res) =>{
         let biom_data = JSON.parse(data);
         let matrix = biom_data;
         // parse data remove data less than 1%
-        if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+        if (req.session.otus) {
           matrix = charts_otus(req, biom_data);
         }
 
@@ -464,7 +464,7 @@ barcharts: (req, res) =>{
         let biom_data = JSON.parse(data);
         let matrix = biom_data;
 
-        if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
+        if (req.session.otus) {
           matrix = charts_otus(req, biom_data);
         }
 
@@ -973,49 +973,55 @@ create_hm_table_from_csv: (req, dm, metadata) => {
 //
 create_hm_table: (req, dm, metadata) => {
     console.log('in create_hm_table2')
-    //console.log(metadata)
+    //console.log(req.session.otus)
     var id_order = req.session.chosen_id_order
 
-    var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
-      'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
-      'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}
     var html = ''
+	
+    
+    if(req.body.source == 'website' ){
+	  if(!req.session.otus){
+	  
+		  var choices = {'jc_kz':'Jaccard\\Kulczynski',     'jc_cb':   'Jaccard\\Canberra','jc_mh': 'Jaccard\\Morisita-Horn','jc_bc':'Jaccard\\Bray-Curtis',
+		  'kz_cb':'Kulczynski\\Canberra','kz_mh':'Kulczynski\\Morisita-Horn', 'kz_bc':  'Kulczynski\\Bray-Curtis','cb_mh':'Canberra\\Morisita-Horn',
+		  'cb_bc':'Canberra\\Bray-Curtis','mh_bc':'Morisita-Horn\\Bray-Curtis'}
+		  html += "<div class='pull-right'>"
+		  html += "	<small>"
 
-    if(req.body.source == 'website'){
-      html += "<div class='pull-right'>"
-      html += "	<small>"
+		  if(metadata.numbers_or_colors == 'colors'){
+			html += "View: <input id='hm_numbers_radio' type='radio'          name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+			html += "<input id='hm_colors_radio' type='radio' checked name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+		  }else{
+			html += "View: <input id='hm_numbers_radio' type='radio'  checked  name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
+			html += "<input id='hm_colors_radio' type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+		  }
+		  html += "<br>Split Distance Metric:&nbsp;"
 
-      if(metadata.numbers_or_colors == 'colors'){
-        html += "View: <input id='hm_numbers_radio' type='radio'          name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
-        html += "<input id='hm_colors_radio' type='radio' checked name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
-      }else{
-        html += "View: <input id='hm_numbers_radio' type='radio'  checked  name='hm_view' value='nums' onclick=\"change_hm_view('numbers')\"> Numbers&nbsp;&nbsp;&nbsp;&nbsp;"
-        html += "<input id='hm_colors_radio' type='radio' name='hm_view' value='color' onclick=\"change_hm_view('colors')\"> Colors"
+		  html += "<select onchange=\"get_split_view(this.value,'"+metadata.numbers_or_colors+"')\">"
+		  html += "<option>Choose Metric Pair</option>"
+		  for(met in choices){
+			if(met == metadata.metric){
+			  html += "<option selected value='"+met+"'>"+choices[met]+"</option>"
+			}else{
+			  html += "<option value='"+met+"'>"+choices[met]+"</option>"
+			}
+		  }
+		  html += "</select>"
+		  html += "    </small>"
+		  html += "</div>"
+
       }
-      html += "<br>Split Distance Metric:&nbsp;"
+	  html += "<center>"
+	  html += "	<small>"
+	  html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
+	  html += "    </small>"
+	  html += "</center>"
 
-      html += "<select onchange=\"get_split_view(this.value,'"+metadata.numbers_or_colors+"')\">"
-      html += "<option>Choose Metric Pair</option>"
-      for(met in choices){
-        if(met == metadata.metric){
-          html += "<option selected value='"+met+"'>"+choices[met]+"</option>"
-        }else{
-          html += "<option value='"+met+"'>"+choices[met]+"</option>"
-        }
-      }
-      html += "</select>"
-      html += "    </small>"
-      html += "</div>"
+	  html += "<span>"+req.session.selected_distance+"</span>"
 
-      html += "<center>"
-      html += "	<small>"
-      html += "      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>"
-      html += "    </small>"
-      html += "</center>"
+	  html += "<br>"
 
-      html += "<span>"+req.session.selected_distance+"</span>"
-
-      html += "<br>"
+      
     }
 
 
@@ -1044,8 +1050,8 @@ create_hm_table: (req, dm, metadata) => {
     k=1
     for(var n in id_order) { // HM rows
       var xdid = id_order[n]
-      if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
-        var xpjds =  req.session.chosen_id_name_hash.names[xdid]
+      if (req.session.otus) {
+        var xpjds =  req.session.otus.chosen_id_name_hash.names[xdid]
       } else {
         var xpjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[xdid]].project + '--' + C.DATASET_NAME_BY_DID[xdid]
       }
@@ -1060,8 +1066,8 @@ create_hm_table: (req, dm, metadata) => {
       for(var m in id_order) {  // HM cols
         var ydid = id_order[m]
 
-        if (req.body.hasOwnProperty('type') && req.body.type === 'otus') {
-          var ypjds =  req.session.chosen_id_name_hash.names[ydid]
+        if (req.session.otus) {
+          var ypjds =  req.session.otus.chosen_id_name_hash.names[ydid]
         } else {
           var ypjds = C.PROJECT_INFORMATION_BY_PID[C.PROJECT_ID_BY_DID[ydid]].project + '--' + C.DATASET_NAME_BY_DID[ydid]
         }
@@ -1076,42 +1082,58 @@ create_hm_table: (req, dm, metadata) => {
         var metric = req.session.selected_distance
         var id = 'dh/'+xpjds+'/'+ypjds+'/'+ metric +'/'+d;
 
+		if (req.session.otus) {
+			var colors   = C.HEATMAP_COLORS
+			  if(xdid === ydid){
+				html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+			  }else{
+				if(req.body.source == 'website'){
+				  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
+				  html += ">"
+				  html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+				}else{
+				  var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+				  html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
+				}
+				html += "</td>"
+			  }
+		}else{
+		
+			if(metadata.numbers_or_colors == 'numbers'){
 
+			  if(xdid === ydid){
+				html += "<td id='' class='heat_map_td' align='center' bgcolor='white'>0.0</td>"
+			  }else{
 
-        if(metadata.numbers_or_colors == 'numbers'){
+				if(req.body.source == 'website'){
+				  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
+				  html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+				  html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+				}else{
+				  var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+				  html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
+				}
+				html += d.toString()+"</td>"
+			  }
 
-          if(xdid === ydid){
-            html += "<td id='' class='heat_map_td' align='center' bgcolor='white'>0.0</td>"
-          }else{
+			}else{
+			  var colors   = C.HEATMAP_COLORS
+			  if(xdid === ydid){
+				html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
+			  }else{
+				if(req.body.source == 'website'){
+				  html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
+				  html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
+				  html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
+				}else{
+				  var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
+				  html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
+				}
+				html += "</td>"
+			  }
 
-            if(req.body.source == 'website'){
-              html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='white'"
-              html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
-            }else{
-              var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
-              html += "<td title='"+title+"' class='heat_map_td' bgcolor='white'>"
-            }
-            html += d.toString()+"</td>"
-          }
-
-        }else{
-          var colors   = C.HEATMAP_COLORS
-          if(xdid === ydid){
-            html += "<td id='' class='heat_map_td' bgcolor='#000'></td>"
-          }else{
-            if(req.body.source == 'website'){
-              html += "<td id='"+id+"' class='heat_map_td tooltip_viz' bgcolor='#"+ colors[sv]+"'"
-              html += " onclick=\"window.open('/visuals/bar_double?did1="+ xdid +"&did2="+ ydid +"&metric="+metric+"&ts="+req.session.ts+"&dist="+ d +"&order=alphaDown', '_blank')\"  >"
-              html += "&nbsp;&nbsp;&nbsp;&nbsp;"  <!-- needed for png image -->
-            }else{
-              var title = xpjds+'&#13;'+ypjds+'&#13;'+ req.session.selected_distance +' -- '+d;
-              html += "<td title='"+title+"' class='heat_map_td' bgcolor='#"+ colors[sv]+"'>"
-            }
-            html += "</td>"
-          }
-
-        }
+			}  // end if numbers_or_colors
+        }// end if otus
 
       }
       k++

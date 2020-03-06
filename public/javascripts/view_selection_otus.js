@@ -1031,7 +1031,7 @@ function create_piecharts_group(new_window) {
         var args = {}
         args.image = 'piecharts'
         args.source = 'website'
-        args.type = 'otus'
+        //args.type = 'otus'
         xmlhttp.open("POST", '/api/create_image', true); 
         //         alert(xmlhttp) 
         xmlhttp.setRequestHeader("Content-type","application/json");
@@ -1090,7 +1090,7 @@ function create_barcharts_group(new_window) {
     let args = {}
     args.image = 'barcharts'
     args.source = 'website'
-    args.type = 'otus'
+    //args.type = 'otus'
     xmlhttp.open("POST", '/api/create_image', true); 
     //         alert(xmlhttp) 
     xmlhttp.setRequestHeader("Content-type","application/json");
@@ -1418,5 +1418,4 @@ function new_window_skeleton(html){
 //
 //
 //
-
 
