@@ -16,12 +16,14 @@
     Click to Open; Right-Click to Download
     <br><br>
     <table >
-        <tr>
+        
 	<% for(n in protocol_list){ %>
-            <td style="padding:3px;"><a href="/static_dnld/<%- protocol_list[n].file_w_path %>" target="_blank"><%- protocol_list[n].file_name %></a></td>
-            <td style="padding:3px;"> Projects: [<%- protocol_list[n].projects %>]</td>
-    <% } %>
+        <tr>
+        <td style="padding:3px;"><a href="/static_dnld/<%- protocol_list[n].file_w_path %>" target="_blank"><%- protocol_list[n].file_name %></a></td>
+        <td style="padding:3px;"> Projects: [<%- protocol_list[n].projects %>]</td>
         </tr>
+    <% } %>
+        
     </table>
 
 
