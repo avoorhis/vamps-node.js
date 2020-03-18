@@ -1,5 +1,6 @@
-<% dscounts = JSON.parse(dscounts)  %>
+<% dscounts  = JSON.parse(dscounts)  %>
 <% metadata  = JSON.parse(mdata)    %>
+<% mdnames   = JSON.parse(mdnames)    %>
 
 <% publish_data  = JSON.parse(publish_info) %>
 <% //pnotes  = JSON.parse(pnotes) %>
@@ -258,19 +259,32 @@ if(user.user_id == data.oid
             <!-- METADATA -->
         <div role="tabpanel" class="tab-pane" id="metadata">
 
-            <table class='table sortable'>
-                <thead><tr><th>dataset</th><th>name</th><th>value</th></tr></thead>
-                <tbody>
+            <table class='table sortable' border='1'>
                 <% if(Object.getOwnPropertyNames(metadata).length == 0){ %>
-                    <tr><td>None Found</td></tr>
+	                <tr><td>None Found</td></tr>
                 <% } else { %>
-                    <% for(n in metadata){ %>
-                        <% for(i in metadata[n]){ %>
-                            <tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
-                        <% } %>
+                    <thead><tr><th>Dataset Name</th>
+                    <% for(n in mdnames){ %>
+                    <th><%= mdnames[n] %></th>
                     <% } %>
+                    </tr></thead>
+                    <tbody>
+                    <% for(ds in metadata){ %>
+                       <tr>
+                       <td><%= ds %></td>
+                       <% for(n in mdnames){ %>
+                          <% if(mdnames[n] in metadata[ds]) { %>
+                            <td><%= metadata[ds][mdnames[n]] %></td>
+                          <% }else{ %>
+                            <td></td>
+                          <% } %>
+                       <% } %>
+                       </tr>
+                    <% } %>
+                
+                
+                   </tbody>
                 <% } %>
-                </tbody>
             </table>
             <% } %>
         </div> <!-- End metadata div -->

@@ -2,7 +2,7 @@ const express = require('express');
 let router = express.Router();
 const fs   = require('fs-extra');
 const nodemailer = require('nodemailer');
-const helpers = require('./helpers/helpers');
+const helpers = require(app_root + '/routes/helpers/helpers');
 const queries = require(app_root + '/routes/queries');
 const path = require('path');
 const CFG  = require(app_root + '/config/config');
@@ -33,6 +33,11 @@ router.get('/projects_index', (req, res) => {
 });
 
 function ProjectProfileFinishRequest (req, res, arg_obj) {
+  let mdata_sort = Object.keys(arg_obj.mdata_names)
+  mdata_sort.sort( (a,b) => {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  })
+  //console.log(mdata_sort)
   res.render('projects/profile', {
     title: 'VAMPS Project',
     info: JSON.stringify(arg_obj.info),
@@ -40,6 +45,7 @@ function ProjectProfileFinishRequest (req, res, arg_obj) {
     dscounts: JSON.stringify(arg_obj.dscounts),
     pid: req.params.id,
     mdata: JSON.stringify(arg_obj.mdata),
+    mdnames: JSON.stringify(mdata_sort),
     pcount: arg_obj.project_count,
     portal: JSON.stringify(arg_obj.member_of_portal),
     publish_info: JSON.stringify(arg_obj.publish_data),
@@ -75,22 +81,27 @@ function get_dsinfo(req) {
 
 function get_mdata(dsinfo){
   let mdata = {};
+  let mdata_names={}
   for (let d_inf of dsinfo){
     let did = d_inf.did;
-    let metadata_name = d_inf.dname;
-    mdata[metadata_name] = {};
+    let dsname = d_inf.dname;
+    
+    
+    mdata[dsname] = {};
 
     for (let name in C.AllMetadata[did]){
       let data;
       data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], name);
-      mdata[metadata_name][data.name] = data.value;
+      mdata[dsname][data.name] = data.value;
       if (name === 'primer_suite_id'){
         data = helpers.required_metadata_names_from_ids(C.AllMetadata[did], 'primer_ids');
-        mdata[metadata_name][data.name] = data.value;
+        mdata[dsname][data.name] = data.value;
       }
+      mdata_names[data.name] = 1 // lookup
     }
   }
-  return mdata;
+  //console.log(mdata)
+  return [mdata, mdata_names];
 }
 
 function get_member_of_portal(req, info) {
@@ -186,7 +197,10 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
     let project_count = C.ALL_PCOUNTS_BY_PID[req.params.id];
     let dsinfo = get_dsinfo(req);
     let dscounts = get_dscounts(dsinfo);
-    let mdata = get_mdata(dsinfo);
+    mdata_items = get_mdata(dsinfo);
+    let mdata = mdata_items[0];
+    let mdata_names = mdata_items[1]
+    //console.log(mdata_names)
     let info = C.PROJECT_INFORMATION_BY_PID[req.params.id];
     let member_of_portal = get_member_of_portal(req, info);
     let best_file = '';
@@ -212,6 +226,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       dsinfo: dsinfo,
       dscounts: dscounts,
       mdata: mdata,
+      mdata_names: mdata_names,
       project_count: project_count,
       member_of_portal: member_of_portal,
       publish_data: publish_data,
@@ -220,7 +235,7 @@ router.get('/:id', helpers.isLoggedIn, (req, res) => {
       project_file_names: project_file_names,
       protocol: protocol_file
     };
-    console.log('z')
+    //console.log('z')
     DBConn.query(queries.get_project_notes_query(req.params.id), function mysqlGetNotes(err, rows){
       if (err) {
         console.log('Getting Project Notes Error: ' + err);
