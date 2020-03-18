@@ -1655,18 +1655,17 @@ router.get('/clear_filters', helpers.isLoggedIn, (req, res) => {
 //
 //
 
-// router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
-//   console.log('in load_portal: ' + portal);
-//   let portal = req.params.portal;
-//
-//   req.session.SHOW_DATA = C.ALL_DATASETS;
-//   PROJECT_TREE_OBJ = [];
-//
-//   PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
-//   PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
-//   let temp_project_filter = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  PROJECT_TREE_PIDS.length};
-//   res.json(temp_project_filter);
-// });
+router.get('/load_portal/:portal', helpers.isLoggedIn, (req, res) => {
+  let portal = req.params.portal;
+  console.log('in load_portal: ' + portal);
+  req.session.SHOW_DATA = C.ALL_DATASETS;
+  req.session.PROJECT_TREE_OBJ = [];
+
+  req.session.PROJECT_TREE_OBJ = helpers.get_portal_projects(req, portal);
+  req.session.PROJECT_TREE_PIDS = filters_obj.filter_project_tree_for_permissions(req, req.session.PROJECT_TREE_OBJ);
+  let temp_project_filter = {"substring": "", "env": [],"target": "", "portal": "", "public": "-1", "metadata1": "", "metadata2": "", "metadata3": "", "pid_length":  req.session.PROJECT_TREE_PIDS.length};
+  res.json(temp_project_filter);
+});
 //
 //
 //  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS  FILTERS FILTERS

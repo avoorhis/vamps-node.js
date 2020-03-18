@@ -18,15 +18,13 @@ router.get('/portals_index', (req, res) => {
 //
 //
 router.get('/visuals_index/:portal', helpers.isLoggedIn, (req, res) => {
-    console.log('in portals visuals_index')
-    
     var portal = req.params.portal;
-    //console.log('visuals_index: '+portal);
+    console.log('in portals visuals_index: '+portal);
     
     var project_list = helpers.get_portal_projects(req, portal)
 
     req.session.SHOW_DATA = project_list;
-    
+    //console.log(req.session.SHOW_DATA);
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
             subtitle  : "Dataset Selection Page",

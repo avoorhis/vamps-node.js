@@ -199,11 +199,12 @@ function clear_filters(from_clear_btn) {
     document.getElementById('portal_select').value ='.....'
   }
   var xmlhttp = new XMLHttpRequest();
-  //alert(xmlhttp)  
+  //alert(target)  
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
+        console.log(xmlhttp.responseText)
         result = JSON.parse(xmlhttp.responseText);
         
         update_gui_elements(result)
