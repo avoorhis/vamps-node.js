@@ -94,6 +94,7 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   let image_to_open = {};
 
   let visual_post_items = start_visual_post_items(req);
+  
   console.log('visual_post_itemsXX');
   console.log(visual_post_items);
   visual_post_items.ts = viz_files_obj.get_user_timestamp(req);
@@ -109,6 +110,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   if (visual_post_items.metadata.includes('primer_suite')){
     visual_post_items.metadata.push('primers');
   }
+  // sort vpi.metadata non-case sensitive
+  visual_post_items.metadata.sort(function (a, b) {
+    	return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
   let metadata = META.write_mapping_file(visual_post_items);
 
   console.log('image to open', image_to_open);

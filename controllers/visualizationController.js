@@ -103,8 +103,7 @@ class viewSelectionGetData {
         md[item] =1;
       }
     }
-    this.req.session.metadata  = this.visual_post_items.metadata = Object.keys(md);
-
+    this.req.session.metadata  = this.visual_post_items.metadata = Object.keys(md)
   }
 
   from_update_data() {  // from 'Update' button on view_selection.html

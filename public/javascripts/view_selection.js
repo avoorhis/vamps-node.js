@@ -192,7 +192,7 @@ var showDots='';
 //   });
 // }
 
-// create fasta
+// create fasta file
 var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
 if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
@@ -204,7 +204,7 @@ if (download_fasta_btn !== null) {
   });
 }
 
-// create metadata
+// create metadata file
 var download_metadata_btn = document.getElementById('download_metadata_btn') || null;
 if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
@@ -215,7 +215,7 @@ if (download_metadata_btn !== null) {
       download_data('metadata', download_type, ts);
   });
 }
-// create counts matrix
+// create counts matrix file
 var download_matrix_btn = document.getElementById('download_matrix_btn') || null;
 if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
@@ -700,30 +700,45 @@ function create_metadata_table(new_window) {
     metadata_div.innerHTML = '';
     metadata_div.style.display = 'block';
     document.getElementById('pre_metadata_table_div').style.display = 'block';
-    var html = '';
+    var html = 'click headers to sort';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
 
     html += "<table border='1' id='metadata_table' class='table table-condensed' >";
-    html += "<thead><tr><th>Dataset (click to sort)</th><th>Name (click to sort)</th><th>Value (click to sort)</th></tr></thead><tbody>";
-
-    for (var ds in md_local) {
-
-          for (var md_item in md_local[ds]) {
-            if(md_item != 'project' && md_item != 'dataset'){
-                html += "<tr>";
-                html += "<td>"+ds+"</td>";
-
-                md_val = md_local[ds][md_item];
-                if(md_val == '' || md_val == undefined){
-                  md_val = 'undefined';
-                }
-                html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
-
-                html += "</tr>";
-            }
-          }
+    html += "<thead><tr><td>Dataset Name</td>";
+    for(n in pi_local.metadata){
+    	html += "<td>"+pi_local.metadata[n]+"</td>";
+    	
     }
-
+    
+    html += "</tr></thead><tbody>";
+    for (var ds in md_local) {
+    	html += "<tr>"
+    	html += "<td>"+ds+"</td>";
+    	for(n in pi_local.metadata){
+    		html += "<td>"+md_local[ds][pi_local.metadata[n]]+"</td>";
+    	}
+    	html += "</tr>";
+    }
+    // html += "<thead><tr><th>Dataset (click to sort)</th><th>Name (click to sort)</th><th>Value (click to sort)</th></tr></thead><tbody>";
+//     for (var ds in md_local) {
+// 
+//           for (var md_item in md_local[ds]) {
+//             if(md_item != 'project' && md_item != 'dataset'){
+//                 html += "<tr>";
+//                 html += "<td>"+ds+"</td>";
+// 
+//                 md_val = md_local[ds][md_item];
+//                 if(md_val == '' || md_val == undefined){
+//                   md_val = 'undefined';
+//                 }
+//                 html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
+// 
+//                 html += "</tr>";
+//             }
+//           }
+//     }
+	
+	
     html += "</tbody></table>";
 
       //alert(md_local[0].env_material)
