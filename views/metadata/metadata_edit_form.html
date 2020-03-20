@@ -106,7 +106,7 @@
       <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
     </div>
     <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
-    <textarea class="textarea_long" id="project_abstract" name="project_abstract" placeholder="Please send the abstract to VAMPS"></textarea>
+      <a href="mailto:vamps@mbl.edu?subject=Abstract for <%= project %>" target='_blank'>Please send the abstract to VAMPS</a>
     <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
     <br />
