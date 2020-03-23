@@ -152,6 +152,7 @@ router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
     }
     
     q += " and dataset_id in('"+sql_dids+"') \n"
+    //Porphyromonadaceae
     console.log('query',q);
     var dataset_lookup = {}
     var html='';
@@ -179,7 +180,7 @@ router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
           console.log(config_file_path)
           fs.ensureDir(data_repo_path, err => {
             if(err){ return console.log(err) } // => null
-            fs.chmod(data_repo_path, '0o777', function chmodFile(err) {
+            fs.chmod(data_repo_path, 0o777, function chmodFile(err) {
                 if(err){ return console.log(err) } // => null
                 var wstream = fs.createWriteStream(fasta_file_path);
                 var rs = new Readable();

@@ -666,7 +666,7 @@ router.post('/create_otus_step2/:code', helpers.isLoggedIn, (req, res) => {
   fs.writeFile(script_path,
     script_text,
     {
-      mode: '0o775'
+      mode: 0o775
     },
     err => {
       if(err) {
