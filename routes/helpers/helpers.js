@@ -391,6 +391,10 @@ module.exports.mysql_real_escape_string = str => {
   });
 };
 
+module.exports.isValidIdSelector = function (str) {
+    var regex = new RegExp(/^[A-Za-z][A-Za-z0-9_\-\:\.]*$/gm);
+    return regex.test(str);
+};
 // module.exports.checkUserName = (username) => {   // SAME FXN IN PASSPORT
 //   let reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
 //   return (reg.test(username));

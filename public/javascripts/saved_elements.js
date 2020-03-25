@@ -101,6 +101,82 @@ function load_configuration(filename) {
 		// };
 		xmlhttp.send(args);
 }
+//
+//
+//
+function cancel_rename(oldfile, datatype) {
+	var originaltext = "<button id='' class='btn btn-xs btn-link' onclick=\"rename_file('"+oldfile+"','"+datatype+"')\">rename</button>"
+	
+	var rename_div = document.getElementById('rename_div')
+	rename_div.style.border = "0"
+	rename_div.innerHTML = originaltext
+	
+}
+function update_file_name(oldfile, datatype) {
+	var rename_div = document.getElementById('rename_div')
+	var form = document.getElementById('rename_file_form')
+	
+	//console.log(form)
+	var newfile_edit = document.getElementById('new_file_txt').value.replace(/ /g,'').replace(/\./g,'')
+	var test = isValidIdSelector(newfile_edit)
+	if(test){
+		//console.log(test)
+		//console.log(newfile_edit)
+		var newfile = 'datasets-'+newfile_edit+'.json'
+		if(newfile == oldfile){
+			cancel_rename(oldfile, datatype)
+			return
+		}
+		var originaltext = "<button id='' class='btn btn-xs btn-link' onclick=\"rename_file('"+newfile+"','"+datatype+"')\">rename</button>"
+	
+		var e1 = document.createElement("input"); //input element, text
+		e1.setAttribute('type',"hidden");
+		e1.setAttribute('name',"newfilename");
+		e1.setAttribute('value',newfile);
+		form.appendChild(e1);
+		var e2 = document.createElement("input"); //input element, text
+		e2.setAttribute('type',"hidden");
+		e2.setAttribute('name',"oldfilename");
+		e2.setAttribute('value',oldfile);
+		form.appendChild(e2);
+		//form.submit()
+	
+		// the following is redundant as the page reloads
+		var filenameplace = document.getElementById(oldfile)
+		filenameplace.innerHTML = newfile
+		rename_div.style.border = "0"
+		rename_div.innerHTML = originaltext
+	}else{
+	   alert('No Special Characters Allowed in Filenames')
+	}
+	
+}
+function isValidIdSelector(str) {
+    var regex = new RegExp(/^[A-Za-z0-9_]*$/gm);  // no special chars
+    return regex.test(str);
+};
+function rename_file(oldfile, datatype) {
+	if(datatype == 'datasets'){
+	  var maxchars = '30' 
+	  var rename_div = document.getElementById('rename_div')
+	  rename_div.style.border = "1px solid black"
+	  var txtbox = "<form id='rename_file_form' method='POST' action='rename_datasets_file' \">"
+	  var name1 = 'datasets-'
+	  var name2 = oldfile.split('.')[0].split('-')[1]
+ 	  var name3 = '.json'
+ 	  txtbox += name1+"<input id='new_file_txt' type='text' size='"+name2.length+"' maxlength='"+maxchars+"' value='"+name2+"' />"+name3
+ 	  
+ 	  txtbox += "<br>Max "+maxchars+" characters --  <span style='padding-left:5px;'>"
+ 	  txtbox += "<input type='button' style='width:50px' class='btn btn-xs btn-primary' value='cancel' onclick=\"cancel_rename('"+oldfile+"','"+datatype+"')\">"
+ 	  txtbox += " <input type='button' style='width:50px' class='btn btn-xs btn-primary' value='enter' onclick=\"update_file_name('"+oldfile+"','"+datatype+"')\">"
+ 	  
+ 	  txtbox += '</span></form>'
+ 	
+ 	  rename_div.innerHTML = txtbox
+	
+	
+	}
+}
 // function view_datasets_ajax2( filename, user, fxn ){
 	
         

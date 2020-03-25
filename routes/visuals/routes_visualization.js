@@ -1259,46 +1259,9 @@ router.get('/saved_elements', helpers.isLoggedIn,  (req, res) => {
     //console.log('req.body: show_saved_datasets-->>');
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
-    let acceptable_prefixes = ['datasets', 'image'];
-    let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
-
-    let file_info = {};
-    let modify_times = [];
-    helpers.mkdirSync(saved_elements_dir);
-    fs.readdir(saved_elements_dir, (err, files) => {
-      if (err){
-
-        let msg = 'ERROR Message '+err;
-        helpers.render_error_page(req,res,msg);
-
-      } else {
-        for (let f in files){
-          let name_parts = files[f].split('-');
-          let prefix_name = name_parts[0];
-          if (acceptable_prefixes.includes(prefix_name)){
-            let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
-            file_info[stat.mtime.getTime()] = {
-              'filename': files[f],
-              'size': stat.size,
-              'mtime': stat.mtime.toString()
-            };
-            modify_times.push(stat.mtime.getTime());
-
-          }
-        }
-        modify_times.sort().reverse();
-        //console.log(JSON.stringify(file_info));
-      }
-
-      res.render('visuals/saved_elements',
-        { title: 'saved_elements',
-
-          finfo: JSON.stringify(file_info),
-          times: modify_times,
-          user: req.user, hostname: CFG.hostname,
-        });
-
-    });
+    gather_saved_elements_data(req, res)
+    return
+    
   }
 
 });
@@ -2102,7 +2065,26 @@ router.get('/taxa_piechart', (req, res) => {
     }
   });
 });
-
+//
+//
+//
+router.post('/rename_datasets_file', (req, res) => {
+	console.log('in rename_datasets_file')
+	console.log(req.body);
+	//console.log(CFG.USER_FILES_BASE);
+	let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
+	//console.log(saved_elements_dir);
+	let pathto_oldfilename = path.join(saved_elements_dir, req.body.oldfilename)
+	let pathto_newfilename = path.join(saved_elements_dir, req.body.newfilename)
+	//console.log(pathto_newfilename)
+	//console.log(pathto_oldfilename)
+	fs.rename(pathto_oldfilename, pathto_newfilename, function(err) {
+    	if ( err ) console.log('ERROR: ' + err);
+    	gather_saved_elements_data(req, res)
+	});
+	return;
+        
+})
 module.exports = router;
 
 /**
@@ -2111,3 +2093,45 @@ module.exports = router;
 
 // Generally put fucntion in helpers.js
 //
+function gather_saved_elements_data(req, res) {
+	let acceptable_prefixes = ['datasets', 'image'];
+    let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
+
+    let file_info = {};
+    let modify_times = [];
+    helpers.mkdirSync(saved_elements_dir);
+    fs.readdir(saved_elements_dir, (err, files) => {
+      if (err){
+
+        let msg = 'ERROR Message '+err;
+        helpers.render_error_page(req,res,msg);
+
+      } else {
+        for (let f in files){
+          let name_parts = files[f].split('-');
+          let prefix_name = name_parts[0];
+          if (acceptable_prefixes.includes(prefix_name)){
+            let stat = fs.statSync(path.join(saved_elements_dir, files[f]));
+            file_info[stat.mtime.getTime()] = {
+              'filename': files[f],
+              'size': stat.size,
+              'mtime': stat.mtime.toString()
+            };
+            modify_times.push(stat.mtime.getTime());
+
+          }
+        }
+        modify_times.sort().reverse();
+        //console.log(JSON.stringify(file_info));
+      }
+
+      res.render('visuals/saved_elements',
+        { title: 'saved_elements',
+
+          finfo: JSON.stringify(file_info),
+          times: modify_times,
+          user: req.user, hostname: CFG.hostname,
+        });
+
+    });
+}
