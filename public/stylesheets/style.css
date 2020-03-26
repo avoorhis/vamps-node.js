@@ -378,7 +378,8 @@ td.left_justify {
 }
 
 .add_on_top {
-    padding-top: 1ex;
+    padding: 3px;
+    border: 1px solid black;
 }
 
 .header_divider {
@@ -457,7 +458,8 @@ td.left_justify {
 }
 
 .header_th_div {
-    width: 25.43em;
+    /* width: 25.43em; */
+    width: 100%;
     /*!important;*/
     /*white-space: nowrap;*/
     overflow: hidden;

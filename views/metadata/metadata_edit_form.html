@@ -53,8 +53,8 @@
 <form name='add_project_form' method='POST' action='/metadata/metadata_upload'>
 <!-- <form action="" method="post" enctype="multipart/form-data"> -->
   <fieldset id="general" >
-  <legend id="general-legend">General sample description</legend>
-    <div class="required_fields add_on_top">
+  <legend id="general-legend">General Sample Description</legend>
+    
 
     <% for (var pid in all_metadata) { %>
       <% if (typeof(all_metadata[pid]) !== 'undefined') { %>
@@ -71,33 +71,55 @@
         <% dataset_ids = all_metadata[pid]["dataset_id"] %>
         <% project_abstracts = all_metadata[pid]["project_abstract"] %>
     <% } %>
-
+    <% } %>
     <!-- dataset_id project title username email institution first_name last_name public -->
+<!-- <div class="required_fields add_on_top">   -->  
+<table border='1'><tr>
+<td class="required_fields add_on_top">    
 
       <label for="project_title">Title of Project:</label>
+</td><td class="required_fields">      
       <input type="text" class="long_input" id="project_title" name="project_title" value='<%= project_title %>'/>
-
-      <br />
+</td>
+</tr><tr>
+<td class="required_fields add_on_top">
+      
       <label for="project">VAMPS project name (MBL Supplied)</label>
+</td><td class="required_fields">
       <input type="text" id="project" class="readonly" readonly name="project" value='<%= project %>'/>
 
-      <br />
+</td>
+</tr><tr>
+<td class="required_fields add_on_top">
       <label for="pi_name">PI Name:</label>
+</td><td class="required_fields">
       <input type="text" id="pi_name" name="pi_name"  value='<%= pi_name %>'/>
 
       <% for (var did in dataset_ids) { %>
         <input type='hidden' name='dataset_id' value='<%= dataset_ids[did] %>' />
       <% } %>
 
-    <% } %>
+   
 
-  <br />
-  <label for="pi_email">PI's email address:</label>
+</td>
+</tr><tr>
+<td class="required_fields add_on_top">
+  <label for="pi_email">PI's Email Address:</label>
+</td><td class="required_fields">
   <input type="email" id="pi_email" name="pi_email"  value='<%= pi_email %>'/>
-  <br />
-    </div> <!-- End of required yellow-->
+  
+   <!--  </div> --> <!-- End of required yellow-->
 
-    <label for="project_abstract">Project abstract:</label>
+
+</td>
+</tr><tr>
+<td>
+
+
+    <label for="project_abstract">Project Abstract:</label>
+    
+</td><td>
+    
     <% if ((typeof(project_abstracts[0]) !== 'undefined') && (project_abstracts[0].length > 0)) { %>
     <div class="white_box readonly">
       <% for (var n in project_abstracts[0]) { %>
@@ -106,18 +128,26 @@
       <input type = "hidden" id="project_abstract" name="project_abstract" value='<%= project_abstracts[0] %>'/>
     </div>
     <% } else { %> <!-- if not (all_metadata[pid]["project_abstract"]) -->
-      <a href="mailto:vamps@mbl.edu?subject=Abstract for <%= project %>" target='_blank'>Please send the abstract to VAMPS</a>
+      <a href="mailto:vamps@mbl.edu?subject=Abstract for <%= project %>" target='_blank'>Please send the abstract to VAMPS (vamps@mbl.edu)</a>
     <% } %> <!-- if else (all_metadata[pid]["project_abstract"]) -->
 
-    <br />
-
-    <label for="reference">References for selected manuscripts published that describe the location:</label>
+</td>
+</tr><tr>
+<td>
+    <label for="reference">References for published<br>manuscripts that describe the location:</label>
+    
+</td><td>
+    
     <textarea class="textarea_long" id="reference" name="reference"  placeholder='<%= reference %>'><%= reference %></textarea>
-  <br />
-
+  
+</td>
+</tr></table>
+  
+<br />  
   </fieldset>
+  
   <fieldset id="parameters">
-    <legend id="parameters-legend">Table of metadata parameters</legend>
+    <legend id="parameters-legend">Table of Metadata Parameters</legend>
     <div class="Headers">
       <table class="NewHeader">
         <tr>

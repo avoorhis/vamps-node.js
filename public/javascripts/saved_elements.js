@@ -139,9 +139,9 @@ function update_file_name(oldfile, datatype) {
 		e2.setAttribute('name',"oldfilename");
 		e2.setAttribute('value',oldfile);
 		form.appendChild(e2);
-		//form.submit()
+		form.submit()
 	
-		// the following is redundant as the page reloads
+		// the following is redundant as the page reloads - but thats okay
 		var filenameplace = document.getElementById(oldfile)
 		filenameplace.innerHTML = newfile
 		rename_div.style.border = "0"

@@ -7,7 +7,7 @@
     <td>
         <% selected_val = get_selected_val(pid, did, "dna_extraction_meth") %>
 
-        <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth">
+        <select id="dna_extraction_meth<%- did %>" name="dna_extraction_meth" style="width:75%;">
             <% dna_extraction_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>
@@ -20,7 +20,7 @@
 <% } else if (all_field_names[idx][1] === "DNA Quantitation") { %>
     <td>
         <% selected_val = get_selected_val(pid, did, "dna_quantitation") %>
-        <select id="dna_quantitation<%- did %>" name="dna_quantitation">
+        <select id="dna_quantitation<%- did %>" name="dna_quantitation" style="width:75%;">
             <% dna_quantitation_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>
@@ -94,7 +94,7 @@
 <% } else if (all_field_names[idx][0] === "env_material") { %>
     <td>
         <% selected_val = get_selected_val(pid, did, "env_material") %>
-        <select id="env_material<%- did %>" name="env_material" class="env_material">
+        <select id="env_material<%- did %>" name="env_material" class="env_material" style="width:75%;">
             <% material_primary_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>
@@ -124,7 +124,7 @@
     <td>
         <% selected_val = get_selected_val(pid, did, "env_package") %>
 
-        <select id="env_package<%- did %>" name="env_package" class="env_package">
+        <select id="env_package<%- did %>" name="env_package" class="env_package" style="width:75%;">
             <% env_package_options.forEach(function(value){ %>
                 <option value="<%= value %>"
                 <% if (value == selected_val) { %>

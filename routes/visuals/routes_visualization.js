@@ -2071,13 +2071,18 @@ router.get('/taxa_piechart', (req, res) => {
 router.post('/rename_datasets_file', (req, res) => {
 	console.log('in rename_datasets_file')
 	console.log(req.body);
+	if(Object.keys(req.body).length === 0){
+		gather_saved_elements_data(req, res)
+		return;
+	}
 	//console.log(CFG.USER_FILES_BASE);
 	let saved_elements_dir = path.join(CFG.USER_FILES_BASE,req.user.username);
 	//console.log(saved_elements_dir);
+	
 	let pathto_oldfilename = path.join(saved_elements_dir, req.body.oldfilename)
 	let pathto_newfilename = path.join(saved_elements_dir, req.body.newfilename)
-	//console.log(pathto_newfilename)
-	//console.log(pathto_oldfilename)
+	console.log(pathto_newfilename)
+	console.log(pathto_oldfilename)
 	fs.rename(pathto_oldfilename, pathto_newfilename, function(err) {
     	if ( err ) console.log('ERROR: ' + err);
     	gather_saved_elements_data(req, res)
