@@ -11,13 +11,13 @@
                         <tr>
                             <% if (all_metadata[pid]["sample_num"]) { %>
                                 <% for (var idx in all_metadata[pid]["sample_num"]) { %>
-                                    <td class="header_th">
+                                    <td class="header_th" >
                                         <div class="header_th_div"><%= all_metadata[pid]["sample_num"][idx] %></div>
                                     </td>
                                 <% } %>
                             <% } else { %>
                                 <% for (var idx in all_metadata[pid]["dataset"]) { %>
-                                    <td class="header_th">
+                                    <td class="header_th"  style='width:200px'>
                                         <div class="header_th_div"><%= all_metadata[pid]["dataset"][idx] %></div>
                                     </td>
                                 <% } %>
