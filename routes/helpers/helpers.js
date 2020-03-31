@@ -1428,7 +1428,7 @@ exports.adapt_3letter_validation = (value, source) => {
   let has_adapt_3letter = checkArray(remove_dummy_entries(source.adapt_3letter));
 
   if (!has_index_and_runkey && !has_adapt_3letter) {
-    throw new Error("Either 'Index sequence (for Illumina) and Adapter sequence' or 'Adapter name 3 letters' are required"); // jshint ignore:line
+    throw new Error("Either 'Index Sequence (for Illumina) and Adapter Sequence' or 'Adapter Name (3 letters)' are required"); // jshint ignore:line
     }
   // console.timeEnd('adapt_3letter_filter');
 };
@@ -1443,7 +1443,7 @@ module.exports.target_gene_validation = (gene, source) => {
   let target_gene_correct   = curr_target_genes.includes(gene);
   let curr_target_genes_str = curr_target_genes.join(" or ");
   if (!target_gene_correct) {
-    throw new Error('For domain ' + curr_domain + ' please choose ' + curr_target_genes_str + ' from Target gene name.');
+    throw new Error('For domain ' + curr_domain + ' please choose ' + curr_target_genes_str + ' from Target Gene Name.');
   }
 };
 
@@ -1455,7 +1455,7 @@ exports.geo_loc_name_validation = (value, source) => {
 
 exports.depth = (value, source) => {
   if ((!checkArray(source.tot_depth_water_col)) && (!checkArray(source.depth_subseafloor)) && (!checkArray(source.depth_subterrestrial))) {
-      throw new Error("Either 'Depth below surface' or 'Depth below seafloor' or 'Water column depth' are required"); // jshint ignore:line
+      throw new Error("Either 'Depth Below Surface' or 'Depth Below Seafloor' or 'Water Column Depth' are required"); // jshint ignore:line
   }
 };
 

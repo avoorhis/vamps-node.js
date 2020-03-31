@@ -101,7 +101,7 @@ class CreateDataObj {
 
   make_metadata_object_from_form() {
     // console.time("TIME: make_metadata_object_from_form");
-    console.trace("Show me, I'm in make_metadata_object_from_form");
+    console.log("Show me, I'm in make_metadata_object_from_form");
     let data = this.req.form;
 
     //new
@@ -921,7 +921,7 @@ class ShowObj {
   }
 
   render_edit_form() {
-    console.trace("Show me, I'm in render_edit_form");
+    console.log("Show me, I'm in render_edit_form");
     this.req = helpers.collect_errors(this.req);
     const mbl_edit = this.get_mbl_edit();
 

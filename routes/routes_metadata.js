@@ -435,7 +435,7 @@ router.post('/metadata_upload',
     form.field("sample_collection_device", helpers.get_second("sample_collection_device")).trim().entityEncode().array(),
     form.field("samp_store_dur", helpers.get_second("samp_store_dur")).trim().is(/^$|^[0-9a-zA-Z ]+$/).entityEncode().array(),
     form.field("samp_store_temp", helpers.get_second("samp_store_temp")).trim().is(/^$|^[0-9.-]+$/).entityEncode().array(),
-    form.field("sample_name", helpers.get_second("sample_name")).trim().required("", "Attention! Files can't be saved with an empty Sample Name").entityEncode().array(),
+    form.field("sample_name", helpers.get_second("sample_name")).trim().required("", "Attention! Files cannot be saved with an empty Sample Name").entityEncode().array(),
     form.field("sample_size_mass", helpers.get_second("sample_size_mass")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("sample_size_vol", helpers.get_second("sample_size_vol")).trim().custom(helpers.positive).custom(helpers.numbers_n_period).entityEncode().array(),
     form.field("sample_type", helpers.get_second("sample_type")).trim().required().custom(helpers.dropdown_items_validation).entityEncode().array(),
@@ -485,7 +485,7 @@ router.post('/metadata_upload',
 
 function make_metadata_object_from_form(req, res) {
   // console.time("TIME: make_metadata_object_from_form");
-  console.trace("Show me, I'm in make_metadata_object_from_form");
+  console.log("Show me, I'm in make_metadata_object_from_form");
   let pid       = req.body.project_id;
   let data      = req.form;
   const met_obj = new metadata_controller.CreateDataObj(req, res, pid, data['dataset_id']);
