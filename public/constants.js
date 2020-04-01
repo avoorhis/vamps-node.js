@@ -682,7 +682,7 @@ constants.VISUAL_THUMBNAILS = {
 };
 
 //constants.ORDERED_METADATA_NAMES_OBJ = {}
-constants.CONTACT_US_SUBJECTS = ["Account Request", "Report a Problem", "Announce a Publication", "Request Project Permanency", "Other"];
+constants.CONTACT_US_SUBJECTS = ["Account Request","Data Request","Report a Problem", "Announce a Publication", "Request Project Permanency", "Other"];
 //
 //
 //
