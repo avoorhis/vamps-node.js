@@ -318,13 +318,7 @@ class visualizationFiles {
     return file_tmp_path;
   }
 
-  print_log_if_not_vamps(req, msg, msg_prod = 'VAMPS PRODUCTION -- no print to log') {
-    if (CFG.site === 'vamps') {
-      console.log(msg_prod);
-    } else {
-      console.log(msg);
-    }
-  }
+  
 
   test_if_json_file_exists(req, dataset_ids, did) {
     let files_prefix = this.file_paths.get_json_files_prefix(req);

@@ -1700,3 +1700,10 @@ module.exports.clean_escape = (text) => {
   return text.replace(/\\r?\\n|\\r|\\n/g, " ");
 };
 
+module.exports.print_log_if_not_vamps = (to_log, msg_prod = 'VAMPS PRODUCTION -- no print to log') => {
+    if (CFG.site === 'vamps') {
+      console.log(msg_prod);
+    } else {
+      console.log(to_log);
+    }
+}

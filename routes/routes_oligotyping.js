@@ -132,7 +132,7 @@ router.post('/project_list2', helpers.isLoggedIn, (req, res) => {
     var rank = tax_obj.rank
     console.log('tax_obj:')
     console.log(JSON.stringify(tax_obj, null, 4));
-    console.log(req.session)
+    helpers.print_log_if_not_vamps(req.session)
     var sql_dids = (req.session.chosen_id_order).join("','")
     
     q = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n"

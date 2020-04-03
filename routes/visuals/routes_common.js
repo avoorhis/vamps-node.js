@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const extend = require('util')._extend;
 const C = require(app_root + '/public/constants');
 const CFG  = require(app_root + '/config/config');
-
+const helpers = require(app_root + '/routes/helpers/helpers');
 
 module.exports = {
 
@@ -151,11 +151,8 @@ module.exports = {
   save_post_items: (req) => {
     // GLOBAL Variable
     var post_hash = {};
-    if(CFG.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-    }else{
-      console.log('VS--BODY (routes_common.js)',req.body)
-    }
+    helpers.print_log_if_not_vamps(req.body)
+    
 
     if(req.body.ds_order === undefined) {
 
@@ -181,12 +178,8 @@ module.exports = {
           if(typeof post_hash.domains == 'string') {
               post_hash.domains = post_hash.domains.split(',');
           }
-          if(CFG.site == 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log(req.body.custom_taxa)
-            console.log(typeof req.body.custom_taxa)
-          }
+          helpers.print_log_if_not_vamps(req.body.custom_taxa)
+          
           //post_hash.custom_taxa   = req.body.custom_taxa  || ['NA'];
           post_hash.custom_taxa   = req.session.custom_taxa || ['NA'];
           // html: [ '1', '60', '2120', '2261' ], object
@@ -416,12 +409,7 @@ create_chosen_id_name_order: (dataset_ids) => {
   return id_name_order;
 },
 create_new_chosen_id_name_hash: (dataset_list, pjds_lookup) => {
-
-  if(CFG.site == 'vamps' ){
-      console.log('VAMPS PRODUCTION -- no print to log');
-  }else{
-      
-  }
+	
   var potential_id_name_hash    = {};
   potential_id_name_hash.ids    = [];
   potential_id_name_hash.names  = [];

@@ -91,7 +91,7 @@ router.post('/view_selection', helpers.isLoggedIn, (req, res) => {
     req.session.otus.chosen_id_name_hash.names = []
 
     console.log('req.session ==>>');
-    console.log(req.session);
+    helpers.print_log_if_not_vamps(req.session)
     console.log('<<--req.body: req.session -- don"t pollute the session');
     //let prj = req.body.otu_id  // filename
     var timestamp = +new Date();

@@ -315,11 +315,8 @@ dheatmap: (req, res) =>{
             res.json(data)
 
           });
-          if(CFG.site == 'vamps' ){
-            console.log('VAMPS PRODUCTION -- no print to log');
-          }else{
-            console.log(stdout)
-          }
+          helpers.print_log_if_not_vamps(stdout)
+          
           //distance_matrix = JSON.parse(stdout);
           distance_matrix = stdout;
         }

@@ -803,11 +803,8 @@ router.post('/show_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) 
 //
 router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res) => {
   console.log('in apply_metadata')
-  if (CFG.site == 'vamps') {
-    console.log('VAMPS PRODUCTION -- no print to log');
-  } else {
-    console.log(req.body)
-  }
+  helpers.print_log_if_not_vamps(req.body)
+  
   var timestamp             = +new Date();
   var selected_pid          = req.body.pid
   var filename              = req.body.filename
@@ -900,11 +897,8 @@ router.post('/apply_metadata', [helpers.isLoggedIn, helpers.isAdmin], (req, res)
   });
   update_metadata_process.on('close', function checkExitCode(code) {
     console.log('From apply_metadata process exited with code ' + code);
-    if (CFG.site == 'vamps') {
-      console.log('VAMPS PRODUCTION -- no print to log');
-    } else {
-      console.log('OUTPUT:\n' + output)
-    }
+    helpers.print_log_if_not_vamps('OUTPUT:\n' + output)
+    
     req.flash('success', 'Success in updating metadata');
     res.render('admin/validate_metadata', {
       title: 'VAMPS Validate Metadata',
@@ -1145,11 +1139,8 @@ router.get('/create_dco_metadata_fileXX', [helpers.isLoggedIn, helpers.isAdmin],
   });
   dco_metadata_process.on('close', function checkExitCode(code) {
     console.log('From apply_metadata process exited with code ' + code);
-    if (CFG.site == 'vamps') {
-      console.log('VAMPS PRODUCTION -- no print to log');
-    } else {
-      console.log('OUTPUT:\n' + output)
-    }
+    helpers.print_log_if_not_vamps('OUTPUT:\n' + output)
+    
     req.flash('success', 'Success in updating metadata');
     res.render('admin/validate_metadata', {
       title: 'VAMPS Validate Metadata',

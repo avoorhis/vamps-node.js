@@ -4774,7 +4774,7 @@ router.post('/download_file', helpers.isLoggedIn, (req, res) => {
   var user_dir = path.join(CFG.USER_FILES_BASE, req.user.username);
   var timestamp = +new Date();  // millisecs since the epoch!
   var file_tag = ['-'+req.body.file_type+'_file'];
-  console.log(req.session);
+  helpers.print_log_if_not_vamps(req.session)
   const file_util_obj = new file_controller.FileUtil(req, res);
 
   file_util_obj.create_export_files(

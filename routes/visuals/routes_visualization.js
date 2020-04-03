@@ -41,7 +41,7 @@ function start_visual_post_items(req) {
 //console.log(visual_post_items.chosen_datasets);
   console.log('VS--visual_post_items and id-hash:>>');
   let msg = 'visual_post_items: ' + JSON.stringify(visual_post_items) + '\n\nreq.session: ' + JSON.stringify(req.session);
-  viz_files_obj.print_log_if_not_vamps(req, msg);
+  helpers.print_log_if_not_vamps(msg);
   console.log('<<VS--visual_post_items');
 
   return visual_post_items;
@@ -84,10 +84,10 @@ router.post('/view_selection', [helpers.isLoggedIn, upload.single('upload_files'
   req.session.otus = false;
   req.session.biom_matrix = {}
   console.log(req.user.username+' req.body: view_selection body-->>');
-  viz_files_obj.print_log_if_not_vamps(req, 'req.body = ' + JSON.stringify(req.body));
+  helpers.print_log_if_not_vamps('req.body = ' + JSON.stringify(req.body));
   console.log('<<--req.body: view_selection');
   console.log('req.session ==>>');
-  console.log(req.session);
+  helpers.print_log_if_not_vamps(req.session)
   console.log('<<--req.body: req.session -- don"t pollute the session');
 
   helpers.start = process.hrtime();
@@ -175,7 +175,7 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
   }
 
   console.log(req.user.username+' req.body: unit_selection-->>');
-  viz_files_obj.print_log_if_not_vamps(req, JSON.stringify(req.body));
+  helpers.print_log_if_not_vamps(JSON.stringify(req.body));
   console.log('req.body: unit_selection');
 
   let dataset_ids = get_dataset_ids(req);
@@ -188,7 +188,7 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
 
   dataset_ids = helpers.screen_dids_for_permissions(req, dataset_ids);
 
-  viz_files_obj.print_log_if_not_vamps(req, 'dataset_ids ' + JSON.stringify(dataset_ids));
+  helpers.print_log_if_not_vamps('dataset_ids ' + JSON.stringify(dataset_ids));
 
   let needed_constants = helpers.retrieve_needed_constants(C,'unit_selection');
   if (dataset_ids === undefined || dataset_ids.length === 0) {
@@ -213,7 +213,7 @@ router.post('/unit_selection', helpers.isLoggedIn, (req, res) => {
     helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
 
     console.log('chosen_dataset_order-->');
-    viz_files_obj.print_log_if_not_vamps(req, chosen_dataset_order);
+    helpers.print_log_if_not_vamps(chosen_dataset_order);
     console.log('<--chosen_dataset_order');
 
     res.render('visuals/unit_selection', {
@@ -337,8 +337,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, (req, res) => {
   let selected_dataset_order = {};
   selected_dataset_order.names = req.session.project_dataset_vars.project_dataset_names;
   selected_dataset_order.ids = req.session.chosen_id_order;
-
-  console.log(req.session);
+  helpers.print_log_if_not_vamps(req.session)
   const user_timestamp = viz_files_obj.get_user_timestamp(req);
   res.render('visuals/reorder_datasets', {
     title: 'VAMPS: Reorder Datasets',
@@ -383,7 +382,7 @@ router.post('/dendrogram',  helpers.isLoggedIn, (req,  res) => {
 ///// It passes the newick string back to view_selection.js
 ///// and tries to construct the svg there before showing it.
   console.log('req.body dnd');
-  viz_files_obj.print_log_if_not_vamps(req, req.body);
+  helpers.print_log_if_not_vamps(req.body);
   console.log('req.body dnd');
   let metric = req.body.metric;
   // let script = req.body.script; // python,  phylogram or phylonator
@@ -420,14 +419,14 @@ router.post('/dendrogram',  helpers.isLoggedIn, (req,  res) => {
     let lines = [];
     if (code === 0){ // SUCCESS
       if (image_type === 'd3'){
-        // viz_files_obj.print_log_if_not_vamps(req, 'stdout: ' + stdout);
+        // helpers.print_log_if_not_vamps('stdout: ' + stdout);
 
         lines = stdout.split('\n');
         const startsWith_newick = lines.find((line) => line.startsWith("NEWICK"));
         let newick = "";
         try {
           newick = startsWith_newick.split('=')[1];
-          // viz_files_obj.print_log_if_not_vamps(req, 'NWK->' + newick);
+          // helpers.print_log_if_not_vamps('NWK->' + newick);
         }
         catch(err) {
           newick = {"ERROR": err};
@@ -1234,7 +1233,7 @@ router.get('/partials/tax_generic_simple', helpers.isLoggedIn,  (req, res) => {
 router.post('/save_datasets', helpers.isLoggedIn,  (req, res) => {
 
   console.log('req.body: save_datasets-->>');
-  viz_files_obj.print_log_if_not_vamps(req, req.body);
+  helpers.print_log_if_not_vamps(req.body);
   console.log('req.body: save_datasets');
 
   let filename_path = path.join(CFG.USER_FILES_BASE,req.user.username,req.body.filename);
@@ -1416,7 +1415,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn, (req, res) => {
   cluster_process.on('close', function clusterProcessOnClose(code) {
     console.log('ds cluster process exited with code ' + code);
     let ds_list = get_ds_list(output);
-    viz_files_obj.print_log_if_not_vamps(req, 'dsl: ' + JSON.stringify(ds_list));
+    helpers.print_log_if_not_vamps('dsl: ' + JSON.stringify(ds_list));
 
     //let last_line = ary[ary.length - 1];
     if (code === 0){   // SUCCESS
@@ -1675,7 +1674,7 @@ router.get('/livesearch_env/:envid', (req, res) => {
   req.session.PROJECT_TREE_OBJ = global_filter_vals.newproject_tree_obj;
   req.session.PROJECT_TREE_PIDS = global_filter_vals.project_tree_pids;
 
-  // viz_files_obj.print_log_if_not_vamps(req, 'PROJECT_FILTER');
+  // helpers.print_log_if_not_vamps('PROJECT_FILTER');
   console.log(req.session.PROJECT_FILTER);
   res.json(req.session.PROJECT_FILTER);
 
@@ -1975,13 +1974,13 @@ router.get('/project_dataset_tree_dhtmlx', (req, res) => {
     if (Object.keys(req.session.DATA_TO_OPEN).length > 0){
       // TODO: Andy, how to test this?
       //console.log('dto');
-      viz_files_obj.print_log_if_not_vamps(req, 'req.session.DATA_TO_OPEN');
+      helpers.print_log_if_not_vamps('req.session.DATA_TO_OPEN');
       for (let openpid in req.session.DATA_TO_OPEN){
         Array.prototype.push.apply(all_checked_dids, req.session.DATA_TO_OPEN[openpid]);
       }
     }
     console.log('all_checked_dids:');
-    viz_files_obj.print_log_if_not_vamps(req, JSON.stringify(all_checked_dids));
+    helpers.print_log_if_not_vamps(JSON.stringify(all_checked_dids));
 
     let pname = this_project.name;
     this_project.datasets.map(dat => {
@@ -2047,7 +2046,7 @@ router.get('/taxa_piechart', (req, res) => {
         }
       }
       new_matrix.rows = biom_matrix.columns;
-      viz_files_obj.print_log_if_not_vamps(req, 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
+      helpers.print_log_if_not_vamps( 'new mtx:' + JSON.stringify(new_matrix) + '\ncounts: ' + JSON.stringify(new_matrix.data));
 
       let cols =  biom_matrix.columns;
 
