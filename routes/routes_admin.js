@@ -1548,7 +1548,7 @@ router.post('/kill_cluster_jobs', [helpers.isLoggedIn, helpers.isAdmin], (req, r
     var cmd = ''
     cmd += "export SGE_ROOT="+CFG.SGE_ROOT+'; '
     cmd += "/opt/sge/bin/lx-amd64/qdel "+jid
-    if(!Number.isInteger(jid)){
+    if(!Number.isInteger(parseInt(jid))){
         req.flash('fail', 'FAIL: Job ID is not Integer');
         res.redirect('/admin/kill_cluster_jobs');
         return
