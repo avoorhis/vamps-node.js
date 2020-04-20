@@ -443,14 +443,15 @@ constants.PORTALS = {
   'PSPHERE': {
     name: 'The Plastisphere',
     subtext: '',
-    projects: ['LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4'],
+    projects: ['LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4','MAA_2018_Bv4','CD_2018a_Bv3v5',
+    'TH_2014_Bv4','MR_2019_Bv3'],
     prefixes: [],
     suffixes: [],
     pagetitle: 'The Plastisphere',
     maintitle: 'Plastisphere Portal',
     subtitle: 'Bacteria and Plastics',
     thumb: '/images/portals/psphere_thumbnail.jpg',
-    zoom: 5  // mostly US
+    zoom: 2  // Now worldwide  No: mostly US
   },
   'RARE': {
     name: 'The Rare Biosphere',

@@ -813,10 +813,11 @@ def get_dataset_and_seqid_from_defline(defline):
     seqid = dlitems[1]
     return (dataset, seqid)
     
-def get_id_and_frequency(item_zero):
-    item_zero_items = item_zero.split('|')  # splits off |frequency:1
-    id = item_zero_items[0]   # remove |frequency:1
-    freq = item_zero_items[1].split(':')[1]
+def get_id_and_frequency(full_id):
+    item_zero_items = full_id.split('|')  # splits off |frequency:1
+    #SWD7_900|SRR6012543.900 900 length=251|127:d|m/o:0.000000|MR:n=0;r1=0;r2=0|Q30:n/a|CO:0|mismatches:0|frequency:24
+    id = ''.join(item_zero_items[0:-1])   # remove |frequency:1
+    freq = item_zero_items[-1].split(':')[1]
     return (id,freq)
 
 if __name__ == '__main__':
