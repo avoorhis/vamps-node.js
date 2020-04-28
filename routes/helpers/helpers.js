@@ -739,7 +739,7 @@ module.exports.get_qsub_script_text = (req, scriptlog, dir_path, cmd_name, cmd_l
   script_text += "hostname\n";
   script_text += 'echo -n "qsub: Current working directory: "' + "\n";
   script_text += "pwd\n\n";
-  script_text += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh\n\n"
+  script_text += "source /groups/vampsweb/" + req.CONFIG.site + "/seqinfobin/vamps_environment.sh;\n\n"
 //     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
 
   for (var i in cmd_list) {
@@ -930,7 +930,8 @@ module.exports.make_gast_script_txt = (req, data_dir, project, cmd_list, opts) =
   }
   else {
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
-    var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting
+    // this is important to have -sync y
+    var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting and then running install
     var parallel_env_tag = '-pe smp 8'  // req to work on vamps cluster 2019-01
     make_gast_script_txt += "qsub "+parallel_env_tag+" "+sync_tag+" " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }

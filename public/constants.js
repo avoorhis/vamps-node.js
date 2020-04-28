@@ -443,8 +443,13 @@ constants.PORTALS = {
   'PSPHERE': {
     name: 'The Plastisphere',
     subtext: '',
-    projects: ['LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4','MAA_2018_Bv4','CD_2018a_Bv3v5',
-    'TH_2014_Bv4','MR_2019_Bv3'],
+    projects: [
+    'LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4',
+    'AD_2019_Bv3v4','AM_2014_Bv4','AM_2016_Bv4','CD_2018a_Bv3v5','GEC_2019_Bv4v5','IVK_2019_Bv3v4','KK_2019_Bv4',
+    ,'MAA_2018_Bv4','MP_2019_Bv3v4','MR_2019_Bv3','TH_2014_Bv4'
+    ],
+   
+
     prefixes: [],
     suffixes: [],
     pagetitle: 'The Plastisphere',
