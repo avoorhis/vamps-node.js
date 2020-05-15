@@ -93,12 +93,19 @@ def start(args):
     
     print ("checking project")
     res = check_project()  ## script dies if project or rev_project is in db
-    
-    if res[0]=='ERROR':
-        print ("1ERROR res[0] "+res[1])
+
+
+    if res[0]=='ERROR' and args.partial:
+        key = input('found project name and args.partial==True Continue to overwrite/add? (y/N) ')
+        if key=='y':
+            pass
+        else:
+            print ("\nExiting")
+            sys.exit(res[1])
+    elif res[0]=='ERROR' and not args.partial:
+        print ("\n1ERROR res[0] "+res[1])
         sys.exit(res[1])
-    
-    
+        
     print ("recreating ranks")
     recreate_ranks()
 
@@ -165,6 +172,7 @@ def check_project():
     cur.execute(q1)
     if cur.rowcount > 0:
         row = cur.fetchone()        
+        CONFIG_ITEMS['project_id'] = str(row[1])
         return ('ERROR','Duplicate project name1: '+CONFIG_ITEMS['project_name']+' PID:'+str(row[1]))
     rev = proj[::-1]
     q2 = "SELECT rev_project_name, project_id from project WHERE rev_project_name='%s'" % (rev)
@@ -224,7 +232,10 @@ def push_project():
     id = CONFIG_ITEMS['owner_id']
     pub = 0 if CONFIG_ITEMS['public'] else 1
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public','matrix','active','permanent','user_project']
-    q = "INSERT into project ("+(',').join(fields)+")"
+    ignore = ''
+    if args.partial:
+        ignore = 'IGNORE'
+    q = "INSERT "+ignore+" into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub,'0','1','0','1')
     if args.verbose:
@@ -246,7 +257,10 @@ def push_dataset():
     args.DATASET_ID_BY_NAME = {}
     global mysql_conn, cur
     fields = ['dataset','dataset_description','project_id']
-    q = "INSERT into dataset ("+(',').join(fields)+")"
+    ignore = ''
+    if args.partial:
+        ignore = 'IGNORE'
+    q = "INSERT "+ignore+" into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s')"
 
     for ds in CONFIG_ITEMS['datasets']:
@@ -450,9 +464,11 @@ def push_taxonomy(args):
     for ds in CONFIG_ITEMS['datasets']:
         args.SEQ_COLLECTOR[ds] = {}
     ds_count = len(CONFIG_ITEMS['datasets'])
-    for i,dir in enumerate(os.listdir(analysis_dir)): 
+    #for i,dir in enumerate(os.listdir(analysis_dir)): 
+    
+    for i,ds in enumerate(CONFIG_ITEMS['datasets']):
         print('\nDS count:'+str(i+1)+'/'+str(ds_count))
-        ds = dir
+        #ds = dir
         data_dir = os.path.join(analysis_dir,ds) 
         unique_file = os.path.join(data_dir,'seqfile.unique.fa')
         if args.verbose:
@@ -887,6 +903,9 @@ if __name__ == '__main__':
     parser.add_argument("-json", "--json_file_path",    
                 required=False,  action="store",   dest = "jsonfile_dir",  default='undefined',
                 help = 'json_file_path for local')
+    parser.add_argument("-a", "--partial",
+                required=False,  action="store_true",   dest = "partial",  default=False,
+                help = 'Partial: script will not check for project')
     args = parser.parse_args() 
     
     # convert args to a dict for passing to fxn
@@ -914,36 +933,27 @@ if __name__ == '__main__':
     print ('db-host:',args.hostname,'db-name:',args.NODE_DATABASE)
     pid = start(args)
     print("Finished; PID=" + str(pid))
-    
-    # delete the big unneeded key
-    #del my_args.SEQ_COLLECTOR 
-    
-    
-    
-    #Script2
-    import vamps_script_upload_metadata as md
-    my_args["project"] = CONFIG_ITEMS['project_name']
-    md.start_metadata_load_from_file(my_args)
-    print(my_args)
-    
-    #Script3
-    import vamps_script_create_json_dataset_files as file_maker
-    # if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
-#         my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
-#     elif args.site == 'vampsdev' or args.site == 'bpcweb7':
-#         my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
-#     else:
-#         if args.jsonfile_dir == 'undefined':
-#             sys.exit('You must add --json_file_path to command line!')
-#         else:
-#             my_args["jsonfile_dir"] = args.jsonfile_dir
+    if args.partial:
+        print('Need to run metadata and files:')
+        print('Exiting')
+        sys.exit()
+    else:            
+
+        #Script2
+        import vamps_script_upload_metadata as md
+        my_args["project"] = CONFIG_ITEMS['project_name']
+        md.start_metadata_load_from_file(my_args)
+        print(my_args)
+
+
+        #Script3
+        import vamps_script_create_json_dataset_files as file_maker
         
-    if args.classifier == 'RDP':
-    	my_args["units"] = 'rdp'
-    elif args.classifier == 'SPINGO':
-    	my_args["units"] = 'generic'
-    else:
-    	my_args["units"] = 'silva119'
-    file_maker.go_add(my_args)
-    print("FINISHED -- LOAD -- METADATA -- FILES")
-    
+        if args.classifier == 'RDP':
+    	    my_args["units"] = 'rdp'
+        elif args.classifier == 'SPINGO':
+    	    my_args["units"] = 'generic'
+        else:
+    	    my_args["units"] = 'silva119'
+        file_maker.go_add(my_args)
+        print("FINISHED -- LOAD -- METADATA -- FILES")

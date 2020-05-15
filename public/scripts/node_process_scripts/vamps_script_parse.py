@@ -91,7 +91,7 @@ def parse_matrix(args):
     max_ds_count = 0
     with open(args.file, mode='r') as infile:
         for line in infile:
-            items = line.strip('\n').split('\t')
+            items = line.strip().split('\t')
             #print('items',items)
             if not line or items[0][:5] == 'VAMPS':
                 print('found vamps')

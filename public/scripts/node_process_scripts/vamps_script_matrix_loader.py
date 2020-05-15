@@ -191,7 +191,8 @@ def parse_matrix_file():
             sys.exit('File delimiter expected to be a <tab>')
         if n==0:  # dataset row
             # May or may not be text in row1;col1
-            datasets = row[1:]
+            #datasets = [d.strip() for d in row[1:]]
+            datasets = [d.strip() for d in row[1:] if d.strip()]  # ONLY for dataset row remove empty datasets
             print('datasets',datasets)
             uniques = list(set(datasets))
             if len(datasets) != len(uniques):
