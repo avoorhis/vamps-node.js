@@ -145,9 +145,9 @@ def go_add(args):
     print(type(args))
     
     global mysql_conn, cur
-    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
+    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
         hostname = 'vampsdb'
-    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
         hostname = 'bpcweb7'
     else:
         hostname = 'localhost'
@@ -432,8 +432,8 @@ if __name__ == '__main__':
     """
     
          
-    parser.add_argument("-site", "--site",    
-                required=False,  action="store",   dest = "site", default='local',
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "host", default='local',
                 help = '')
     parser.add_argument("-db","--database",                   
                required=False,  action="store",   dest = "NODE_DATABASE", default='vamps2',

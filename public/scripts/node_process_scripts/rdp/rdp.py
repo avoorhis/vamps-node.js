@@ -27,7 +27,7 @@ import subprocess
 
 
 #def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
-def run_rdp(uniquefile, outfile, classifier, gene, site):	
+def run_rdp(uniquefile, outfile, classifier, gene, host):	
 	
     
     #PATH_2_JAVA = "/usr/bin/java"
@@ -88,8 +88,8 @@ if __name__ == '__main__':
     parser.add_argument('-rdp_dir', '--rdp_dir',
                 required=True,   action="store",  dest = "rdp_script_dir",
                  help = 'The base directory where to find classifier.jar')
-    parser.add_argument("-site", "--site",
-    			required=False,  action="store",   dest = "site",
+    parser.add_argument("-host", "--host",
+    			required=False,  action="store",   dest = "host",
                 help = 'vamps, vampsdev or local')
    #  parser.add_argument("-pdir", "--process_dir",
 #                 required=False,  action="store",   dest = "process_dir", default='/',
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
     #os.chdir(args.baseoutputdir)
-    run_rdp(args.infile, args.outfile, args.process_dir,  args.rdp_script_dir, args.site)
+    run_rdp(args.infile, args.outfile, args.process_dir,  args.rdp_script_dir, args.host)
 
 
     

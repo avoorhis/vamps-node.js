@@ -84,9 +84,9 @@ def start_metadata_load_from_file(args):
     
     global mysql_conn, cur
    
-    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
+    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
         hostname = 'vampsdb'
-    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
         hostname = 'bpcweb7'
     else:
         hostname = 'localhost'
@@ -366,7 +366,7 @@ if __name__ == '__main__':
          where
             
             -project_dir/--project_dir   
-            -site/--site
+            -host/--host
                 
             -i/--infile     
            -config/--config
@@ -389,8 +389,8 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--project",    
                 required=True,  action="store",   dest = "project", 
                 help = '')     
-    parser.add_argument("-site", "--site",    
-                required=False,  action="store",   dest = "site", default='local',
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "host", default='local',
                 help = '')
     parser.add_argument("-config", "--config",    
                 required=True,  action="store",   dest = "config_file", 

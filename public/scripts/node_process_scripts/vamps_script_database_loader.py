@@ -244,7 +244,8 @@ def push_project():
     #print cur.lastrowid
     ## should have already checked 
     cur.execute(q)
-    CONFIG_ITEMS['project_id'] = cur.lastrowid
+    if not args.partial:
+        CONFIG_ITEMS['project_id'] = cur.lastrowid
     
     mysql_conn.commit()
     
@@ -262,7 +263,7 @@ def push_dataset():
         ignore = 'IGNORE'
     q = "INSERT "+ignore+" into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s')"
-
+    
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
@@ -492,14 +493,7 @@ def push_taxonomy(args):
             tmp_seqs[id]['freq'] = freq
             tmp_seqs[id]['seq']= f.seq
         f.close()
-        if 'input_type' in args and args.input_type == 'tax_by_seq':
-            tax_file = os.path.join(data_dir,'sequences_n_taxonomy.txt')
-            unique_file = os.path.join(gast_dir, dir, 'unique.fa')
-            if os.path.exists(tax_file):
-                run_tax_by_seq_file(args, ds, data_file, tmp_seqs)
-            else:
-                print ("cound not find file:",data_file)
-        elif args.classifier.upper() == 'GAST':
+        if args.classifier.upper() == 'GAST':
             #data_file   = os.path.join(data_dir, 'gast_out.txt')
             data_file   = unique_file+'.gast'
             
@@ -816,8 +810,9 @@ def get_config_data(args):
     datasets = {}
     for dsname, count in  config.items('MAIN.dataset'):
         #print '  %s = %s' % (name, value) 
-        ds = dsname 
-        datasets[ds] = count
+        ds = dsname
+        if count > 0:
+            datasets[ds] = count
     CONFIG_ITEMS['datasets'] = datasets    
     print (CONFIG_ITEMS )
        
@@ -845,22 +840,21 @@ if __name__ == '__main__':
        uploads to new vamps  
          where
             
-            -dir/--indir   This is the base directory where analysis/gast/ is located.
-                            This should be all you need.
-                     Steps 1 & 2 are in py_mbl_sequencing_pipeline (modified)
-                     
-                     Step 1) ./1-vamps-load.py
-                             Create config.ini from input fasta file
-                             Will also create directory structure:
-                                 analysis/gast/<dataset name>
-                             Installs fatsta files into separate dataset directories.
-                     Step 2) ./2-vamps-gast.py
-                             Will create INFO_CONFIG.ini
-                             and, using (modified) python_pipeline,
-                             GAST data into analysis/gast/<dataset name> directory
-                     Step 3) This script:
-                             .database_project_upload.py -dir input_directory
-
+		-a/--partial this will bypass project check for unique-ness; allows adding datasets
+	         use: split INFO.config into multiple datasets  [Default:False]
+        
+        -v verbose
+        
+        -host/--host vamps or vampsdev or [Default:local]
+        
+        -class/--class classifier [GAST:RDP:SPINGO] [Default:GAST]
+        
+        -project_dir Full path of project directory [Required] 
+        	Contains config file and analysis dir wirh ds and taxonomy files
+        
+        -config  Name only of config file. Must be in project_dir [Required]
+           
+         
 """
 
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
@@ -872,24 +866,15 @@ if __name__ == '__main__':
                 required=False,   action="store",  dest = "NODE_DATABASE",   default='vamps2',         
                 help = 'node database') 
     
-    parser.add_argument('-ref_db_dir', '--reference_db',         
-                required=False,   action="store",  dest = "ref_db_dir", default = "default",           
-                help = 'node database')                                           
-    parser.add_argument("-in_type", "--in_type",    
-                required=False,  action="store",   dest = "input_type", default='unknown',
-                help = '')
     parser.add_argument('-class', '--classifier',         
-                required=False,   action="store",  dest = "classifier",  default='unknown',            
+                required=False,   action="store",  dest = "classifier",  default='GAST',            
                 help = 'GAST or RDP or SPINGO')  
     
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
                 help = '')         
-    parser.add_argument("-site", "--site",    
-                required=False,  action="store",   dest = "site", default='local',
-                help = '')
-    parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='',
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "host", default='local',
                 help = '')
     parser.add_argument("-config", "--config",    
                 required=True,  action="store",   dest = "config_file", 
@@ -910,10 +895,10 @@ if __name__ == '__main__':
     
     # convert args to a dict for passing to fxn
     my_args = vars(args)
-    if args.site == 'vamps' or args.site == 'vampsdb' or args.site == 'bpcweb8':
+    if args.host == 'vamps' or args.host == 'vampsdb' or args.host == 'bpcweb8':
         args.hostname = 'vampsdb'
         my_args["jsonfile_dir"] = '/groups/vampsweb/vamps/nodejs/json/'
-    elif args.site == 'vampsdev' or args.site == 'bpcweb7':
+    elif args.host == 'vampsdev' or args.host == 'bpcweb7':
         args.hostname = 'bpcweb7'
         my_args["jsonfile_dir"] = '/groups/vampsweb/vampsdev/nodejs/json/'
     else:

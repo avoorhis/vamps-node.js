@@ -2247,8 +2247,8 @@ function rdpTax(req, project_config, ref_db)
     var script_path = CFG.PATH_TO_NODE_SCRIPTS;
     var units = 'rdp'
     var classifier = 'RDP'
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',C.CONFIG_FILE]
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-host',CFG.site,'-path_to_classifier',path2classifier,'-gene',gene,'--config',C.CONFIG_FILE]
+    var cmd2_opts = [ '-project_dir',data_dir,'-host',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
     //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'--config',C.CONFIG_FILE ]
     //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-units',units,'--jsonfile_dir',CFG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     
@@ -2275,8 +2275,8 @@ function spingoTax(req, project_config, ref_db)
     var units = 'generic'
     var classifier = 'SPINGO'
     
-    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-path_to_spingo',path2spingo,'--config',C.CONFIG_FILE,'-db',ref_db_path]
-    var cmd2_opts = [ '-project_dir',data_dir,'-site',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
+    var cmd1_opts = [ '-project_dir',data_dir,'-p',project,'-host',CFG.site,'-path_to_spingo',path2spingo,'--config',C.CONFIG_FILE,'-db',ref_db_path]
+    var cmd2_opts = [ '-project_dir',data_dir,'-host',CFG.site,'--classifier',classifier,'--config',C.CONFIG_FILE ]
     //var cmd3_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'--config',C.CONFIG_FILE ]
     //var cmd4_opts = [ '-project_dir',data_dir,'-p',project,'-site',CFG.site,'-units',units,'--jsonfile_dir',CFG.JSON_FILES_BASE,'--config',C.CONFIG_FILE ]
     var spingo_cmd1 = script_path + '/vamps_script_spingo_run.py'                   + ' '+cmd1_opts.join(' ')
@@ -2370,7 +2370,7 @@ function gastTax(req, project_config, ref_db)
   // for tests: is_local = false;
   // TODO:  use file_path_obj;
   var new_info_filename_path = path.join(data_dir, C.CONFIG_FILE)
-  var database_loader_args = ['-site',CFG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
+  var database_loader_args = ['-host',CFG.site,'-class','GAST','-project_dir',data_dir,'-config',new_info_filename_path]
   var database_loader = CFG.PATH_TO_NODE_SCRIPTS+'/vamps_script_database_loader.py' +' '+database_loader_args.join(' ') +' >> '+scriptlog
   
   //var gast_ill_path = data_dir+"/clust_gast_ill_"+project+".sh"

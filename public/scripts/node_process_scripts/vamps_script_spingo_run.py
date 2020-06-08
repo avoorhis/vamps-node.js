@@ -114,8 +114,8 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project", 
                 help="Project Name")
-    parser.add_argument("-site", "--site",    
-                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+    parser.add_argument("-host", "--host",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "host",  default='local',
                 help="")                           
     parser.add_argument("-db", "--ref_database",    
                  required=True,  action="store",   dest = "ref_database",

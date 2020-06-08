@@ -78,7 +78,7 @@ def start_rdp(args):
          
             #rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created
             rdp_out_file = os.path.join(args.project_dir, 'analysis', dataset, 'rdp_out.rdp') # to be created
-            rdp.run_rdp( unique_file, rdp_out_file, args.path_to_classifier, args.gene, args.site )
+            rdp.run_rdp( unique_file, rdp_out_file, args.path_to_classifier, args.gene, args.host )
     
 
             
@@ -108,8 +108,8 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project", 
                 help="Project Name")
-    parser.add_argument("-site", "--site",    
-                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+    parser.add_argument("-host", "--host",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "host",  default='local',
                 help="")            
                  
     parser.add_argument("-gene", "--gene",    
