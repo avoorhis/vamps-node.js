@@ -811,7 +811,7 @@ def get_config_data(args):
     for dsname, count in  config.items('MAIN.dataset'):
         #print '  %s = %s' % (name, value) 
         ds = dsname
-        if count > 0:
+        if int(count) > 0:
             datasets[ds] = count
     CONFIG_ITEMS['datasets'] = datasets    
     print (CONFIG_ITEMS )
