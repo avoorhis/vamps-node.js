@@ -730,7 +730,7 @@ module.exports.get_qsub_script_text = (req, scriptlog, dir_path, cmd_name, cmd_l
   script_text += "#$ -j y\n";
   script_text += "#$ -o " + scriptlog + "\n";
   script_text += "#$ -N " + cmd_name + "\n";
-  script_text += "#$ -pe smp 8\n";
+  script_text += "#$ -pe allslots 12\n";
   //script_text += "#$ -p 100\n";   // priority default is 0
   script_text += "#$ -cwd\n";
   script_text += "#$ -V\n";
@@ -932,7 +932,8 @@ module.exports.make_gast_script_txt = (req, data_dir, project, cmd_list, opts) =
     // the -sync y tag means that the following install scripts will run AFTER the cluster gast scripts finish
     // this is important to have -sync y
     var sync_tag = '-sync y' // forces qsub to wait until all jobs finish before exiting and then running install
-    var parallel_env_tag = '-pe smp 8'  // req to work on vamps cluster 2019-01
+    //var parallel_env_tag = '-pe smp 8'  // req to work on vamps cluster 2019-01
+    var parallel_env_tag = '-pe allslots 12'
     make_gast_script_txt += "qsub "+parallel_env_tag+" "+sync_tag+" " + data_dir + "/clust_gast_ill_" + project + ".sh\n";
   }
   make_gast_script_txt += "echo \"Done with cluster_gast\" >> " + data_dir + "/cluster.log\n"

@@ -445,7 +445,8 @@ constants.PORTALS = {
     subtext: '',
     projects: [
     'LAZ_SEA_Bv6', 'LAZ_SEA_Ev9', 'LAZ_SEA_Bv6v4', 'LAZ_DET_Bv3v4',
-    'AD_2019_Bv3v4','AM_2014_Bv4','AM_2016_Bv4','AST_2019_Bv4','CD_2018a_Bv3v5','CD_2018b_Bv3v5',
+    'LQM_MPLA_Bv4v5','LQM_PLA2_Bv4v5','LQM_PLA3_Bv4v5','LQM_PLA4_Bv4v5',
+    'AD_2019_Bv3v4','AMC_2014_Bv4','AMC_2016_Bv4','AST_2019_Bv4','CD_2018a_Bv3v5','CD_2018b_Bv3v5',
     'CDT_2017_Bv3v4','CDT_2017_ITS2',
     'ES_2017_Bv3','GEC_2019_Bv4v5','GEC_2019_ITS',
     'IVK_2018_Bv3v4','IVK_2019_Bv3v4','KK_2019_Bv4','KPNLF_2019_Bv3v4',
