@@ -398,9 +398,10 @@ def push_sequences(args):
                     #q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
                     #q4 += " VALUES('%s','%s') "
                 elif args.classifier.upper() == 'RDP':
+                    boot_score = args.SEQ_COLLECTOR[ds][seq]['distance']
                     q = "INSERT into rdp_taxonomy_info_per_seq"
-                    q += " (sequence_id,rdp_taxonomy_id,rank_id)"
-                    q += " VALUES ('%s','%s','%s')" % (str(seqid), tax_id, rank_id)
+                    q += " (sequence_id,rdp_taxonomy_id,rank_id,boot_score)"
+                    q += " VALUES ('%s','%s','%s','%s')" % (str(seqid), tax_id, rank_id, boot_score)
                     q += " ON DUPLICATE KEY UPDATE rdp_taxonomy_id='"+tax_id+"', rank_id='"+rank_id+"'"
                     
                     q3 = "SELECT rdp_taxonomy_info_per_seq_id from rdp_taxonomy_info_per_seq"
