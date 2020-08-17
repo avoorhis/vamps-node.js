@@ -2240,8 +2240,8 @@ function rdpTax(req, project_config, ref_db)
     
     if (ref_db.substr(-3) == 'ITS')   // 16S or ITS
     {
-      //gene = 'fungalits_unite';
-      gene = 'fungallsu';
+      gene = 'fungalits_unite';
+      //gene = 'fungallsu';
     }
   // TODO:  use file_path_obj;
   var path2classifier = path.join(CFG.PATH_TO_CLASSIFIER,'classifier.jar')  // + '_' + ref_db;
