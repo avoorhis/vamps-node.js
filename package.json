@@ -39,7 +39,7 @@
     "html-pdf": "^2.2.0",
     "htmlencode": "0.0.4",
     "https-proxy-agent": "^2.2.4",
-    "ini": "^1.3.5",
+    "ini": "^1.3.6",
     "iniparser": "^1.0.5",
     "js2xmlparser": "^4.0.0",
     "jsdom": "^15.2.1",
